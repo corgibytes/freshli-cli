@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Freshli.cli;
+using Freshli.Cli;
 using Xunit;
 
-namespace Freshli.Test.cli {
+namespace Freshli.Cli.Test {
   public class OutputFormatterTest {
     [Fact]
     public void Basics() {

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Freshli.CLI", "Freshli.CLI\Freshli.CLI.csproj", "{2DDABC87-299E-4A40-AAF4-70E49402321A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Freshli.Cli", "Freshli.Cli\Freshli.Cli.csproj", "{2DDABC87-299E-4A40-AAF4-70E49402321A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Freshli.CLI.Test", "Freshli.CLI.Test\Freshli.CLI.Test.csproj", "{91306A42-A29B-410A-8549-598B33DD0378}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Freshli.Cli.Test", "Freshli.Cli.Test\Freshli.Cli.Test.csproj", "{91306A42-A29B-410A-8549-598B33DD0378}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Freshli", "freshli\Freshli\Freshli.csproj", "{D1EDF882-2E59-48ED-8190-5F9812C5367D}"
 EndProject
