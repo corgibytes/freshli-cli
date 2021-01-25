@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Freshli.Cli;
 using Xunit;
 
 namespace Freshli.Cli.Test {
