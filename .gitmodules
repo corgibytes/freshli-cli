@@ -1,0 +1,4 @@
+[submodule "freshli"]
+	branch = cli-breakout
+	path = freshli
+	url = git@github.com:corgibytes/freshli.git
