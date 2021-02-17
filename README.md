@@ -75,11 +75,6 @@ Date    LibYear UpgradesAvailable       Skipped
 
 ### Building `freshli-cli`
 
-First, run :
-```
-git submodule update --init --recursive
-```
-
 There are multiple ways to build `freshli-cli`. The simplest is directly on the command line by running `dotnet build`.
 
 You can also use an IDE for working on `freshli-cli`. Most of the project's developers use JetBrains Rider, but you can also use Visual Studio 2019. If you don't want to use an IDE, then a text editor with good C# support such as Visual Studio Code or Atom also works equally well.
