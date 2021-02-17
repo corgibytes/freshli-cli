@@ -1,12 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\freshli\Freshli\Freshli.csproj" />
+    <PackageReference Include="Freshli" Version="0.0.0" />
   </ItemGroup>
-
 </Project>
