@@ -75,9 +75,29 @@ Date    LibYear UpgradesAvailable       Skipped
 
 ### Building `freshli-cli`
 
+#### Configuring Github Packages
+
+To use Freshli Core, you'll need to [create a personal access token] and copy
+the `nuget.config.example` file in Freshli.Cli to create a `nuget.config` file
+with your Github username and personal access token:
+
+```
+...
+<packageSourceCredentials>
+  <GithubPackages>
+    <add key="Username" value="GITHUB_USERNAME" />
+    <add key="ClearTextPassword" value="PERSONAL_ACCESS_TOKEN" />
+  </GithubPackages>
+</packageSourceCredentials>
+...
+```
+
+#### Building
+
 There are multiple ways to build `freshli-cli`. The simplest is directly on the command line by running `dotnet build`.
 
-You can also use an IDE for working on `freshli-cli`. Most of the project's developers use JetBrains Rider, but you can also use Visual Studio 2019. If you don't want to use an IDE, then a text editor with good C# support such as Visual Studio Code or Atom also works equally well.
+You can also use an IDE for working on `freshli-cli`. Most of the project's developers use JetBrains Rider, but you can also use Visual Studio 2019. If you don't want to use an IDE, then a text editor with good C# support such as Visual Studio Code or Atom also works equally well. Visual Studio Code is configured with
+a Remote Container for convenience.
 
 This is what a successful command line build looks like:
 
