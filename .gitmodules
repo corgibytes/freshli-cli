@@ -1,4 +1,0 @@
-[submodule "freshli"]
-	branch = main
-	path = freshli
-	url = git@github.com:corgibytes/freshli.git

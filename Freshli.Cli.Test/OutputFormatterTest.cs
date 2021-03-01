@@ -28,15 +28,17 @@ namespace Freshli.Cli.Test {
       var results = new List<MetricsResult>();
       foreach (var dateAndValue in datesAndValues) {
         var result = new LibYearResult();
-        result.Add(
-          "test_package",
-          "1.0",
-          dateAndValue.Date,
-          "2.0",
-          DateTime.Today,
-          dateAndValue.Value,
-          dateAndValue.UpgradeAvailable,
-          dateAndValue.Skipped
+        result.Add(new LibYearPackageResult
+          (
+            "test_package",
+            "1.0",
+            dateAndValue.Date,
+            "2.0",
+            DateTime.Today,
+            dateAndValue.Value,
+            dateAndValue.UpgradeAvailable,
+            dateAndValue.Skipped
+          )
         );
         results.Add(new MetricsResult(dateAndValue.Date, "N/A", result));
       }
