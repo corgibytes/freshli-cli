@@ -21,7 +21,5 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Freshli.Cli\Freshli.Cli.csproj" />
-    <ProjectReference Include="..\freshli\Freshli\Freshli.csproj" />
   </ItemGroup>
-
 </Project>
