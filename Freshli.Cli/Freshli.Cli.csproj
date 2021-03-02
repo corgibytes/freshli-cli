@@ -4,6 +4,6 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Freshli" Version="0.3.0-alpha0020" />
+    <PackageReference Include="Freshli" Version="0.3.0-beta0001" />
   </ItemGroup>
 </Project>
