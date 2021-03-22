@@ -55,8 +55,7 @@ jobs:
           versionSpec: '0.11.0'
 
       - uses: gittools/actions/gitreleasemanager/create@v0.9.9
-        name: Create/Update GitHub Release ${{ steps.gitversion.outputs.majorMinorPatch }}
-        continue-on-error: true
+        name: Create/Update GitHub Release ${{ steps.gitversion.outputs.majorMinorPatch }}        
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: 'corgibytes'
