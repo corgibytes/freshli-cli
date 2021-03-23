@@ -70,7 +70,7 @@ jobs:
           git add --renormalize CHANGELOG.md
           cat CHANGELOG.md
 
-      - uses: stefanzweifel/git-auto-commit-action@v4                
+      - uses: stefanzweifel/git-auto-commit-action@v4
         name: Commit Change Log and if it Changed
         with:
           commit_message: Committing auto generated change log.          
