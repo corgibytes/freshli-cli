@@ -1,7 +1,8 @@
+using Freshli;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Freshli.Cli {
+namespace Corgibytes.Freshli.Cli {
   public class OutputFormatter {
     private readonly TextWriter _writer;
 
