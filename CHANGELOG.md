@@ -1,12 +1,16 @@
 ## v0.3.0
 
 
-As part of this release we had [1 issue](https://github.com/corgibytes/freshli-cli/milestone/1?closed=1) closed.
+As part of this release we had [2 issues](https://github.com/corgibytes/freshli-cli/milestone/1?closed=1) closed.
 Goals for this milestone:
 
 - Proper versioning and change log.
 - Use beta version of Freshli NuGet package.
 - Make exe available to download.
+
+__Bug__
+
+- [__#13__](https://github.com/corgibytes/freshli-cli/issues/13) Issue for testing changelog generation
 
 __Enhancement__
 
