@@ -90,6 +90,5 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}                    
           owner: 'corgibytes'
           repository: 'freshli-cli'
-          milestone: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'           
-          tagName: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
-          assets: 'freshli-cli.windows-amd64.zip'
+          milestone: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'                     
+          assets: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}.zip'
