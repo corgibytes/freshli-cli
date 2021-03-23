@@ -65,9 +65,9 @@ jobs:
       # This will generate the change log for all the GitHub Releases, feature
       # is not included in the GitReleaseManager action yet.
       - name: Generate Change Log
-        run: |
-          git config --global core.autocrlf input
+        run: |          
           dotnet-gitreleasemanager export --token ${{ secrets.GITHUB_TOKEN }} -o 'corgibytes' -r 'freshli-cli' -f 'CHANGELOG.md'
+          git add --renormalize CHANGELOG.md
           cat CHANGELOG.md
 
       - uses: stefanzweifel/git-auto-commit-action@v4                
