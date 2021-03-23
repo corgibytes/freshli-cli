@@ -75,3 +75,21 @@ jobs:
         with:
           commit_message: Committing auto generated change log.          
           file_pattern: CHANGELOG.md
+
+      - name: Build
+        run: dotnet build --configuration Release                      
+
+      - uses: papeloto/action-zip@v1
+        with:
+          files: ./Freshli.Cli/bin/Release
+          dest: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}.zip'
+
+      - name: Add Assets
+        uses: gittools/actions/gitreleasemanager/addasset@v0.9.9
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}                    
+          owner: 'corgibytes'
+          repository: 'freshli-cli'
+          milestone: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'           
+          tagName: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
+          assets: 'freshli-cli.windows-amd64.zip'
