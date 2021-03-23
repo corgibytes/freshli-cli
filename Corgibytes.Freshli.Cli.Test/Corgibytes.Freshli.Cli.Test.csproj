@@ -20,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Freshli.Cli\Freshli.Cli.csproj" />
+    <ProjectReference Include="..\Corgibytes.Freshli.Cli\Corgibytes.Freshli.Cli.csproj" />
   </ItemGroup>
 </Project>
