@@ -1,0 +1,152 @@
+name: .NET Core
+
+on:
+  push:
+    branches: [ main, release* ]
+  pull_request:
+    branches: [ main, release* ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: "[Setup] - Checkout code"
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Required for GitVersion
+          submodules: 'recursive'
+      
+      - name: "[Setup] - .NET Core"
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 5.0.x
+
+      - name: "[Setup] - .NET Core 3 (GitReleaseManager)"
+        if: ${{ github.event_name == 'push' }}
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.0.x
+
+      - name: "[Setup] - Install GitVersion"
+        uses: gittools/actions/gitversion/setup@v0.9.9
+        with:
+          versionSpec: '5.6.6'
+
+      - name: "[Setup] - Install GitReleaseManager"
+        if: ${{ github.event_name == 'push' }}
+        uses: gittools/actions/gitreleasemanager/setup@v0.9.9        
+        with:
+          versionSpec: '0.11.0'
+
+      - name: "[Versioning] - GitVersion Config"
+        uses: gittools/actions/gitversion/execute@v0.9.9
+        with:
+          useConfigFile: true
+          additionalArguments: '/showConfig'
+
+      - name: "[Versioning] - Determine Version"
+        uses: gittools/actions/gitversion/execute@v0.9.9
+        id: gitversion
+        with:
+          useConfigFile: true
+
+      - name: "[Versioning] - Update csproj Files"
+        uses: gittools/actions/gitversion/execute@v0.9.9
+        with:
+          useConfigFile: true
+          additionalArguments: '/updateprojectfiles'
+    
+      - name: "[Versioning] -  Display updated csproj File"
+        run: cat Freshli.Cli/Freshli.Cli.csproj
+        
+      - name: "[Draft Release] - Create/Update GitHub Release ${{ steps.gitversion.outputs.majorMinorPatch }}"
+        if: ${{ github.event_name == 'push' }}
+        uses: gittools/actions/gitreleasemanager/create@v0.9.9        
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: 'corgibytes'
+          repository: 'freshli-cli'
+          milestone: 'v${{ steps.gitversion.outputs.majorMinorPatch }}' 
+
+      # This will generate the change log for all the GitHub Releases, feature
+      # is not included in the GitReleaseManager action yet.
+      - name: "[Draft Release] - Generate Change Log"
+        if: ${{ github.event_name == 'push' }}
+        run: |          
+          dotnet-gitreleasemanager export --token ${{ secrets.GITHUB_TOKEN }} -o 'corgibytes' -r 'freshli-cli' -f 'CHANGELOG.md'
+          git add --renormalize CHANGELOG.md
+          cat CHANGELOG.md
+
+      - name: "[Draft Release] - Commit Change Log and if it Changed"
+        if: ${{ github.event_name == 'push' }}
+        uses: stefanzweifel/git-auto-commit-action@v4        
+        with:
+          commit_message: Committing auto generated change log.          
+          file_pattern: CHANGELOG.md
+
+      - name: "[Build] - Build"
+        run: dotnet build --configuration Release
+      
+      - name: "[Test] - Test, Generate Code Coverage"
+        if: ${{ !env.ACT }}
+        uses: paambaati/codeclimate-action@v2.7.5
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.TEST_REPORTER_ID }}
+        with:
+          coverageCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
+          coverageLocations: |
+            ${{github.workspace}}/Freshli.Cli.Test/coverage.info:lcov
+
+      - name: "[Publish] - Publish win-x64, linux-x64 and osx-x64"
+        run: | 
+            dotnet publish -r win-x64 -c Release --self-contained false
+            dotnet publish -r linux-x64 -c Release --self-contained false
+            dotnet publish -r osx-x64 -c Release --self-contained false
+    
+      - name: "[Post Publish] - Zip win-x64 Release"
+        uses: papeloto/action-zip@v1
+        with:
+          files: ./Freshli.Cli/bin/Release/net5.0/win-x64/publish
+          dest: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip'
+
+      - name: "[Post Publish] - Zip linux-x64 Release"
+        uses: papeloto/action-zip@v1
+        with:
+          files: ./Freshli.Cli/bin/Release/net5.0/linux-x64/publish
+          dest: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip'
+
+      - name: "[Post Publish] - Zip osx-x64 Release"
+        uses: papeloto/action-zip@v1
+        with:
+          files: ./Freshli.Cli/bin/Release/net5.0/osx-x64/publish
+          dest: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip'
+
+      - name: "[Post Publish] - Upload win-x64 Assets as Github Workflow Artifacts"
+        uses: actions/upload-artifact@v2
+        with:
+          name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-win-x64.zip
+          path: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip'
+            
+      - name: "[Post Publish] - Upload linux-x64 Assets as Github Workflow Artifacts"
+        uses: actions/upload-artifact@v2
+        with:
+          name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-linux-x64.zip
+          path: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip'
+
+      - name: "[Post Publish] - Upload osx-x64 Assets as Github Workflow Artifacts"
+        uses: actions/upload-artifact@v2
+        with:
+          name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-osx-x64.zip
+          path: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip'
+
+      - name: "[Post Build] - Add Assets to Release Draft"
+        if: ${{ github.event_name == 'push' }}
+        uses: gittools/actions/gitreleasemanager/addasset@v0.9.9
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          owner: 'corgibytes'
+          repository: 'freshli-cli'
+          milestone: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
+          tagName: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
+          assets: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip,freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip,freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip'
