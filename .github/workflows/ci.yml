@@ -23,6 +23,7 @@ jobs:
           dotnet-version: 5.0.x
 
       - name: "[Setup] - .NET Core 3 (GitReleaseManager)"
+        if: ${{ github.event_name == 'push' }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.0.x
@@ -33,6 +34,7 @@ jobs:
           versionSpec: '5.6.6'
 
       - name: "[Setup] - Install GitReleaseManager"
+        if: ${{ github.event_name == 'push' }}
         uses: gittools/actions/gitreleasemanager/setup@v0.9.9        
         with:
           versionSpec: '0.11.0'
@@ -59,6 +61,7 @@ jobs:
         run: cat Freshli.Cli/Freshli.Cli.csproj
         
       - name: "[Draft Release] - Create/Update GitHub Release ${{ steps.gitversion.outputs.majorMinorPatch }}"
+        if: ${{ github.event_name == 'push' }}
         uses: gittools/actions/gitreleasemanager/create@v0.9.9        
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -69,12 +72,14 @@ jobs:
       # This will generate the change log for all the GitHub Releases, feature
       # is not included in the GitReleaseManager action yet.
       - name: "[Draft Release] - Generate Change Log"
+        if: ${{ github.event_name == 'push' }}
         run: |          
           dotnet-gitreleasemanager export --token ${{ secrets.GITHUB_TOKEN }} -o 'corgibytes' -r 'freshli-cli' -f 'CHANGELOG.md'
           git add --renormalize CHANGELOG.md
           cat CHANGELOG.md
 
       - name: "[Draft Release] - Commit Change Log and if it Changed"
+        if: ${{ github.event_name == 'push' }}
         uses: stefanzweifel/git-auto-commit-action@v4        
         with:
           commit_message: Committing auto generated change log.          
@@ -129,6 +134,7 @@ jobs:
           path: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip'
 
       - name: "[Post Build] - Add Assets to Release Draft"
+        if: ${{ github.event_name == 'push' }}
         uses: gittools/actions/gitreleasemanager/addasset@v0.9.9
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
