@@ -1,4 +1,4 @@
-# freshli CLI
+# Freshli CLI
 
 ## Getting started with `freshli` CLI
 
