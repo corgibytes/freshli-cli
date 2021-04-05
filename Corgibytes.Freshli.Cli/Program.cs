@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
+using Freshli;
 using NLog;
 
-namespace Freshli.Cli {
+namespace Corgibytes.Freshli.Cli {
   class Program {
     private static readonly Logger logger = LogManager.GetCurrentClassLogger();
 
