@@ -1,14 +1,33 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <OutputType>exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>Corgibytes.Freshli.Cli</AssemblyName>
+    <PackAsTool>true</PackAsTool>
+    <OutputType>Exe</OutputType>
+    <ToolCommandName>freshli-cli</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
+    <ApplicationIcon>corgi.ico</ApplicationIcon>
+    <Product>Corgibytes - Freshli</Product>
+    <Company>Corgibytes, LLC. All rights reserved</Company>    
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0-alpha0208" />
-    <PackageReference Include="GitVersion.MsBuild" Version="5.6.6">
+    <PackageReference Include="Autofac" Version="6.2.0" />
+    <PackageReference Include="CommandLineParser" Version="2.8.0" />
+    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.0.4" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.6.10">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="ServiceStack.Text" Version="5.11.0" />
+    <PackageReference Include="YamlDotNet" Version="11.2.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="IoC\Interceptors\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\CliOutput.resx">
