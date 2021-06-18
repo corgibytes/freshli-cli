@@ -442,3 +442,4 @@ results/
 
 Freshli.Cli.Test/coverage.info
 Freshli.Cli/nuget.config
+nuget.config
