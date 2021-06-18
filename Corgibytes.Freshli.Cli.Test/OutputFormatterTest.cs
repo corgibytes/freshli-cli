@@ -1,6 +1,7 @@
-using Freshli;
+using Corgibytes.Freshli.Lib;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Xunit;
 
@@ -8,8 +9,7 @@ namespace Corgibytes.Freshli.Cli.Test
 {
     public class OutputFormatterTest
     {
-
-        public static IList<(DateTime Date, double Value, bool UpgradeAvailable, bool Skipped)> DatesAndValues
+        private static IList<(DateTime Date, double Value, bool UpgradeAvailable, bool Skipped)> DatesAndValues
         {
             get
             {
@@ -32,13 +32,38 @@ namespace Corgibytes.Freshli.Cli.Test
       };
             }
         }
-
-        public static string ExpectedDatesAndValues
+        
+        private static IList<MetricsResult> CreateResults()
         {
-            get
+            IList<MetricsResult> results = new List<MetricsResult>();
+            foreach (var dateAndValue in DatesAndValues)
             {
-                StringWriter expected = new StringWriter();
-                expected.WriteLine("Date\tLibYear\tUpgradesAvailable\tSkipped");
+                var result = new LibYearResult();
+                result.Add(new LibYearPackageResult
+                    (
+                        "test_package",
+                        "1.0",
+                        dateAndValue.Date,
+                        "2.0",
+                        DateTime.Today,
+                        dateAndValue.Value,
+                        dateAndValue.UpgradeAvailable,
+                        dateAndValue.Skipped
+                    )
+                );
+                results.Add(new MetricsResult(dateAndValue.Date, "N/A", result));
+            }
+
+            return results;
+        }
+
+        private static string EnglishHeader = "Date\tLibYear\tUpgradesAvailable\tSkipped";
+        private static string SpanishHeader = "Fecha\tAñoLib\tActualizaciónDisponible\tOmitido";
+
+        private static string ExpectedDatesAndValues(string header)
+        {
+            StringWriter expected = new StringWriter();
+                expected.WriteLine(header);
                 expected.WriteLine("2010/01/01\t1.1010\t0\t0");
                 expected.WriteLine("2010/02/01\t2.2020\t0\t0");
                 expected.WriteLine("2010/03/01\t3.3030\t0\t0");
@@ -53,36 +78,64 @@ namespace Corgibytes.Freshli.Cli.Test
                 expected.WriteLine("2010/12/01\t12.2121\t1\t0");
                 expected.WriteLine("2011/01/01\t0.0000\t0\t1");
                 return expected.ToString();
-            }
         }
+        
         [Fact]
-        public void Basics()
+        public void EnglishLanguage()
         {
-
-            IList<MetricsResult> results = new List<MetricsResult>();
-            foreach (var dateAndValue in DatesAndValues)
-            {
-                var result = new LibYearResult();
-                result.Add(new LibYearPackageResult
-                  (
-                    "test_package",
-                    "1.0",
-                    dateAndValue.Date,
-                    "2.0",
-                    DateTime.Today,
-                    dateAndValue.Value,
-                    dateAndValue.UpgradeAvailable,
-                    dateAndValue.Skipped
-                  )
-                );
-                results.Add(new MetricsResult(dateAndValue.Date, "N/A", result));
-            }
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+            
+            var results = CreateResults();
 
             var actual = new StringWriter();
             var formatter = new OutputFormatter(actual);
-            formatter.Write(results);      
+            formatter.Write(results);
 
-            Assert.Equal(ExpectedDatesAndValues, actual.ToString());
+            Assert.Equal(ExpectedDatesAndValues(EnglishHeader), actual.ToString());
+        }
+
+        [Fact]
+        public void InvariantLanguage()
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
+            
+            var results = CreateResults();
+
+            var actual = new StringWriter();
+            var formatter = new OutputFormatter(actual);
+            formatter.Write(results);
+
+            Assert.Equal(ExpectedDatesAndValues(EnglishHeader), actual.ToString());
+        }
+
+        [Fact]
+        public void SpanishLanguage()
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("es");
+            
+            var results = CreateResults();
+
+            var actual = new StringWriter();
+            var formatter = new OutputFormatter(actual);
+            formatter.Write(results);
+
+            Assert.Equal(ExpectedDatesAndValues(SpanishHeader), actual.ToString());
+        }
+        
+        [Fact]
+        public void UnsupportedLanguage()
+        {
+            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de"); //This will have to change if we ever support German
+            
+            var results = CreateResults();
+
+            var actual = new StringWriter();
+            var formatter = new OutputFormatter(actual);
+            formatter.Write(results);
+
+            Assert.Equal(ExpectedDatesAndValues(EnglishHeader), actual.ToString());
         }
     }
+    
+    
 }
