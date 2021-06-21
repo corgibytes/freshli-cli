@@ -17,10 +17,10 @@
     <data name="Output_LibYear" xml:space="preserve">
         <value>AñoLib</value>
     </data>
-    <data name="Output_Skipped" xml:space="preserve">
-        <value>Omitido</value>
-    </data>
-    <data name="Output_UpgradesAvailable" xml:space="preserve">
-        <value>ActualizaciónDisponible</value>
-    </data>
+  <data name="Output_Skipped" xml:space="preserve">
+    <value>Omitida</value>
+  </data>
+  <data name="Output_UpgradesAvailable" xml:space="preserve">
+    <value>ActualizaciónesDisponibles</value>
+  </data>
 </root>

@@ -32,7 +32,7 @@ namespace Corgibytes.Freshli.Cli.Test
       };
             }
         }
-        
+
         private static IList<MetricsResult> CreateResults()
         {
             IList<MetricsResult> results = new List<MetricsResult>();
@@ -58,7 +58,7 @@ namespace Corgibytes.Freshli.Cli.Test
         }
 
         private static string EnglishHeader = "Date\tLibYear\tUpgradesAvailable\tSkipped";
-        private static string SpanishHeader = "Fecha\tAñoLib\tActualizaciónDisponible\tOmitido";
+        private static string SpanishHeader = "Fecha\tAñoLib\tActualizaciónesDisponibles\tOmitida";
 
         private static string ExpectedDatesAndValues(string header)
         {
@@ -79,12 +79,12 @@ namespace Corgibytes.Freshli.Cli.Test
                 expected.WriteLine("2011/01/01\t0.0000\t0\t1");
                 return expected.ToString();
         }
-        
+
         [Fact]
         public void EnglishLanguage()
         {
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
-            
+
             var results = CreateResults();
 
             var actual = new StringWriter();
@@ -98,7 +98,7 @@ namespace Corgibytes.Freshli.Cli.Test
         public void InvariantLanguage()
         {
             CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
-            
+
             var results = CreateResults();
 
             var actual = new StringWriter();
@@ -112,7 +112,7 @@ namespace Corgibytes.Freshli.Cli.Test
         public void SpanishLanguage()
         {
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("es");
-            
+
             var results = CreateResults();
 
             var actual = new StringWriter();
@@ -121,12 +121,12 @@ namespace Corgibytes.Freshli.Cli.Test
 
             Assert.Equal(ExpectedDatesAndValues(SpanishHeader), actual.ToString());
         }
-        
+
         [Fact]
         public void UnsupportedLanguage()
         {
             CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de"); //This will have to change if we ever support German
-            
+
             var results = CreateResults();
 
             var actual = new StringWriter();
@@ -136,6 +136,6 @@ namespace Corgibytes.Freshli.Cli.Test
             Assert.Equal(ExpectedDatesAndValues(EnglishHeader), actual.ToString());
         }
     }
-    
-    
+
+
 }
