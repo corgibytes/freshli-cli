@@ -65,7 +65,7 @@ jobs:
         #if: ${{ github.event_name == 'push' }}
         continue-on-error: true
         run: |
-          echo "::set-output name=results::$(dotnet-gitreleasemanager create --owner corgibytes --repository freshli-cli --token ${{ secrets.GITHUB_TOKEN }}) --milestone ${{ steps.gitversion.outputs.majorMinorPatch }} "
+          echo "::set-output name=results::$(dotnet-gitreleasemanager create --owner corgibytes --repository freshli-cli --token ${{ secrets.GITHUB_TOKEN }} --milestone ${{ steps.gitversion.outputs.majorMinorPatch }})"
 
       # The draft release command will raise an error if there are no closed issues.  No closed issues
       # shouldn't result in a failed build.
