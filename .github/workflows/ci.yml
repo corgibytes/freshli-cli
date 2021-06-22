@@ -65,7 +65,7 @@ jobs:
         #if: ${{ github.event_name == 'push' }}
         continue-on-error: true
         run: |
-          dotnet-gitreleasemanager create --owner corgibytes --repository freshli-cli --token ${{ secrets.GITHUB_TOKEN }} --milestone v${{ steps.gitversion.outputs.majorMinorPatch }} 2>&1 > results.txt
+          dotnet-gitreleasemanager create --owner corgibytes --repository freshli-cli --token ${{ secrets.GITHUB_TOKEN }} --milestone v${{ steps.gitversion.outputs.majorMinorPatch }} 2>&1 > results.txt || true
           cat results.txt
           echo "::set-output name=results::$(cat results.txt)""
 
