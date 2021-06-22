@@ -65,7 +65,7 @@ jobs:
         #if: ${{ github.event_name == 'push' }}
         continue-on-error: true
         run: |
-          dotnet-gitreleasemanager create --owner corgibytes --repository freshli-cli --token ${{ secrets.GITHUB_TOKEN }} --milestone v${{ steps.gitversion.outputs.majorMinorPatch }} --logFilePath output.txt
+          dotnet-gitreleasemanager create --owner corgibytes --repository freshli-cli --token ${{ secrets.GITHUB_TOKEN }} --milestone v${{ steps.gitversion.outputs.majorMinorPatch }} --logFilePath output.txt || true
           cat output.txt
           cat output.txt | grep '(No closed issues have been found for milestone) | (Drafted release is available at)'
 #          cat results.txt
