@@ -71,7 +71,7 @@ jobs:
       # shouldn't result in a failed build.
       - name: "[Draft Release] - Check for release draft errors"
         run: |
-          echo "${{ steps.create_release_draft.outputs.results }}
+          echo "${{ steps.create_release_draft.outputs.results }}"
           echo "${{ steps.create_release_draft.outputs.results }}" | grep '(No closed issues have been found for milestone) | (Drafted release is available at)'
 
      # - name: "[Draft Release] - Create/Update GitHub Release ${{ steps.gitversion.outputs.majorMinorPatch }}"
