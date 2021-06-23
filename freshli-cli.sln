@@ -19,6 +19,14 @@ ProjectSection(SolutionItems) = preProject
 	CHANGELOG.md = CHANGELOG.md
 EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8242C989-FA9E-4257-8685-5392F08C9B85}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{44C5535B-9B91-4CEF-9F3E-4B0058506EEC}"
+ProjectSection(SolutionItems) = preProject
+	.github\workflows\ci.yml = .github\workflows\ci.yml
+	.github\workflows\cla.yml = .github\workflows\cla.yml
+EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -56,5 +64,9 @@ Global
 		{91306A42-A29B-410A-8549-598B33DD0378}.Release|x64.Build.0 = Release|Any CPU
 		{91306A42-A29B-410A-8549-598B33DD0378}.Release|x86.ActiveCfg = Release|Any CPU
 		{91306A42-A29B-410A-8549-598B33DD0378}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8242C989-FA9E-4257-8685-5392F08C9B85} = {DF081CB0-00F4-4E7D-9411-9F43B642A3D8}
+		{44C5535B-9B91-4CEF-9F3E-4B0058506EEC} = {8242C989-FA9E-4257-8685-5392F08C9B85}
 	EndGlobalSection
 EndGlobal
