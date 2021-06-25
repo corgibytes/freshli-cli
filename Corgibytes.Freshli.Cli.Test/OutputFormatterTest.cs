@@ -80,10 +80,9 @@ namespace Corgibytes.Freshli.Cli.Test
                 return expected.ToString();
         }
 
-        [Fact]
-        public void EnglishLanguage()
+        private static void TestOutputFormatter(CultureInfo testedCulture, string expectedHeader)
         {
-            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+            CultureInfo.CurrentUICulture = testedCulture;
 
             var results = CreateResults();
 
@@ -91,49 +90,33 @@ namespace Corgibytes.Freshli.Cli.Test
             var formatter = new OutputFormatter(actual);
             formatter.Write(results);
 
-            Assert.Equal(ExpectedDatesAndValues(EnglishHeader), actual.ToString());
+            Assert.Equal(ExpectedDatesAndValues(expectedHeader), actual.ToString());
         }
+
+        [Fact]
+        public void EnglishLanguage()
+        {
+            TestOutputFormatter(CultureInfo.GetCultureInfo("en"), EnglishHeader);
+        }
+
+
 
         [Fact]
         public void InvariantLanguage()
         {
-            CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
-
-            var results = CreateResults();
-
-            var actual = new StringWriter();
-            var formatter = new OutputFormatter(actual);
-            formatter.Write(results);
-
-            Assert.Equal(ExpectedDatesAndValues(EnglishHeader), actual.ToString());
+            TestOutputFormatter(CultureInfo.InvariantCulture, EnglishHeader);
         }
 
         [Fact]
         public void SpanishLanguage()
         {
-            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("es");
-
-            var results = CreateResults();
-
-            var actual = new StringWriter();
-            var formatter = new OutputFormatter(actual);
-            formatter.Write(results);
-
-            Assert.Equal(ExpectedDatesAndValues(SpanishHeader), actual.ToString());
+            TestOutputFormatter(CultureInfo.GetCultureInfo("es"), SpanishHeader);
         }
 
         [Fact]
         public void UnsupportedLanguage()
         {
-            CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("de"); //This will have to change if we ever support German
-
-            var results = CreateResults();
-
-            var actual = new StringWriter();
-            var formatter = new OutputFormatter(actual);
-            formatter.Write(results);
-
-            Assert.Equal(ExpectedDatesAndValues(EnglishHeader), actual.ToString());
+            TestOutputFormatter(CultureInfo.GetCultureInfo("de"), EnglishHeader);
         }
     }
 
