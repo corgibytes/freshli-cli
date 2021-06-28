@@ -1,3 +1,18 @@
+## v0.4.0
+
+
+As part of this release we had [2 issues](https://github.com/corgibytes/freshli-cli/milestone/2?closed=1) closed.
+Goals for this milestone:
+
+- Download CLI as .NET tool.
+- Better how to use documentation.
+
+__DevOps__
+
+- [__#21__](https://github.com/corgibytes/freshli-cli/issues/21) Update GitReleaseManager support labels
+- [__#20__](https://github.com/corgibytes/freshli-cli/issues/20) Creating empty GitHub Release fails
+
+
 ## v0.3.0
 
 
