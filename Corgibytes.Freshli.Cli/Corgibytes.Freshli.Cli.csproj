@@ -2,6 +2,17 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageVersion>0.1.0</PackageVersion>
+    <Title>Freshli</Title>
+    <Description>Freshli analyzes repositories for historical metrics about a project's dependencies.</Description>
+    <PackageProjectUrl>https://github.com/corgibytes/freshli-cli</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIconUrl>icon.png</PackageIconUrl>
+    <RepositoryUrl>https://github.com/corgibytes/freshli-cli</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>corgibytes freshli static-code-analysis metrics dependencies dependency-metrics</PackageTags>
+    <Authors>Corgibytes</Authors>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.0.4" />
@@ -9,5 +20,10 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="">
+      <Link>LICENSE</Link>
+    </None>
   </ItemGroup>
 </Project>
