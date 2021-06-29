@@ -440,5 +440,5 @@ Freshli.sln.DotSettings.user
 *.log
 results/
 
-Freshli.Cli.Test/coverage.info
-Freshli.Cli/nuget.config
+coverage.info
+nuget.config
