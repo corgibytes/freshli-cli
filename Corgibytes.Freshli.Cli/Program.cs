@@ -9,6 +9,7 @@ using Corgibytes.Freshli.Cli.Factories;
 using Corgibytes.Freshli.Cli.Options;
 
 using NLog;
+using System.Collections.Generic;
 
 namespace Corgibytes.Freshli.Cli
 {
