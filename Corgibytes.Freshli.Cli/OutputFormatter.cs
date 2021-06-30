@@ -1,5 +1,6 @@
 using Corgibytes.Freshli.Lib;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using Corgibytes.Freshli.Cli.Resources;
 
@@ -13,6 +14,7 @@ namespace Corgibytes.Freshli.Cli
         public OutputFormatter(TextWriter writer)
         {
             _writer = writer;
+            CultureInfo.CurrentCulture = CultureInfo.InvariantCulture; //format for dates and numbers to use invariant
         }
 
         public void Write(IList<MetricsResult> results)
@@ -27,7 +29,7 @@ namespace Corgibytes.Freshli.Cli
             foreach (var resultSet in results)
             {
                 _writer.WriteLine(
-                  $"{resultSet.Date.ToString("yyyy/MM/dd")}" + Separator +
+                  $"{resultSet.Date:yyyy-MM-dd}" + Separator +
                   $"{resultSet.LibYear.Total:F4}" + Separator +
                   $"{resultSet.LibYear.UpgradesAvailable}" + Separator +
                   $"{resultSet.LibYear.Skipped}"
