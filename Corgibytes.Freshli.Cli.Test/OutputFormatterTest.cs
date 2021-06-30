@@ -57,8 +57,8 @@ namespace Corgibytes.Freshli.Cli.Test
             return results;
         }
 
-        private static string EnglishHeader = "Date\tLibYear\tUpgradesAvailable\tSkipped";
-        private static string SpanishHeader = "Fecha\tAñoLib\tActualizaciónesDisponibles\tOmitida";
+        private static string EnglishHeader = "Date (yyyy-MM-dd)\tLibYear\tUpgradesAvailable\tSkipped";
+        private static string SpanishHeader = "Fecha (aaaa-MM-dd)\tAñoLib\tActualizaciónesDisponibles\tOmitida";
 
         private static string ExpectedDatesAndValues(string header)
         {
