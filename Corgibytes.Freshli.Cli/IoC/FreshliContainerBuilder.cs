@@ -16,6 +16,7 @@ namespace Corgibytes.Freshli.Cli.IoC
         {
             var builder = new ContainerBuilder();
 
+            builder.RegisterModule(new MiddlewareModule());
             builder.RegisterModule(new BaseCommandModule());
             builder.RegisterModule(new AuthCommandModule());
             builder.RegisterModule(new ScanCommandModule());
