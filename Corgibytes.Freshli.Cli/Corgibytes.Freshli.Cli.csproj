@@ -7,7 +7,6 @@
     <OutputType>Exe</OutputType>
     <ToolCommandName>freshli-cli</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
-    <ApplicationIcon>corgi.ico</ApplicationIcon>
     <Product>Corgibytes - Freshli</Product>
     <Company>Corgibytes, LLC. All rights reserved</Company>    
   </PropertyGroup>
