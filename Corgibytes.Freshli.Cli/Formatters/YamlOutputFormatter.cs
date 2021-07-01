@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Autofac.Extras.DynamicProxy;
+using Corgibytes.Freshli.Cli.IoC.Interceptors;
+using System.Collections.Generic;
 using YamlDotNet.Serialization;
 
 namespace Corgibytes.Freshli.Cli.Formatters

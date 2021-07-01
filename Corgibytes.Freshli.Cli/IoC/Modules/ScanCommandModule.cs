@@ -1,5 +1,6 @@
 ﻿using Autofac;
-using Corgibytes.Freshli.Cli.Options;
+using Autofac.Extras.DynamicProxy;
+using Corgibytes.Freshli.Cli.IoC.Interceptors;
 using Corgibytes.Freshli.Cli.Runners;
 using Freshli;
 
@@ -9,8 +10,11 @@ namespace Corgibytes.Freshli.Cli.IoC.Modules
     {
         protected override void Load( ContainerBuilder builder )
         {
-            builder.RegisterType<Runner>().As<Runner>();
-            builder.RegisterType<ScanCommandRunner>();
+            builder.RegisterType<Runner>()
+                .AsSelf();                
+
+            builder.RegisterType<ScanCommandRunner>()
+                .EnableClassInterceptors();
         }
     }
 }
