@@ -23,8 +23,6 @@ namespace Corgibytes.Freshli.Cli.Options
             {
                 this.path = File.Exists(value) ? System.IO.Path.GetFullPath(path) : value;
             }
-
-        }
-
+        }       
     }
 }

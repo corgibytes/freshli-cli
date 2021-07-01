@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 
 namespace Corgibytes.Freshli.Cli.Options
@@ -15,5 +16,9 @@ namespace Corgibytes.Freshli.Cli.Options
         [Option('o', "output", Default = new[] { OutputStrategyType.console }, Separator = ',', Required = false, HelpText = "[ console | file ] - This option is case sensitive")]
         public IList<OutputStrategyType> Output { get; set; }
 
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this, Formatting.Indented);
+        }
     }
 }
