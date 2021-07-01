@@ -1,16 +1,17 @@
+using Autofac.Extras.DynamicProxy;
+using Corgibytes.Freshli.Cli.IoC.Interceptors;
 using NLog;
 using System;
 using System.Collections.Generic;
 
 namespace Corgibytes.Freshli.Cli.Formatters
 {
+    [Intercept(typeof(LoggerInterceptor))]
     public abstract class OutputFormatter : IOutputFormatter
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
-
         public abstract FormatType Type { get; }
 
-        public string Format<T>( T entity )
+        public virtual string Format<T>( T entity )
         {            
             if(entity == null)
                 throw new ArgumentNullException(nameof(entity));
@@ -18,7 +19,7 @@ namespace Corgibytes.Freshli.Cli.Formatters
             return this.Build<T>(entity);
         }
 
-        public string Format<T>( IList<T> entities )
+        public virtual string Format<T>( IList<T> entities )
         {
             if(entities == null)
                 throw new ArgumentNullException(nameof(entities));
