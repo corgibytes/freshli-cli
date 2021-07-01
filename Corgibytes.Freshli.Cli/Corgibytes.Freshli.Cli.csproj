@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Extensions\" />
+    <Folder Include="Diagrams\" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\CliOutput.resx">
