@@ -90,8 +90,8 @@ jobs:
         
       - name: "Debug"
         run: |
-          ls -la Corgibytes.Freshli.CLI/bin/Release
-          ls -la Corgibytes.Freshli.CLI/bin/Release/net5.0
+          ls -la Corgibytes.Freshli.Cli/bin/Release
+          ls -la Corgibytes.Freshli.Cli/bin/Release/net5.0
       
       - name: "[Test] - Test, Generate Code Coverage"
         if: ${{ !env.ACT }}
