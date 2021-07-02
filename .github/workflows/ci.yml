@@ -139,6 +139,12 @@ jobs:
         with:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-osx-x64.zip
           path: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip'
+          
+      - name: "[Post Publish] - Upload NuGet Package as Github Workflow Artifacts"
+        uses: actions/upload-artifact@v2
+        with:
+          name: 'Corgibytes.Freshli.Cli-${{ steps.gitversionl.outputs.majorMinorPatch }}.nupkg'
+          path: 'Corgibytes.Freshli.Cli/bin/Release/*.nupkg'
 
       - name: "[Post Publish] - Add Assets to Release Draft"
         if: ${{ github.event_name == 'push' }}
