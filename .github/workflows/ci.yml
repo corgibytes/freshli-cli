@@ -92,6 +92,7 @@ jobs:
         run: |
           ls -la Corgibytes.Freshli.Cli/bin/Release
           ls -la Corgibytes.Freshli.Cli/bin/Release/net5.0
+          ls -la Corgibytes.Freshli.Cli/bin/Release/net5.0/runtimes
       
       - name: "[Test] - Test, Generate Code Coverage"
         if: ${{ !env.ACT }}
@@ -144,6 +145,12 @@ jobs:
         with:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-osx-x64.zip
           path: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip'
+          
+      # REM
+      - name: "[Build] - Build Two"
+        run: |
+          dotnet clean
+          dotnet build --configuration Release
           
       - name: "[Post Publish] - Upload NuGet Package as Github Workflow Artifacts"
         uses: actions/upload-artifact@v2
