@@ -95,7 +95,7 @@ jobs:
           mkdir BUILD_ARTIFACTS_FOLDER
           cp Corgibytes.Freshli.Cli/bin/Release/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg BUILD_ARTIFACTS_FOLDER
           ls -la BUILD_ARTIFACTS_FOLDER
-          echo "nuget_package_path=BUILD_ARTIFACTS_FOLDER/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg
+          echo "nuget_package_path=BUILD_ARTIFACTS_FOLDER/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg"
       
       - name: "[Test] - Test, Generate Code Coverage"
         if: ${{ !env.ACT }}
