@@ -92,9 +92,10 @@ jobs:
         
       - name: "[Build] - Copy NuGet Package to Build Artifacts"
         run: |
-          mkdir BUILD_ARTIFACTS_FOLDER
+          mkdir $BUILD_ARTIFACTS_FOLDER
           cp Corgibytes.Freshli.Cli/bin/Release/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg BUILD_ARTIFACTS_FOLDER
-          ls -la BUILD_ARTIFACTS_FOLDER
+          ls -la $BUILD_ARTIFACTS_FOLDER
+          echo "nuget_package_file=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
           echo "nuget_package_path=$BUILD_ARTIFACTS_FOLDER/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
       
       - name: "[Test] - Test, Generate Code Coverage"
@@ -155,7 +156,7 @@ jobs:
       - name: "[Post Publish] - Upload NuGet Package as Github Workflow Artifacts"
         uses: actions/upload-artifact@v2
         with:
-          name: Corgibytes.Freshli.Cli-${{ steps.gitversion.outputs.majorMinorPatch }}.nupkg
+          name: ${{ env.nuget_package_file }}
           path: ${{ env.nuget_package_path }}
           
       - name: "[Post Publish] - Add Assets to Release Draft"
