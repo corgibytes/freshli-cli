@@ -332,6 +332,11 @@ Passed!  - Failed:     0, Passed:   813, Skipped:     0, Total:   813, Duration:
 
 The tests currently take longer to run than we would like. We're exploring ways to speed that up. You can run a subset of tests by including the `--filter` flag, e.g. `dotnet test --filter ComputeAsOf`.
 
+## Culture and Language Support
+
+The headings for column output are localized such that the culture settings of the user's computer are used. (This is found in the CurrentUICulture). Currently there are English and Spanish translations with English being the default.
+
+Data (such as dates and numeric formatting) are NOT localized. Dates and numeric formats use the CurrentCulture which is explicitly set to the [invariant culture](https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo.invariantculture?view=net-5.0).
 ## Next Steps
 
 Once the cli-breakout changes are merged into freshli, the freshli submodule will need to be updated to the `main` branch and the output for this `README` will need to be re-generated.
