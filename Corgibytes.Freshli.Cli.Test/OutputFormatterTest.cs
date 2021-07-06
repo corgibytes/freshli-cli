@@ -106,7 +106,6 @@ namespace Corgibytes.Freshli.Cli.Test
             TestOutputFormatter(CultureInfo.GetCultureInfo("en-CA"), EnglishHeader);
         }
 
-
         [Fact]
         public void InvariantLanguage()
         {
@@ -125,6 +124,4 @@ namespace Corgibytes.Freshli.Cli.Test
             TestOutputFormatter(CultureInfo.GetCultureInfo("de-DE"), EnglishHeader);
         }
     }
-
-
 }
