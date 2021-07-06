@@ -95,8 +95,8 @@ jobs:
           mkdir $BUILD_ARTIFACTS_FOLDER
           cp Corgibytes.Freshli.Cli/bin/Release/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg BUILD_ARTIFACTS_FOLDER
           ls -la $BUILD_ARTIFACTS_FOLDER
-          echo "nuget_package_file=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
-          echo "nuget_package_path=$BUILD_ARTIFACTS_FOLDER/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
+          echo "NUGET_PACKAGE_FILE=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
+          echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
       
       - name: "[Test] - Test, Generate Code Coverage"
         if: ${{ !env.ACT }}
@@ -118,19 +118,19 @@ jobs:
         uses: papeloto/action-zip@v1
         with:
           files: Corgibytes.Freshli.Cli/bin/Release/net5.0/win-x64/publish
-          dest: BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip
+          dest: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip
 
       - name: "[Post Publish] - Zip linux-x64 Release"
         uses: papeloto/action-zip@v1
         with:
           files: Corgibytes.Freshli.Cli/bin/Release/net5.0/linux-x64/publish
-          dest: BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip
+          dest: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip
 
       - name: "[Post Publish] - Zip osx-x64 Release"
         uses: papeloto/action-zip@v1
         with:
           files: Corgibytes.Freshli.Cli/bin/Release/net5.0/osx-x64/publish
-          dest: BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip
+          dest: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip
           
       - name: "[Post Publish] - View Build Artifacts Folder"
         run: ls -la BUILD_ARTIFACTS_FOLDER
@@ -139,25 +139,25 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-win-x64.zip
-          path: BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip
+          path: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip
             
       - name: "[Post Publish] - Upload linux-x64 Assets as Github Workflow Artifacts"
         uses: actions/upload-artifact@v2
         with:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-linux-x64.zip
-          path: BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip
+          path: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip
 
       - name: "[Post Publish] - Upload osx-x64 Assets as Github Workflow Artifacts"
         uses: actions/upload-artifact@v2
         with:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-osx-x64.zip
-          path: BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip
+          path: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip
           
       - name: "[Post Publish] - Upload NuGet Package as Github Workflow Artifacts"
         uses: actions/upload-artifact@v2
         with:
-          name: ${{ env.nuget_package_file }}
-          path: ${{ env.nuget_package_path }}
+          name: ${{ env.NUGET_PACKAGE_FILE }}
+          path: ${{ env.NUGET_PACKAGE_PATH }}
           
       - name: "[Post Publish] - Add Assets to Release Draft"
         #if: ${{ github.event_name == 'push' }}
@@ -168,11 +168,11 @@ jobs:
           repository: 'freshli-cli'
           milestone: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
           tagName: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
-          assets: 'BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip,BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip,BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip,${{ env.nuget_package_path }}'
+          assets: 'BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip,BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip,BUILD_ARTIFACTS_FOLDER/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip,${{ env.NUGET_PACKAGE_PATH }}'
           
       - name: "[Push] - Push to GitHub"
         #if: github.event_name == 'push'
-        run: dotnet nuget push ${{ env.nuget_package_path }} -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate -n true -s https://nuget.pkg.github.com/corgibytes/index.json
+        run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate -n true -s https://nuget.pkg.github.com/corgibytes/index.json
 
 #          - name: Publish Alpha Package to Github Packages
 #              if: github.event_name == 'push'
