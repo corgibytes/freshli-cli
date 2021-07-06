@@ -88,6 +88,7 @@ jobs:
       - name: "[Build] - Build"
         run: dotnet build --configuration Release
         
+      # REM
       - name: "Debug"
         run: |
           ls -la Corgibytes.Freshli.Cli/bin/Release
