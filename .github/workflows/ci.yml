@@ -26,7 +26,7 @@ jobs:
 
       # .NET Core 3 is required for GitReleaseManager.
       - name: "[Setup] - .NET Core 3 (GitReleaseManager)"
-        if: ${{ github.event_name == 'push' }}
+        #if: ${{ github.event_name == 'push' }}
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: 3.0.x
@@ -37,7 +37,7 @@ jobs:
           versionSpec: '5.6.6'
 
       - name: "[Setup] - Install GitReleaseManager"
-        if: ${{ github.event_name == 'push' }}
+        #if: ${{ github.event_name == 'push' }}
         uses: gittools/actions/gitreleasemanager/setup@v0.9.9        
         with:
           versionSpec: '0.11.0'
@@ -66,7 +66,7 @@ jobs:
       # If there are no closed issues generating the Github Release will fail because it raises an exception.
       # Work around this by checking for success or no closed issue errors.
       - name: "[Draft Release] - Create/Update GitHub Release ${{ steps.gitversion.outputs.majorMinorPatch }}"
-        if: ${{ github.event_name == 'push' }}
+        #if: ${{ github.event_name == 'push' }}
         run: |
           dotnet-gitreleasemanager create --owner corgibytes --repository freshli-cli --token ${{ secrets.GITHUB_TOKEN }} --milestone v${{ steps.gitversion.outputs.majorMinorPatch }} --logFilePath output.txt || true
           cat output.txt | grep 'No closed issues have been found for milestone\|Drafted release is available at'
@@ -74,7 +74,7 @@ jobs:
       # This will generate the change log for all the GitHub Releases, feature
       # is not included in the GitReleaseManager action yet.
       - name: "[Draft Release] - Generate Change Log"
-        if: ${{ github.event_name == 'push' }}
+        #if: ${{ github.event_name == 'push' }}
         run: |          
           dotnet-gitreleasemanager export --token ${{ secrets.GITHUB_TOKEN }} -o 'corgibytes' -r 'freshli-cli' -f 'CHANGELOG.md'
           git add --renormalize CHANGELOG.md
@@ -155,8 +155,8 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: Corgibytes.Freshli.Cli-${{ steps.gitversion.outputs.majorMinorPatch }}.nupkg
-          path: BUILD_ARTIFACTS_FOLDER/*.nupkg'
-
+          path: BUILD_ARTIFACTS_FOLDER/*.nupkg
+          
       - name: "[Post Publish] - Add Assets to Release Draft"
         #if: ${{ github.event_name == 'push' }}
         uses: gittools/actions/gitreleasemanager/addasset@v0.9.9
