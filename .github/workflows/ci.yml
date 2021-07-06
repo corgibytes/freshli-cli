@@ -150,7 +150,7 @@ jobs:
       # REM
       - name: "[Build] - Build Two"
         run: |
-          dotnet clean
+          dotnet clean --configuration Release
           dotnet build --configuration Release
           
       - name: "[Post Publish] - Upload NuGet Package as Github Workflow Artifacts"
