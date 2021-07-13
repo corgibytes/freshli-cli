@@ -16,11 +16,22 @@
     <ToolCommandName>Freshli</ToolCommandName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.0.4" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="">
       <Link>LICENSE</Link>
     </None>
+    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0-alpha0208" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\CliOutput.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CliOutput.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Resources\CliOutput.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CliOutput.resx</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>
