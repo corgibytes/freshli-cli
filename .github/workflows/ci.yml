@@ -3,12 +3,15 @@ name: .NET Core
 on:
   push:
     branches: [ main, release* ]
+    tags: 'v*'
   pull_request:
     branches: [ main, release* ]
 
 jobs:
   build:
     runs-on: ubuntu-20.04
+    env:
+      BUILD_ARTIFACTS_FOLDER: build_artifacts
 
     steps:
       - name: "[Setup] - Checkout code"
@@ -16,7 +19,7 @@ jobs:
         with:
           fetch-depth: 0 # Required for GitVersion
           submodules: 'recursive'
-      
+
       - name: "[Setup] - .NET Core"
         uses: actions/setup-dotnet@v1
         with:
@@ -36,7 +39,7 @@ jobs:
 
       - name: "[Setup] - Install GitReleaseManager"
         if: ${{ github.event_name == 'push' }}
-        uses: gittools/actions/gitreleasemanager/setup@v0.9.9        
+        uses: gittools/actions/gitreleasemanager/setup@v0.9.9
         with:
           versionSpec: '0.11.0'
 
@@ -57,10 +60,10 @@ jobs:
         with:
           useConfigFile: true
           additionalArguments: '/updateprojectfiles'
-    
+
       - name: "[Versioning] -  Display updated csproj File"
         run: cat Corgibytes.Freshli.Cli/Corgibytes.Freshli.Cli.csproj
-      
+
       # If there are no closed issues generating the Github Release will fail because it raises an exception.
       # Work around this by checking for success or no closed issue errors.
       - name: "[Draft Release] - Create/Update GitHub Release ${{ steps.gitversion.outputs.majorMinorPatch }}"
@@ -73,21 +76,29 @@ jobs:
       # is not included in the GitReleaseManager action yet.
       - name: "[Draft Release] - Generate Change Log"
         if: ${{ github.event_name == 'push' }}
-        run: |          
+        run: |
           dotnet-gitreleasemanager export --token ${{ secrets.GITHUB_TOKEN }} -o 'corgibytes' -r 'freshli-cli' -f 'CHANGELOG.md'
           git add --renormalize CHANGELOG.md
           cat CHANGELOG.md
 
       - name: "[Draft Release] - Commit Change Log and if it Changed"
-        if: ${{ github.event_name == 'push' }}
-        uses: stefanzweifel/git-auto-commit-action@v4        
+        if: ${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') }}
+        uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: Committing auto generated change log.          
+          commit_message: Committing auto generated change log.
           file_pattern: CHANGELOG.md
 
       - name: "[Build] - Build"
         run: dotnet build --configuration Release
-      
+
+      - name: "[Build] - Copy NuGet Package to Build Artifacts"
+        run: |
+          mkdir ${{ env.BUILD_ARTIFACTS_FOLDER }}
+          cp Corgibytes.Freshli.Cli/bin/Release/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg ${{ env.BUILD_ARTIFACTS_FOLDER }}
+          ls -la ${{ env.BUILD_ARTIFACTS_FOLDER }}
+          echo "NUGET_PACKAGE_FILE=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
+          echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
+
       - name: "[Test] - Test, Generate Code Coverage"
         if: ${{ !env.ACT }}
         uses: paambaati/codeclimate-action@v2.7.5
@@ -99,48 +110,57 @@ jobs:
             ${{github.workspace}}/Corgibytes.Freshli.Cli.Test/coverage.info:lcov
 
       - name: "[Publish] - Publish win-x64, linux-x64 and osx-x64"
-        run: | 
+        run: |
             dotnet publish -r win-x64 -c Release --self-contained false
             dotnet publish -r linux-x64 -c Release --self-contained false
             dotnet publish -r osx-x64 -c Release --self-contained false
-    
+
       - name: "[Post Publish] - Zip win-x64 Release"
         uses: papeloto/action-zip@v1
         with:
-          files: ./Corgibytes.Freshli.Cli/bin/Release/net5.0/win-x64/publish
-          dest: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip'
+          files: Corgibytes.Freshli.Cli/bin/Release/net5.0/win-x64/publish
+          dest: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip
 
       - name: "[Post Publish] - Zip linux-x64 Release"
         uses: papeloto/action-zip@v1
         with:
-          files: ./Corgibytes.Freshli.Cli/bin/Release/net5.0/linux-x64/publish
-          dest: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip'
+          files: Corgibytes.Freshli.Cli/bin/Release/net5.0/linux-x64/publish
+          dest: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip
 
       - name: "[Post Publish] - Zip osx-x64 Release"
         uses: papeloto/action-zip@v1
         with:
-          files: ./Corgibytes.Freshli.Cli/bin/Release/net5.0/osx-x64/publish
-          dest: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip'
+          files: Corgibytes.Freshli.Cli/bin/Release/net5.0/osx-x64/publish
+          dest: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip
+
+      - name: "[Post Publish] - View Build Artifacts Folder"
+        run: ls -la ${{ env.BUILD_ARTIFACTS_FOLDER }}
 
       - name: "[Post Publish] - Upload win-x64 Assets as Github Workflow Artifacts"
         uses: actions/upload-artifact@v2
         with:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-win-x64.zip
-          path: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip'
-            
+          path: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip
+
       - name: "[Post Publish] - Upload linux-x64 Assets as Github Workflow Artifacts"
         uses: actions/upload-artifact@v2
         with:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-linux-x64.zip
-          path: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip'
+          path: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip
 
       - name: "[Post Publish] - Upload osx-x64 Assets as Github Workflow Artifacts"
         uses: actions/upload-artifact@v2
         with:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-osx-x64.zip
-          path: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip'
+          path: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip
 
-      - name: "[Post Build] - Add Assets to Release Draft"
+      - name: "[Post Publish] - Upload NuGet Package as Github Workflow Artifacts"
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.NUGET_PACKAGE_FILE }}
+          path: ${{ env.NUGET_PACKAGE_PATH }}
+
+      - name: "[Post Publish] - Add Assets to Release Draft"
         if: ${{ github.event_name == 'push' }}
         uses: gittools/actions/gitreleasemanager/addasset@v0.9.9
         with:
@@ -149,4 +169,15 @@ jobs:
           repository: 'freshli-cli'
           milestone: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
           tagName: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
-          assets: 'freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip,freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip,freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip'
+          assets: '${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip,${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip,${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip,${{ env.NUGET_PACKAGE_PATH }}'
+
+      # Push all versions to GitHub packages.  This includes alpha version, in the main branch, and beta
+      # versions in the release branch.
+      - name: "[Push] - Push to GitHub"
+        if: github.event_name == 'push'
+        run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate -n true -s https://nuget.pkg.github.com/corgibytes/index.json
+
+      # Only push production or release candidates to Nuget.org.  These will be tagged.
+      - name: "[Push] - Push to NuGet"
+        if: githu.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -n true -s https://api.nuget.org/v3/index.json
