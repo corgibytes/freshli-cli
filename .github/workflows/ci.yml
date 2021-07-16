@@ -179,5 +179,5 @@ jobs:
 
       # Only push production or release candidates to Nuget.org.  These will be tagged.
       - name: "[Push] - Push to NuGet"
-        if: githu.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
         run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -n true -s https://api.nuget.org/v3/index.json
