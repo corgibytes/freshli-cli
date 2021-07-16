@@ -1,9 +1,7 @@
-# Freshli CLI
+# Freshli Command Line
 
 [![](https://img.shields.io/github/v/release/corgibytes/freshli-cli?label=Latest%20Release)](https://github.com/corgibytes/freshli-cli/releases/latest)
 [![](https://github.com/corgibytes/freshli-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/corgibytes/freshli-cli/actions)
-
-https://img.shields.io/github/v/tag/corgibytes/freshli-cli?label=Latest%20Release
 
 A tool for displaying historical metrics about a project's dependencies.  Run the Freshli CLI on you project to see how your project's dependency freshness changes over time.
 
@@ -61,13 +59,10 @@ Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
 ...
 ```
 
-### Old Releases
-
-You can find old releases to download [here](https://github.com/corgibytes/freshli-cli/releases).  You can find old .NET Tool releases [here](https://www.nuget.org/packages/Corgibytes.Freshli.Cli/).
-
 ### Alpha/Beta Releases
 
 If you like to live on the edge you can find alpha/beta builds of Freshli as .NET Tool on our GitHub Packages [feed](https://github.com/corgibytes/freshli-cli/packages/875174).  To download from the GitHub Packages feed you need to add the GitHub Packages as a NuGet source:
+
 
 ```
 dotnet nuget add source --username USERNAME --password PERSONAL_ACCESS_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/corgibytes/index.json"
@@ -99,14 +94,41 @@ When downloading a alpha/beta version make sure you put the version in the .NET 
 dotnet tool install Corgibytes.Freshli.Cli -g --version 0.5.0-alpha0001
 ```
 
+### Old Releases
+
+You can find old releases to download [here](https://github.com/corgibytes/freshli-cli/releases) and old .NET Tool releases [here](https://www.nuget.org/packages/Corgibytes.Freshli.Cli/).
+
+## Supported Dependency Managers
+
+The dependency managers that Freshli supports are listed below along with the manifest files it can parse.  The manifest file is the file that lists what dependencies are required by the project and has changed over time for some dependency managers, like NuGet.
+
+| Dependency Manager | Language(s)/Framework(s) | Manifest Files Format |
+|--------------------|-----------------------|----------|
+| [Bundler](https://bundler.io/) | [Ruby](https://www.ruby-lang.org), [Ruby on Rails](https://rubyonrails.org/) | Gemfile.lock |
+| [Carton](https://metacpan.org/pod/Carton) | [Perl](https://www.perl.org/) | cpanfile |
+| [Composer](https://getcomposer.org/) | [PHP](https://www.php.net/) | composer.json, composer.lock |
+| [Pip](https://pypi.org/project/pip/) | [Python](https://www.python.org/) | requirements.txt |
+| [NuGet](https://www.nuget.org/) | [C#](https://docs.microsoft.com/en-us/dotnet/csharp/) | *.csproj |
+
+Please let us know what other dependency managers and/or manifest files you would like use to support via the contact information in the [Contributing](#contributing) section.
+
 ## What Data Does Freahli Return?
 
-Freshli check your projects dependencies at on month intervals and returns a table with the following values:
+Freshli check your projects dependencies at on month intervals and returns a table with the following that looks like:
 
-- The date the check was done.
-- The total [libyear](https://libyear.com/) of all the dependencies.
-- How many dependencies are out of date at the date of the check.
-- How many dependencies Freshli couldn't determine the libyear for.
+```
+Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
+2017-01-01              0.0000  0                       0
+2017-02-01              0.0219  1                       0
+...
+```
+
+The values in the table are:
+
+- Date: The date the check was done.
+- Libyear: The total [libyear](https://libyear.com/) of all the dependencies.
+- Upgrades Available: How many dependencies are out of date at the date of the check.
+- Skipped: How many dependencies Freshli couldn't determine the libyear for.
 
 ### Libyear
 
@@ -165,4 +187,4 @@ Data (such as dates and numeric formatting) are NOT localized. Dates and numeric
 We are not sure how to handle documentation, such as this ReadMe, in different languages.  If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
 
 ## Contributing
-If you have any questions, notice a bug, or have a suggestion/enhancment please let me know by opening [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
+If you have any questions, notice a bug, or have a suggestion/enhancment please let us know by opening a [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
