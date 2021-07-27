@@ -158,7 +158,7 @@ Sep 15, 2019 (v1.2.0)
 Oct 31, 2019 (v1.2.1)
 ```
 
-When checking the libyear on March 1, 2019 Freshli will use v1.0.1 (Apr 3rd, 2019) as the latest dependency.  So if as of May 1, 2019 your project uses v1.1.0 your libyear is zero as v1.2.0 was not released until Sep.  If on May 1st your project is using v1.0.0 then your libyear is days between Apr 3, 2019 and Jan 1, 2019 which is 93 days so you get a libyear of:
+When checking the libyear on May 1, 2019 Freshli will use v1.1.0 (Apr 3rd, 2019) as the latest dependency.  So if as of May 1, 2019 your project uses v1.1.0 your libyear is zero as v1.2.0 was not released until Sep.  If on May 1st your project is using v1.0.0 then your libyear is days between Apr 3, 2019 and Jan 1, 2019 which is 93 days so you get a libyear of:
 
 ```
 93 / 365 = 0.2548
