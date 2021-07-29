@@ -1,7 +1,7 @@
 ## v0.4.0
 
 
-As part of this release we had [4 issues](https://github.com/corgibytes/freshli-cli/milestone/2?closed=1) closed.
+As part of this release we had [7 issues](https://github.com/corgibytes/freshli-cli/milestone/2?closed=1) closed.
 Goals for this milestone:
 
 - Download CLI as .NET tool.
@@ -10,6 +10,7 @@ Goals for this milestone:
 
 __DevOps__
 
+- [__#35__](https://github.com/corgibytes/freshli-cli/issues/35) Unexpected input for CLA action
 - [__#21__](https://github.com/corgibytes/freshli-cli/issues/21) Update GitReleaseManager support labels
 - [__#20__](https://github.com/corgibytes/freshli-cli/issues/20) Creating empty GitHub Release fails
 
@@ -17,9 +18,14 @@ __Dependencies__
 
 - [__#38__](https://github.com/corgibytes/freshli-cli/issues/38) Update Freshli Lib to 0.4.0-alpha0208
 
-__Enhancement__
+__Documentation__
+
+- [__#22__](https://github.com/corgibytes/freshli-cli/issues/22) Update ReadMe with how to use CLI
+
+__Enhancements__
 
 - [__#28__](https://github.com/corgibytes/freshli-cli/issues/28) Localize the CLI
+- [__#27__](https://github.com/corgibytes/freshli-cli/issues/27) Install Freshli CLI as .NET tool
 
 
 ## v0.3.0
