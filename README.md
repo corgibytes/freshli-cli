@@ -1,342 +1,190 @@
-# Freshli CLI
+# Freshli Command Line
 
-## Getting started with `freshli` CLI
+[![](https://img.shields.io/github/v/release/corgibytes/freshli-cli?label=Latest%20Release)](https://github.com/corgibytes/freshli-cli/releases/latest)
+[![](https://github.com/corgibytes/freshli-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/corgibytes/freshli-cli/actions)
 
-### Running `freshli-cli`
+A tool for displaying historical metrics about a project's dependencies.  Run the Freshli CLI on you project to see how your project's dependency freshness changes over time.
 
-Right now to run `freshli-cli` from the command line, you need to have the .NET Core SDK installed.
+## Installing and Running
 
-Once you do, you can run use `dotnet run --project Freshli.Cli/Freshli.Cli.csproj -- <url>` to run the project.
+First you need .NET 5.0 runtime installed which you can find [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime).  After .NET 5.0 is installed you download the latest Freshli executables [here](https://github.com/corgibytes/freshli-cli/releases/latest).  Pick the Zip file that matches you OS (Windows, Linux, or MacOs) then:
 
-Here's an example:
+1) Download it.
+2) Extract the Zip file.
+3) Copy the folder to an apporiate location.
+4) Open a terminal and run `Corgibytes.Freshli.Cli.exe`.
 
-```
-➜  freshli-cli git:(main) ✗ dotnet run --project Corgibytes.Freshli.Cli/Corgibytes.Freshli.Cli.csproj -- http://github.com/corgibytes/freshli-fixture-ruby-nokotest
-2021/01/25 12:52:27.656| INFO|Freshli.Cli.Program:10|Main(http://github.com/corgibytes/freshli-fixture-ruby-nokotest)
-2021/01/25 12:52:27.800| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:52:27.802| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:52:27.802| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:52:27.802| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:52:27.802| INFO|Freshli.Cli.Program:16|Collecting data for http://github.com/corgibytes/freshli-fixture-ruby-nokotest
-2021/01/25 12:52:27.802| INFO|Freshli.Runner:20|Run(http://github.com/corgibytes/freshli-fixture-ruby-nokotest, 1/25/2021)
-Date    LibYear UpgradesAvailable       Skipped
-2017/01/01      0.0000  0       0
-2017/02/01      0.0219  1       0
-2017/03/01      0.0219  1       0
-2017/04/01      0.2274  1       0
-2017/05/01      0.2274  1       0
-2017/06/01      0.3644  1       0
-2017/07/01      1.8521  2       0
-2017/08/01      1.8521  2       0
-2017/09/01      1.8521  2       0
-2017/10/01      2.4164  2       0
-2017/11/01      2.4164  2       0
-2017/12/01      2.4164  2       0
-2018/01/01      0.0000  0       0
-2018/02/01      0.3616  1       0
-2018/03/01      0.3616  1       0
-2018/04/01      0.3616  1       0
-2018/05/01      0.3616  1       0
-2018/06/01      0.3616  1       0
-2018/07/01      0.7397  1       0
-2018/08/01      0.7890  1       0
-2018/09/01      0.7890  1       0
-2018/10/01      0.7890  1       0
-2018/11/01      1.0438  1       0
-2018/12/01      1.0438  1       0
-2019/01/01      0.0000  0       0
-2019/02/01      0.0712  1       0
-2019/03/01      0.0712  1       0
-2019/04/01      0.2658  1       0
-2019/05/01      0.3425  1       0
-2019/06/01      0.3425  1       0
-2019/07/01      0.3425  1       0
-2019/08/01      0.3425  1       0
-2019/09/01      0.6466  1       0
-2019/10/01      0.6466  1       0
-2019/11/01      0.8685  1       0
-2019/12/01      0.8685  1       0
-2020/01/01      0.9616  1       0
-2020/02/01      0.9616  1       0
-2020/03/01      2.4329  2       0
-2020/04/01      2.4329  2       0
-2020/05/01      2.4329  2       0
-2020/06/01      2.4329  2       0
-2020/07/01      2.4329  2       0
-2020/08/01      2.7808  2       0
-2020/09/01      2.7808  2       0
-2020/10/01      2.7808  2       0
-2020/11/01      2.7808  2       0
-2020/12/01      2.7808  2       0
-2021/01/01      2.7808  2       0
-```
-
-`freshli-cli` and `freshli` should build and run on any platform that's supported by the .NET Core SDK. It is heavily tested on both macOS and Windows. If you run into problems, please open an issue. The output from above was captured from running in `zsh` on macOS Catalina (10.15.5).
-
-### Building `freshli-cli`
-
-#### Configuring Github Packages
-
-To use Freshli Core, you'll need to [create a personal access token] and copy
-the `nuget.config.example` file in Freshli.Cli to create a `nuget.config` file
-with your Github username and personal access token:
+To run Freshli:
 
 ```
-...
-<packageSourceCredentials>
-  <GithubPackages>
-    <add key="Username" value="GITHUB_USERNAME" />
-    <add key="ClearTextPassword" value="PERSONAL_ACCESS_TOKEN" />
-  </GithubPackages>
-</packageSourceCredentials>
+Path\To\Freshli\Corgibytes.Freshli.Cli.exe <repo>
+```
+
+Where `<repo>` is the path the repository you want to check.  Can be either `https` or `git` path.  For example:
+
+```
+Corgibytes.Freshli.Cli.exe https://github.com/corgibytes/freshli-fixture-ruby-nokotest
+```
+
+The above repo is one we use for testing Freshli.  When run you should get output like:
+
+```
+> Corgibytes.Freshli.Cli.exe https://github.com/corgibytes/freshli-fixture-ruby-nokotest
+Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
+2017-01-01              0.0000  0                       0
+2017-02-01              0.0219  1                       0
+2017-03-01              0.0219  1                       0
 ...
 ```
 
-#### Building
+### .NET Tool
 
-There are multiple ways to build `freshli-cli`. The simplest is directly on the command line by running `dotnet build`.
-
-You can also use an IDE for working on `freshli-cli`. Most of the project's developers use JetBrains Rider, but you can also use Visual Studio 2019. If you don't want to use an IDE, then a text editor with good C# support such as Visual Studio Code or Atom also works equally well. Visual Studio Code is configured with
-a Remote Container for convenience.
-
-This is what a successful command line build looks like:
+If you have .NET 5.0 SDK [installed](https://dotnet.microsoft.com/download/dotnet/5.0) you can install Freshli as .NET Tool:
 
 ```
-➜  freshli-cli git:(main) ✗ dotnet build
-Microsoft (R) Build Engine version 16.8.3+39993bd9d for .NET
-Copyright (C) Microsoft Corporation. All rights reserved.
+> dotnet tool install Corgibytes.Freshli.Cli -g
 
-  Determining projects to restore...
-  All projects are up-to-date for restore.
-  Freshli -> /home/dan/RiderProjects/freshli-cli/freshli/Freshli/bin/Debug/net5.0/Freshli.dll
-  Freshli.Test -> /home/dan/RiderProjects/freshli-cli/freshli/Freshli.Test/bin/Debug/net5.0/Freshli.Test.dll
-  Freshli.Cli -> /home/dan/RiderProjects/freshli-cli/Freshli.Cli/bin/Debug/net5.0/Freshli.Cli.dll
-  Archive:  nokotest.zip
-    inflating: nokotest/Gemfile
-    inflating: nokotest/Gemfile.lock
-    inflating: nokotest/.git/config
-   extracting: nokotest/.git/objects/0d/8f4f864a22eac5f72153cf1d77fc9791796e6d
-   extracting: nokotest/.git/objects/93/e24fec7e2d55e1f2649989a131b1a044008e60
-   extracting: nokotest/.git/objects/bb/e94adc863a728d5c63b1293a7d1d81ac437f30
-   extracting: nokotest/.git/objects/6e/dae1c2dc746439f567894cf77effc7a8abf97b
-   extracting: nokotest/.git/objects/01/7031627f36deb582d69cddd381718be0044b02
-   extracting: nokotest/.git/objects/90/2a3082740f83776eec419c59a56e54424fdec5
-   extracting: nokotest/.git/objects/b9/803963c64c5c8794334bb667d98c969add6fd0
-   extracting: nokotest/.git/objects/b9/d397bcc26e2a820a2e077298f35521b154febd
-   extracting: nokotest/.git/objects/c4/a0ab82b5bf0d03d646348bce24527d84d8bfe4
-   extracting: nokotest/.git/objects/e1/be34540508cfb94fea222ecdc61a95652068ee
-   extracting: nokotest/.git/objects/76/06873e8c521ba79d093029969c2da124ed03d3
-   extracting: nokotest/.git/objects/13/963f09081c175c66d20f7dd15d23fedc789ce4
-   extracting: nokotest/.git/HEAD
-    inflating: nokotest/.git/info/exclude
-    inflating: nokotest/.git/logs/HEAD
-    inflating: nokotest/.git/logs/refs/heads/master
-    inflating: nokotest/.git/description
-    inflating: nokotest/.git/hooks/commit-msg.sample
-    inflating: nokotest/.git/hooks/pre-rebase.sample
-    inflating: nokotest/.git/hooks/pre-commit.sample
-    inflating: nokotest/.git/hooks/applypatch-msg.sample
-    inflating: nokotest/.git/hooks/prepare-commit-msg.sample
-    inflating: nokotest/.git/hooks/post-update.sample
-    inflating: nokotest/.git/hooks/pre-applypatch.sample
-    inflating: nokotest/.git/hooks/pre-push.sample
-    inflating: nokotest/.git/hooks/update.sample
-   extracting: nokotest/.git/refs/heads/master
-    inflating: nokotest/.git/index
-   extracting: nokotest/.git/COMMIT_EDITMSG
-  Freshli.Cli.Test -> /home/dan/RiderProjects/freshli-cli/Freshli.Cli.Test/bin/Debug/net5.0/Freshli.Cli.Test.dll
-
-Build succeeded.
-    0 Warning(s)
-    0 Error(s)
-
-Time Elapsed 00:00:05.77
+You can invoke the tool using the following command: Freshli
+Tool 'corgibytes.freshli.cli' (version 'X.Y.Z') was successfully installed.
 ```
 
-### Running the test suite
-
-Simply running `dotnet test` will kick off the test runner. If you're using an IDE to build `freshli-cli`, such as JetBrains Rider or Visual Studio 2019, then you can use the test runner that's built into the IDE.
-
-Here's an example of a successful test run:
+To run Freshli use the `Freshli` command as such:
 
 ```
-➜  freshli git:(main) ✗ dotnet test
-  Determining projects to restore...
-  Restored /home/dan/RiderProjects/freshli-cli/Freshli.Cli.Test/Freshli.Cli.Test.csproj (in 723 ms).
-  Restored /home/dan/RiderProjects/freshli-cli/freshli/Freshli/Freshli.csproj (in 723 ms).
-  Restored /home/dan/RiderProjects/freshli-cli/Freshli.Cli/Freshli.Cli.csproj (in 722 ms).
-  Restored /home/dan/RiderProjects/freshli-cli/freshli/Freshli.Test/Freshli.Test.csproj (in 736 ms).
-  Freshli -> /home/dan/RiderProjects/freshli-cli/freshli/Freshli/bin/Debug/net5.0/Freshli.dll
-  Freshli.Cli -> /home/dan/RiderProjects/freshli-cli/Freshli.Cli/bin/Debug/net5.0/Freshli.Cli.dll
-  Freshli.Test -> /home/dan/RiderProjects/freshli-cli/freshli/Freshli.Test/bin/Debug/net5.0/Freshli.Test.dll
-  Archive:  nokotest.zip
-    inflating: nokotest/Gemfile
-    inflating: nokotest/Gemfile.lock
-    inflating: nokotest/.git/config
-   extracting: nokotest/.git/objects/0d/8f4f864a22eac5f72153cf1d77fc9791796e6d
-   extracting: nokotest/.git/objects/93/e24fec7e2d55e1f2649989a131b1a044008e60
-   extracting: nokotest/.git/objects/bb/e94adc863a728d5c63b1293a7d1d81ac437f30
-   extracting: nokotest/.git/objects/6e/dae1c2dc746439f567894cf77effc7a8abf97b
-   extracting: nokotest/.git/objects/01/7031627f36deb582d69cddd381718be0044b02
-   extracting: nokotest/.git/objects/90/2a3082740f83776eec419c59a56e54424fdec5
-   extracting: nokotest/.git/objects/b9/803963c64c5c8794334bb667d98c969add6fd0
-   extracting: nokotest/.git/objects/b9/d397bcc26e2a820a2e077298f35521b154febd
-   extracting: nokotest/.git/objects/c4/a0ab82b5bf0d03d646348bce24527d84d8bfe4
-   extracting: nokotest/.git/objects/e1/be34540508cfb94fea222ecdc61a95652068ee
-   extracting: nokotest/.git/objects/76/06873e8c521ba79d093029969c2da124ed03d3
-   extracting: nokotest/.git/objects/13/963f09081c175c66d20f7dd15d23fedc789ce4
-   extracting: nokotest/.git/HEAD
-    inflating: nokotest/.git/info/exclude
-    inflating: nokotest/.git/logs/HEAD
-    inflating: nokotest/.git/logs/refs/heads/master
-    inflating: nokotest/.git/description
-    inflating: nokotest/.git/hooks/commit-msg.sample
-    inflating: nokotest/.git/hooks/pre-rebase.sample
-    inflating: nokotest/.git/hooks/pre-commit.sample
-    inflating: nokotest/.git/hooks/applypatch-msg.sample
-    inflating: nokotest/.git/hooks/prepare-commit-msg.sample
-    inflating: nokotest/.git/hooks/post-update.sample
-    inflating: nokotest/.git/hooks/pre-applypatch.sample
-    inflating: nokotest/.git/hooks/pre-push.sample
-    inflating: nokotest/.git/hooks/update.sample
-   extracting: nokotest/.git/refs/heads/master
-    inflating: nokotest/.git/index
-   extracting: nokotest/.git/COMMIT_EDITMSG
-Test run for /home/dan/RiderProjects/freshli-cli/freshli/Freshli.Test/bin/Debug/net5.0/Freshli.Test.dll (.NETCoreApp,Version=v5.0)
-Microsoft (R) Test Execution Command Line Tool Version 16.8.3
-Copyright (c) Microsoft Corporation.  All rights reserved.
-
-  Freshli.Cli.Test -> /home/dan/RiderProjects/freshli-cli/Freshli.Cli.Test/bin/Debug/net5.0/Freshli.Cli.Test.dll
-Test run for /home/dan/RiderProjects/freshli-cli/Freshli.Cli.Test/bin/Debug/net5.0/Freshli.Cli.Test.dll (.NETCoreApp,Version=v5.0)
-Microsoft (R) Test Execution Command Line Tool Version 16.8.3
-Copyright (c) Microsoft Corporation.  All rights reserved.
-
-Starting test execution, please wait...
-Starting test execution, please wait...
-A total of 1 test files matched the specified pattern.
-A total of 1 test files matched the specified pattern.
-
-Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 8 ms - /home/dan/RiderProjects/freshli-cli/Freshli.Cli.Test/bin/Debug/net5.0/Freshli.Cli.Test.dll (net5.0)
-2021/01/25 12:56:30.242| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:56:30.299| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:56:30.301| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:56:30.301| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:56:30.345| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:56:30.345| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:56:30.345| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:56:30.345| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:56:30.379| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:56:30.381| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:56:30.381| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:56:30.381| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:56:30.426| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:56:30.426| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:56:30.429| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:56:30.429| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:56:30.448| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:56:30.448| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:56:30.449| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:56:30.449| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:56:30.532| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:56:30.532| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:56:30.534| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:56:30.534| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:56:30.534| INFO|Freshli.Runner:20|Run(/home/dan/RiderProjects/freshli-cli/freshli/Freshli.Test/bin/Debug/net5.0/fixtures/ruby/nokotest, 1/1/2020)
-2021/01/25 12:56:32.257| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:56:32.257| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:56:32.258| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:56:32.258| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:56:32.258| INFO|Freshli.Runner:20|Run(https://github.com/feedbin/feedbin, 1/1/2020)
-2021/01/25 12:56:39.339| WARN|Freshli.LibYearCalculator:76|Negative value (-0.036) computed for tzinfo as of 3/1/2014; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.38", RepoVersionPublishedAt: 2013-10-08T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:29.026| WARN|Freshli.LibYearCalculator:76|Negative value (-0.036) computed for tzinfo as of 11/1/2013; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.38", RepoVersionPublishedAt: 2013-10-08T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:29.335| WARN|Freshli.LibYearCalculator:76|Negative value (-0.074) computed for mime-types as of 1/1/2014; setting value to 0: { Name: "mime-types", RepoVersion: "1.25.1", RepoVersionPublishedAt: 2013-11-24T00:00:00, LatestVersion: "2.0", LatestPublishedAt: 2013-10-28T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:29.685| WARN|Freshli.LibYearCalculator:76|Negative value (-0.036) computed for tzinfo as of 1/1/2014; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.38", RepoVersionPublishedAt: 2013-10-08T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:29.914| WARN|Freshli.LibYearCalculator:76|Negative value (-0.036) computed for tzinfo as of 2/1/2014; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.38", RepoVersionPublishedAt: 2013-10-08T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:29.924| WARN|Freshli.LibYearCalculator:76|Negative value (-0.170) computed for arel as of 3/1/2014; setting value to 0: { Name: "arel", RepoVersion: "4.0.2", RepoVersionPublishedAt: 2014-02-05T00:00:00, LatestVersion: "5.0.0", LatestPublishedAt: 2013-12-05T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:29.942| WARN|Freshli.LibYearCalculator:76|Negative value (-0.036) computed for tzinfo as of 3/1/2014; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.38", RepoVersionPublishedAt: 2013-10-08T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:29.948| WARN|Freshli.LibYearCalculator:76|Negative value (-0.170) computed for arel as of 4/1/2014; setting value to 0: { Name: "arel", RepoVersion: "4.0.2", RepoVersionPublishedAt: 2014-02-05T00:00:00, LatestVersion: "5.0.0", LatestPublishedAt: 2013-12-05T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:31.345| WARN|Freshli.LibYearCalculator:76|Negative value (-0.452) computed for tzinfo as of 4/1/2014; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.39", RepoVersionPublishedAt: 2014-03-09T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:32.400| WARN|Freshli.LibYearCalculator:76|Negative value (-0.452) computed for tzinfo as of 5/1/2014; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.39", RepoVersionPublishedAt: 2014-03-09T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:49.721| WARN|Freshli.LibYearCalculator:76|Negative value (-0.030) computed for timers as of 10/1/2015; setting value to 0: { Name: "timers", RepoVersion: "4.0.4", RepoVersionPublishedAt: 2015-09-01T00:00:00, LatestVersion: "4.1.1", LatestPublishedAt: 2015-08-21T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:50.506| WARN|Freshli.LibYearCalculator:76|Negative value (-0.030) computed for timers as of 11/1/2015; setting value to 0: { Name: "timers", RepoVersion: "4.0.4", RepoVersionPublishedAt: 2015-09-01T00:00:00, LatestVersion: "4.1.1", LatestPublishedAt: 2015-08-21T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:51.687| WARN|Freshli.LibYearCalculator:76|Negative value (-0.258) computed for libv8 as of 12/1/2015; setting value to 0: { Name: "libv8", RepoVersion: "3.16.14.13", RepoVersionPublishedAt: 2015-10-15T00:00:00, LatestVersion: "4.5.95.5", LatestPublishedAt: 2015-07-13T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:51.924| WARN|Freshli.LibYearCalculator:76|Negative value (-0.258) computed for libv8 as of 1/1/2016; setting value to 0: { Name: "libv8", RepoVersion: "3.16.14.13", RepoVersionPublishedAt: 2015-10-15T00:00:00, LatestVersion: "4.5.95.5", LatestPublishedAt: 2015-07-13T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:52.219| WARN|Freshli.LibYearCalculator:76|Negative value (-0.258) computed for libv8 as of 2/1/2016; setting value to 0: { Name: "libv8", RepoVersion: "3.16.14.13", RepoVersionPublishedAt: 2015-10-15T00:00:00, LatestVersion: "4.5.95.5", LatestPublishedAt: 2015-07-13T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:53.557| WARN|Freshli.LibYearCalculator:76|Negative value (-0.258) computed for libv8 as of 3/1/2016; setting value to 0: { Name: "libv8", RepoVersion: "3.16.14.13", RepoVersionPublishedAt: 2015-10-15T00:00:00, LatestVersion: "4.5.95.5", LatestPublishedAt: 2015-07-13T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:54.045| WARN|Freshli.LibYearCalculator:76|Negative value (-0.258) computed for libv8 as of 4/1/2016; setting value to 0: { Name: "libv8", RepoVersion: "3.16.14.13", RepoVersionPublishedAt: 2015-10-15T00:00:00, LatestVersion: "4.5.95.5", LatestPublishedAt: 2015-07-13T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:55.771| WARN|Freshli.LibYearCalculator:76|Negative value (-1.225) computed for fog-rackspace as of 6/1/2016; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.1", RepoVersionPublishedAt: 2016-02-16T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:58.820| WARN|Freshli.LibYearCalculator:76|Negative value (-1.225) computed for fog-rackspace as of 7/1/2016; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.1", RepoVersionPublishedAt: 2016-02-16T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:57:59.430| WARN|Freshli.LibYearCalculator:76|Negative value (-1.225) computed for fog-rackspace as of 8/1/2016; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.1", RepoVersionPublishedAt: 2016-02-16T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:00.614| WARN|Freshli.LibYearCalculator:76|Negative value (-1.225) computed for fog-rackspace as of 9/1/2016; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.1", RepoVersionPublishedAt: 2016-02-16T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:04.246| WARN|Freshli.LibYearCalculator:76|Negative value (-1.225) computed for fog-rackspace as of 10/1/2016; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.1", RepoVersionPublishedAt: 2016-02-16T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:07.125| WARN|Freshli.LibYearCalculator:76|Negative value (-1.225) computed for fog-rackspace as of 11/1/2016; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.1", RepoVersionPublishedAt: 2016-02-16T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:07.186| WARN|Freshli.LibYearCalculator:76|Negative value (-1.940) computed for fog-rackspace as of 1/1/2017; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.2", RepoVersionPublishedAt: 2016-11-03T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:08.255| WARN|Freshli.LibYearCalculator:76|Negative value (-2.400) computed for fog-rackspace as of 6/1/2017; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.5", RepoVersionPublishedAt: 2017-04-20T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:08.259| WARN|Freshli.LibYearCalculator:76|Negative value (-0.003) computed for libv8 as of 6/1/2017; setting value to 0: { Name: "libv8", RepoVersion: "3.16.14.19", RepoVersionPublishedAt: 2017-03-09T00:00:00, LatestVersion: "5.3.332.38.5", LatestPublishedAt: 2017-03-08T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:08.287| WARN|Freshli.LibYearCalculator:76|Negative value (-2.400) computed for fog-rackspace as of 7/1/2017; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.5", RepoVersionPublishedAt: 2017-04-20T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:08.292| WARN|Freshli.LibYearCalculator:76|Negative value (-0.003) computed for libv8 as of 7/1/2017; setting value to 0: { Name: "libv8", RepoVersion: "3.16.14.19", RepoVersionPublishedAt: 2017-03-09T00:00:00, LatestVersion: "5.3.332.38.5", LatestPublishedAt: 2017-03-08T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:08.324| WARN|Freshli.LibYearCalculator:76|Negative value (-2.400) computed for fog-rackspace as of 8/1/2017; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.5", RepoVersionPublishedAt: 2017-04-20T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:08.930| WARN|Freshli.LibYearCalculator:76|Negative value (-2.400) computed for fog-rackspace as of 9/1/2017; setting value to 0: { Name: "fog-rackspace", RepoVersion: "0.1.5", RepoVersionPublishedAt: 2017-04-20T00:00:00, LatestVersion: "1.0.4", LatestPublishedAt: 2014-11-26T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:58:23.298| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:58:23.298| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:58:23.298| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:58:23.298| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:58:23.302| INFO|Freshli.Runner:20|Run(/home/dan/RiderProjects/freshli-cli/freshli/Freshli.Test/bin/Debug/net5.0/fixtures/php/large, 1/1/2020)
-2021/01/25 12:58:56.843| WARN|Freshli.LibYearCalculator:76|Negative value (-0.027) computed for symfony/event-dispatcher as of 1/1/2020; setting value to 0: { Name: "symfony/event-dispatcher", RepoVersion: "v4.4.2", RepoVersionPublishedAt: 2019-11-28T00:00:00, LatestVersion: "v5.0.2", LatestPublishedAt: 2019-11-18T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:59:19.138| WARN|Freshli.LibYearCalculator:76|Negative value (-2.077) computed for scrivo/highlight.php as of 1/1/2020; setting value to 0: { Name: "scrivo/highlight.php", RepoVersion: "v9.17.1.0", RepoVersionPublishedAt: 2019-12-13T00:00:00, LatestVersion: "v9.12.0", LatestPublishedAt: 2017-11-15T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:59:27.113| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:59:27.113| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:59:27.113| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:59:27.113| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:59:27.113| INFO|Freshli.Runner:20|Run(/home/dan/RiderProjects/freshli-cli/freshli/Freshli.Test/bin/Debug/net5.0/fixtures/php/drupal, 1/1/2020)
-2021/01/25 12:59:40.326| WARN|Freshli.LibYearCalculator:76|Negative value (-0.422) computed for drupal/drupal as of 1/1/2020; setting value to 0: { Name: "drupal/drupal", RepoVersion: "7.69.0", RepoVersionPublishedAt: 2020-05-20T00:00:00, LatestVersion: "8.8.1", LatestPublishedAt: 2019-12-18T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 12:59:40.350| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 12:59:40.350| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 12:59:40.350| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 12:59:40.350| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 12:59:40.350| INFO|Freshli.Runner:20|Run(https://github.com/gohugoio/hugo, 1/1/2020)
-2021/01/25 13:00:27.180| WARN|Freshli.Runner:63|Unable to find a manifest file
-2021/01/25 13:00:27.231| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 13:00:27.231| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 13:00:27.231| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 13:00:27.231| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 13:00:27.231| INFO|Freshli.Runner:20|Run(https://github.com/binux/pyspider, 1/1/2020)
-2021/01/25 13:00:36.115| WARN|Freshli.Languages.Python.PyPIRepository:50|Error adding version to kombu release history: Unable to parse version string: '3.0.17-20140602'.
-2021/01/25 13:00:36.183| WARN|Freshli.LibYearCalculator:76|Negative value (-0.252) computed for pymongo as of 10/1/2015; setting value to 0: { Name: "pymongo", RepoVersion: "2.9", RepoVersionPublishedAt: 2015-09-30T23:34:44, LatestVersion: "3.0.3", LatestPublishedAt: 2015-07-01T00:43:35, UpgradeAvailable: True, Value: 0 }
-2021/01/25 13:00:36.379| WARN|Freshli.LibYearCalculator:76|Negative value (-0.252) computed for pymongo as of 11/1/2015; setting value to 0: { Name: "pymongo", RepoVersion: "2.9", RepoVersionPublishedAt: 2015-09-30T23:34:44, LatestVersion: "3.0.3", LatestPublishedAt: 2015-07-01T00:43:35, UpgradeAvailable: True, Value: 0 }
-2021/01/25 13:00:37.416| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 13:00:37.416| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 13:00:37.416| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 13:00:37.416| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 13:00:37.417| INFO|Freshli.Runner:20|Run(https://github.com/corgibytes/freshli-fixture-ruby-nokotest, 1/1/2020)
-2021/01/25 13:00:40.239| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 13:00:40.239| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 13:00:40.239| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 13:00:40.239| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 13:00:40.239| INFO|Freshli.Runner:20|Run(https://github.com/PerlDancer/Dancer2, 1/1/2020)
-2021/01/25 13:00:52.920| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Ruby.RubyBundlerManifestFinder
-2021/01/25 13:00:52.920| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Python.PipRequirementsTxtManifestFinder
-2021/01/25 13:00:52.926| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Php.PhpComposerManifestFinder
-2021/01/25 13:00:52.926| INFO|Freshli.ManifestFinder:57|Registering IManifestFinder: Freshli.Languages.Perl.CpanfileManifestFinder
-2021/01/25 13:00:52.926| INFO|Freshli.Runner:20|Run(https://github.com/thoughtbot/clearance, 6/1/2020)
-2021/01/25 13:01:33.999| WARN|Freshli.LibYearCalculator:76|Negative value (-0.036) computed for tzinfo as of 12/1/2013; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.38", RepoVersionPublishedAt: 2013-10-08T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 13:01:34.015| WARN|Freshli.LibYearCalculator:76|Negative value (-0.036) computed for tzinfo as of 1/1/2014; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.38", RepoVersionPublishedAt: 2013-10-08T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 13:01:34.035| WARN|Freshli.LibYearCalculator:76|Negative value (-0.036) computed for tzinfo as of 2/1/2014; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.38", RepoVersionPublishedAt: 2013-10-08T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 13:01:34.341| WARN|Freshli.LibYearCalculator:76|Negative value (-0.036) computed for tzinfo as of 3/1/2014; setting value to 0: { Name: "tzinfo", RepoVersion: "0.3.38", RepoVersionPublishedAt: 2013-10-08T00:00:00, LatestVersion: "1.1.0", LatestPublishedAt: 2013-09-25T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 13:01:40.380| WARN|Freshli.LibYearCalculator:76|Negative value (-0.003) computed for json as of 4/1/2017; setting value to 0: { Name: "json", RepoVersion: "1.8.6", RepoVersionPublishedAt: 2017-01-13T00:00:00, LatestVersion: "2.0.3", LatestPublishedAt: 2017-01-12T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 13:01:40.383| WARN|Freshli.LibYearCalculator:76|Negative value (-0.364) computed for rack as of 4/1/2017; setting value to 0: { Name: "rack", RepoVersion: "1.6.5", RepoVersionPublishedAt: 2016-11-10T00:00:00, LatestVersion: "2.0.1", LatestPublishedAt: 2016-06-30T00:00:00, UpgradeAvailable: True, Value: 0 }
-2021/01/25 13:01:40.397| WARN|Freshli.LibYearCalculator:76|Negative value (-0.364) computed for rack as of 5/1/2017; setting value to 0: { Name: "rack", RepoVersion: "1.6.5", RepoVersionPublishedAt: 2016-11-10T00:00:00, LatestVersion: "2.0.1", LatestPublishedAt: 2016-06-30T00:00:00, UpgradeAvailable: True, Value: 0 }
-
-Passed!  - Failed:     0, Passed:   813, Skipped:     0, Total:   813, Duration: 6 m 7 s - /home/dan/RiderProjects/freshli-cli/freshli/Freshli.Test/bin/Debug/net5.0/Freshli.Test.dll (net5.0)
+> Freshli https://github.com/corgibytes/freshli-fixture-ruby-nokotest
+Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
+2017-01-01              0.0000  0                       0
+2017-02-01              0.0219  1                       0
+2017-03-01              0.0219  1                       0
+...
 ```
 
-The tests currently take longer to run than we would like. We're exploring ways to speed that up. You can run a subset of tests by including the `--filter` flag, e.g. `dotnet test --filter ComputeAsOf`.
+### Alpha/Beta Releases
+
+If you like to live on the edge you can find alpha/beta builds of Freshli as .NET Tool on our GitHub Packages [feed](https://github.com/corgibytes/freshli-cli/packages/875174).  To download from the GitHub Packages feed you need to add the GitHub Packages as a NuGet source:
+
+
+```
+dotnet nuget add source --username USERNAME --password PERSONAL_ACCESS_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/corgibytes/index.json"
+```
+
+Alternately you can use a `nuget.config` file:
+
+```
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+    <packageSources>
+        <clear />
+        <add key="GithubPackages" value="https://nuget.pkg.github.com/corgibytes/index.json" />
+    </packageSources>
+    <packageSourceCredentials>
+        <GithubPackages>
+            <add key="Username" value="USERNAME" />
+            <add key="ClearTextPassword" value="PERSONAL_ACCESS_TOKEN" />
+        </GithubPackages>
+    </packageSourceCredentials>
+</configuration>
+```
+
+More details on adding GitHub packages as a source can be found [here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry).
+
+When downloading a alpha/beta version make sure you put the version in the .NET Tool install command:
+
+```
+dotnet tool install Corgibytes.Freshli.Cli -g --version 0.5.0-alpha0001
+```
+
+### Old Releases
+
+You can find old releases to download [here](https://github.com/corgibytes/freshli-cli/releases) and old .NET Tool releases [here](https://www.nuget.org/packages/Corgibytes.Freshli.Cli/).
+
+## Supported Dependency Managers
+
+The dependency managers that Freshli supports are listed below along with the manifest files it can parse.  The manifest file is the file that lists what dependencies are required by the project and has changed over time for some dependency managers, like NuGet.
+
+| Dependency Manager | Language(s)/Framework(s) | Manifest Files Format |
+|--------------------|-----------------------|----------|
+| [Bundler](https://bundler.io/) | [Ruby](https://www.ruby-lang.org), [Ruby on Rails](https://rubyonrails.org/) | Gemfile.lock |
+| [Carton](https://metacpan.org/pod/Carton) | [Perl](https://www.perl.org/) | cpanfile |
+| [Composer](https://getcomposer.org/) | [PHP](https://www.php.net/) | composer.json, composer.lock |
+| [Pip](https://pypi.org/project/pip/) | [Python](https://www.python.org/) | requirements.txt |
+| [NuGet](https://www.nuget.org/) | [C#](https://docs.microsoft.com/en-us/dotnet/csharp/) | *.csproj |
+
+Please let us know what other dependency managers and/or manifest files you would like use to support via the contact information in the [Contributing](#contributing) section.
+
+## What Data Does Freahli Return?
+
+Freshli check your projects dependencies at on month intervals and returns a table with the following that looks like:
+
+```
+Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
+2017-01-01              0.0000  0                       0
+2017-02-01              0.0219  1                       0
+...
+```
+
+The values in the table are:
+
+- Date: The date the check was done.
+- Libyear: The total [libyear](https://libyear.com/) of all the dependencies.
+- Upgrades Available: How many dependencies are out of date at the date of the check.
+- Skipped: How many dependencies Freshli couldn't determine the libyear for.
+
+### Libyear
+
+The libyear for a dependency is calculated by dividing the days between the current version and latest version by 365.  Yes we know we shouldn't always use 365, we will fix it in a future release.  For example, if the days between the current dependency and the latest is 42 days then the libyear is:
+
+```
+42 / 365 = 0.1151
+```
+
+Say you have 4 dependencies that are 128, 256, 512, and 1024 the libyear would be:
+
+```
+(128 / 365) + (256 / 365) + (512 / 365) + (1024 / 365) =
+0.3507 + 0.7014 + 1.4027 + 2.8055 =
+5.2603
+```
+
+That means you dependencies are 5.3 libyears out of date or 5 libyears and 109.5 libdays.
+
+Note: The latest dependency is determined based on date the check is run.  For example, if a dependency has the following release dates:
+
+```
+Jan 1, 2019 (v1.0.0)
+Jan 26, 2019 (v1.0.1)
+Apr 3, 2019 (v1.1.0)
+Sep 15, 2019 (v1.2.0)
+Oct 31, 2019 (v1.2.1)
+```
+
+When checking the libyear on May 1, 2019 Freshli will use v1.1.0 (Apr 3rd, 2019) as the latest dependency.  So if as of May 1, 2019 your project uses v1.1.0 your libyear is zero as v1.2.0 was not released until Sep.  If on May 1st your project is using v1.0.0 then your libyear is days between Apr 3, 2019 and Jan 1, 2019 which is 93 days so you get a libyear of:
+
+```
+93 / 365 = 0.2548
+```
+
+If you have v1.0.1 instealled then your libyear when checking on May 1, 2019 is 68 days for a libyear of:
+
+```
+68 / 365 = 0.1863
+```
+
+### Upgrades Available
+
+Is simply the number of dependencies in your project that are not using the latest version at the time of the check.  For example, if you have 5 dependencies and 3 of them are not using the latest version then you the update count is 3.
+
+### Skipped
+
+Simply the number of dependencies Freshli could not calculate the libyear for on the given date.  Could be because a package has been removed in the package manager or similar issue.  Could also be a timeout error from the package manager or a bug in Freshli.
 
 ## Culture and Language Support
 
 The headings for column output are localized such that the culture settings of the user's computer are used. (This is found in the CurrentUICulture). Currently there are English and Spanish translations with English being the default.
 
 Data (such as dates and numeric formatting) are NOT localized. Dates and numeric formats use the CurrentCulture which is explicitly set to the [invariant culture](https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo.invariantculture?view=net-5.0).
-## Next Steps
 
-Once the cli-breakout changes are merged into freshli, the freshli submodule will need to be updated to the `main` branch and the output for this `README` will need to be re-generated.
+We are not sure how to handle documentation, such as this ReadMe, in different languages.  If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
+
+## Contributing
+If you have any questions, notice a bug, or have a suggestion/enhancment please let us know by opening a [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
