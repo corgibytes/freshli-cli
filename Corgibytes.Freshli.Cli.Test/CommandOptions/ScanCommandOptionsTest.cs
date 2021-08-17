@@ -1,59 +1,65 @@
-﻿using Corgibytes.Freshli.Cli.Formatters;
-using Corgibytes.Freshli.Cli.OutputStrategies;
-using Corgibytes.Freshli.Cli.Test.Common;
-using Corgibytes.Freshli.Cli.CommandOptions;
-
-using FluentAssertions;
-
-using Xunit;
-using Xunit.Abstractions;
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
+using System.IO;
+using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Formatters;
+using Corgibytes.Freshli.Cli.OutputStrategies;
+using Corgibytes.Freshli.Cli.Test.Common;
+using FluentAssertions;
+using Xunit;
+using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.CommandOptions
 {
     public class ScanCommandOptionsTest : FreshliTest
     {
-        public ScanCommandOptionsTest( ITestOutputHelper output ) : base(output) { }
+        public ScanCommandOptionsTest(ITestOutputHelper output) : base(output) { }
 
-            [Theory]
-            [MemberData(nameof(ScanOptionsArgs))]
-            public void Send_Args_ReturnsScanOptions( string[] args, string expectedPath, FormatType expectedFormat, IList<OutputStrategyType> expectedOutput )
-            {
-                CommandLineBuilder cmBuilder = Program.CreateCommandLineBuilder();
-                Parser parser = new (cmBuilder.Command);
-           
-                ParseResult result = parser.Parse(args);
+        [Theory]
+        [MemberData(nameof(ScanOptionsArgs))]
+        public void Send_Args_ReturnsScanOptions(string[] args, string expectedPath, FormatType expectedFormat, IList<OutputStrategyType> expectedOutput)
+        {
+            CommandLineBuilder cmBuilder = Program.CreateCommandLineBuilder();
+            Parser parser = new(cmBuilder.Command);
 
-                string path = result.ValueForArgument<string>("path");
-                FormatType formatType = result.ValueForOption<FormatType>("--format");
-                FormatType formatTypeFromAlias = result.ValueForOption<FormatType>("-f");
+            ParseResult result = parser.Parse(args);
 
-                IEnumerable<OutputStrategyType> outputStrategyTypes = result.ValueForOption<IEnumerable<OutputStrategyType>>("--output");
-                IEnumerable<OutputStrategyType> outputStrategyTypesFromAlias = result.ValueForOption<IEnumerable<OutputStrategyType>>("-o");
+            DirectoryInfo path = result.ValueForArgument<DirectoryInfo>("path");
+            FormatType formatType = result.ValueForOption<FormatType>("--format");
+            FormatType formatTypeFromAlias = result.ValueForOption<FormatType>("-f");
 
-                formatType.Should().Be(formatTypeFromAlias);
+            IEnumerable<OutputStrategyType> outputStrategyTypes = result.ValueForOption<IEnumerable<OutputStrategyType>>("--output");
+            IEnumerable<OutputStrategyType> outputStrategyTypesFromAlias = result.ValueForOption<IEnumerable<OutputStrategyType>>("-o");
 
-                outputStrategyTypes.Should().NotBeEmpty()
-                .And.Equal(outputStrategyTypesFromAlias);
+            formatType.Should().Be(formatTypeFromAlias);
 
-                path.Should().NotBeEmpty()
-                .And.Be(expectedPath);
+            outputStrategyTypes.Should().NotBeEmpty()
+            .And.Equal(outputStrategyTypesFromAlias);
 
-                formatType.Should()
-                .Be(expectedFormat);
+            path.Should().NotBeNull();
+            path.FullName.Should().NotBeEmpty()
+            .And.Be(expectedPath);
 
-                outputStrategyTypes.Should().NotContainNulls()
-                .And.NotContain(OutputStrategyType.None);
+            formatType.Should()
+            .Be(expectedFormat);
 
-                //Veryfy all required ones are present
-                expectedOutput.Should().BeSubsetOf(outputStrategyTypes);
+            outputStrategyTypes.Should().NotContainNulls()
+            .And.NotContain(OutputStrategyType.None);
 
-                //Veryfy there aren't extra output stragetegies added
-                outputStrategyTypes.Should().BeSubsetOf(expectedOutput);
-        }   
+            //Veryfy all required ones are present
+            expectedOutput.Should().BeSubsetOf(outputStrategyTypes);
+
+            //Veryfy there aren't extra output stragetegies added
+            outputStrategyTypes.Should().BeSubsetOf(expectedOutput);
+        }
+
+        [Fact]
+        public void Verify_ScanCommandOptionsType()
+        {
+            ScanCommandOptions options = new();
+            options.Type.Should().Be(CommandOptionType.Scan);
+        }
 
         public static IEnumerable<object[]> ScanOptionsArgs =>
               new List<object[]>

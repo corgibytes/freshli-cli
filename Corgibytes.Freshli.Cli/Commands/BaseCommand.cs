@@ -1,23 +1,24 @@
-﻿using Corgibytes.Freshli.Cli.Factories;
+﻿using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Binding;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
+using Corgibytes.Freshli.Cli.Factories;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.Binding;
-using System.CommandLine.Invocation;
-using System.CommandLine.Parsing;
 
 namespace Corgibytes.Freshli.Cli.Commands
 {
-    public abstract class BaseCommand: Command
+    public abstract class BaseCommand : Command
     {
         public IoCCommandRunnerFactory CommandRunnerFactory { get; set; }
 
-        public BaseCommand(string name, string description = null) : base(name, description) {        
-            Option<FormatType> formatOption = new (new[] { "--format", "-f" },
+        public BaseCommand(string name, string description = null) : base(name, description)
+        {
+            Option<FormatType> formatOption = new(new[] { "--format", "-f" },
                 description: "Represents the output format type - It's value is case insensitive",
                 getDefaultValue: () => FormatType.Json)
             {

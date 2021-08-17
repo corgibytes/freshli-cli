@@ -8,10 +8,11 @@ namespace Corgibytes.Freshli.Cli.IoC.Modules
 {
     public class ScanCommandServiceBuilder
     {
-        public void Register(IServiceCollection collection) {
+        public void Register(IServiceCollection collection)
+        {
             collection.AddScoped<Runner>();
             collection.AddTransient<ICommandRunner<ScanCommandOptions>, ScanCommandRunner>();
             collection.AddOptions<ScanCommandOptions>().BindCommandLine();
-        }    
+        }
     }
 }

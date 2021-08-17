@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Commands
         public MainCommand() : base("Root Command")
         {
             this.Handler = CommandHandler.Create<IHost>((host) =>
-            {                
+            {
                 Console.WriteLine("Root Command Executed");
             });
         }
