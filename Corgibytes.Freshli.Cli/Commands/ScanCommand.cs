@@ -1,11 +1,9 @@
-﻿using System;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.Factories;
-using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -13,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Commands
 {
     public class ScanCommand : BaseCommand
     {
-        public ScanCommand() : base("scan", "Scan command returns metrics results for given local repositorry path")
+        public ScanCommand() : base("scan", "Scan command returns metrics results for given local repository path")
         {
 
             Argument<DirectoryInfo> pathArgument = new("path", "Source code repository path")
@@ -23,16 +21,18 @@ namespace Corgibytes.Freshli.Cli.Commands
 
             this.AddArgument(pathArgument);
 
-            this.Handler = CommandHandler.Create<IHost, ScanCommandOptions>((host, options) =>
-           {
-               using IServiceScope scope = host.Services.CreateScope();
+            this.Handler = CommandHandler.Create<IHost, InvocationContext, ScanCommandOptions >(this.Run);
+        }
 
-               Console.WriteLine(CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler);
+        private void Run(IHost host, InvocationContext context, ScanCommandOptions options)
+        {
+            using IServiceScope scope = host.Services.CreateScope();
 
-               ICommandRunnerFactory commandRunnerFactory = scope.ServiceProvider.GetRequiredService<ICommandRunnerFactory>();
-               ICommandRunner<ScanCommandOptions> runner = commandRunnerFactory.CreateScanCommandRunner(options);
-               runner.Run(options);
-           });
+            context.Console.Out.Write($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
+
+            ICommandRunnerFactory commandRunnerFactory = scope.ServiceProvider.GetRequiredService<ICommandRunnerFactory>();
+            ICommandRunner<ScanCommandOptions> runner = commandRunnerFactory.CreateScanCommandRunner(options);
+            runner.Run(options);
         }
     }
 }

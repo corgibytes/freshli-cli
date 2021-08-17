@@ -61,6 +61,24 @@ namespace Corgibytes.Freshli.Cli.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Executing auth command handler.
+        /// </summary>
+        internal static string AuthCommand_AuthCommand_Executing_auth_command_handler {
+            get {
+                return ResourceManager.GetString("AuthCommand_AuthCommand_Executing_auth_command_handler", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Root Command Executed.
+        /// </summary>
+        internal static string MainCommand_MainCommand_Root_Command_Executed {
+            get {
+                return ResourceManager.GetString("MainCommand_MainCommand_Root_Command_Executed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Date (yyyy-MM-dd).
         /// </summary>
         internal static string Output_Date {
