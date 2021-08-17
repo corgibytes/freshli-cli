@@ -1,5 +1,5 @@
-﻿using Corgibytes.Freshli.Cli.CommandOptions;
-using System;
+﻿using System;
+using Corgibytes.Freshli.Cli.CommandOptions;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners
 {

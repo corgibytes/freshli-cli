@@ -1,16 +1,11 @@
-﻿using Corgibytes.Freshli.Cli.Formatters;
+﻿using System;
+using System.Collections.Generic;
+using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Corgibytes.Freshli.Lib;
-
 using FluentAssertions;
-
 using Newtonsoft.Json;
-
 using ServiceStack.Text;
-
-using System;
-using System.Collections.Generic;
-
 using Xunit;
 using Xunit.Abstractions;
 using YamlDotNet.Serialization;
@@ -28,11 +23,11 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
 
         private static readonly IList<MetricsResult> s_metricsResultListTestData;
 
-        public OutputFormatterTest( ITestOutputHelper output ) : base(output) { }
+        public OutputFormatterTest(ITestOutputHelper output) : base(output) { }
 
         static OutputFormatterTest()
         {
-            JsonFormatter = new();
+            JsonFormatter = new ();
             YamlFormatter = new();
             CsvFormatter = new();
 
@@ -48,24 +43,32 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
         [Theory]
         [MemberData(nameof(FormatterTypeCheckData))]
 
-        public void Check_FormatterType_IsExpectedType( IOutputFormatter formatter, FormatType expectedType )
+        public void Check_FormatterType_IsExpectedType(IOutputFormatter formatter, FormatType expectedType)
         {
-            formatter.Type.Should().Be(expectedType);            
+            formatter.Type.Should().Be(expectedType);
         }
 
         [Theory]
         [MemberData(nameof(Formatters))]
-        public void Send_NullObject_ReturnsArgumentNullException( IOutputFormatter formatter )
+        public void Send_NullObject_ReturnsArgumentNullException(IOutputFormatter formatter)
         {
             MetricsResult result = null;
             formatter.Invoking(x => x.Format(result))
-                .Should().Throw<ArgumentNullException>();            
+                .Should().Throw<ArgumentNullException>();
         }
 
+        [Theory]
+        [MemberData(nameof(Formatters))]
+        public void Send_NullList_ReturnsArgumentNullException(IOutputFormatter formatter)
+        {
+            IList<MetricsResult> results = null;
+            formatter.Invoking(x => x.Format(results))
+                .Should().Throw<ArgumentNullException>();
+        }
 
         [Theory]
         [MemberData(nameof(SerializedData))]
-        public void Send_Object_ReturnsSerializedEntity( string expectedSerialization, string actualSerialization, FormatType formatType )
+        public void Send_Object_ReturnsSerializedEntity(string expectedSerialization, string actualSerialization, FormatType formatType)
         {
             Output.WriteLine($"Testing {formatType} serialization");
             Assert.Equal(expectedSerialization, actualSerialization);

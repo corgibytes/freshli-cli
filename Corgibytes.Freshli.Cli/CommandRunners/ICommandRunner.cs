@@ -4,6 +4,6 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 {
     public interface ICommandRunner<T> where T : ICommandOption
     {
-        public int Run( T options );
+        public int Run(T options);
     }
 }

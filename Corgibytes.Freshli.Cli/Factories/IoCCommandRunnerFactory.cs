@@ -1,24 +1,24 @@
-﻿using Corgibytes.Freshli.Cli.Formatters;
-using Corgibytes.Freshli.Cli.OutputStrategies;
-using Corgibytes.Freshli.Cli.CommandRunners;
-using Microsoft.Extensions.DependencyInjection;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NamedServices.Microsoft.Extensions.DependencyInjection;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.CommandRunners;
+using Corgibytes.Freshli.Cli.Formatters;
+using Corgibytes.Freshli.Cli.OutputStrategies;
+using Microsoft.Extensions.DependencyInjection;
+using NamedServices.Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Factories
 {
     public class IoCCommandRunnerFactory : ICommandRunnerFactory
     {
         public IServiceProvider ServiceProvider { get; set; }
-    
+
         public IoCCommandRunnerFactory(IServiceProvider serviceProvider)
         {
             this.ServiceProvider = serviceProvider;
         }
-    
+
         public ICommandRunner<AuthCommandOptions> CreateAuthCommandRunner()
         {
             using IServiceScope scope = ServiceProvider.CreateScope();
@@ -27,12 +27,15 @@ namespace Corgibytes.Freshli.Cli.Factories
 
         public ICommandRunner<ScanCommandOptions> CreateScanCommandRunner(ScanCommandOptions options)
         {
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+            
             using IServiceScope scope = ServiceProvider.CreateScope();
-            this.InstantiateBasenOptions(options, scope, out IList<IOutputStrategy> requestedOutputStrategies, out IOutputFormatter requestedFormatter);            
+            this.InstantiateBasenOptions(options, scope, out IList<IOutputStrategy> requestedOutputStrategies, out IOutputFormatter requestedFormatter);
             return ActivatorUtilities.CreateInstance<ScanCommandRunner>(scope.ServiceProvider, requestedOutputStrategies, requestedFormatter);
         }
 
-        private void InstantiateBasenOptions( ScanCommandOptions options, IServiceScope scope, out IList<IOutputStrategy> requestedOutputStrategies, out IOutputFormatter requestedFormatter)
+        private void InstantiateBasenOptions(ScanCommandOptions options, IServiceScope scope, out IList<IOutputStrategy> requestedOutputStrategies, out IOutputFormatter requestedFormatter)
         {
             //Instantiate Output Strategies and formatter based on requested output and formatter types.
             requestedOutputStrategies = options.Output.Select(output => scope.ServiceProvider.GetRequiredNamedService<IOutputStrategy>(output)).ToList();

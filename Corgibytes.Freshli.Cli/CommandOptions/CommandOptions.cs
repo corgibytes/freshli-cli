@@ -1,7 +1,7 @@
-﻿using Corgibytes.Freshli.Cli.Formatters;
+﻿using System.Collections.Generic;
+using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace Corgibytes.Freshli.Cli.CommandOptions
 {
@@ -11,9 +11,9 @@ namespace Corgibytes.Freshli.Cli.CommandOptions
         public FormatType Format { get; set; }
         public IList<OutputStrategyType> Output { get; set; }
 
-        public override string ToString()
+        protected CommandOptions()
         {
-            return JsonConvert.SerializeObject(this, Formatting.Indented);
+            this.Output = new List<OutputStrategyType>();
         }
     }
 }
