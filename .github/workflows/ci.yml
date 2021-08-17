@@ -41,7 +41,7 @@ jobs:
         #if: ${{ github.event_name == 'push' }}
         uses: gittools/actions/gitreleasemanager/setup@v0.9.9
         with:
-          versionSpec: '0.11.0'
+          versionSpec: '0.12.0'
 
       - name: "[Versioning] - GitVersion Config"
         uses: gittools/actions/gitversion/execute@v0.9.9
