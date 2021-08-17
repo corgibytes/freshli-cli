@@ -1,12 +1,11 @@
-﻿using Corgibytes.Freshli.Cli.Options;
-using Corgibytes.Freshli.Cli.Runners;
+﻿using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.CommandRunners;
 
 namespace Corgibytes.Freshli.Cli.Factories
 {
     public interface ICommandRunnerFactory
     {
-        ICommandRunner<ScanOptions> CreateScanRunner( ScanOptions options );
-        ICommandRunner<AuthOptions> CreateAuthRunner( AuthOptions options );
-
+        ICommandRunner<ScanCommandOptions> CreateScanCommandRunner(ScanCommandOptions scanOptions);
+        ICommandRunner<AuthCommandOptions> CreateAuthCommandRunner();
     }
 }

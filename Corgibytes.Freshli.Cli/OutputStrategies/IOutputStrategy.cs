@@ -1,7 +1,7 @@
 ﻿using Corgibytes.Freshli.Cli.Formatters;
-using Corgibytes.Freshli.Cli.Options;
-using Freshli;
+using Corgibytes.Freshli.Lib;
 using System.Collections.Generic;
+using Corgibytes.Freshli.Cli.CommandOptions;
 
 namespace Corgibytes.Freshli.Cli.OutputStrategies
 {
@@ -9,6 +9,6 @@ namespace Corgibytes.Freshli.Cli.OutputStrategies
     {
         OutputStrategyType Type { get; }
 
-        void Send( IList<MetricsResult> results, IOutputFormatter formatter, ScanOptions options );
+        void Send( IList<MetricsResult> results, IOutputFormatter formatter, ScanCommandOptions options );
     }
 }
