@@ -33,4 +33,10 @@
   <data name="ScanCommand_ScanCommand_Executing_scan_command_handler" xml:space="preserve">
     <value>Executing scan command handler</value>
   </data>
+  <data name="MainCommand_MainCommand_Root_Command_Executed" xml:space="preserve">
+    <value>Root Command Executed</value>
+  </data>
+  <data name="AuthCommand_AuthCommand_Executing_auth_command_handler" xml:space="preserve">
+    <value>Executing auth command handler</value>
+  </data>
 </root>

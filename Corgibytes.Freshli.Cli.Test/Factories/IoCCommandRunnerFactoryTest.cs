@@ -15,18 +15,23 @@ namespace Corgibytes.Freshli.Cli.Test.Factories
 {
     public class IoCCommandRunnerFactoryTest
     {
+        private IHost Host { get; }
+
+        public IoCCommandRunnerFactoryTest()
+        {
+            Host = Microsoft.Extensions.Hosting.Host.CreateDefaultBuilder()
+                .ConfigureServices((_, services) =>
+                {
+                    new FreshliServiceBuilder(services).Register();
+                }).Build();
+        }
 
         [Theory]
         [MemberData(nameof(ScanOptionsArgs))]
         public void Send_ScanOptions_CreateScanRunner(FormatType format, IList<OutputStrategyType> outputTypes)
         {
-            IHostBuilder host = Host.CreateDefaultBuilder()
-              .ConfigureServices((_, services) =>
-              {
-                  FreshliServiceBuilder.Register(services);
-              });
-
-            IoCCommandRunnerFactory commandRunnerFactory = new(host.Build().Services);
+            
+            IoCCommandRunnerFactory commandRunnerFactory = new(Host.Services);
             ScanCommandOptions scanOptions = new()
             {
                 Format = format,
@@ -49,13 +54,7 @@ namespace Corgibytes.Freshli.Cli.Test.Factories
         [Fact]
         public void AuthCommandRunner_Should_NotBeNull()
         {
-            IHostBuilder host = Host.CreateDefaultBuilder()
-                .ConfigureServices((_, services) =>
-                {
-                    FreshliServiceBuilder.Register(services);
-                });
-
-            IoCCommandRunnerFactory commandRunnerFactory = new(host.Build().Services);
+            IoCCommandRunnerFactory commandRunnerFactory = new(Host.Services);
             AuthCommandRunner runner = commandRunnerFactory.CreateAuthCommandRunner() as AuthCommandRunner;
             runner.Should().NotBeNull();
         }
@@ -63,13 +62,7 @@ namespace Corgibytes.Freshli.Cli.Test.Factories
         [Fact]
         public void ScanCommandRunner_Invoke_Throws_Exception_OnNullOptions()
         {
-            IHostBuilder host = Host.CreateDefaultBuilder()
-                .ConfigureServices((_, services) =>
-                {
-                    FreshliServiceBuilder.Register(services);
-                });
-
-            IoCCommandRunnerFactory commandRunnerFactory = new(host.Build().Services);
+            IoCCommandRunnerFactory commandRunnerFactory = new(Host.Services);
             commandRunnerFactory
                 .Invoking(x => x.CreateScanCommandRunner(null))
                 .Should().Throw<ArgumentNullException>();
@@ -78,13 +71,7 @@ namespace Corgibytes.Freshli.Cli.Test.Factories
         [Fact]
         public void ScanCommandRunner_Should_NotBeNull()
         {
-            IHostBuilder host = Host.CreateDefaultBuilder()
-                .ConfigureServices((_, services) =>
-                {
-                    FreshliServiceBuilder.Register(services);
-                });
-
-            IoCCommandRunnerFactory commandRunnerFactory = new(host.Build().Services);
+            IoCCommandRunnerFactory commandRunnerFactory = new(Host.Services);
             ICommandRunner<ScanCommandOptions> runner = commandRunnerFactory.CreateScanCommandRunner(new ScanCommandOptions());
             runner.Should().NotBeNull();
         }
