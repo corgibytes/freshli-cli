@@ -1,8 +1,8 @@
 ﻿using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.OutputStrategies;
-using Corgibytes.Freshli.Lib;
 using System.Collections.Generic;
+using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners
 {
