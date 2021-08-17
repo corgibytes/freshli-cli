@@ -41,11 +41,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
         
         public void Verify_format_option_configuration(string alias)
         {
-            ScanCommand scanCommand = new();
-            Option option = scanCommand.Options.FirstOrDefault(x => x.Aliases.Contains(alias));
-            option.Should().NotBeNull();
-            option.AllowMultipleArgumentsPerToken.Should().BeFalse();
-            option.Arity.Should().BeEquivalentTo(ArgumentArity.ExactlyOne);
+            VerifyAlias(alias, ArgumentArity.ExactlyOne, false);
         }
 
         [Theory]
@@ -53,11 +49,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
         [InlineData("-o")]
         public void Verify_output_options_configuration(string alias)
         {
-            ScanCommand scanCommand = new();
-            Option option = scanCommand.Options.FirstOrDefault(x => x.Aliases.Contains(alias));
-            option.Should().NotBeNull();
-            option.AllowMultipleArgumentsPerToken.Should().BeTrue();
-            option.Arity.Should().BeEquivalentTo(ArgumentArity.OneOrMore);
+            VerifyAlias(alias, ArgumentArity.OneOrMore, true);
         }
 
         [Fact]
@@ -76,8 +68,17 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
 
             console.Out.ToString().Should().Contain("[ scan <.> [ -f <Json> ]");
             console.Out.ToString().Should().Contain("Command Execution Invocation Started");
-            console.Out.ToString().Should().Contain("Executing scan command handler");
             console.Out.ToString().Should().Contain("Command Execution Invocation Ended");
+            console.Out.ToString().Should().NotContain("Exception has been thrown by the target of an invocation");
+        }
+
+        private void VerifyAlias(string alias, IArgumentArity arity, bool allowMultipleArgumentsPerToken)
+        {
+            ScanCommand scanCommand = new();
+            Option option = scanCommand.Options.FirstOrDefault(x => x.Aliases.Contains(alias));
+            option.Should().NotBeNull();
+            option.AllowMultipleArgumentsPerToken.Should().Be(allowMultipleArgumentsPerToken);
+            option.Arity.Should().BeEquivalentTo(arity);
         }
     }
 }
