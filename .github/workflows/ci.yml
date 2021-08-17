@@ -30,7 +30,7 @@ jobs:
         #if: ${{ github.event_name == 'push' }}
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: 3.1.x
+          dotnet-version: 3.0.x
 
       - name: "[Setup] - Install GitVersion"
         uses: gittools/actions/gitversion/setup@v0.9.9
@@ -41,7 +41,7 @@ jobs:
         #if: ${{ github.event_name == 'push' }}
         uses: gittools/actions/gitreleasemanager/setup@v0.9.9
         with:
-          versionSpec: '0.12.0'
+          versionSpec: '0.11.0'
 
       - name: "[Versioning] - GitVersion Config"
         uses: gittools/actions/gitversion/execute@v0.9.9
