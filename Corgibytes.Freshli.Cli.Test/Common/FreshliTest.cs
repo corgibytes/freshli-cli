@@ -6,7 +6,7 @@ namespace Corgibytes.Freshli.Cli.Test.Common
     {
         protected ITestOutputHelper Output { get; private set; }
 
-        public FreshliTest( ITestOutputHelper output )
+        public FreshliTest(ITestOutputHelper output)
         {
             this.Output = output;
         }

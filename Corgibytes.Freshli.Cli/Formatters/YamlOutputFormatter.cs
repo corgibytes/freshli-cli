@@ -7,12 +7,12 @@ namespace Corgibytes.Freshli.Cli.Formatters
     {
         public override FormatType Type => FormatType.Yaml;
 
-        protected override string Build<T>( T entity )
+        protected override string Build<T>(T entity)
         {
             return new Serializer().Serialize(entity);
         }
 
-        protected override string Build<T>( IList<T> entities )
+        protected override string Build<T>(IList<T> entities)
         {
             return new Serializer().Serialize(entities);
         }

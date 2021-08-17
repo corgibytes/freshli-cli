@@ -30,4 +30,7 @@
     <data name="Output_Skipped" xml:space="preserve">
         <value>Skipped</value>
     </data>
+  <data name="ScanCommand_ScanCommand_Executing_scan_command_handler" xml:space="preserve">
+    <value>Executing scan command handler</value>
+  </data>
 </root>

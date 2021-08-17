@@ -95,5 +95,14 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("Output_UpgradesAvailable", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Executing scan command handler.
+        /// </summary>
+        internal static string ScanCommand_ScanCommand_Executing_scan_command_handler {
+            get {
+                return ResourceManager.GetString("ScanCommand_ScanCommand_Executing_scan_command_handler", resourceCulture);
+            }
+        }
     }
 }
