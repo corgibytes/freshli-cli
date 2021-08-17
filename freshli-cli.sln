@@ -11,12 +11,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 ProjectSection(SolutionItems) = preProject
 	GitReleaseManager.yaml = GitReleaseManager.yaml
 	GitVersion.yml = GitVersion.yml
-	LICENSE = LICENSE
 	README.md = README.md
 	.codeclimate.yml = .codeclimate.yml
 	.gitattributes = .gitattributes
 	.gitignore = .gitignore
 	CHANGELOG.md = CHANGELOG.md
+	LICENSE = LICENSE
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8242C989-FA9E-4257-8685-5392F08C9B85}"
