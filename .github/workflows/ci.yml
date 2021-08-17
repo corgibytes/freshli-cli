@@ -168,6 +168,7 @@ jobs:
           owner: 'corgibytes'
           repository: 'freshli-cli'
           milestone: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
+          tagName: 'v${{ steps.gitversion.outputs.majorMinorPatch }}'
           assets: '${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip,${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip,${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip,${{ env.NUGET_PACKAGE_PATH }}'
 
       # Push all versions to GitHub packages.  This includes alpha version, in the main branch, and beta
