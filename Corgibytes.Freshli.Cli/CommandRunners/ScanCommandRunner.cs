@@ -1,23 +1,17 @@
-﻿using Autofac.Extras.DynamicProxy;
-using Corgibytes.Freshli.Cli.Formatters;
-using Corgibytes.Freshli.Cli.IoC.Interceptors;
-using Corgibytes.Freshli.Cli.Options;
+﻿using Corgibytes.Freshli.Cli.Formatters;
+using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.OutputStrategies;
-using Freshli;
-using NLog;
+using Corgibytes.Freshli.Lib;
 using System.Collections.Generic;
 
-namespace Corgibytes.Freshli.Cli.Runners
+namespace Corgibytes.Freshli.Cli.CommandRunners
 {
-    [Intercept(typeof(LoggerInterceptor))]
-    public class ScanCommandRunner : ICommandRunner<ScanOptions>
-    {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+
+    public class ScanCommandRunner : ICommandRunner<ScanCommandOptions>
+    {        
         public Runner Runner { get; set; }
         public IList<IOutputStrategy> OutputStrategies { get; set; }
         public IOutputFormatter OutputFormatter { get; set; }
-
-        public delegate ScanCommandRunner Factory( IList<IOutputStrategy> outputStrategy, IOutputFormatter outputFormatter );
 
         public ScanCommandRunner( IList<IOutputStrategy> outputStrategy, IOutputFormatter outputFormatter, Runner runner )
         {
@@ -25,10 +19,10 @@ namespace Corgibytes.Freshli.Cli.Runners
             this.OutputFormatter = outputFormatter;
             this.Runner = runner;
         }
-
-        public virtual int Run( ScanOptions options )
+        
+        public virtual int Run( ScanCommandOptions options )
         {
-            var results = this.Runner.Run(options.Path);
+            IList<MetricsResult> results = this.Runner.Run(options.Path);
 
             foreach(IOutputStrategy output in this.OutputStrategies)
             {

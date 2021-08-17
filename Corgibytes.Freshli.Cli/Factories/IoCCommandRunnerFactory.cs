@@ -1,45 +1,42 @@
-﻿using Autofac;
-using Corgibytes.Freshli.Cli.Formatters;
-using Corgibytes.Freshli.Cli.IoC;
-using Corgibytes.Freshli.Cli.Options;
+﻿using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
-using Corgibytes.Freshli.Cli.Runners;
-using Freshli;
+using Corgibytes.Freshli.Cli.CommandRunners;
+using Microsoft.Extensions.DependencyInjection;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using NamedServices.Microsoft.Extensions.DependencyInjection;
+using Corgibytes.Freshli.Cli.CommandOptions;
 
 namespace Corgibytes.Freshli.Cli.Factories
 {
     public class IoCCommandRunnerFactory : ICommandRunnerFactory
     {
-        private static IContainer Container { get; set; }
-
-        static IoCCommandRunnerFactory()
+        public IServiceProvider ServiceProvider { get; set; }
+    
+        public IoCCommandRunnerFactory(IServiceProvider serviceProvider)
         {
-            Container = FreshliContainerBuilder.Build();
+            this.ServiceProvider = serviceProvider;
+        }
+    
+        public ICommandRunner<AuthCommandOptions> CreateAuthCommandRunner()
+        {
+            using IServiceScope scope = ServiceProvider.CreateScope();
+            return scope.ServiceProvider.GetService<ICommandRunner<AuthCommandOptions>>();
         }
 
-        public ICommandRunner<AuthOptions> CreateAuthRunner( AuthOptions options )
+        public ICommandRunner<ScanCommandOptions> CreateScanCommandRunner(ScanCommandOptions options)
         {
-            using var scope = Container.BeginLifetimeScope();
-            ICommandRunner<AuthOptions> authCommandRunner = scope.Resolve<ICommandRunner<AuthOptions>>();
-            return authCommandRunner;
+            using IServiceScope scope = ServiceProvider.CreateScope();
+            this.InstantiateBasenOptions(options, scope, out IList<IOutputStrategy> requestedOutputStrategies, out IOutputFormatter requestedFormatter);            
+            return ActivatorUtilities.CreateInstance<ScanCommandRunner>(scope.ServiceProvider, requestedOutputStrategies, requestedFormatter);
         }
 
-        public ICommandRunner<ScanOptions> CreateScanRunner( ScanOptions options )
+        private void InstantiateBasenOptions( ScanCommandOptions options, IServiceScope scope, out IList<IOutputStrategy> requestedOutputStrategies, out IOutputFormatter requestedFormatter)
         {
-            using var scope = Container.BeginLifetimeScope();
-
-            this.InstantiateBasenOptions(options, scope, out IList<IOutputStrategy> requestedOutputStrategies, out IOutputFormatter requestedFormatter);
-            var createScanCommandRunner = scope.Resolve<ScanCommandRunner.Factory>();
-            return createScanCommandRunner(requestedOutputStrategies, requestedFormatter) ;
-        }
-
-        private void InstantiateBasenOptions( Option options, ILifetimeScope scope, out IList<IOutputStrategy> requestedOutputStrategies, out IOutputFormatter requestedFormatter )
-        {
-            // Instantiate Output Strategies and formatter based on requested output and formatter types.
-            requestedOutputStrategies = options.Output.Select(output => scope.ResolveKeyed<IOutputStrategy>(output)).ToList<IOutputStrategy>();
-            requestedFormatter = scope.ResolveKeyed<IOutputFormatter>(options.Format);
+            //Instantiate Output Strategies and formatter based on requested output and formatter types.
+            requestedOutputStrategies = options.Output.Select(output => scope.ServiceProvider.GetRequiredNamedService<IOutputStrategy>(output)).ToList();
+            requestedFormatter = scope.ServiceProvider.GetRequiredNamedService<IOutputFormatter>(options.Format);
         }
     }
 }

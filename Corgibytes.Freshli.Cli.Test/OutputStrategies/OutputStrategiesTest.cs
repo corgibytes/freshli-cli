@@ -1,12 +1,17 @@
-﻿using Corgibytes.Freshli.Cli.Formatters;
-using Corgibytes.Freshli.Cli.Options;
+﻿using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
-using Freshli;
+using Corgibytes.Freshli.Lib;
+
 using Moq;
+
 using System.Collections.Generic;
+
 using Xunit;
 using Xunit.Abstractions;
+
+using FluentAssertions;
 
 namespace Corgibytes.Freshli.Cli.Test.OutputStrategies
 {
@@ -29,7 +34,7 @@ namespace Corgibytes.Freshli.Cli.Test.OutputStrategies
         {
             var formatterMock = new Mock<IOutputFormatter>();
             var result = new List<MetricsResult>();
-            var optionsMock = new Mock<ScanOptions>();
+            var optionsMock = new Mock<ScanCommandOptions>();
 
             formatterMock.Setup(f => f.Format<MetricsResult>(result)).Returns("formatted text");
             strategy.Send(result, formatterMock.Object, optionsMock.Object);
@@ -41,7 +46,7 @@ namespace Corgibytes.Freshli.Cli.Test.OutputStrategies
 
         public void Check_FormatterType_IsExpectedType( IOutputStrategy outputStrategy, OutputStrategyType expectedType )
         {
-            Assert.Equal(expectedType, outputStrategy.Type);
+            outputStrategy.Type.Should().Be(expectedType);
         }
 
 
@@ -55,8 +60,8 @@ namespace Corgibytes.Freshli.Cli.Test.OutputStrategies
         public static IEnumerable<object[]> OutputStrategiesTypeCheckData =>
           new List<object[]>
           {
-                new object[] { ConsoleOutputStrategy, OutputStrategyType.console},
-                new object[] { FileOutputStrategy, OutputStrategyType.file},
+                new object[] { ConsoleOutputStrategy, OutputStrategyType.Console},
+                new object[] { FileOutputStrategy, OutputStrategyType.File},
           };
     }
 }

@@ -2,7 +2,8 @@
 {
     public enum OutputStrategyType
     {
-        console,
-        file
+        None,
+        Console,
+        File
     }
 }

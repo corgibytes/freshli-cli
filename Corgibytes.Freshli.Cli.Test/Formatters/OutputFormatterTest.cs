@@ -1,13 +1,20 @@
 ﻿using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Test.Common;
-using Freshli;
+using Corgibytes.Freshli.Lib;
+
+using FluentAssertions;
+
 using Newtonsoft.Json;
+
 using ServiceStack.Text;
+
 using System;
 using System.Collections.Generic;
+
 using Xunit;
 using Xunit.Abstractions;
 using YamlDotNet.Serialization;
+
 
 namespace Corgibytes.Freshli.Cli.Test.Formatters
 {
@@ -17,9 +24,9 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
         private static YamlOutputFormatter YamlFormatter { get; }
         private static CsvOutputFormatter CsvFormatter { get; }
 
-        private static readonly MetricsResult metricsResultTestData;
+        private static readonly MetricsResult s_metricsResultTestData;
 
-        private static readonly IList<MetricsResult> metricsResultListTestData;
+        private static readonly IList<MetricsResult> s_metricsResultListTestData;
 
         public OutputFormatterTest( ITestOutputHelper output ) : base(output) { }
 
@@ -34,8 +41,8 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
             LibYearResult libYearResult = new();
             libYearResult.Add(new LibYearPackageResult("polyglot", "0.3.3", new DateTime(2011, 11, 01), "0.3.3", new DateTime(2011, 11, 01), 0.0, false, false));
 
-            metricsResultTestData = new(date, sha, libYearResult);
-            metricsResultListTestData = new List<MetricsResult>() { metricsResultTestData, metricsResultTestData };
+            s_metricsResultTestData = new(date, sha, libYearResult);
+            s_metricsResultListTestData = new List<MetricsResult>() { s_metricsResultTestData, s_metricsResultTestData };
         }
 
         [Theory]
@@ -43,7 +50,7 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
 
         public void Check_FormatterType_IsExpectedType( IOutputFormatter formatter, FormatType expectedType )
         {
-            Assert.Equal(expectedType, formatter.Type);
+            formatter.Type.Should().Be(expectedType);            
         }
 
         [Theory]
@@ -51,7 +58,8 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
         public void Send_NullObject_ReturnsArgumentNullException( IOutputFormatter formatter )
         {
             MetricsResult result = null;
-            Assert.Throws<ArgumentNullException>(() => formatter.Format(result));
+            formatter.Invoking(x => x.Format(result))
+                .Should().Throw<ArgumentNullException>();            
         }
 
 
@@ -59,16 +67,16 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
         [MemberData(nameof(SerializedData))]
         public void Send_Object_ReturnsSerializedEntity( string expectedSerialization, string actualSerialization, FormatType formatType )
         {
-            this.Output.WriteLine($"Testing {formatType} serialization");
+            Output.WriteLine($"Testing {formatType} serialization");
             Assert.Equal(expectedSerialization, actualSerialization);
         }
 
         public static IEnumerable<object[]> FormatterTypeCheckData =>
           new List<object[]>
           {
-                new object[] { JsonFormatter, FormatType.json},
-                new object[] { YamlFormatter, FormatType.yaml},
-                new object[] { CsvFormatter, FormatType.csv},
+                new object[] { JsonFormatter, FormatType.Json },
+                new object[] { YamlFormatter, FormatType.Yaml},
+                new object[] { CsvFormatter, FormatType.Csv},
           };
 
         public static IEnumerable<object[]> Formatters =>
@@ -82,13 +90,13 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
         public static IEnumerable<object[]> SerializedData =>
    new List<object[]>
    {
-                new object[] { JsonFormatter.Format(metricsResultTestData), JsonConvert.SerializeObject(metricsResultTestData, Formatting.Indented),JsonFormatter.Type },
-                new object[] { YamlFormatter.Format(metricsResultTestData), new Serializer().Serialize(metricsResultTestData), YamlFormatter.Type  },
-                new object[] { CsvFormatter.Format(metricsResultTestData), CsvSerializer.SerializeToCsv(new List<MetricsResult>() { metricsResultTestData }), CsvFormatter.Type },
+                new object[] { JsonFormatter.Format(s_metricsResultTestData), JsonConvert.SerializeObject(s_metricsResultTestData, Formatting.Indented),JsonFormatter.Type },
+                new object[] { YamlFormatter.Format(s_metricsResultTestData), new Serializer().Serialize(s_metricsResultTestData), YamlFormatter.Type  },
+                new object[] { CsvFormatter.Format(s_metricsResultTestData), CsvSerializer.SerializeToCsv(new List<MetricsResult>() { s_metricsResultTestData }), CsvFormatter.Type },
 
-                new object[] { JsonFormatter.Format(metricsResultListTestData), JsonConvert.SerializeObject(metricsResultListTestData, Formatting.Indented), JsonFormatter.Type },
-                new object[] { YamlFormatter.Format(metricsResultListTestData), new Serializer().Serialize(metricsResultListTestData), YamlFormatter.Type  },
-                new object[] { CsvFormatter.Format(metricsResultListTestData), CsvSerializer.SerializeToCsv(metricsResultListTestData), CsvFormatter.Type  },
+                new object[] { JsonFormatter.Format(s_metricsResultListTestData), JsonConvert.SerializeObject(s_metricsResultListTestData, Formatting.Indented), JsonFormatter.Type },
+                new object[] { YamlFormatter.Format(s_metricsResultListTestData), new Serializer().Serialize(s_metricsResultListTestData), YamlFormatter.Type  },
+                new object[] { CsvFormatter.Format(s_metricsResultListTestData), CsvSerializer.SerializeToCsv(s_metricsResultListTestData), CsvFormatter.Type  },
 
                 new object[] { JsonFormatter.Format<MetricsResult>(new List<MetricsResult>()), JsonConvert.SerializeObject(new List<MetricsResult>(), Formatting.Indented), JsonFormatter.Type },
                 new object[] { YamlFormatter.Format<MetricsResult>(new List<MetricsResult>()), new Serializer().Serialize(new List<MetricsResult>()), YamlFormatter.Type },
