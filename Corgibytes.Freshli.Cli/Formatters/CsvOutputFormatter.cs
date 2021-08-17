@@ -5,7 +5,7 @@ namespace Corgibytes.Freshli.Cli.Formatters
 {
     public class CsvOutputFormatter : OutputFormatter
     {
-        public override FormatType Type => FormatType.csv;
+        public override FormatType Type => FormatType.Csv;
 
         protected override string Build<T>( T entity )
         {

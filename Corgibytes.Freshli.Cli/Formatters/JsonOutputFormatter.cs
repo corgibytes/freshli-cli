@@ -5,7 +5,7 @@ namespace Corgibytes.Freshli.Cli.Formatters
 {
     public class JsonOutputFormatter : OutputFormatter
     {
-        public override FormatType Type => FormatType.json;
+        public override FormatType Type => FormatType.Json;
 
         protected override string Build<T>( T entity )
         {
