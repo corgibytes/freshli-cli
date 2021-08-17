@@ -162,7 +162,7 @@ jobs:
 
       - name: "[Post Publish] - Add Assets to Release Draft"
         #if: github.event_name == 'push'
-        uses: gittools/actions/gitreleasemanager/addasset@v0.9.9
+        uses: gittools/actions/gitreleasemanager/addasset@v0.9.10
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           owner: 'corgibytes'
