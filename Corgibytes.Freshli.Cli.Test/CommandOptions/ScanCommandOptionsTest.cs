@@ -54,12 +54,6 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
             outputStrategyTypes.Should().BeSubsetOf(expectedOutput);
         }
 
-        [Fact]
-        public void Verify_ScanCommandOptionsType()
-        {
-            ScanCommandOptions options = new();
-            options.Type.Should().Be(CommandOptionType.Scan);
-        }
 
         public static IEnumerable<object[]> ScanOptionsArgs =>
               new List<object[]>

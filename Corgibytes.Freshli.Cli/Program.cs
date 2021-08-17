@@ -39,7 +39,7 @@ namespace Corgibytes.Freshli.Cli
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((_, services) =>
             {
-                FreshliServiceBuilder.Register(services);
+                new FreshliServiceBuilder(services).Register();
             });
 
         public static CommandLineBuilder CreateCommandLineBuilder()
@@ -64,7 +64,7 @@ namespace Corgibytes.Freshli.Cli
             return builder;
         }
 
-        public async static Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
+        public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
         {
             string commandLine = context.ParseResult.ToString();
 
