@@ -35,8 +35,6 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
                 
             console.Out.ToString().Should().Contain("[ auth *[ --format <Json> ] *[ --output <Console> ] ] ]]");
             console.Out.ToString().Should().Contain("Command Execution Invocation Started");
-            console.Out.ToString().Should().Contain("Executing auth command handler");
-            console.Out.ToString().Should().Contain("Command Execution Invocation Ended");
             console.Out.ToString().Should().Contain("Exception has been thrown by the target of an invocation");
         }
     }
