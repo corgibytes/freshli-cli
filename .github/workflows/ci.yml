@@ -35,7 +35,7 @@ jobs:
       - name: "[Setup] - Install GitVersion"
         uses: gittools/actions/gitversion/setup@v0.9.9
         with:
-          versionSpec: '5.6.6'
+          versionSpec: '5.7.0'
 
       - name: "[Setup] - Install GitReleaseManager"
         if: ${{ github.event_name == 'push' }}
