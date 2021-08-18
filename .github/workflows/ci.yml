@@ -94,10 +94,10 @@ jobs:
       - name: "[Build] - Copy NuGet Package to Build Artifacts"
         run: |
           mkdir ${{ env.BUILD_ARTIFACTS_FOLDER }}
-          cp Corgibytes.Freshli.Cli/bin/Release/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg ${{ env.BUILD_ARTIFACTS_FOLDER }}
+          cp Corgibytes.Freshli.Cli/bin/Release/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.FullSemVer }}.nupkg ${{ env.BUILD_ARTIFACTS_FOLDER }}
           ls -la ${{ env.BUILD_ARTIFACTS_FOLDER }}
-          echo "NUGET_PACKAGE_FILE=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
-          echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
+          echo "NUGET_PACKAGE_FILE=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.FullSemVer }}.nupkg" >> $GITHUB_ENV
+          echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.FullSemVer }}.nupkg" >> $GITHUB_ENV
 
       - name: "[Test] - Test, Generate Code Coverage"
         if: ${{ !env.ACT }}
