@@ -13,7 +13,6 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
 
         [Theory]
         [MemberData(nameof(CommandOptionsTypeCheckData))]
-
         public void Check_FormatterType_IsExpectedType(ICommandOptions options, CommandOptionType expectedType)
         {
             options.Type.Should().Be(expectedType);
@@ -23,7 +22,6 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
             new List<object[]>
             {
                 new object[] { new ScanCommandOptions(), CommandOptionType.Scan },
-                new object[] { new AuthCommandOptions(), CommandOptionType.Auth }
             };
     }
 }

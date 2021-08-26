@@ -2,8 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Corgibytes.Freshli.Cli.Formatters
-{
-    //    [Intercept(typeof(LoggerInterceptor))]
+{   
     public abstract class OutputFormatter : IOutputFormatter
     {
         public abstract FormatType Type { get; }
@@ -13,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Formatters
             if (entity == null)
                 throw new ArgumentNullException(nameof(entity));
 
-            return this.Build<T>(entity);
+            return Build<T>(entity);
         }
 
         public virtual string Format<T>(IList<T> entities)
@@ -21,7 +20,7 @@ namespace Corgibytes.Freshli.Cli.Formatters
             if (entities == null)
                 throw new ArgumentNullException(nameof(entities));
 
-            return this.Build<T>(entities);
+            return Build<T>(entities);
         }
 
         protected abstract string Build<T>(T entity);

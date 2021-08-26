@@ -5,6 +5,7 @@ using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Corgibytes.Freshli.Lib;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -30,7 +31,7 @@ namespace Corgibytes.Freshli.Cli.Test.OutputStrategies
         {
             var formatterMock = new Mock<IOutputFormatter>();
             var result = new List<MetricsResult>();
-            var optionsMock = new Mock<ScanCommandOptions>() ;
+            var optionsMock = new Mock<ScanCommandOptions>();
 
             formatterMock.Setup(f => f.Format<MetricsResult>(result)).Returns("formatted text");
             strategy.Send(result, formatterMock.Object, optionsMock.Object);

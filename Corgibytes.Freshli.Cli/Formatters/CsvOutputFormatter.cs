@@ -9,7 +9,7 @@ namespace Corgibytes.Freshli.Cli.Formatters
 
         protected override string Build<T>(T entity)
         {
-            return this.Build<T>(new List<T>() { entity });
+            return Build<T>(new List<T>() { entity });
         }
 
         protected override string Build<T>(IList<T> entities)

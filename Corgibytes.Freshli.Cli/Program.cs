@@ -21,8 +21,7 @@ namespace Corgibytes.Freshli.Cli
             get
             {
                 return new List<BaseCommand>() {
-                    new ScanCommand(),
-                    new AuthCommand()
+                    new ScanCommand()                    
                 };
             }
         }
@@ -45,10 +44,7 @@ namespace Corgibytes.Freshli.Cli
         public static CommandLineBuilder CreateCommandLineBuilder()
         {
             CommandLineBuilder builder = new CommandLineBuilder(new MainCommand())
-                .UseHost(args =>
-                {
-                    return CreateHostBuilder(args);
-                })
+                .UseHost(CreateHostBuilder)
                 .UseMiddleware(async (context, next) =>
                 {
                     await LogExecution(context, next);
@@ -84,7 +80,7 @@ namespace Corgibytes.Freshli.Cli
             catch (Exception e)
             {
                 string message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
-                context.Console.Out.Write($"{message} - Take a look at the log for detailed information.\n");
+                context.Console.Out.Write($"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
                 s_logger.Error($"{message} - {e.StackTrace}");
             }
         }
