@@ -2,7 +2,6 @@
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.IO;
-using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
@@ -37,17 +36,16 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
             formatType.Should().Be(formatTypeFromAlias);
 
             outputStrategyTypes.Should().NotBeEmpty()
-            .And.Equal(outputStrategyTypesFromAlias);
+                .And.Equal(outputStrategyTypesFromAlias);
 
             path.Should().NotBeNull();
             path.FullName.Should().NotBeEmpty()
-            .And.Be(expectedPath);
+                .And.Be(expectedPath);
 
             formatType.Should()
-            .Be(expectedFormat);
+                .Be(expectedFormat);
 
-            outputStrategyTypes.Should().NotContainNulls()
-            .And.NotContain(OutputStrategyType.None);
+            outputStrategyTypes.Should().NotContainNulls();
 
             //Veryfy all required ones are present
             expectedOutput.Should().BeSubsetOf(outputStrategyTypes);
@@ -69,15 +67,17 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
                     new object[] { new string[] { "scan", TempPath, "-f", "yaml", "-o", "console" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console } },
                     new object[] { new string[] { "scan", TempPath, "--format", "yaml", "-o", "file" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.File }},
                     new object[] { new string[] { "scan", TempPath, "-f", "yaml", "--output", "console","-o", "file" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console, OutputStrategyType.File } },
-                    //It should send the default formatter
+
+                    //It should configure the default formatter
                     new object[] { new string[] { "scan", TempPath , "--output", "console" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
                     new object[] { new string[] { "scan", TempPath, "-o", "file" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.File} },                    
-                    //It should send the default output
+
+                    //It should configure the default output
                     new object[] { new string[] { "scan", TempPath, "--format", "yaml" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console } },
                     new object[] { new string[] { "scan", TempPath, "-f", "csv" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.Console } },
-                    //It should send the default formatter and default output
+
+                    //It should configure the default formatter and default output
                     new object[] { new string[] { "scan", TempPath }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } }
               };
     }
 }
-

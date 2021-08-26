@@ -25,8 +25,8 @@ namespace Corgibytes.Freshli.Cli.Commands
                 Arity = ArgumentArity.OneOrMore,
             };
 
-            this.AddOption(formatOption);
-            this.AddOption(outputOption);
+            AddOption(formatOption);
+            AddOption(outputOption);
 
         }
     }

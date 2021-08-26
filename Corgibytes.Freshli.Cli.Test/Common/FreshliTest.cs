@@ -8,7 +8,7 @@ namespace Corgibytes.Freshli.Cli.Test.Common
 
         public FreshliTest(ITestOutputHelper output)
         {
-            this.Output = output;
+            Output = output;
         }
     }
 }

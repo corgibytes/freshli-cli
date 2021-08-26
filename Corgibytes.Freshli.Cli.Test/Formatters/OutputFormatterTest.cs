@@ -27,7 +27,7 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
 
         static OutputFormatterTest()
         {
-            JsonFormatter = new ();
+            JsonFormatter = new();
             YamlFormatter = new();
             CsvFormatter = new();
 

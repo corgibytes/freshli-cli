@@ -39,4 +39,7 @@
   <data name="AuthCommand_AuthCommand_Executing_auth_command_handler" xml:space="preserve">
     <value>Executing auth command handler</value>
   </data>
+  <data name="ScanCommandRunner_Run_Path_should_not_be_null_or_empty" xml:space="preserve">
+    <value>Path should not be null or empty</value>
+  </data>
 </root>
