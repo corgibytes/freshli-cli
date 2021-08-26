@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.CommandOptions
 
         protected CommandOptions()
         {
-            this.Output = new List<OutputStrategyType>();
+            Output = new List<OutputStrategyType>();
         }
     }
 }

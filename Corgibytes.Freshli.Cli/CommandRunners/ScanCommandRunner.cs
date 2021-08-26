@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
+using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners
@@ -10,23 +12,29 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
     public class ScanCommandRunner : ICommandRunner<ScanCommandOptions>
     {
         public Runner Runner { get; set; }
-        public IList<IOutputStrategy> OutputStrategies { get; set; }
-        public IOutputFormatter OutputFormatter { get; set; }
+        private readonly IServiceProvider _services;
 
-        public ScanCommandRunner(IList<IOutputStrategy> outputStrategy, IOutputFormatter outputFormatter, Runner runner)
+        public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner)
         {
-            this.OutputStrategies = outputStrategy;
-            this.OutputFormatter = outputFormatter;
-            this.Runner = runner;
+            Runner = runner;
+            _services = serviceProvider;
         }
 
         public virtual int Run(ScanCommandOptions options)
         {
-            IList<MetricsResult> results = this.Runner.Run(options.Path.FullName);
-
-            foreach (IOutputStrategy output in this.OutputStrategies)
+            if (string.IsNullOrWhiteSpace(options.Path))
             {
-                output.Send(results, this.OutputFormatter, options);
+                throw new ArgumentNullException(nameof(options), CliOutput.ScanCommandRunner_Run_Path_should_not_be_null_or_empty);
+            }
+
+            IOutputFormatter formatter = options.Format.ToFormatter(_services);
+            IEnumerable<IOutputStrategy> outputStrategies = options.Output.ToOutputStrategies(_services);
+
+            IList<MetricsResult> results = Runner.Run(options.Path);
+
+            foreach (IOutputStrategy output in outputStrategies)
+            {
+                output.Send(results, formatter, options);
             }
 
             return 0;

@@ -1,11 +1,16 @@
-﻿using System.CommandLine;
+﻿using System;
+using System.Collections.Generic;
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.IO;
+using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
-using Corgibytes.Freshli.Cli.Factories;
+using Corgibytes.Freshli.Cli.Formatters;
+using Corgibytes.Freshli.Cli.OutputStrategies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NamedServices.Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Commands
 {
@@ -14,25 +19,28 @@ namespace Corgibytes.Freshli.Cli.Commands
         public ScanCommand() : base("scan", "Scan command returns metrics results for given local repository path")
         {
 
-            Argument<DirectoryInfo> pathArgument = new("path", "Source code repository path")
+            Argument<string> pathArgument = new("path", "Source code repository path")
             {
                 Arity = ArgumentArity.ExactlyOne
             };
 
-            this.AddArgument(pathArgument);
+            AddArgument(pathArgument);
 
-            this.Handler = CommandHandler.Create<IHost, InvocationContext, ScanCommandOptions >(this.Run);
+            Handler = CommandHandler.Create<IHost, InvocationContext, ScanCommandOptions>(Run);
         }
 
         private void Run(IHost host, InvocationContext context, ScanCommandOptions options)
         {
-            using IServiceScope scope = host.Services.CreateScope();
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
 
             context.Console.Out.Write($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
 
-            ICommandRunnerFactory commandRunnerFactory = scope.ServiceProvider.GetRequiredService<ICommandRunnerFactory>();
-            ICommandRunner<ScanCommandOptions> runner = commandRunnerFactory.CreateScanCommandRunner(options);
+            using IServiceScope scope = host.Services.CreateScope();
+            ICommandRunner<ScanCommandOptions> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<ScanCommandOptions>>();
+
             runner.Run(options);
         }
+        
     }
 }
