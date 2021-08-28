@@ -26,6 +26,7 @@ namespace Corgibytes.Freshli.Cli.IoC
 
         public void RegisterBaseCommand()
         {
+            Services.AddScoped<Runner>();
             Services.AddNamedScoped<IOutputFormatter, JsonOutputFormatter>(FormatType.Json);
             Services.AddNamedScoped<IOutputFormatter, CsvOutputFormatter>(FormatType.Csv);
             Services.AddNamedScoped<IOutputFormatter, YamlOutputFormatter>(FormatType.Yaml);
@@ -34,8 +35,7 @@ namespace Corgibytes.Freshli.Cli.IoC
         }
 
         public void RegisterScanCommand()
-        {
-            Services.AddScoped<Runner>();
+        {            
             Services.AddScoped<ICommandRunner<ScanCommandOptions>, ScanCommandRunner>();
             Services.AddOptions<ScanCommandOptions>().BindCommandLine();
         }
