@@ -4,9 +4,8 @@ using Corgibytes.Freshli.Cli.OutputStrategies;
 
 namespace Corgibytes.Freshli.Cli.CommandOptions
 {
-    public abstract class CommandOptions : ICommandOptions
-    {
-        public abstract CommandOptionType Type { get; }
+    public abstract class CommandOptions
+    {        
         public FormatType Format { get; set; }
         public IList<OutputStrategyType> Output { get; set; }
 

@@ -14,17 +14,7 @@ namespace Corgibytes.Freshli.Cli
 {
     public class Program
     {
-        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
-
-        static IList<BaseCommand> Commands
-        {
-            get
-            {
-                return new List<BaseCommand>() {
-                    new ScanCommand()                    
-                };
-            }
-        }
+        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger(); 
 
         public static async Task<int> Main(string[] args)
         {
@@ -50,12 +40,8 @@ namespace Corgibytes.Freshli.Cli
                     await LogExecution(context, next);
                 })
                .UseExceptionHandler()
-               .UseHelp();
-
-            foreach (BaseCommand command in Commands)
-            {
-                builder.AddCommand(command);
-            }
+               .UseHelp()
+               .AddCommand(new ScanCommand());            
 
             return builder;
         }
