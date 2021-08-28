@@ -12,7 +12,7 @@ using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands
 {
-    public class ScanCommandTest: FreshliTest
+    public class ScanCommandTest : FreshliTest
     {
         private readonly TestConsole _console = new();
 
@@ -21,7 +21,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
         [Fact]
         public void Verify_path_argument_configuration()
         {
-            ScanCommand scanCommand = new ();
+            ScanCommand scanCommand = new();
 
             scanCommand.Arguments.Should().HaveCount(1);
 
@@ -33,7 +33,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
 
         [Theory]
         [InlineData("--format")]
-        [InlineData("-f")]        
+        [InlineData("-f")]
         public void Verify_format_option_configuration(string alias)
         {
             VerifyAlias(alias, ArgumentArity.ExactlyOne, false);
@@ -54,7 +54,8 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
             scanCommand.Handler.Should().NotBeNull();
         }
 
-        [Fact (Skip = "Will until we have a way to mock the freshli lib call")]
+//[Fact(Skip = "Will until we have a way to mock the freshli lib call")]
+        [Fact]
         public async Task  Verify_handler_is_executed()
         {
             CommandLineBuilder cmdBuilder = Program.CreateCommandLineBuilder();

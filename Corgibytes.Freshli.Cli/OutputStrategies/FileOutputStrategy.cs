@@ -6,8 +6,7 @@ using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.OutputStrategies
-{
-    //[Intercept(typeof(LoggerInterceptor))]
+{    
     public class FileOutputStrategy : IOutputStrategy
     {
         public OutputStrategyType Type => OutputStrategyType.File;

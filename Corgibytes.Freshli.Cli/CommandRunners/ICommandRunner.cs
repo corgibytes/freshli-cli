@@ -2,7 +2,7 @@
 
 namespace Corgibytes.Freshli.Cli.CommandRunners
 {
-    public interface ICommandRunner<T> where T : ICommandOptions
+    public interface ICommandRunner<T> where T : CommandOptions.CommandOptions
     {
         public int Run(T options);
     }

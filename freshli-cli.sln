@@ -1,31 +1,32 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31112.23
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corgibytes.Freshli.Cli", "Corgibytes.Freshli.Cli\Corgibytes.Freshli.Cli.csproj", "{2DDABC87-299E-4A40-AAF4-70E49402321A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corgibytes.Freshli.Cli", "Corgibytes.Freshli.Cli\Corgibytes.Freshli.Cli.csproj", "{2DDABC87-299E-4A40-AAF4-70E49402321A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Corgibytes.Freshli.Cli.Test", "Corgibytes.Freshli.Cli.Test\Corgibytes.Freshli.Cli.Test.csproj", "{91306A42-A29B-410A-8549-598B33DD0378}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Corgibytes.Freshli.Cli.Test", "Corgibytes.Freshli.Cli.Test\Corgibytes.Freshli.Cli.Test.csproj", "{91306A42-A29B-410A-8549-598B33DD0378}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{DF081CB0-00F4-4E7D-9411-9F43B642A3D8}"
-ProjectSection(SolutionItems) = preProject
-	GitReleaseManager.yaml = GitReleaseManager.yaml
-	GitVersion.yml = GitVersion.yml
-	README.md = README.md
-	.codeclimate.yml = .codeclimate.yml
-	.gitattributes = .gitattributes
-	.gitignore = .gitignore
-	CHANGELOG.md = CHANGELOG.md
-	LICENSE = LICENSE
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.codeclimate.yml = .codeclimate.yml
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		CHANGELOG.md = CHANGELOG.md
+		CONTRIBUTING.md = CONTRIBUTING.md
+		GitReleaseManager.yaml = GitReleaseManager.yaml
+		GitVersion.yml = GitVersion.yml
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{8242C989-FA9E-4257-8685-5392F08C9B85}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{44C5535B-9B91-4CEF-9F3E-4B0058506EEC}"
-ProjectSection(SolutionItems) = preProject
-	.github\workflows\ci.yml = .github\workflows\ci.yml
-	.github\workflows\cla.yml = .github\workflows\cla.yml
-EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+		.github\workflows\cla.yml = .github\workflows\cla.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,9 +36,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{2DDABC87-299E-4A40-AAF4-70E49402321A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -65,8 +63,14 @@ Global
 		{91306A42-A29B-410A-8549-598B33DD0378}.Release|x86.ActiveCfg = Release|Any CPU
 		{91306A42-A29B-410A-8549-598B33DD0378}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{8242C989-FA9E-4257-8685-5392F08C9B85} = {DF081CB0-00F4-4E7D-9411-9F43B642A3D8}
 		{44C5535B-9B91-4CEF-9F3E-4B0058506EEC} = {8242C989-FA9E-4257-8685-5392F08C9B85}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3FFC04E8-EE2C-4E7F-A738-1A748936E527}
 	EndGlobalSection
 EndGlobal

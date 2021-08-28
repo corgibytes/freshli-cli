@@ -8,27 +8,23 @@ using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners
 {
+    public class ScanCommandRunner : CommandRunner<ScanCommandOptions>
+    {        
 
-    public class ScanCommandRunner : ICommandRunner<ScanCommandOptions>
-    {
-        public Runner Runner { get; set; }
-        private readonly IServiceProvider _services;
-
-        public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner)
+        public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner): base(serviceProvider,runner)
         {
-            Runner = runner;
-            _services = serviceProvider;
+            
         }
 
-        public virtual int Run(ScanCommandOptions options)
+        public override int Run(ScanCommandOptions options)
         {
             if (string.IsNullOrWhiteSpace(options.Path))
             {
                 throw new ArgumentNullException(nameof(options), CliOutput.ScanCommandRunner_Run_Path_should_not_be_null_or_empty);
             }
 
-            IOutputFormatter formatter = options.Format.ToFormatter(_services);
-            IEnumerable<IOutputStrategy> outputStrategies = options.Output.ToOutputStrategies(_services);
+            IOutputFormatter formatter = options.Format.ToFormatter(Services);
+            IEnumerable<IOutputStrategy> outputStrategies = options.Output.ToOutputStrategies(Services);
 
             IList<MetricsResult> results = Runner.Run(options.Path);
 
