@@ -1,51 +1,74 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
-using Corgibytes.Freshli.Lib;
+using System;
+using System.Collections.Generic;
+using System.CommandLine.Builder;
+using System.CommandLine.Hosting;
+using System.CommandLine.Invocation;
+using System.CommandLine.Parsing;
+using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.IoC;
+using Microsoft.Extensions.Hosting;
 using NLog;
 
 namespace Corgibytes.Freshli.Cli
 {
-    class Program
+    public class Program
     {
-        private static readonly Logger logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger(); 
 
-        static void Main(string[] args)
+        public static async Task<int> Main(string[] args)
         {
-            logger.Info($"Main({string.Join(separator: ",", args)})");
+            CommandLineBuilder cmdBuilder = CreateCommandLineBuilder();
+            return await cmdBuilder.UseDefaults()
+                .Build()
+                .InvokeAsync(args);
+        }
+
+        static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+            .ConfigureServices((_, services) =>
+            {
+                new FreshliServiceBuilder(services).Register();
+            });
+
+        public static CommandLineBuilder CreateCommandLineBuilder()
+        {
+            CommandLineBuilder builder = new CommandLineBuilder(new MainCommand())
+                .UseHost(CreateHostBuilder)
+                .UseMiddleware(async (context, next) =>
+                {
+                    await LogExecution(context, next);
+                })
+               .UseExceptionHandler()
+               .UseHelp()
+               .AddCommand(new ScanCommand());            
+
+            return builder;
+        }
+
+        public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
+        {
+            string commandLine = context.ParseResult.ToString();
 
             try
             {
-                var runner = new Runner();
-                var directory = SafelyGetFullPath(args[0]);
+                string callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
+                string doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
 
-                logger.Info($"Collecting data for {directory}");
+                context.Console.Out.Write(callingMessage);
+                s_logger.Trace(callingMessage);
 
-                var results = runner.Run(args[0]);
+                await next(context);
 
-                var formatter = new OutputFormatter(Console.Out);
-                formatter.Write(results);
+                context.Console.Out.Write(doneMessage);
+                s_logger.Trace(doneMessage);
             }
             catch (Exception e)
             {
-                logger.Error(
-                  e,
-                  $"Exception executing Freshli for args = " +
-                  $"[{string.Join(separator: ",", args)}]: {e.Message}"
-                );
-                logger.Trace(e, e.StackTrace);
+                string message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
+                context.Console.Out.Write($"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
+                s_logger.Error($"{message} - {e.StackTrace}");
             }
-        }
-
-        private static string SafelyGetFullPath(string path)
-        {
-            var result = path;
-            if (File.Exists(path))
-            {
-                result = Path.GetFullPath(path);
-            }
-
-            return result;
         }
     }
 }
