@@ -188,3 +188,7 @@ We are not sure how to handle documentation, such as this ReadMe, in different l
 
 ## Contributing
 If you have any questions, notice a bug, or have a suggestion/enhancment please let us know by opening a [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
+
+See the [Contributing guide](CONTRIBUTING.md) guide for developer documentation.
+
+
