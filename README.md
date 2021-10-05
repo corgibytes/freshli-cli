@@ -30,6 +30,7 @@ The above repo is one we use for testing Freshli.  When run you should get outpu
 
 ```
 > Corgibytes.Freshli.Cli.exe https://github.com/corgibytes/freshli-fixture-ruby-nokotest
+Gemfile.lock
 Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
 2017-01-01              0.0000  0                       0
 2017-02-01              0.0219  1                       0
@@ -117,13 +118,14 @@ Please let us know what other dependency managers and/or manifest files you woul
 Freshli check your projects dependencies at on month intervals and returns a table with the following that looks like:
 
 ```
+Gemfile.lock
 Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
 2017-01-01              0.0000  0                       0
 2017-02-01              0.0219  1                       0
 ...
 ```
 
-The values in the table are:
+First is the name of the manifest file being parsed followed by the historical values for that manifest file:
 
 - Date: The date the check was done.
 - Libyear: The total [libyear](https://libyear.com/) of all the dependencies.
