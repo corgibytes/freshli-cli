@@ -10,10 +10,6 @@ __Dependencies__
 - [__#43__](https://github.com/corgibytes/freshli-cli/pull/43) Upgrade to Freshli-Lib v0.4.0
 
 
-## 
-
-
-
 ## v0.5.0
 
 
