@@ -9,11 +9,11 @@ using Corgibytes.Freshli.Lib;
 namespace Corgibytes.Freshli.Cli.CommandRunners
 {
     public class ScanCommandRunner : CommandRunner<ScanCommandOptions>
-    {        
+    {
 
         public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner): base(serviceProvider,runner)
         {
-            
+
         }
 
         public override int Run(ScanCommandOptions options)
@@ -26,7 +26,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
             IOutputFormatter formatter = options.Format.ToFormatter(Services);
             IEnumerable<IOutputStrategy> outputStrategies = options.Output.ToOutputStrategies(Services);
 
-            IList<MetricsResult> results = Runner.Run(options.Path);
+            IList<ScanResult> results = Runner.Run(options.Path);
 
             foreach (IOutputStrategy output in outputStrategies)
             {

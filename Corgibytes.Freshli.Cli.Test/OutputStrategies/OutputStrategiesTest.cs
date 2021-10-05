@@ -30,12 +30,12 @@ namespace Corgibytes.Freshli.Cli.Test.OutputStrategies
         public void Send_MetricsResult_CallFormatterOnce(IOutputStrategy strategy)
         {
             var formatterMock = new Mock<IOutputFormatter>();
-            var result = new List<MetricsResult>();
+            var result = new List<ScanResult>();
             var optionsMock = new Mock<ScanCommandOptions>();
 
-            formatterMock.Setup(f => f.Format<MetricsResult>(result)).Returns("formatted text");
+            formatterMock.Setup(f => f.Format<ScanResult>(result)).Returns("formatted text");
             strategy.Send(result, formatterMock.Object, optionsMock.Object);
-            formatterMock.Verify(f => f.Format<MetricsResult>(result), Times.Once());
+            formatterMock.Verify(f => f.Format<ScanResult>(result), Times.Once());
         }
 
         [Theory]
