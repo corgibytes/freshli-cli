@@ -19,7 +19,7 @@
     <None Include="..\LICENSE" Pack="true" PackagePath="">
       <Link>LICENSE</Link>
     </None>
-    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0-alpha0208" />
+    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\CliOutput.resx">
