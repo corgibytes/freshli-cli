@@ -17,23 +17,27 @@ namespace Corgibytes.Freshli.Cli
             CultureInfo.CurrentCulture = CultureInfo.InvariantCulture; //format for dates and numbers to use invariant
         }
 
-        public void Write(IList<MetricsResult> results)
+        public void Write(IEnumerable<ScanResult> results)
         {
-            _writer.WriteLine(
-              CliOutput.Output_Date + Separator +
-              CliOutput.Output_LibYear + Separator +
-              CliOutput.Output_UpgradesAvailable + Separator +
-              CliOutput.Output_Skipped
-            );
-
-            foreach (var resultSet in results)
+            foreach ((string filename, List<MetricsResult> metricsResults) in results)
             {
+                _writer.WriteLine(filename);
                 _writer.WriteLine(
-                  $"{resultSet.Date:yyyy-MM-dd}" + Separator +
-                  $"{resultSet.LibYear.Total:F4}" + Separator +
-                  $"{resultSet.LibYear.UpgradesAvailable}" + Separator +
-                  $"{resultSet.LibYear.Skipped}"
+                    CliOutput.Output_Date + Separator +
+                    CliOutput.Output_LibYear + Separator +
+                    CliOutput.Output_UpgradesAvailable + Separator +
+                    CliOutput.Output_Skipped
                 );
+
+                foreach (var metricResult in metricsResults)
+                {
+                    _writer.WriteLine(
+                        $"{metricResult.Date:yyyy-MM-dd}" + Separator +
+                        $"{metricResult.LibYear.Total:F4}" + Separator +
+                        $"{metricResult.LibYear.UpgradesAvailable}" + Separator +
+                        $"{metricResult.LibYear.Skipped}"
+                    );
+                }
             }
         }
     }
