@@ -19,7 +19,7 @@
     <None Include="..\LICENSE" Pack="true" PackagePath="">
       <Link>LICENSE</Link>
     </None>
-    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0-alpha0221" />
+    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-preview.7.21377.19" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="6.0.0-preview.7.21377.19" />
     <PackageReference Include="NamedServices.Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
@@ -27,8 +27,8 @@
     <PackageReference Include="ServiceStack.Text" Version="5.12.0" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta1.21308.1" />
     <PackageReference Include="System.CommandLine.Hosting" Version="0.3.0-alpha.21216.1" />
-    <PackageReference Include="YamlDotNet" Version="11.2.1" />
-  </ItemGroup>  
+    <PackageReference Include="YamlDotNet" Version="11.2.1" /> 
+  </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\CliOutput.resx">
       <Generator>ResXFileCodeGenerator</Generator>

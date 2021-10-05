@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.OutputStrategies
         public OutputStrategyType Type => OutputStrategyType.Console;
         public ConsoleOutputStrategy() { }
 
-        public virtual void Send(IList<MetricsResult> results, IOutputFormatter formatter, ScanCommandOptions options)
+        public virtual void Send(IList<ScanResult> results, IOutputFormatter formatter, ScanCommandOptions options)
         {
             Console.WriteLine("Sending metrics to Console");
             Console.Out.WriteLine(formatter.Format(results));
