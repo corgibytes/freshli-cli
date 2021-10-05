@@ -1,3 +1,15 @@
+## v0.4.1
+
+
+As part of this release we had [1 issue](https://github.com/corgibytes/freshli-cli/milestone/4?closed=1) closed.
+Goals for this milestone:
+- Update to use Freshli-Lib v0.4.0 (handle multiple manifest files).
+
+__Dependencies__
+
+- [__#43__](https://github.com/corgibytes/freshli-cli/pull/43) Upgrade to Freshli-Lib v0.4.0
+
+
 ## v0.5.0
 
 

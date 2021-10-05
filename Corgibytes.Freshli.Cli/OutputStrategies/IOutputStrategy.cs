@@ -9,6 +9,6 @@ namespace Corgibytes.Freshli.Cli.OutputStrategies
     {
         OutputStrategyType Type { get; }
 
-        void Send(IList<MetricsResult> results, IOutputFormatter formatter, ScanCommandOptions options);
+        void Send(IList<ScanResult> results, IOutputFormatter formatter, ScanCommandOptions options);
     }
 }
