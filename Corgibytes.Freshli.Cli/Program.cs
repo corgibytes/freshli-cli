@@ -19,6 +19,7 @@ namespace Corgibytes.Freshli.Cli
     public class Program
     {
         private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+        private const string DefaultLogLayout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
 
         public static async Task<int> Main(string[] args)
         {
@@ -35,13 +36,13 @@ namespace Corgibytes.Freshli.Cli
 
             ColoredConsoleTarget consoleTarget = new ColoredConsoleTarget();
             config.AddTarget("console", consoleTarget);
-            consoleTarget.Layout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
+            consoleTarget.Layout = DefaultLogLayout;
             config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Warn, consoleTarget));
 
             FileTarget fileTarget = new FileTarget();
             config.AddTarget("file", fileTarget);
             fileTarget.FileName = "${basedir}/freshli.log";
-            fileTarget.Layout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
+            fileTarget.Layout = DefaultLogLayout;
             config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Debug, fileTarget));
 
 
