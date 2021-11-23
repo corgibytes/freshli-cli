@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
@@ -9,24 +8,47 @@ using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.IoC;
 using Microsoft.Extensions.Hosting;
 using NLog;
+using NLog.Config;
+using NLog.Targets;
 
 namespace Corgibytes.Freshli.Cli
 {
     public class Program
     {
-        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger(); 
+        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
 
         public static async Task<int> Main(string[] args)
         {
+            //ConfigureLogging();
             CommandLineBuilder cmdBuilder = CreateCommandLineBuilder();
             return await cmdBuilder.UseDefaults()
                 .Build()
                 .InvokeAsync(args);
         }
 
+        private static void ConfigureLogging()
+        {
+            LoggingConfiguration config = new LoggingConfiguration();
+
+            ColoredConsoleTarget consoleTarget = new ColoredConsoleTarget();
+            config.AddTarget("console", consoleTarget);
+            consoleTarget.Layout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
+            //config.LoggingRules.Add(new LoggingRule("Microsoft.*", LogLevel.Trace, LogLevel.Warn, null));
+            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Warn, consoleTarget));
+
+            FileTarget fileTarget = new FileTarget();
+            config.AddTarget("file", fileTarget);
+            fileTarget.FileName = "${basedir}/freshli.log";
+            fileTarget.Layout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
+            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, fileTarget));
+
+            LogManager.Configuration = config;
+        }
+
         static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-            .ConfigureServices((_, services) =>
+                .ConfigureLogging(logging => ConfigureLogging())
+                .ConfigureServices((_, services) =>
             {
                 new FreshliServiceBuilder(services).Register();
             });
@@ -41,7 +63,7 @@ namespace Corgibytes.Freshli.Cli
                 })
                .UseExceptionHandler()
                .UseHelp()
-               .AddCommand(new ScanCommand());            
+               .AddCommand(new ScanCommand());
 
             return builder;
         }
@@ -55,18 +77,15 @@ namespace Corgibytes.Freshli.Cli
                 string callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
                 string doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
 
-                context.Console.Out.Write(callingMessage);
                 s_logger.Trace(callingMessage);
 
                 await next(context);
 
-                context.Console.Out.Write(doneMessage);
                 s_logger.Trace(doneMessage);
             }
             catch (Exception e)
             {
                 string message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
-                context.Console.Out.Write($"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
                 s_logger.Error($"{message} - {e.StackTrace}");
             }
         }
