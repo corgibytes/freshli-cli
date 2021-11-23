@@ -10,6 +10,9 @@ using Microsoft.Extensions.Hosting;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using NLog.Extensions.Logging;
+using NLog.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli
 {
@@ -33,21 +36,27 @@ namespace Corgibytes.Freshli.Cli
             ColoredConsoleTarget consoleTarget = new ColoredConsoleTarget();
             config.AddTarget("console", consoleTarget);
             consoleTarget.Layout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
-            //config.LoggingRules.Add(new LoggingRule("Microsoft.*", LogLevel.Trace, LogLevel.Warn, null));
-            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Warn, consoleTarget));
+            config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Warn, consoleTarget));
 
             FileTarget fileTarget = new FileTarget();
             config.AddTarget("file", fileTarget);
             fileTarget.FileName = "${basedir}/freshli.log";
             fileTarget.Layout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
-            config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, fileTarget));
+            config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Debug, fileTarget));
+
 
             LogManager.Configuration = config;
         }
 
         static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging => ConfigureLogging())
+                .ConfigureLogging(logging =>
+                {
+                    logging.ClearProviders();
+                    logging.AddNLog();
+                    ConfigureLogging();
+
+                }).UseNLog()
                 .ConfigureServices((_, services) =>
             {
                 new FreshliServiceBuilder(services).Register();
@@ -61,10 +70,9 @@ namespace Corgibytes.Freshli.Cli
                 {
                     await LogExecution(context, next);
                 })
-               .UseExceptionHandler()
+                .UseExceptionHandler()
                .UseHelp()
                .AddCommand(new ScanCommand());
-
             return builder;
         }
 
