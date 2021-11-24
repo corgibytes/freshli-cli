@@ -1,4 +1,5 @@
 using System;
+using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
@@ -13,6 +14,7 @@ using NLog.Targets;
 using NLog.Extensions.Logging;
 using NLog.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using static System.String;
 
 namespace Corgibytes.Freshli.Cli
 {
@@ -23,28 +25,32 @@ namespace Corgibytes.Freshli.Cli
 
         public static async Task<int> Main(string[] args)
         {
-            //ConfigureLogging();
             CommandLineBuilder cmdBuilder = CreateCommandLineBuilder();
             return await cmdBuilder.UseDefaults()
                 .Build()
                 .InvokeAsync(args);
         }
 
-        private static void ConfigureLogging()
+        private static void ConfigureLogging(string consoleLogLevel)
         {
             LoggingConfiguration config = new LoggingConfiguration();
 
             ColoredConsoleTarget consoleTarget = new ColoredConsoleTarget();
             config.AddTarget("console", consoleTarget);
             consoleTarget.Layout = DefaultLogLayout;
-            config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Warn, consoleTarget));
+            NLog.LogLevel desiredLevel = NLog.LogLevel.Warn;
+            if (!IsNullOrEmpty(consoleLogLevel))
+            {
+                desiredLevel = NLog.LogLevel.FromString(consoleLogLevel);
+            }
+
+            config.LoggingRules.Add(new LoggingRule("*", desiredLevel, consoleTarget));
 
             FileTarget fileTarget = new FileTarget();
             config.AddTarget("file", fileTarget);
             fileTarget.FileName = "${basedir}/freshli.log";
             fileTarget.Layout = DefaultLogLayout;
-            config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Debug, fileTarget));
-
+            config.LoggingRules.Add(new LoggingRule("*", NLog.LogLevel.Trace, fileTarget));
 
             LogManager.Configuration = config;
         }
@@ -55,9 +61,10 @@ namespace Corgibytes.Freshli.Cli
                 {
                     logging.ClearProviders();
                     logging.AddNLog();
-                    ConfigureLogging();
+                    ConfigureLogging(null);
 
-                }).UseNLog()
+                })
+                .UseNLog()
                 .ConfigureServices((_, services) =>
             {
                 new FreshliServiceBuilder(services).Register();
@@ -65,15 +72,23 @@ namespace Corgibytes.Freshli.Cli
 
         public static CommandLineBuilder CreateCommandLineBuilder()
         {
+            Option consoleLogLevel = new Option<string?>("--consoleLogLevel", "the minimum log level to log to console");
+
             CommandLineBuilder builder = new CommandLineBuilder(new MainCommand())
                 .UseHost(CreateHostBuilder)
-                .UseMiddleware(async (context, next) =>
-                {
-                    await LogExecution(context, next);
-                })
                 .UseExceptionHandler()
-               .UseHelp()
-               .AddCommand(new ScanCommand());
+                .UseHelp()
+                .AddCommand(new ScanCommand())
+                .AddOption(consoleLogLevel);
+            builder.UseMiddleware(context=>
+            {
+                ConfigureLogging(context.ParseResult.ValueForOption(consoleLogLevel)?.ToString());
+
+            });
+            builder.UseMiddleware(async (context, next) =>
+            {
+                await LogExecution(context, next);
+            });
             return builder;
         }
 
