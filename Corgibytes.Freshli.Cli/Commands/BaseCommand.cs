@@ -7,13 +7,15 @@ using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NLog;
 
 namespace Corgibytes.Freshli.Cli.Commands
 {
     public abstract class BaseCommand<T> : Command where T: CommandOptions.CommandOptions
     {
+        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
         protected BaseCommand(string name, string description = null) : base(name, description)
-        {                        
+        {
               Option <FormatType> formatOption = new(new[] { "--format", "-f" },
                 description: "Represents the output format type - It's value is case insensitive",
                 getDefaultValue: () => FormatType.Json)
@@ -42,7 +44,7 @@ namespace Corgibytes.Freshli.Cli.Commands
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            context.Console.Out.Write($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
+            s_logger.Info($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
 
             using IServiceScope scope = host.Services.CreateScope();
             ICommandRunner<T> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<T>>();
