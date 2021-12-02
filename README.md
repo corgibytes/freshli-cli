@@ -191,7 +191,7 @@ We are not sure how to handle documentation, such as this ReadMe, in different l
 
 By default all logs are set to WARN level and sent to the console output.
 
-Log levels can be adjusted by using the `--logLevel <level>` argument when running the application. The level can be any level that is supported by NLog:
+Log levels can be adjusted by using the `--logLevel <level>` option when running the application. The level can be any level that is supported by NLog:
 
 -   Trace
 -   Debug
@@ -200,7 +200,7 @@ Log levels can be adjusted by using the `--logLevel <level>` argument when runni
 -   Error
 -   Fatal
 
-Logs can be redirected to a file instead by using the `--logFile <file_path_and_name>` argument when running the application.
+Logs can be redirected to a file instead by using the `--logFile <file_path_and_name>` option when running the application.
 
 ## Contributing
 
