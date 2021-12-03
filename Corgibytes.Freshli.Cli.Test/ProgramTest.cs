@@ -40,5 +40,18 @@ namespace Corgibytes.Freshli.Cli.Test
             stringWriter.ToString().Should().NotContain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
         }
 
+        [Fact]
+        public void Validate_Main_logfile()
+        {
+            Console.Out.Write(Environment.CurrentDirectory);
+            string testfile = "testlog.log";
+            StringWriter stringWriter = new StringWriter();
+            Console.SetOut(stringWriter);
+            Program.Main(new string [] {"--loglevel", "Info", "--logfile", testfile });
+            string logFileContent = File.ReadAllText(testfile);
+            stringWriter.ToString().Should().NotContain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
+            logFileContent.ToString().Should().Contain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
+        }
+
     }
 }
