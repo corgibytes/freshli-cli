@@ -33,11 +33,7 @@ namespace Corgibytes.Freshli.Cli
 
         private static void ConfigureLogging(string consoleLogLevel, string logfile)
         {
-            NLog.LogLevel desiredLevel = NLog.LogLevel.Warn;
-            if (!IsNullOrEmpty(consoleLogLevel))
-            {
-                desiredLevel = NLog.LogLevel.FromString(consoleLogLevel);
-            }
+            NLog.LogLevel desiredLevel = NLog.LogLevel.FromString(consoleLogLevel);
 
             LoggingConfiguration config = new LoggingConfiguration();
             if (IsNullOrEmpty(logfile))
@@ -65,8 +61,6 @@ namespace Corgibytes.Freshli.Cli
                 {
                     logging.ClearProviders();
                     logging.AddNLog();
-                    ConfigureLogging(null, null);
-
                 })
                 .UseNLog()
                 .ConfigureServices((_, services) =>
@@ -76,7 +70,8 @@ namespace Corgibytes.Freshli.Cli
 
         public static CommandLineBuilder CreateCommandLineBuilder()
         {
-            Option logLevelOption = new Option<string?>("--loglevel", "the minimum log level to log to console");
+            Option logLevelOption = new Option<string>(alias: "--loglevel", description:"the minimum log level to log to console",
+                getDefaultValue: () => "Warn");
             Option logFileOption = new Option<string?>("--logfile", "file for logs instead of logging to console");
 
             CommandLineBuilder builder = new CommandLineBuilder(new MainCommand())
@@ -88,8 +83,8 @@ namespace Corgibytes.Freshli.Cli
                 .AddOption(logFileOption);
             builder.UseMiddleware(context=>
             {
-                ConfigureLogging(context.ParseResult.ValueForOption(logLevelOption)?.ToString(),
-                    context.ParseResult.ValueForOption(logFileOption)?.ToString());
+                ConfigureLogging(context.ParseResult.ValueForOption<string>(logLevelOption),
+                    context.ParseResult.ValueForOption<string>(logFileOption));
 
             });
             builder.UseMiddleware(async (context, next) =>
