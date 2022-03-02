@@ -33,30 +33,30 @@ jobs:
           dotnet-version: 3.0.x
 
       - name: "[Setup] - Install GitVersion"
-        uses: gittools/actions/gitversion/setup@v0.9.11
+        uses: gittools/actions/gitversion/setup@v0.9.10
         with:
           versionSpec: '5.6.6'
 
       - name: "[Setup] - Install GitReleaseManager"
         if: ${{ github.event_name == 'push' }}
-        uses: gittools/actions/gitreleasemanager/setup@v0.9.11
+        uses: gittools/actions/gitreleasemanager/setup@v0.9.10
         with:
           versionSpec: '0.11.0'
 
       - name: "[Versioning] - GitVersion Config"
-        uses: gittools/actions/gitversion/execute@v0.9.11
+        uses: gittools/actions/gitversion/execute@v0.9.10
         with:
           useConfigFile: true
           additionalArguments: '/showConfig'
 
       - name: "[Versioning] - Determine Version"
-        uses: gittools/actions/gitversion/execute@v0.9.11
+        uses: gittools/actions/gitversion/execute@v0.9.10
         id: gitversion
         with:
           useConfigFile: true
 
       - name: "[Versioning] - Update csproj Files"
-        uses: gittools/actions/gitversion/execute@v0.9.11
+        uses: gittools/actions/gitversion/execute@v0.9.10
         with:
           useConfigFile: true
           additionalArguments: '/updateprojectfiles'
