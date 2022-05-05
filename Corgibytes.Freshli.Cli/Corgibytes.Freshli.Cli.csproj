@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>Freshli</Title>
     <Description>Freshli analyzes repositories for historical metrics about a project's dependencies.</Description>
@@ -14,6 +14,7 @@
     <Authors>Corgibytes</Authors>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>freshli</ToolCommandName>
+    <LangVersion>latestmajor</LangVersion>
   </PropertyGroup>     
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="">
