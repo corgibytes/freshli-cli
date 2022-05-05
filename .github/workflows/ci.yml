@@ -109,6 +109,16 @@ jobs:
           coverageLocations: |
             ${{github.workspace}}/Corgibytes.Freshli.Cli.Test/coverage.info:lcov
 
+      - name: "[Test] - Setup for Behavior Acceptance Tests"
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 2.6 # Not needed with a .ruby-version file
+          bundler-cache: true
+
+      - name: "[Test] - Behavior Acceptance Tests"
+        run: |
+            dotnet build -o bin && bundle exec cucumber
+
       - name: "[Publish] - Publish win-x64, linux-x64 and osx-x64"
         run: |
             dotnet publish -r win-x64 -c Release --self-contained false
