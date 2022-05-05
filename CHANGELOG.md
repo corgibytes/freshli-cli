@@ -14,19 +14,19 @@ __Dependencies__
 
 
 As part of this release we had [3 issues](https://github.com/corgibytes/freshli-cli/milestone/3?closed=1) closed.
+
 Goals for this milestone:
 
 - CLI can be used in a CI build to get the Freshness score.
 
 __DevOps__
 
-- [__#41__](https://github.com/corgibytes/freshli-cli/pull/41) Fixes #33, removes warning for GitReleaseManager on Add Asset
 - [__#33__](https://github.com/corgibytes/freshli-cli/issues/33) Warning when adding assets to GitHub release in CI
+- [__#41__](https://github.com/corgibytes/freshli-cli/pull/41) Fixes #33, removes warning for GitReleaseManager on Add Asset
 
 __Enhancement__
 
 - [__#25__](https://github.com/corgibytes/freshli-cli/issues/25) Add Scan and Help commands
-
 
 ## v0.4.0
 
