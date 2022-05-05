@@ -448,3 +448,11 @@ Freshli.Cli/nuget.config
 
 # Ignore nuget config as it contains passwords or personal access tokens.
 nuget.config
+
+# ignore Ruby cruft
+Gemfile.lock
+
+# ignore generic build locations
+bin/
+binpublish/
+exe/
