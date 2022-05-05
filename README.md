@@ -188,6 +188,23 @@ Data (such as dates and numeric formatting) are NOT localized. Dates and numeric
 
 We are not sure how to handle documentation, such as this ReadMe, in different languages.  If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
 
+## Testing
+
+You can test Freshli using Aruba and Cucumber, which is pre-configured in the repository.
+
+You will need Ruby installed on your system, and then run:
+
+```bash
+gem install bundler
+bundle
+```
+
+From then on, you can run the Aruba tests with:
+
+```bash
+dotnet build -o bin && bundle exec cucumber
+```
+
 ## Contributing
 If you have any questions, notice a bug, or have a suggestion/enhancment please let us know by opening a [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
 
