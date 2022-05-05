@@ -7,7 +7,7 @@ A tool for displaying historical metrics about a project's dependencies.  Run th
 
 ## Installing and Running
 
-First you need .NET 5.0 runtime installed which you can find [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime).  After .NET 5.0 is installed you download the latest Freshli executables [here](https://github.com/corgibytes/freshli-cli/releases/latest).  Pick the Zip file that matches you OS (Windows, Linux, or MacOs) then:
+First you need .NET 6.0 runtime installed which you can find [here](https://dotnet.microsoft.com/download/dotnet/6.0/runtime).  After .NET 6.0 is installed you download the latest Freshli executables [here](https://github.com/corgibytes/freshli-cli/releases/latest).  Pick the Zip file that matches you OS (Windows, Linux, or MacOs) then:
 
 1) Download it.
 2) Extract the Zip file.
@@ -40,7 +40,7 @@ Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
 
 ### .NET Tool
 
-If you have .NET 5.0 SDK [installed](https://dotnet.microsoft.com/download/dotnet/5.0) you can install Freshli as .NET Tool:
+If you have .NET 6.0 SDK [installed](https://dotnet.microsoft.com/download/dotnet/6.0) you can install Freshli as .NET Tool:
 
 ```
 > dotnet tool install Corgibytes.Freshli.Cli -g
@@ -184,7 +184,7 @@ Simply the number of dependencies Freshli could not calculate the libyear for on
 
 The headings for column output are localized such that the culture settings of the user's computer are used. (This is found in the CurrentUICulture). Currently there are English and Spanish translations with English being the default.
 
-Data (such as dates and numeric formatting) are NOT localized. Dates and numeric formats use the CurrentCulture which is explicitly set to the [invariant culture](https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo.invariantculture?view=net-5.0).
+Data (such as dates and numeric formatting) are NOT localized. Dates and numeric formats use the CurrentCulture which is explicitly set to the [invariant culture](https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo.invariantculture?view=net-6.0).
 
 We are not sure how to handle documentation, such as this ReadMe, in different languages.  If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
 
