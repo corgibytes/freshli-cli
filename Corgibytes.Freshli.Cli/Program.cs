@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli
 {
     public class Program
     {
-        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger(); 
+        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
 
         public static async Task<int> Main(string[] args)
         {
@@ -33,15 +33,16 @@ namespace Corgibytes.Freshli.Cli
 
         public static CommandLineBuilder CreateCommandLineBuilder()
         {
-            CommandLineBuilder builder = new CommandLineBuilder(new MainCommand())
+            var command = new MainCommand {new ScanCommand()};
+
+            CommandLineBuilder builder = new CommandLineBuilder(command)
                 .UseHost(CreateHostBuilder)
-                .UseMiddleware(async (context, next) =>
+                .AddMiddleware(async (context, next) =>
                 {
                     await LogExecution(context, next);
                 })
-               .UseExceptionHandler()
-               .UseHelp()
-               .AddCommand(new ScanCommand());            
+                .UseExceptionHandler()
+                .UseHelp();
 
             return builder;
         }
