@@ -54,7 +54,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
             scanCommand.Handler.Should().NotBeNull();
         }
 
-        [Fact(Skip = "Will until we have a way to mock the freshli lib call")]        
+        [Fact(Skip = "Will until we have a way to mock the freshli lib call")]
         public async Task  Verify_handler_is_executed()
         {
             CommandLineBuilder cmdBuilder = Program.CreateCommandLineBuilder();
@@ -67,7 +67,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
             _console.Out.ToString().Should().NotContain("Exception has been thrown by the target of an invocation");
         }
 
-        private static void VerifyAlias(string alias, IArgumentArity arity, bool allowMultipleArgumentsPerToken)
+        private static void VerifyAlias(string alias, ArgumentArity arity, bool allowMultipleArgumentsPerToken)
         {
             ScanCommand scanCommand = new();
             Option option = scanCommand.Options.FirstOrDefault(x => x.Aliases.Contains(alias));

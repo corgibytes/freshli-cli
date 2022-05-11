@@ -10,11 +10,11 @@ This project can be developed on any platform. To get started, follow instructio
 
 ### Prerequisites
 
-This project depends on .NET Core 5.0. Before working on the project, check that .NET Core prerequisites have been met.
+This project depends on .NET Core 6.0. Before working on the project, check that .NET Core prerequisites have been met.
 
- - [Prerequisites for .NET Core on Windows](https://docs.microsoft.com/en-us/dotnet/core/windows-prerequisites?tabs=net50)
- - [Prerequisites for .NET Core on Linux](https://docs.microsoft.com/en-us/dotnet/core/linux-prerequisites?tabs=net50)
- - [Prerequisites for .NET Core on macOS](https://docs.microsoft.com/en-us/dotnet/core/macos-prerequisites?tabs=net50)
+ - [Prerequisites for .NET Core on Windows](https://docs.microsoft.com/en-us/dotnet/core/windows-prerequisites?tabs=net60)
+ - [Prerequisites for .NET Core on Linux](https://docs.microsoft.com/en-us/dotnet/core/linux-prerequisites?tabs=net60)
+ - [Prerequisites for .NET Core on macOS](https://docs.microsoft.com/en-us/dotnet/core/macos-prerequisites?tabs=net60)
 
 ### Visual Studio
 
@@ -43,7 +43,7 @@ Package                          | Version                                      
 
 #### Command Options and Commands and Command Runners
 
-* Freshli CLI **Commands** are implemented using the [Command Line Api](https://github.com/dotnet/command-line-api) library. All the commands are located under the **Commands** folder and are needed for the library to know how to parse user input and transform it into CommandOptions. 
+* Freshli CLI **Commands** are implemented using the [Command Line Api](https://github.com/dotnet/command-line-api) library. All the commands are located under the **Commands** folder and are needed for the library to know how to parse user input and transform it into CommandOptions.
 This type of entity is where you configure the structure of your command.
 * Freshli CLI **Command Options** represents all the options allowed for a particular Command. The input will be transformed into this object and send to the command runner. All the commands options for all the different commands are located inside the **CommandOptions** folder.
 * Freshli CLI **Command Runners** are responsible for receiving a Command Options and execute the Run Command logic. It is used by the Command classes to delegate it's execution.
@@ -54,13 +54,13 @@ So far, the following commands have been implemented:
 
 Follow below steps if you want to contribute with a new command:
 
-1) Add a new class called _**YourNewCommandNameCommandOptions**_ into the **CommandOptions folder** and inherit from the base class **_CommandOptions_**. You do not need to implement anything  to allow the **format** and **output** options. These are inherited from the base class. 
+1) Add a new class called _**YourNewCommandNameCommandOptions**_ into the **CommandOptions folder** and inherit from the base class **_CommandOptions_**. You do not need to implement anything  to allow the **format** and **output** options. These are inherited from the base class.
 
 Example: CustomCommandOptions
 
 ```
     public class ScanCommandOptions : CommandOptions
-    {                
+    {
         public string YourArgument { get ; set; }
         public string YourOption { get ; set; }
 
@@ -81,7 +81,7 @@ Example: CustomCommandOptions
           // you have to reference the command-line-api library documentation. Below are just
           // examples. See the Commands/ScanCommand.cs for an example or go to the Command Line Api (https://github.com/dotnet/command-line-api) repository for detailed information.
 
-           Option<string> yourOption= new(new[] { "--alias1", "alias2" }, description: "Option  Description");    
+           Option<string> yourOption= new(new[] { "--alias1", "alias2" }, description: "Option  Description");
            AddOption(yourOption);
 
            Argument<string> yourArgument = new("yourargumentname", "Argument Description")
@@ -90,17 +90,17 @@ Example: CustomCommandOptions
     }
 ```
 
-3) Add a new class called _**YourNewCommandNameCommandRunner**_ into the **CommandRunners** folder and inherit it from **CommandRunner**. 
+3) Add a new class called _**YourNewCommandNameCommandRunner**_ into the **CommandRunners** folder and inherit it from **CommandRunner**.
 Implement the Run method.
 
 Example: CustomCommandRunners
 
 ```
  public class CustomCommandRunner : CommandRunner<CustomCommandOptions>
- {        
+ {
         public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner): base(serviceProvider,runner)
         {
-            
+
         }
 
         public override int Run(CustomCommandOptions options)
@@ -127,7 +127,7 @@ Update the **FreshliServiceBuilder Register** method in order to add the invokat
 
 5) Go to Main and Add your new Command in the _**CreateCommandLineBuilder**_ method. This will allow the main program to identify you added
 a new command.
- 
+
 6) Go to **Corgibytes.Freshli.Cli.Test** and add unit tests.
 
 7) Open a Pull Request with your changes
@@ -144,8 +144,8 @@ Available formatters are **json, yaml, and csv**. These formatters can be found 
 If you want to contribute with a formatter, you have to follow below instructions:
 
 1) Add the new format type into the _**FormatType**_ enum. Example: _**Custom**_
- 
-2) Add a new class called _**YourNewFormatOutputFormatter**_ into the _**Formatters folder**_ and inherit it from OutputFormatter. Implement requred methods 
+
+2) Add a new class called _**YourNewFormatOutputFormatter**_ into the _**Formatters folder**_ and inherit it from OutputFormatter. Implement requred methods
   Example: CustomOutputFormatter
 
 ```
@@ -165,10 +165,10 @@ If you want to contribute with a formatter, you have to follow below instruction
     }
 ```
 
-5) Register your new formatter class in the IoC Container. Open the _**FreshliServiceBuilder.cs**_ file, search for the **RegisterBaseCommand** 
+5) Register your new formatter class in the IoC Container. Open the _**FreshliServiceBuilder.cs**_ file, search for the **RegisterBaseCommand**
 method and add a new registration line for your formatter as follows
 
-```     
+```
     Example: Services.AddNamedScoped<IOutputFormatter,CustomOutputFormatter>(FormatType.Custom);
 
 ```
@@ -188,12 +188,12 @@ An Output Strategy is reponsable for sending the serialized response of a comman
 Available outputs are **console, file**. These formatters can be found under the _**OutputStrategies**_ folder as follows.
 
 * **ConsoleOutputStrategy**  - Sends serialized data by a formatter to the standard output.
-* **FileOutputStrategy**     - Sends serialized data by a formatter to a file. 
+* **FileOutputStrategy**     - Sends serialized data by a formatter to a file.
 
 If you want to contribute with a new output strategy, you have to follow below instructions:
 
 1) Add the new format type into the _**OutputStrategyType**_ enum. Example: _**Custom**_
- 
+
 2) Add a new class called _**YourNewOutputStrategy**_ into the _**OutputStrategies folder**_ and implement the _**IOutputStrategy**_ interface.
   Example: CustomOutputStrategy
 
@@ -209,10 +209,10 @@ If you want to contribute with a new output strategy, you have to follow below i
     }
 ```
 
-5) Register your new output strategy class in the IoC Container. Open the _**FreshliServiceBuilder.cs**_ file, search for the **RegisterBaseCommand** 
+5) Register your new output strategy class in the IoC Container. Open the _**FreshliServiceBuilder.cs**_ file, search for the **RegisterBaseCommand**
 method and add a new registration line for your strategy as follows
 
-```     
+```
     Example: Services.AddNamedScoped<IOutputStrategy, CustomOutputStrategy>(OutputStrategyType.Custom);
 ```
 
