@@ -11,6 +11,6 @@ namespace Corgibytes.Freshli.Cli.CommandOptions
 
         public IList<OutputStrategyType> Output { get; set; } = new List<OutputStrategyType>();
         public DirectoryInfo Path { get ; set; }
-    
+
     }
 }
