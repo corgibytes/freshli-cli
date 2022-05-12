@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
+using System.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.Formatters;
@@ -36,7 +37,7 @@ namespace Corgibytes.Freshli.Cli.Commands
             AddOption(formatOption);
             AddOption(outputOption);
 
-            Argument<string> pathArgument = new("path", "Source code repository path")
+            Argument<DirectoryInfo> pathArgument = new("path", "Source code repository path")
             {
                 Arity = ArgumentArity.ExactlyOne
             };
