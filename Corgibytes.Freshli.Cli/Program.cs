@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
@@ -33,7 +32,7 @@ namespace Corgibytes.Freshli.Cli
 
         public static CommandLineBuilder CreateCommandLineBuilder()
         {
-            var command = new MainCommand {new ScanCommand()};
+            var command = new MainCommand {new ScanCommand(), new CacheCommand()};
 
             CommandLineBuilder builder = new CommandLineBuilder(command)
                 .UseHost(CreateHostBuilder)
