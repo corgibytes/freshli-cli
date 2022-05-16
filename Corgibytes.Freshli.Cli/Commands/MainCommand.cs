@@ -1,6 +1,6 @@
-﻿using System;
-using System.CommandLine;
+﻿using System.CommandLine;
 using System.IO;
+using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Commands
 {
@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Commands
             Option<DirectoryInfo> cacheDirOption = new(
                 new[] {"--cache-dir"},
                 description: "The location for storing temporary files",
-                getDefaultValue: () => new DirectoryInfo(Environment.GetEnvironmentVariable("HOME") + "/.freshli"))
+                getDefaultValue: () => CacheContext.CacheDirDefault)
             {
                 Arity = ArgumentArity.ExactlyOne
             };
