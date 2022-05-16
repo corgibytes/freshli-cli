@@ -47,7 +47,7 @@ namespace Corgibytes.Freshli.Cli.Commands
             Handler = CommandHandler.Create<IHost, InvocationContext, ScanCommandOptions>(Run);
         }
 
-        private void Run(IHost host, InvocationContext context, ScanCommandOptions options)
+        private int Run(IHost host, InvocationContext context, ScanCommandOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -57,7 +57,7 @@ namespace Corgibytes.Freshli.Cli.Commands
             using IServiceScope scope = host.Services.CreateScope();
             ICommandRunner<ScanCommandOptions> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<ScanCommandOptions>>();
 
-            runner.Run(options);
+            return runner.Run(options);
         }
     }
 }
