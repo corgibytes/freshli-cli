@@ -1,6 +1,6 @@
 using System;
-using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners
@@ -29,9 +29,8 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 
         public override int Run(CachePrepareCommandOptions options)
         {
-            // TODO: implementation here
-            Console.Out.WriteLine("YOU DID IT (Runner)!");
-            return 0;
+            bool success = Cache.Prepare(options.CacheDir);
+            return success ? 0 : 1;
         }
     }
 }
