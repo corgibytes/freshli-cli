@@ -51,10 +51,11 @@ This type of entity is where you configure the structure of your command.
 So far, the following commands have been implemented:
 
 * **scan** - Collects historical metrics about a project's dependencies - Implemented in _Commands/ScanCommand.cs_, _CommandOptions/ScanCommandOptions.cs_ and _CommandRunners/ScanCommandRunner.cs_
+* **cache** - Manages the cache databased used by the other commands - Implemented in _Commands/CacheCommand.cs_, _CommandOptions/CacheCommandOptions.cs_ and _CommandRunners/CacheCommandRunner.cs_
 
 Follow below steps if you want to contribute with a new command:
 
-1) Add a new class called _**YourNewCommandNameCommandOptions**_ into the **CommandOptions folder** and inherit from the base class **_CommandOptions_**. You do not need to implement anything  to allow the **format** and **output** options. These are inherited from the base class.
+1) Add a new class called _**YourNewCommandNameCommandOptions**_ into the **CommandOptions folder** and inherit from the base class _**CommandOptions**_. You do not need to implement anything to allow the **cache-dir** option, as this is inherited from the base class.
 
 Example: CustomCommandOptions
 
@@ -68,12 +69,12 @@ Example: CustomCommandOptions
     }
 ```
 
-2) Add a new class called _**YourNewCommandNameCommand**_ into the **Commands folder** and inherit it from the base class _**BaseCommand**_. You do not need to implement anything  to allow the **format** and **output** options. These are inherited from the base class.
+2) Add a new class called _**YourNewCommandNameCommand**_ into the **Commands folder** and inherit it from the base class _**Command**_. You do not need to implement anything to allow the **cache-dir** option, as this is added globally.
 
     Example: CustomCommand
 
 ```
-    public class CustomCommand : BaseCommand<CustomCommandOptions>
+    public class CustomCommand : Command
     {
         public CustomCommand() : base("custom", "Custom command description")
         {
@@ -125,8 +126,8 @@ Example: CustomCommandRunners
 
 Update the **FreshliServiceBuilder Register** method in order to add the invokation to this new method.
 
-5) Go to Main and Add your new Command in the _**CreateCommandLineBuilder**_ method. This will allow the main program to identify you added
-a new command.
+5) Go to _Program.cs_ and add your new Command to the list at the top of the _**CreateCommandLineBuilder**_ method. This will allow the main program to identify
+   you added a new command.
 
 6) Go to **Corgibytes.Freshli.Cli.Test** and add unit tests.
 
@@ -134,6 +135,7 @@ a new command.
 
 #### Formatters
 
+The **scan** command has a `--format` option, which allows specifying a formatter to use for the output of that command.
 A serialization formatter is responsible for encoding objects into a particular format. The formatted output will be sent to all the selected output strategies
 Available formatters are **json, yaml, and csv**. These formatters can be found under the _**Formatters**_ folder as follows.
 
@@ -184,7 +186,8 @@ method and add a new registration line for your formatter as follows
 
 #### Output Strategies
 
-An Output Strategy is reponsable for sending the serialized response of a command to a configured output. The formatted output will be sent to all the selected output strategies
+The **scan** command has an `--output` option, which allows specifying one or more output strategies to use for the output of that command.
+An Output Strategy is responsible for sending the serialized response of a command to a configured output. The formatted output will be sent to all the selected output strategies
 Available outputs are **console, file**. These formatters can be found under the _**OutputStrategies**_ folder as follows.
 
 * **ConsoleOutputStrategy**  - Sends serialized data by a formatter to the standard output.
