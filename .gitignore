@@ -456,3 +456,6 @@ Gemfile.lock
 bin/
 binpublish/
 exe/
+
+# ignore cucumber/aruba temporary files
+tmp/
