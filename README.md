@@ -205,6 +205,16 @@ From then on, you can run the Aruba tests with:
 dotnet build -o bin && bundle exec cucumber
 ```
 
+## Working with the DevContainer
+
+This project has uses DevContainer to assist with creating a full configured development environment.
+
+There are two paths to working with this DevContainer setup.
+
+1. [Install the `devcontainer` CLI](https://code.visualstudio.com/docs/remote/devcontainer-cli) and then run `devcontainer build` followed by `devcontainer open`. That will open Visual Studio Code running from inside of a container with everything needed to build the project.
+
+2. Run `docker` directly. Run `docker -t freshli-cli-dev .devcontainer/` to build the container. Then you'll be able to run `docker run --rm -it -v $PWD:/code -w /code freshli-cli-dev bash` to create a shell session inside of a running container with everything set up for you. (Note, you may need to run `bundle install` when you first start the container to install the ruby-based dependencies. This step is performed for you if you use the `devcontainer` CLI to open a Visual Studio Code instance.)
+
 ## Contributing
 If you have any questions, notice a bug, or have a suggestion/enhancment please let us know by opening a [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
 
