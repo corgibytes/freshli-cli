@@ -36,7 +36,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
         [InlineData("-f")]
         public void Verify_format_option_configuration(string alias)
         {
-            VerifyAlias(alias, ArgumentArity.ExactlyOne, false);
+            TestHelpers.VerifyAlias<ScanCommand>(alias, ArgumentArity.ExactlyOne, false);
         }
 
         [Theory]
@@ -44,7 +44,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
         [InlineData("-o")]
         public void Verify_output_options_configuration(string alias)
         {
-            VerifyAlias(alias, ArgumentArity.OneOrMore, true);
+            TestHelpers.VerifyAlias<ScanCommand>(alias, ArgumentArity.OneOrMore, true);
         }
 
         [Fact]
@@ -65,15 +65,6 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
             _console.Out.ToString().Should().Contain("Command Execution Invocation Started");
             _console.Out.ToString().Should().Contain("Command Execution Invocation Ended");
             _console.Out.ToString().Should().NotContain("Exception has been thrown by the target of an invocation");
-        }
-
-        private static void VerifyAlias(string alias, ArgumentArity arity, bool allowMultipleArgumentsPerToken)
-        {
-            ScanCommand scanCommand = new();
-            Option option = scanCommand.Options.FirstOrDefault(x => x.Aliases.Contains(alias));
-            option.Should().NotBeNull();
-            option.AllowMultipleArgumentsPerToken.Should().Be(allowMultipleArgumentsPerToken);
-            option.Arity.Should().BeEquivalentTo(arity);
         }
     }
 }
