@@ -29,14 +29,14 @@ This project also supports using
 
 ### Nuget Dependencies
 
-Package                          | Version                                                                                                                                     | Description
----------------------------------| ------------------------------------------------------------------------------------------------------------------------------------------- | -----------------------------
-`System.CommandLine`             | [![Nuget](https://img.shields.io/nuget/v/System.CommandLine.svg)](https://nuget.org/packages/System.CommandLine)                            | Command line parser, model binding, invocation, shell completions
-`System.CommandLine.Hosting`     | [![Nuget](https://img.shields.io/nuget/v/System.CommandLine.Hosting.svg)](https://nuget.org/packages/System.CommandLine.Hosting)            | support for using System.CommandLine with [Microsoft.Extensions.Hosting](https://www.nuget.org/packages/Microsoft.Extensions.Hosting/)
-`Corgibytes.Freshli.Lib`             | [![Nuget](https://img.shields.io/nuget/v/Corgibytes.Freshli.Lib.svg)](https://nuget.org/packages/Corgibytes.Freshli.Lib)                            | Core library for collecting historical metrics about a project's dependencies
-`YamlDotNet`             | [![Nuget](https://img.shields.io/nuget/v/YamlDotNet.svg)](https://nuget.org/packages/YamlDotNet)                            | A .NET library for YAML. YamlDotNet provides low level parsing and emitting of YAML as well as a high level object model similar to XmlDocument.
-`Newtonsoft.Json`             | [![Nuget](https://img.shields.io/nuget/v/Newtonsoft.Json.svg)](https://nuget.org/packages/Newtonsoft.Json)                            | Json.NET is a popular high-performance JSON framework for .NET
-`NamedServices.Microsoft.Extensions.DependencyInjection`             | [![Nuget](https://img.shields.io/nuget/v/NamedServices.Microsoft.Extensions.DependencyInjection.svg)](https://nuget.org/packages/NamedServices.Microsoft.Extensions.DependencyInjection)                            | Named Services for Microsoft.Extensions.DependencyInjection
+| Package                                                  | Version                                                                                                                                                                                  | Description                                                                                                                                      |
+|----------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------|
+| `System.CommandLine`                                     | [![Nuget](https://img.shields.io/nuget/v/System.CommandLine.svg)](https://nuget.org/packages/System.CommandLine)                                                                         | Command line parser, model binding, invocation, shell completions                                                                                |
+| `System.CommandLine.Hosting`                             | [![Nuget](https://img.shields.io/nuget/v/System.CommandLine.Hosting.svg)](https://nuget.org/packages/System.CommandLine.Hosting)                                                         | support for using System.CommandLine with [Microsoft.Extensions.Hosting](https://www.nuget.org/packages/Microsoft.Extensions.Hosting/)           |
+| `Corgibytes.Freshli.Lib`                                 | [![Nuget](https://img.shields.io/nuget/v/Corgibytes.Freshli.Lib.svg)](https://nuget.org/packages/Corgibytes.Freshli.Lib)                                                                 | Core library for collecting historical metrics about a project's dependencies                                                                    |
+| `YamlDotNet`                                             | [![Nuget](https://img.shields.io/nuget/v/YamlDotNet.svg)](https://nuget.org/packages/YamlDotNet)                                                                                         | A .NET library for YAML. YamlDotNet provides low level parsing and emitting of YAML as well as a high level object model similar to XmlDocument. |
+| `Newtonsoft.Json`                                        | [![Nuget](https://img.shields.io/nuget/v/Newtonsoft.Json.svg)](https://nuget.org/packages/Newtonsoft.Json)                                                                               | Json.NET is a popular high-performance JSON framework for .NET                                                                                   |
+| `NamedServices.Microsoft.Extensions.DependencyInjection` | [![Nuget](https://img.shields.io/nuget/v/NamedServices.Microsoft.Extensions.DependencyInjection.svg)](https://nuget.org/packages/NamedServices.Microsoft.Extensions.DependencyInjection) | Named Services for Microsoft.Extensions.DependencyInjection                                                                                      |
 
 
 ### Main Entities
@@ -124,7 +124,7 @@ Example: CustomCommandRunners
         }
 ```
 
-Update the **FreshliServiceBuilder Register** method in order to add the invokation to this new method.
+Update the **FreshliServiceBuilder Register** method in order to add the invocation to this new method.
 
 5) Go to _Program.cs_ and add your new Command to the list at the top of the _**CreateCommandLineBuilder**_ method. This will allow the main program to identify
    you added a new command.
@@ -147,7 +147,7 @@ If you want to contribute with a formatter, you have to follow below instruction
 
 1) Add the new format type into the _**FormatType**_ enum. Example: _**Custom**_
 
-2) Add a new class called _**YourNewFormatOutputFormatter**_ into the _**Formatters folder**_ and inherit it from OutputFormatter. Implement requred methods
+2) Add a new class called _**YourNewFormatOutputFormatter**_ into the _**Formatters folder**_ and inherit it from OutputFormatter. Implement required methods
   Example: CustomOutputFormatter
 
 ```
@@ -175,7 +175,7 @@ method and add a new registration line for your formatter as follows
 
 ```
 
-6) In order to test your new formatter, build the solution and run a command (for example the scan command), and specofy your new format as input for the format option. Example:
+6) In order to test your new formatter, build the solution and run a command (for example the scan command), and specify your new format as input for the format option. Example:
 
         ```
         freshli scan repository-path -f custom

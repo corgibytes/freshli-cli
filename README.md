@@ -11,7 +11,7 @@ First you need .NET 6.0 runtime installed which you can find [here](https://dotn
 
 1) Download it.
 2) Extract the Zip file.
-3) Copy the folder to an apporiate location.
+3) Copy the folder to an appropriate location.
 4) Open a terminal and run `Corgibytes.Freshli.Cli.exe`.
 
 To run Freshli:
@@ -103,17 +103,17 @@ You can find old releases to download [here](https://github.com/corgibytes/fresh
 
 The dependency managers that Freshli supports are listed below along with the manifest files it can parse.  The manifest file is the file that lists what dependencies are required by the project and has changed over time for some dependency managers, like NuGet.
 
-| Dependency Manager | Language(s)/Framework(s) | Manifest Files Format |
-|--------------------|-----------------------|----------|
-| [Bundler](https://bundler.io/) | [Ruby](https://www.ruby-lang.org), [Ruby on Rails](https://rubyonrails.org/) | Gemfile.lock |
-| [Carton](https://metacpan.org/pod/Carton) | [Perl](https://www.perl.org/) | cpanfile |
-| [Composer](https://getcomposer.org/) | [PHP](https://www.php.net/) | composer.json, composer.lock |
-| [Pip](https://pypi.org/project/pip/) | [Python](https://www.python.org/) | requirements.txt |
-| [NuGet](https://www.nuget.org/) | [C#](https://docs.microsoft.com/en-us/dotnet/csharp/) | *.csproj |
+| Dependency Manager                        | Language(s)/Framework(s)                                                     | Manifest Files Format        |
+|-------------------------------------------|------------------------------------------------------------------------------|------------------------------|
+| [Bundler](https://bundler.io/)            | [Ruby](https://www.ruby-lang.org), [Ruby on Rails](https://rubyonrails.org/) | Gemfile.lock                 |
+| [Carton](https://metacpan.org/pod/Carton) | [Perl](https://www.perl.org/)                                                | cpanfile                     |
+| [Composer](https://getcomposer.org/)      | [PHP](https://www.php.net/)                                                  | composer.json, composer.lock |
+| [Pip](https://pypi.org/project/pip/)      | [Python](https://www.python.org/)                                            | requirements.txt             |
+| [NuGet](https://www.nuget.org/)           | [C#](https://docs.microsoft.com/en-us/dotnet/csharp/)                        | *.csproj                     |
 
 Please let us know what other dependency managers and/or manifest files you would like use to support via the contact information in the [Contributing](#contributing) section.
 
-## What Data Does Freahli Return?
+## What Data Does Freshli Return?
 
 Freshli check your projects dependencies at on month intervals and returns a table with the following that looks like:
 
@@ -166,7 +166,7 @@ When checking the libyear on May 1, 2019 Freshli will use v1.1.0 (Apr 3rd, 2019)
 93 / 365 = 0.2548
 ```
 
-If you have v1.0.1 instealled then your libyear when checking on May 1, 2019 is 68 days for a libyear of:
+If you have v1.0.1 installed then your libyear when checking on May 1, 2019 is 68 days for a libyear of:
 
 ```
 68 / 365 = 0.1863

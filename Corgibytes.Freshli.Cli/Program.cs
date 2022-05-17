@@ -23,16 +23,14 @@ namespace Corgibytes.Freshli.Cli
                 .InvokeAsync(args);
         }
 
-        static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-            .ConfigureServices((_, services) =>
-            {
-                new FreshliServiceBuilder(services).Register();
-            });
-
         public static CommandLineBuilder CreateCommandLineBuilder()
         {
-            var command = new MainCommand {new ScanCommand(), new CacheCommand()};
+            var command = new MainCommand
+            {
+                // Add commands here!
+                new ScanCommand(),
+                new CacheCommand()
+            };
 
             CommandLineBuilder builder = new CommandLineBuilder(command)
                 .UseHost(CreateHostBuilder)
@@ -45,6 +43,13 @@ namespace Corgibytes.Freshli.Cli
 
             return builder;
         }
+
+        static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
+            .ConfigureServices((_, services) =>
+            {
+                new FreshliServiceBuilder(services).Register();
+            });
 
         public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
         {
