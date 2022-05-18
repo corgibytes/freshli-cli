@@ -9,6 +9,7 @@ using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands
 {
@@ -32,19 +33,21 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
         }
 
         [Theory]
-        [InlineData("--format")]
-        [InlineData("-f")]
-        public void Verify_format_option_configuration(string alias)
+        [MethodData(nameof(DataForVerifyOptionConfigurations))]
+        public void VerifyOptionConfigurations(string alias, ArgumentArity arity, bool allowsMultiples)
         {
-            TestHelpers.VerifyAlias<ScanCommand>(alias, ArgumentArity.ExactlyOne, false);
+            TestHelpers.VerifyAlias<ScanCommand>(alias, arity, allowsMultiples);
         }
 
-        [Theory]
-        [InlineData("--output")]
-        [InlineData("-o")]
-        public void Verify_output_options_configuration(string alias)
+        private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations()
         {
-            TestHelpers.VerifyAlias<ScanCommand>(alias, ArgumentArity.OneOrMore, true);
+            return new TheoryData<string, ArgumentArity, bool>()
+            {
+                {"--format", ArgumentArity.ExactlyOne, false},
+                {"-f", ArgumentArity.ExactlyOne, false},
+                {"--output", ArgumentArity.OneOrMore, true},
+                {"-o", ArgumentArity.OneOrMore, true}
+            };
         }
 
         [Fact]
