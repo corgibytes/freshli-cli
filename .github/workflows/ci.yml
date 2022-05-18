@@ -115,7 +115,7 @@ jobs:
 
       - name: "[Test] - Behavior Acceptance Tests with Coverage Collection"
         run: |
-          dotnet build -o bin && dotnet coverlett ./bin --target "cucumber" --output ./coverage-acceptance.info --format lcov
+          dotnet build -o bin && dotnet coverlet ./bin --target "cucumber" --output ./coverage-acceptance.info --format lcov
 
       - name: "[Test] - Send Code Coverage Data to Code Climate"
         uses: paambaati/codeclimate-action@v3.0.0
