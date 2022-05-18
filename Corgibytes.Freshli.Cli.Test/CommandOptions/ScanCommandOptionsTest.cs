@@ -29,11 +29,11 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
 
             ParseResult result = parser.Parse(args);
 
-            DirectoryInfo path = result.GetArgumentByName<DirectoryInfo>("path");
-            FormatType formatType = result.GetOptionByName<FormatType>("format");
-            FormatType formatTypeFromAlias = result.GetOptionByAlias<FormatType>("-f");
-            IEnumerable<OutputStrategyType> outputStrategyTypes = result.GetOptionByName<IEnumerable<OutputStrategyType>>("output");
-            IEnumerable<OutputStrategyType> outputStrategyTypesFromAlias = result.GetOptionByAlias<IEnumerable<OutputStrategyType>>("-o");
+            DirectoryInfo path = result.GetArgumentValueByName<DirectoryInfo>("path");
+            FormatType formatType = result.GetOptionValueByName<FormatType>("format");
+            FormatType formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
+            IEnumerable<OutputStrategyType> outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output");
+            IEnumerable<OutputStrategyType> outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o");
 
             formatType.Should().Be(formatTypeFromAlias);
 
