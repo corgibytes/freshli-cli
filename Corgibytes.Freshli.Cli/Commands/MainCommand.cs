@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Commands
             Option<DirectoryInfo> cacheDirOption = new(
                 new[] {"--cache-dir"},
                 description: "The location for storing temporary files",
-                getDefaultValue: () => CacheContext.CacheDirDefault)
+                getDefaultValue: () => CacheContext.DefaultCacheDir)
             {
                 Arity = ArgumentArity.ExactlyOne
             };
