@@ -18,7 +18,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 
         public override int Run(ScanCommandOptions options)
         {
-            if (string.IsNullOrWhiteSpace(options.Path))
+            if (string.IsNullOrWhiteSpace(options.Path?.FullName))
             {
                 throw new ArgumentNullException(nameof(options), CliOutput.ScanCommandRunner_Run_Path_should_not_be_null_or_empty);
             }
@@ -26,7 +26,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
             IOutputFormatter formatter = options.Format.ToFormatter(Services);
             IEnumerable<IOutputStrategy> outputStrategies = options.Output.ToOutputStrategies(Services);
 
-            IList<ScanResult> results = Runner.Run(options.Path);
+            IList<ScanResult> results = Runner.Run(options.Path.FullName);
 
             foreach (IOutputStrategy output in outputStrategies)
             {

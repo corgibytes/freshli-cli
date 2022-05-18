@@ -11,7 +11,7 @@ First you need .NET 6.0 runtime installed which you can find [here](https://dotn
 
 1) Download it.
 2) Extract the Zip file.
-3) Copy the folder to an apporiate location.
+3) Copy the folder to an appropriate location.
 4) Open a terminal and run `Corgibytes.Freshli.Cli.exe`.
 
 To run Freshli:
@@ -103,17 +103,17 @@ You can find old releases to download [here](https://github.com/corgibytes/fresh
 
 The dependency managers that Freshli supports are listed below along with the manifest files it can parse.  The manifest file is the file that lists what dependencies are required by the project and has changed over time for some dependency managers, like NuGet.
 
-| Dependency Manager | Language(s)/Framework(s) | Manifest Files Format |
-|--------------------|-----------------------|----------|
-| [Bundler](https://bundler.io/) | [Ruby](https://www.ruby-lang.org), [Ruby on Rails](https://rubyonrails.org/) | Gemfile.lock |
-| [Carton](https://metacpan.org/pod/Carton) | [Perl](https://www.perl.org/) | cpanfile |
-| [Composer](https://getcomposer.org/) | [PHP](https://www.php.net/) | composer.json, composer.lock |
-| [Pip](https://pypi.org/project/pip/) | [Python](https://www.python.org/) | requirements.txt |
-| [NuGet](https://www.nuget.org/) | [C#](https://docs.microsoft.com/en-us/dotnet/csharp/) | *.csproj |
+| Dependency Manager                        | Language(s)/Framework(s)                                                     | Manifest Files Format        |
+|-------------------------------------------|------------------------------------------------------------------------------|------------------------------|
+| [Bundler](https://bundler.io/)            | [Ruby](https://www.ruby-lang.org), [Ruby on Rails](https://rubyonrails.org/) | Gemfile.lock                 |
+| [Carton](https://metacpan.org/pod/Carton) | [Perl](https://www.perl.org/)                                                | cpanfile                     |
+| [Composer](https://getcomposer.org/)      | [PHP](https://www.php.net/)                                                  | composer.json, composer.lock |
+| [Pip](https://pypi.org/project/pip/)      | [Python](https://www.python.org/)                                            | requirements.txt             |
+| [NuGet](https://www.nuget.org/)           | [C#](https://docs.microsoft.com/en-us/dotnet/csharp/)                        | *.csproj                     |
 
 Please let us know what other dependency managers and/or manifest files you would like use to support via the contact information in the [Contributing](#contributing) section.
 
-## What Data Does Freahli Return?
+## What Data Does Freshli Return?
 
 Freshli check your projects dependencies at on month intervals and returns a table with the following that looks like:
 
@@ -166,7 +166,7 @@ When checking the libyear on May 1, 2019 Freshli will use v1.1.0 (Apr 3rd, 2019)
 93 / 365 = 0.2548
 ```
 
-If you have v1.0.1 instealled then your libyear when checking on May 1, 2019 is 68 days for a libyear of:
+If you have v1.0.1 installed then your libyear when checking on May 1, 2019 is 68 days for a libyear of:
 
 ```
 68 / 365 = 0.1863
@@ -188,9 +188,9 @@ Data (such as dates and numeric formatting) are NOT localized. Dates and numeric
 
 We are not sure how to handle documentation, such as this ReadMe, in different languages.  If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
 
-## Testing
+## Acceptance Testing
 
-You can test Freshli using Aruba and Cucumber, which is pre-configured in the repository.
+In addition to running `dotnet test` to run the project's unit and integration tests, you run Freshli's acceptance test suite, built using Aruba and Cucumber, which is pre-configured in the repository.
 
 You will need Ruby installed on your system, and then run:
 
@@ -204,6 +204,33 @@ From then on, you can run the Aruba tests with:
 ```bash
 dotnet build -o bin && bundle exec cucumber
 ```
+
+### Collecting Code Coverage for the Acceptance Tests
+
+Code coverage data can be collected for the acceptance tests. This activity is performed by the project's continuous integration environment where the collected data is sent to CodeClimate for further tracking. You can also run the code coverage collection locally.
+
+First you'll need to make sure that the correct version of the [Coverlet code coverage tool](https://github.com/coverlet-coverage/coverlet) is installed:
+
+```bash
+dotnet tool restore
+```
+
+From then on, you can run the test suite and collect coverage with:
+
+```bash
+dotnet coverlet bin/Corgibytes.Freshli.Cli --target "bundle" --targetargs "exec cucumber" --output
+```
+
+## Working with the DevContainer
+
+This project has uses DevContainer to assist with creating a full configured development environment.
+
+There are two paths to working with this DevContainer setup.
+
+1. [Install the `devcontainer` CLI](https://code.visualstudio.com/docs/remote/devcontainer-cli) and then run `devcontainer build` followed by `devcontainer open`. That will open Visual Studio Code running from inside of a container with everything needed to build the project.
+
+2. Run `docker` directly. Run `docker -t freshli-cli-dev .devcontainer/` to build the container. Then you'll be able to run `docker run --rm -it -v $PWD:/code -w /code freshli-cli-dev bash` to create a shell session inside of a running container with everything set up for you. (Note, you may need to run `bundle install` when you first start the container to install the ruby-based dependencies. This step is performed for you if you use the `devcontainer` CLI to open a Visual Studio Code instance.)
+
 
 ## Contributing
 If you have any questions, notice a bug, or have a suggestion/enhancment please let us know by opening a [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
