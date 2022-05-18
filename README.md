@@ -188,9 +188,9 @@ Data (such as dates and numeric formatting) are NOT localized. Dates and numeric
 
 We are not sure how to handle documentation, such as this ReadMe, in different languages.  If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
 
-## Testing
+## Acceptance Testing
 
-You can test Freshli using Aruba and Cucumber, which is pre-configured in the repository.
+In addition to running `dotnet test` to run the project's unit and integration tests, you run Freshli's acceptance test suite, built using Aruba and Cucumber, which is pre-configured in the repository.
 
 You will need Ruby installed on your system, and then run:
 
@@ -203,6 +203,22 @@ From then on, you can run the Aruba tests with:
 
 ```bash
 dotnet build -o bin && bundle exec cucumber
+```
+
+### Collecting Code Coverage for the Acceptance Tests
+
+Code coverage data can be collected for the acceptance tests. This activity is performed by the project's continuous integration environment where the collected data is sent to CodeClimate for further tracking. You can also run the code coverage collection locally.
+
+First you'll need to make sure that the correct version of the [Coverlet code coverage tool](https://github.com/coverlet-coverage/coverlet) is installed:
+
+```bash
+dotnet tool restore
+```
+
+From then on, you can run the test suite and collect coverage with:
+
+```bash
+dotnet coverlet bin/Corgibytes.Freshli.Cli --target "bundle" --targetargs "exec cucumber" --output
 ```
 
 ## Working with the DevContainer
