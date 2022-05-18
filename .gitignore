@@ -442,6 +442,8 @@ results/
 
 # Ignore test coverage.
 coverage.info
+coverage-acceptance.info
+coverage.json
 Freshli.Cli.Test/coverage.info
 Freshli.Cli/nuget.config
 
