@@ -10,22 +10,39 @@ namespace Corgibytes.Freshli.Cli.Test
 {
     public static class ParseResultExtensions
     {
-        public static T GetArgumentByName<T>(this ParseResult result, string name)
+        private static Option<T> FindOption<T>(this ParseResult result, Func<Option, bool> finder)
         {
-            Argument<T> arg = result.CommandResult.Command.Arguments.Single(x => x.Name.Equals(name)) as Argument<T>;
-            return result.GetValueForArgument<T>(arg);
+            return result.CommandResult.Command.Options.Single(finder) as Option<T>;
         }
 
-        public static T GetOptionByName<T>(this ParseResult result, string name)
+        private static T FindOptionAndGetValue<T>(this ParseResult result, Func<Option, bool> finder)
         {
-            Option<T> option = result.CommandResult.Command.Options.Single(x => x.Name.Equals(name)) as Option<T>;
-            return result.GetValueForOption<T>(option);
+            return result.GetValueForOption(result.FindOption<T>(finder));
         }
 
-        public static T GetOptionByAlias<T>(this ParseResult result, string alias)
+        private static Argument<T> FindArgument<T>(this ParseResult result, Func<Argument, bool> finder)
         {
-            Option<T> option= result.CommandResult.Command.Options.Single(x => x.Aliases.Contains(alias)) as Option<T>;
-            return result.GetValueForOption<T>(option);
+            return result.CommandResult.Command.Arguments.Single(finder) as Argument<T>;
+        }
+
+        private static T FindArgumentAndGetValue<T>(this ParseResult result, Func<Argument, bool> finder)
+        {
+            return result.GetValueForArgument(result.FindArgument<T>(finder));
+        }
+
+        public static T GetArgumentValueByName<T>(this ParseResult result, string name)
+        {
+            return result.FindArgumentAndGetValue<T>(value => value.Name.Equals(name));
+        }
+
+        public static T GetOptionValueByName<T>(this ParseResult result, string name)
+        {
+            return result.FindOptionAndGetValue<T>(x => x.Name.Equals(name));
+        }
+
+        public static T GetOptionValueByAlias<T>(this ParseResult result, string alias)
+        {
+            return result.FindOptionAndGetValue<T>(x => x.Aliases.Contains(alias));
         }
     }
 }
