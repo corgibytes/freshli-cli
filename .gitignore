@@ -440,7 +440,6 @@ Freshli.sln.DotSettings.user
 *.log
 results/
 
-
 # Ignore test coverage.
 coverage.info
 Freshli.Cli.Test/coverage.info
@@ -448,9 +447,6 @@ Freshli.Cli/nuget.config
 
 # Ignore nuget config as it contains passwords or personal access tokens.
 nuget.config
-
-# ignore Ruby cruft
-Gemfile.lock
 
 # ignore generic build locations
 bin/
