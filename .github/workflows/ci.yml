@@ -103,15 +103,6 @@ jobs:
         run: |
           dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
 
-        if: ${{ !env.ACT }}
-        uses: paambaati/codeclimate-action@v2.7.5
-        env:
-          CC_TEST_REPORTER_ID: ${{ secrets.TEST_REPORTER_ID }}
-        with:
-          coverageCommand: dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
-          coverageLocations: |
-            ${{github.workspace}}/Corgibytes.Freshli.Cli.Test/coverage.info:lcov
-
       - name: "[Test] - Setup for Behavior Acceptance Tests"
         uses: ruby/setup-ruby@v1
         with:
