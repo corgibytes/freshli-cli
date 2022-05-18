@@ -192,9 +192,9 @@ jobs:
       # versions in the release branch.
       - name: "[Push] - Push to GitHub"
         if: github.event_name == 'push'
-        run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate -n true -s https://nuget.pkg.github.com/corgibytes/index.json
+        run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate --no-symbols -s https://nuget.pkg.github.com/corgibytes/index.json
 
       # Only push production or release candidates to Nuget.org.  These will be tagged.
       - name: "[Push] - Push to NuGet"
         if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate -n true -s https://api.nuget.org/v3/index.json
+        run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate --no-symbols -s https://api.nuget.org/v3/index.json
