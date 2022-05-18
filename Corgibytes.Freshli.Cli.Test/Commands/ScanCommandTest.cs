@@ -9,6 +9,7 @@ using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands
 {
@@ -32,19 +33,21 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
         }
 
         [Theory]
-        [InlineData("--format")]
-        [InlineData("-f")]
-        public void Verify_format_option_configuration(string alias)
+        [MethodData(nameof(DataForVerifyOptionConfigurations))]
+        public void VerifyOptionConfigurations(string alias, ArgumentArity arity, bool allowsMultiples)
         {
-            VerifyAlias(alias, ArgumentArity.ExactlyOne, false);
+            TestHelpers.VerifyAlias<ScanCommand>(alias, arity, allowsMultiples);
         }
 
-        [Theory]
-        [InlineData("--output")]
-        [InlineData("-o")]
-        public void Verify_output_options_configuration(string alias)
+        private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations()
         {
-            VerifyAlias(alias, ArgumentArity.OneOrMore, true);
+            return new TheoryData<string, ArgumentArity, bool>()
+            {
+                {"--format", ArgumentArity.ExactlyOne, false},
+                {"-f", ArgumentArity.ExactlyOne, false},
+                {"--output", ArgumentArity.OneOrMore, true},
+                {"-o", ArgumentArity.OneOrMore, true}
+            };
         }
 
         [Fact]
@@ -54,7 +57,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
             scanCommand.Handler.Should().NotBeNull();
         }
 
-        [Fact(Skip = "Will until we have a way to mock the freshli lib call")]        
+        [Fact(Skip = "Will until we have a way to mock the freshli lib call")]
         public async Task  Verify_handler_is_executed()
         {
             CommandLineBuilder cmdBuilder = Program.CreateCommandLineBuilder();
@@ -65,15 +68,6 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
             _console.Out.ToString().Should().Contain("Command Execution Invocation Started");
             _console.Out.ToString().Should().Contain("Command Execution Invocation Ended");
             _console.Out.ToString().Should().NotContain("Exception has been thrown by the target of an invocation");
-        }
-
-        private static void VerifyAlias(string alias, IArgumentArity arity, bool allowMultipleArgumentsPerToken)
-        {
-            ScanCommand scanCommand = new();
-            Option option = scanCommand.Options.FirstOrDefault(x => x.Aliases.Contains(alias));
-            option.Should().NotBeNull();
-            option.AllowMultipleArgumentsPerToken.Should().Be(allowMultipleArgumentsPerToken);
-            option.Arity.Should().BeEquivalentTo(arity);
         }
     }
 }

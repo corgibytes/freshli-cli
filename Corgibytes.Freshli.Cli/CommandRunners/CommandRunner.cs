@@ -2,8 +2,8 @@
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners
-{    
-    public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOptions.CommandOptions 
+{
+    public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOptions.CommandOptions
     {
         protected Runner Runner { get; }
         protected IServiceProvider Services { get; }
@@ -15,6 +15,6 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
         }
 
         public abstract int Run(T options);
-        
+
     }
 }

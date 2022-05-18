@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.IO;
+using System.Linq;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
@@ -26,12 +29,11 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
 
             ParseResult result = parser.Parse(args);
 
-            DirectoryInfo path = result.ValueForArgument<DirectoryInfo>("path");
-            FormatType formatType = result.ValueForOption<FormatType>("--format");
-            FormatType formatTypeFromAlias = result.ValueForOption<FormatType>("-f");
-
-            IEnumerable<OutputStrategyType> outputStrategyTypes = result.ValueForOption<IEnumerable<OutputStrategyType>>("--output");
-            IEnumerable<OutputStrategyType> outputStrategyTypesFromAlias = result.ValueForOption<IEnumerable<OutputStrategyType>>("-o");
+            DirectoryInfo path = result.GetArgumentValueByName<DirectoryInfo>("path");
+            FormatType formatType = result.GetOptionValueByName<FormatType>("format");
+            FormatType formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
+            IEnumerable<OutputStrategyType> outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output");
+            IEnumerable<OutputStrategyType> outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o");
 
             formatType.Should().Be(formatTypeFromAlias);
 
@@ -70,7 +72,7 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
 
                     //It should configure the default formatter
                     new object[] { new string[] { "scan", TempPath , "--output", "console" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
-                    new object[] { new string[] { "scan", TempPath, "-o", "file" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.File} },                    
+                    new object[] { new string[] { "scan", TempPath, "-o", "file" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.File} },
 
                     //It should configure the default output
                     new object[] { new string[] { "scan", TempPath, "--format", "yaml" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console } },
