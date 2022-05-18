@@ -106,7 +106,7 @@ jobs:
       - name: "[Test] - Setup for Behavior Acceptance Tests"
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.6 # Not needed with a .ruby-version file
+          ruby-version: 3.1 # Not needed with a .ruby-version file
           bundler-cache: true
 
       - name: "[Test] - Setup for Acceptance Test Coverage Collection"
