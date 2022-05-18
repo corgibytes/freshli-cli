@@ -33,5 +33,20 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
             return success ? 0 : 1;
         }
     }
+
+    public class CacheDestroyCommandRunner : CommandRunner<CacheDestroyCommandOptions>
+    {
+        public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner)
+            : base(serviceProvider, runner)
+        {
+
+        }
+
+        public override int Run(CacheDestroyCommandOptions options)
+        {
+            bool success = Cache.Destroy(options.CacheDir);
+            return (success == true ? 0 : 1);
+        }
+    }
 }
 

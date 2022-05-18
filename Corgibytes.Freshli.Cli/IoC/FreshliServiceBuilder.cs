@@ -48,6 +48,9 @@ namespace Corgibytes.Freshli.Cli.IoC
 
             Services.AddScoped<ICommandRunner<CachePrepareCommandOptions>, CachePrepareCommandRunner>();
             Services.AddOptions<CachePrepareCommandOptions>().BindCommandLine();
+
+            Services.AddScoped<ICommandRunner<CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
+            Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
         }
     }
 }
