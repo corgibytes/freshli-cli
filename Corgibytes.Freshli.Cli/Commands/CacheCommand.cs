@@ -14,6 +14,9 @@ namespace Corgibytes.Freshli.Cli.Commands
         {
             CachePrepareCommand prepare = new();
             AddCommand(prepare);
+
+            CacheDestroyCommand destroy = new();
+            AddCommand(destroy);
         }
     }
 
@@ -29,6 +32,22 @@ namespace Corgibytes.Freshli.Cli.Commands
         {
             using IServiceScope scope = host.Services.CreateScope();
             ICommandRunner<CachePrepareCommandOptions> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<CachePrepareCommandOptions>>();
+            return runner.Run(options);
+        }
+    }
+
+    public class CacheDestroyCommand : Command
+    {
+        public CacheDestroyCommand() : base("destroy",
+            "Deletes the Freshli cache.")
+        {
+            Handler = CommandHandler.Create<IHost, InvocationContext, CacheDestroyCommandOptions>(Run);
+        }
+
+        private int Run(IHost host, InvocationContext context, CacheDestroyCommandOptions options)
+        {
+            using IServiceScope scope = host.Services.CreateScope();
+            ICommandRunner<CacheDestroyCommandOptions> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<CacheDestroyCommandOptions>>();
             return runner.Run(options);
         }
     }
