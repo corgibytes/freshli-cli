@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
@@ -14,7 +13,7 @@ namespace Corgibytes.Freshli.Cli
 {
     public class Program
     {
-        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger(); 
+        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
 
         public static async Task<int> Main(string[] args)
         {
@@ -24,27 +23,33 @@ namespace Corgibytes.Freshli.Cli
                 .InvokeAsync(args);
         }
 
+        public static CommandLineBuilder CreateCommandLineBuilder()
+        {
+            var command = new MainCommand
+            {
+                // Add commands here!
+                new ScanCommand(),
+                new CacheCommand()
+            };
+
+            CommandLineBuilder builder = new CommandLineBuilder(command)
+                .UseHost(CreateHostBuilder)
+                .AddMiddleware(async (context, next) =>
+                {
+                    await LogExecution(context, next);
+                })
+                .UseExceptionHandler()
+                .UseHelp();
+
+            return builder;
+        }
+
         static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((_, services) =>
             {
                 new FreshliServiceBuilder(services).Register();
             });
-
-        public static CommandLineBuilder CreateCommandLineBuilder()
-        {
-            CommandLineBuilder builder = new CommandLineBuilder(new MainCommand())
-                .UseHost(CreateHostBuilder)
-                .UseMiddleware(async (context, next) =>
-                {
-                    await LogExecution(context, next);
-                })
-               .UseExceptionHandler()
-               .UseHelp()
-               .AddCommand(new ScanCommand());            
-
-            return builder;
-        }
 
         public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
         {
