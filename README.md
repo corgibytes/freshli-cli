@@ -1,7 +1,7 @@
 # Freshli Command Line
 
 [![](https://img.shields.io/github/v/release/corgibytes/freshli-cli?label=Latest%20Release)](https://github.com/corgibytes/freshli-cli/releases/latest)
-[![](https://github.com/corgibytes/freshli-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/corgibytes/freshli-cli/actions)
+[![](https://github.com/corgibytes/freshli-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/corgibytes/freshli-cli/actions) [![Maintainability](https://api.codeclimate.com/v1/badges/53f738a69259b3940778/maintainability)](https://codeclimate.com/github/corgibytes/freshli-cli/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/53f738a69259b3940778/test_coverage)](https://codeclimate.com/github/corgibytes/freshli-cli/test_coverage)
 
 A tool for displaying historical metrics about a project's dependencies.  Run the Freshli CLI on you project to see how your project's dependency freshness changes over time.
 
