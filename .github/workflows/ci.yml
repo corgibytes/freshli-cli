@@ -100,6 +100,9 @@ jobs:
           echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
 
       - name: "[Test] - Test, Generate Code Coverage"
+        run: |
+          dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
+
         if: ${{ !env.ACT }}
         uses: paambaati/codeclimate-action@v2.7.5
         env:
@@ -115,15 +118,28 @@ jobs:
           ruby-version: 2.6 # Not needed with a .ruby-version file
           bundler-cache: true
 
-      - name: "[Test] - Behavior Acceptance Tests"
+      - name: "[Test] - Setup for Acceptance Test Coverage Collection"
         run: |
-            dotnet build -o bin && bundle exec cucumber
+          dotnet tool restore
+
+      - name: "[Test] - Behavior Acceptance Tests with Coverage Collection"
+        run: |
+          dotnet build -o bin && dotnet coverlett ./bin --target "cucumber" --output ./coverage-acceptance.info --format lcov
+
+      - name: "[Test] - Send Code Coverage Data to Code Climate"
+        uses: paambaati/codeclimate-action@v3.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.TEST_REPORTER_ID }}
+        with:
+          coverageLocations: |
+            ${{github.workspace}}/Corgibytes.Freshli.Cli.Test/coverage.info
+            ${{github.workspace}}/coverage-acceptance.info
 
       - name: "[Publish] - Publish win-x64, linux-x64 and osx-x64"
         run: |
-            dotnet publish -r win-x64 -c Release --self-contained false
-            dotnet publish -r linux-x64 -c Release --self-contained false
-            dotnet publish -r osx-x64 -c Release --self-contained false
+          dotnet publish -r win-x64 -c Release --self-contained false
+          dotnet publish -r linux-x64 -c Release --self-contained false
+          dotnet publish -r osx-x64 -c Release --self-contained false
 
       - name: "[Post Publish] - Zip win-x64 Release"
         uses: papeloto/action-zip@v1
