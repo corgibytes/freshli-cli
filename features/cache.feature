@@ -12,3 +12,18 @@ Feature: Cache
         Then the directory named "~/somewhere_else" should exist
         And a file named "~/somewhere_else/freshli.db" should exist
         And we can open a SQLite connection to "~/somewhere_else/freshli.db"
+
+    Scenario: Destroy
+        Given a directory named "~/.freshli" exists
+        And a blank file named "~/.freshli/freshli.db" exists
+        When I run `freshli cache destroy --force`
+        Then the directory named "~/.freshli" should not exist
+
+    Scenario: Destroy on unclean folder
+        Given a directory named "~/.freshli" exists
+        And a blank file named "~/.freshli/freshli.db" exists
+        And a blank file named "~/.freshli/nonsense.txt" exists
+        When I run `freshli cache destroy --force`
+        Then the directory named "~/.freshli" should exist
+        And the file named "~/.freshli/nonsense.txt" should exist
+        And the file named "~/.freshli/freshli.db" should not exist
