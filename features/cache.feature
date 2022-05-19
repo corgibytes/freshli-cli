@@ -7,4 +7,8 @@ Feature: Cache
         And we can open a SQLite connection to "~/.freshli/freshli.db"
 
     Scenario: Prepare with overridden cache-dir
+        Given a directory named "~/somewhere_else" does not exist
         When I run `freshli cache prepare --cache-dir somewhere_else`
+        Then the directory named "~/somewhere_else" should exist
+        And a file named "~/somewhere_else/freshli.db" should exist
+        And we can open a SQLite connection to "~/somewhere_else/freshli.db"
