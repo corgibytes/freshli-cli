@@ -1,16 +1,12 @@
 using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.CommandLine.NamingConventionBinder;
 using Corgibytes.Freshli.Cli.CommandOptions;
-using Corgibytes.Freshli.Cli.CommandRunners;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands
 {
     public class CacheCommand : Command
     {
-        public CacheCommand() : base("cache", "Manages the local cache database")
+        public CacheCommand()
+            : base("cache", "Manages the local cache database")
         {
             CachePrepareCommand prepare = new();
             AddCommand(prepare);
@@ -20,26 +16,17 @@ namespace Corgibytes.Freshli.Cli.Commands
         }
     }
 
-    public class CachePrepareCommand : Command
+    public class CachePrepareCommand : RunnableCommand<CachePrepareCommandOptions>
     {
-        public CachePrepareCommand() : base("prepare",
-            "Ensures the cache directory exists and contains a valid cache database.")
-        {
-            Handler = CommandHandler.Create<IHost, InvocationContext, CachePrepareCommandOptions>(Run);
-        }
-
-        private int Run(IHost host, InvocationContext context, CachePrepareCommandOptions options)
-        {
-            using IServiceScope scope = host.Services.CreateScope();
-            ICommandRunner<CachePrepareCommandOptions> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<CachePrepareCommandOptions>>();
-            return runner.Run(options);
-        }
+        public CachePrepareCommand()
+            : base("prepare", "Ensures the cache directory exists and contains a valid cache database.")
+        {}
     }
 
-    public class CacheDestroyCommand : Command
+    public class CacheDestroyCommand : RunnableCommand<CacheDestroyCommandOptions>
     {
-        public CacheDestroyCommand() : base("destroy",
-            "Deletes the Freshli cache.")
+        public CacheDestroyCommand()
+            : base("destroy", "Deletes the Freshli cache.")
         {
             Option<bool> forceOption = new("--force", "Don't prompt to confirm destruction of cache.")
             {
@@ -47,15 +34,6 @@ namespace Corgibytes.Freshli.Cli.Commands
             };
 
             AddOption(forceOption);
-
-            Handler = CommandHandler.Create<IHost, InvocationContext, CacheDestroyCommandOptions>(Run);
-        }
-
-        private int Run(IHost host, InvocationContext context, CacheDestroyCommandOptions options)
-        {
-            using IServiceScope scope = host.Services.CreateScope();
-            ICommandRunner<CacheDestroyCommandOptions> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<CacheDestroyCommandOptions>>();
-            return runner.Run(options);
         }
     }
 
