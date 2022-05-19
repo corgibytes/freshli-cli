@@ -16,7 +16,7 @@ namespace Corgibytes.Freshli.Cli.Functionality
         private static void MigrateIfPending(CacheContext context)
         {
             var pending = context.Database.GetPendingMigrations();
-            if (pending.Any() == false)
+            if (!pending.Any())
             {
                 return;
             }
@@ -29,7 +29,7 @@ namespace Corgibytes.Freshli.Cli.Functionality
             Console.Out.WriteLine($"Preparing cache at {cacheDir}");
 
             // Create the directory if it doesn't already exist
-            if (cacheDir.Exists == false)
+            if (!cacheDir.Exists)
             {
                 cacheDir.Create();
             }
@@ -51,7 +51,7 @@ namespace Corgibytes.Freshli.Cli.Functionality
         public static bool Destroy(DirectoryInfo cacheDir)
         {
             // If the directory doesn't exist, do nothing (be idempotent).
-            if (cacheDir.Exists == false)
+            if (!cacheDir.Exists)
             {
                 Console.Error.WriteLine("Cache directory already destroyed or does not exist.");
                 return true;
@@ -60,11 +60,10 @@ namespace Corgibytes.Freshli.Cli.Functionality
             // Find and delete each known cache file in the cache directory.
             List<FileInfo> filesInCacheDir = cacheDir.GetFiles().ToList();
 
-            List<FileInfo> toDelete =
-                (from file in filesInCacheDir where s_knownCacheFiles.Contains(file.Name) select file).ToList();
+            List<FileInfo> toDelete = filesInCacheDir.Where(file => s_knownCacheFiles.Contains(file.Name)).ToList();
 
             // If no known cache files were found in the non-empty cache directory, fail with warning message.
-            if (toDelete.Any() == false && filesInCacheDir.Any())
+            if (!toDelete.Any() && filesInCacheDir.Any())
             {
                 Console.Error.WriteLine("Provided --cache-dir contained no known Freshli cache files. Directory not destroyed.");
                 return false;
@@ -72,13 +71,20 @@ namespace Corgibytes.Freshli.Cli.Functionality
 
             // Delete each cache file from the directory.
             foreach (var file in toDelete)
+            {
                 file.Delete();
+            }
 
             // Delete the cache directory if it is now empty.
-            if (cacheDir.GetFiles().Length == 0)
+            if (!cacheDir.GetFiles().Any())
+            {
                 cacheDir.Delete();
+            }
             else
-                Console.Error.WriteLine("Cache directory contains files not belonging to Freshli. Directory not destroyed.");
+            {
+                Console.Error.WriteLine(
+                    "Cache directory contains files not belonging to Freshli. Directory not destroyed.");
+            }
 
             return true;
         }
