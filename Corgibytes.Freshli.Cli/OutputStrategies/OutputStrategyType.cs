@@ -1,8 +1,6 @@
-﻿namespace Corgibytes.Freshli.Cli.OutputStrategies
+﻿namespace Corgibytes.Freshli.Cli.OutputStrategies;
+public enum OutputStrategyType
 {
-    public enum OutputStrategyType
-    {
-        Console,
-        File
-    }
+    Console,
+    File
 }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.CommandLine;
+﻿using System.Collections.Generic;
 using System.CommandLine.Builder;
 using System.CommandLine.Parsing;
 using System.IO;
@@ -12,74 +10,72 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Corgibytes.Freshli.Cli.Test.CommandOptions
+namespace Corgibytes.Freshli.Cli.Test.CommandOptions;
+public class ScanCommandOptionsTest : FreshliTest
 {
-    public class ScanCommandOptionsTest : FreshliTest
+    private static string TempPath { get; } = Path.GetTempPath();
+
+    public ScanCommandOptionsTest(ITestOutputHelper output) : base(output) { }
+
+    [Theory]
+    [MemberData(nameof(ScanOptionsArgs))]
+    public void Send_Args_ReturnsScanOptions(string[] args, string expectedPath, FormatType expectedFormat, IList<OutputStrategyType> expectedOutput)
     {
-        private static string TempPath { get; } = Path.GetTempPath();
+        CommandLineBuilder cmBuilder = Program.CreateCommandLineBuilder();
+        Parser parser = new(cmBuilder.Command);
 
-        public ScanCommandOptionsTest(ITestOutputHelper output) : base(output) { }
+        ParseResult result = parser.Parse(args);
 
-        [Theory]
-        [MemberData(nameof(ScanOptionsArgs))]
-        public void Send_Args_ReturnsScanOptions(string[] args, string expectedPath, FormatType expectedFormat, IList<OutputStrategyType> expectedOutput)
-        {
-            CommandLineBuilder cmBuilder = Program.CreateCommandLineBuilder();
-            Parser parser = new(cmBuilder.Command);
+        DirectoryInfo path = result.GetArgumentValueByName<DirectoryInfo>("path");
+        FormatType formatType = result.GetOptionValueByName<FormatType>("format");
+        FormatType formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
+        List<OutputStrategyType> outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output").ToList();
+        List<OutputStrategyType> outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o").ToList();
 
-            ParseResult result = parser.Parse(args);
+        formatType.Should().Be(formatTypeFromAlias);
 
-            DirectoryInfo path = result.GetArgumentValueByName<DirectoryInfo>("path");
-            FormatType formatType = result.GetOptionValueByName<FormatType>("format");
-            FormatType formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
-            IEnumerable<OutputStrategyType> outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output");
-            IEnumerable<OutputStrategyType> outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o");
+        outputStrategyTypes.Should().NotBeEmpty()
+            .And.Equal(outputStrategyTypesFromAlias);
 
-            formatType.Should().Be(formatTypeFromAlias);
+        path.Should().NotBeNull();
+        path.FullName.Should().NotBeEmpty()
+            .And.Be(expectedPath);
 
-            outputStrategyTypes.Should().NotBeEmpty()
-                .And.Equal(outputStrategyTypesFromAlias);
+        formatType.Should()
+            .Be(expectedFormat);
 
-            path.Should().NotBeNull();
-            path.FullName.Should().NotBeEmpty()
-                .And.Be(expectedPath);
+        outputStrategyTypes.Should().NotContainNulls();
 
-            formatType.Should()
-                .Be(expectedFormat);
+        // Verify all required ones are present
+        expectedOutput.Should().BeSubsetOf(outputStrategyTypes);
 
-            outputStrategyTypes.Should().NotContainNulls();
-
-            //Veryfy all required ones are present
-            expectedOutput.Should().BeSubsetOf(outputStrategyTypes);
-
-            //Veryfy there aren't extra output stragetegies added
-            outputStrategyTypes.Should().BeSubsetOf(expectedOutput);
-        }
-
-        public static IEnumerable<object[]> ScanOptionsArgs =>
-              new List<object[]>
-              {
-                    new object[] { new string[] { "scan", TempPath, "--format", "json", "--output", "console"}, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
-                    new object[] { new string[] { "scan", TempPath, "--Format", "JSON", "--output", "CONSOLE" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
-                    new object[] { new string[] { "scan", TempPath, "--format", "csv", "--output", "file", "--output", "console" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.File, OutputStrategyType.Console }},
-                    new object[] { new string[] { "scan", TempPath, "--format", "yaml", "--output", "file" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.File }},
-                    new object[] { new string[] { "scan", TempPath, "-f", "json", "-o", "console" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
-                    new object[] { new string[] { "scan", TempPath, "-f", "csv", "-o", "file", "-o", "console" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.File, OutputStrategyType.Console }},
-                    new object[] { new string[] { "scan", TempPath, "-f", "Csv", "-o", "FILE", "-o", "console" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.File, OutputStrategyType.Console }},
-                    new object[] { new string[] { "scan", TempPath, "-f", "yaml", "-o", "console" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console } },
-                    new object[] { new string[] { "scan", TempPath, "--format", "yaml", "-o", "file" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.File }},
-                    new object[] { new string[] { "scan", TempPath, "-f", "yaml", "--output", "console","-o", "file" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console, OutputStrategyType.File } },
-
-                    //It should configure the default formatter
-                    new object[] { new string[] { "scan", TempPath , "--output", "console" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
-                    new object[] { new string[] { "scan", TempPath, "-o", "file" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.File} },
-
-                    //It should configure the default output
-                    new object[] { new string[] { "scan", TempPath, "--format", "yaml" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console } },
-                    new object[] { new string[] { "scan", TempPath, "-f", "csv" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.Console } },
-
-                    //It should configure the default formatter and default output
-                    new object[] { new string[] { "scan", TempPath }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } }
-              };
+        // Verify there aren't extra output strategies added
+        outputStrategyTypes.Should().BeSubsetOf(expectedOutput);
     }
+
+    public static IEnumerable<object[]> ScanOptionsArgs =>
+          new List<object[]>
+          {
+                new object[] { new [] { "scan", TempPath, "--format", "json", "--output", "console"}, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
+                new object[] { new [] { "scan", TempPath, "--Format", "JSON", "--output", "CONSOLE" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
+                new object[] { new [] { "scan", TempPath, "--format", "csv", "--output", "file", "--output", "console" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.File, OutputStrategyType.Console }},
+                new object[] { new [] { "scan", TempPath, "--format", "yaml", "--output", "file" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.File }},
+                new object[] { new [] { "scan", TempPath, "-f", "json", "-o", "console" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
+                new object[] { new [] { "scan", TempPath, "-f", "csv", "-o", "file", "-o", "console" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.File, OutputStrategyType.Console }},
+                new object[] { new [] { "scan", TempPath, "-f", "Csv", "-o", "FILE", "-o", "console" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.File, OutputStrategyType.Console }},
+                new object[] { new [] { "scan", TempPath, "-f", "yaml", "-o", "console" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console } },
+                new object[] { new [] { "scan", TempPath, "--format", "yaml", "-o", "file" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.File }},
+                new object[] { new [] { "scan", TempPath, "-f", "yaml", "--output", "console","-o", "file" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console, OutputStrategyType.File } },
+
+                //It should configure the default formatter
+                new object[] { new [] { "scan", TempPath , "--output", "console" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
+                new object[] { new [] { "scan", TempPath, "-o", "file" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.File} },
+
+                //It should configure the default output
+                new object[] { new [] { "scan", TempPath, "--format", "yaml" }, TempPath, FormatType.Yaml, new List<OutputStrategyType>() { OutputStrategyType.Console } },
+                new object[] { new [] { "scan", TempPath, "-f", "csv" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.Console } },
+
+                //It should configure the default formatter and default output
+                new object[] { new [] { "scan", TempPath }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } }
+          };
 }
