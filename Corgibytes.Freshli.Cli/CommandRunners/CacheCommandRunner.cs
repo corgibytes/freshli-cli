@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Lib;
@@ -44,9 +45,26 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 
         public override int Run(CacheDestroyCommandOptions options)
         {
+            // Skip prompt if the --force flag is passed
+            if (options.Force)
+                goto Destroy;
+
+            // Prompt the user whether they want to destroy the cache
+            Console.Out.Write($"Do you want to destroy the Freshli cache at {options.CacheDir.ToString()}? [y/N] ");
+            string choice = Console.In.ReadLine();
+            string[] choicesToProceed = {"y", "Y"};
+            // If a "proceed" choice is not input, abort operation.
+            if (choicesToProceed.Contains(choice) == false)
+            {
+                Console.Out.WriteLine("Operation aborted. Cache not destroyed.");
+                return 0;
+            }
+
+            // Destroy the cache
+            Destroy:
+            Console.Out.WriteLine("Destroying cache...");
             bool success = Cache.Destroy(options.CacheDir);
             return (success == true ? 0 : 1);
         }
     }
 }
-
