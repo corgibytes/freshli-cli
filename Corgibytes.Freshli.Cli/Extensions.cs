@@ -1,4 +1,4 @@
-namespace Corgibytes.Freshli.Cli.Extensions;
+namespace Corgibytes.Freshli.Cli;
 
 public static class BooleanExtensions
 {

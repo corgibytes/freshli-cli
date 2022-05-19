@@ -8,50 +8,48 @@ using Corgibytes.Freshli.Lib;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
 
-namespace Corgibytes.Freshli.Cli.IoC
+namespace Corgibytes.Freshli.Cli.IoC;
+public class FreshliServiceBuilder
 {
-    public class FreshliServiceBuilder
+    public IServiceCollection Services { get; }
+
+    public FreshliServiceBuilder(IServiceCollection services)
     {
-        public IServiceCollection Services { get; }
+        Services = services;
+    }
 
-        public FreshliServiceBuilder(IServiceCollection services)
-        {
-            Services = services;
-        }
+    public void Register()
+    {
+        RegisterBaseCommand();
+        RegisterScanCommand();
+        RegisterCacheCommand();
+    }
 
-        public void Register()
-        {
-            RegisterBaseCommand();
-            RegisterScanCommand();
-            RegisterCacheCommand();
-        }
+    public void RegisterBaseCommand()
+    {
+        Services.AddScoped<Runner>();
+    }
 
-        public void RegisterBaseCommand()
-        {
-            Services.AddScoped<Runner>();
-        }
+    public void RegisterScanCommand()
+    {
+        Services.AddScoped<ICommandRunner<ScanCommandOptions>, ScanCommandRunner>();
+        Services.AddNamedScoped<IOutputFormatter, JsonOutputFormatter>(FormatType.Json);
+        Services.AddNamedScoped<IOutputFormatter, CsvOutputFormatter>(FormatType.Csv);
+        Services.AddNamedScoped<IOutputFormatter, YamlOutputFormatter>(FormatType.Yaml);
+        Services.AddNamedScoped<IOutputStrategy, FileOutputStrategy>(OutputStrategyType.File);
+        Services.AddNamedScoped<IOutputStrategy, ConsoleOutputStrategy>(OutputStrategyType.Console);
+        Services.AddOptions<ScanCommandOptions>().BindCommandLine();
+    }
 
-        public void RegisterScanCommand()
-        {
-            Services.AddScoped<ICommandRunner<ScanCommandOptions>, ScanCommandRunner>();
-            Services.AddNamedScoped<IOutputFormatter, JsonOutputFormatter>(FormatType.Json);
-            Services.AddNamedScoped<IOutputFormatter, CsvOutputFormatter>(FormatType.Csv);
-            Services.AddNamedScoped<IOutputFormatter, YamlOutputFormatter>(FormatType.Yaml);
-            Services.AddNamedScoped<IOutputStrategy, FileOutputStrategy>(OutputStrategyType.File);
-            Services.AddNamedScoped<IOutputStrategy, ConsoleOutputStrategy>(OutputStrategyType.Console);
-            Services.AddOptions<ScanCommandOptions>().BindCommandLine();
-        }
+    public void RegisterCacheCommand()
+    {
+        Services.AddScoped<ICommandRunner<CacheCommandOptions>, CacheCommandRunner>();
+        Services.AddOptions<CacheCommandOptions>().BindCommandLine();
 
-        public void RegisterCacheCommand()
-        {
-            Services.AddScoped<ICommandRunner<CacheCommandOptions>, CacheCommandRunner>();
-            Services.AddOptions<CacheCommandOptions>().BindCommandLine();
+        Services.AddScoped<ICommandRunner<CachePrepareCommandOptions>, CachePrepareCommandRunner>();
+        Services.AddOptions<CachePrepareCommandOptions>().BindCommandLine();
 
-            Services.AddScoped<ICommandRunner<CachePrepareCommandOptions>, CachePrepareCommandRunner>();
-            Services.AddOptions<CachePrepareCommandOptions>().BindCommandLine();
-
-            Services.AddScoped<ICommandRunner<CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
-            Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
-        }
+        Services.AddScoped<ICommandRunner<CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
+        Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
     }
 }

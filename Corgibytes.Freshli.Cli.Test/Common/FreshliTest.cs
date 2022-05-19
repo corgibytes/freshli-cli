@@ -1,14 +1,12 @@
 ﻿using Xunit.Abstractions;
 
-namespace Corgibytes.Freshli.Cli.Test.Common
+namespace Corgibytes.Freshli.Cli.Test.Common;
+public class FreshliTest
 {
-    public class FreshliTest
-    {
-        protected ITestOutputHelper Output { get; private set; }
+    protected ITestOutputHelper Output { get; private set; }
 
-        public FreshliTest(ITestOutputHelper output)
-        {
-            Output = output;
-        }
+    public FreshliTest(ITestOutputHelper output)
+    {
+        Output = output;
     }
 }

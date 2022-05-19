@@ -11,7 +11,7 @@ using NLog;
 
 namespace Corgibytes.Freshli.Cli
 {
-    public class Program
+    public static class Program
     {
         private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
 
