@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Lib;
 
@@ -30,8 +31,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 
         public override int Run(CachePrepareCommandOptions options)
         {
-            bool success = Cache.Prepare(options.CacheDir);
-            return success ? 0 : 1;
+            return Cache.Prepare(options.CacheDir).ToExitCode();
         }
     }
 
@@ -62,8 +62,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 
             // Destroy the cache
             Console.Out.WriteLine("Destroying cache...");
-            bool success = Cache.Destroy(options.CacheDir);
-            return (success ? 0 : 1);
+            return Cache.Destroy(options.CacheDir).ToExitCode();
         }
     }
 }
