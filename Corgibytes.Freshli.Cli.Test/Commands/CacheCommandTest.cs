@@ -1,7 +1,4 @@
-using System.CommandLine.Builder;
-using System.CommandLine.IO;
-using System.CommandLine.Parsing;
-using System.Threading.Tasks;
+using System.CommandLine;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
@@ -12,8 +9,6 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
 {
     public class CacheCommandTest : FreshliTest
     {
-        private readonly TestConsole _console = new();
-
         public CacheCommandTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
@@ -28,6 +23,20 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
         {
             CachePrepareCommand cachePrepareCommand = new();
             cachePrepareCommand.Handler.Should().NotBeNull();
+        }
+
+        [Fact]
+        public void Verify_destroy_handler_configuration()
+        {
+            CacheDestroyCommand cacheDestroyCommand = new();
+            cacheDestroyCommand.Handler.Should().NotBeNull();
+        }
+
+        [Theory]
+        [InlineData("--force")]
+        public void Verify_force_option_configuration(string alias)
+        {
+            TestHelpers.VerifyAlias<CacheDestroyCommand>(alias, ArgumentArity.ZeroOrOne, false);
         }
     }
 }
