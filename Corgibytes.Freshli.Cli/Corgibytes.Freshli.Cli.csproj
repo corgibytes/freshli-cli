@@ -15,7 +15,10 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>freshli</ToolCommandName>
     <LangVersion>latestmajor</LangVersion>
-  </PropertyGroup>     
+    <PackageId>Corgibytes.Freshli.Cli</PackageId>
+    <Company>Corgibytes</Company>
+    <AssemblyName>freshli</AssemblyName>
+  </PropertyGroup>
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="">
       <Link>LICENSE</Link>

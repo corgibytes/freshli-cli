@@ -1,10 +1,10 @@
 Feature: Freshli.Cli
     Scenario: Help option
-        When I run `Corgibytes.Freshli.Cli --help`
+        When I run `freshli --help`
         Then the output should contain:
         """
         Usage:
-          Corgibytes.Freshli.Cli [command] [options]
+          freshli [command] [options]
         """
         And the output should contain:
         """
