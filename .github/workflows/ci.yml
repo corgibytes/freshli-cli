@@ -25,13 +25,6 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-      # .NET Core 3 is required for GitReleaseManager.
-      - name: "[Setup] - .NET Core 3 (GitReleaseManager)"
-        if: ${{ github.event_name == 'push' }}
-        uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: 3.0.x
-
       - name: "[Setup] - Install GitVersion"
         uses: gittools/actions/gitversion/setup@v0.9.13
         with:
