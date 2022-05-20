@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Formatters
     {
         public static IOutputFormatter ToFormatter(this FormatType formatType, IServiceProvider services)
         {
-            using IServiceScope scope = services.CreateScope();
+            using var scope = services.CreateScope();
             return scope.ServiceProvider.GetRequiredNamedService<IOutputFormatter>(formatType);
         }
     }

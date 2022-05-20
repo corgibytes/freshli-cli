@@ -17,7 +17,7 @@ namespace Corgibytes.Freshli.Cli
 
         public static async Task<int> Main(string[] args)
         {
-            CommandLineBuilder cmdBuilder = CreateCommandLineBuilder();
+            var cmdBuilder = CreateCommandLineBuilder();
             return await cmdBuilder.UseDefaults()
                 .Build()
                 .InvokeAsync(args);
@@ -32,7 +32,7 @@ namespace Corgibytes.Freshli.Cli
                 new CacheCommand()
             };
 
-            CommandLineBuilder builder = new CommandLineBuilder(command)
+            var builder = new CommandLineBuilder(command)
                 .UseHost(CreateHostBuilder)
                 .AddMiddleware(async (context, next) =>
                 {
@@ -53,12 +53,12 @@ namespace Corgibytes.Freshli.Cli
 
         public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
         {
-            string commandLine = context.ParseResult.ToString();
+            var commandLine = context.ParseResult.ToString();
 
             try
             {
-                string callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
-                string doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
+                var callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
+                var doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
 
                 context.Console.Out.Write(callingMessage);
                 s_logger.Trace(callingMessage);
@@ -70,7 +70,7 @@ namespace Corgibytes.Freshli.Cli
             }
             catch (Exception e)
             {
-                string message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
+                var message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
                 context.Console.Out.Write($"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
                 s_logger.Error($"{message} - {e.StackTrace}");
             }

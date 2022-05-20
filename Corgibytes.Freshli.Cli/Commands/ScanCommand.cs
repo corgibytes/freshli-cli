@@ -54,8 +54,8 @@ namespace Corgibytes.Freshli.Cli.Commands
 
             context.Console.Out.Write($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
 
-            using IServiceScope scope = host.Services.CreateScope();
-            ICommandRunner<ScanCommandOptions> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<ScanCommandOptions>>();
+            using var scope = host.Services.CreateScope();
+            var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<ScanCommandOptions>>();
 
             return runner.Run(options);
         }

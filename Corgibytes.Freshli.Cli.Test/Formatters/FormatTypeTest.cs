@@ -27,7 +27,7 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
                 .Cast<FormatType>()
                 .ToList();
 
-            foreach (FormatType type in formatTypes)
+            foreach (var type in formatTypes)
             {
                 type.ToFormatter(_services).Should()
                     .NotBeNull();
