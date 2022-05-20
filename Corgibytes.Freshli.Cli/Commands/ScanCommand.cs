@@ -50,7 +50,9 @@ namespace Corgibytes.Freshli.Cli.Commands
         private int Run(IHost host, InvocationContext context, ScanCommandOptions options)
         {
             if (options == null)
+            {
                 throw new ArgumentNullException(nameof(options));
+            }
 
             context.Console.Out.Write($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
 
