@@ -188,6 +188,14 @@ Data (such as dates and numeric formatting) are NOT localized. Dates and numeric
 
 We are not sure how to handle documentation, such as this ReadMe, in different languages.  If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
 
+## Linting
+
+We use a few different automatted tools tools to help us keep the code in this repository in compliance with the Freshli project style guide.
+
+### [eclint](https://gitlab.com/greut/eclint)
+
+The eclint project helps us validate that the files in the project are formatted consistently with respect to the rules that have been defined in the `.editorconfig` file.
+
 ## Acceptance Testing
 
 In addition to running `dotnet test` to run the project's unit and integration tests, you run Freshli's acceptance test suite, built using Aruba and Cucumber, which is pre-configured in the repository.
