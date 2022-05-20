@@ -19,11 +19,15 @@ Feature: Cache
         When I run `freshli cache destroy --force`
         Then the directory named "~/.freshli" should not exist
 
-    Scenario: Destroy on unclean folder
+    Scenario: Destroy with overridden cache-dir
+        Given a directory named "~/somewhere_else" exists
+        And a blank file named "~/somewhere_else/freshli.db" exists
+        When I run `freshli cache destroy --cache-dir somewhere_else --force`
+        Then the directory named "~/somewhere_else" should not exist
+
+    Scenario: Destroy on non-cache folder
         Given a directory named "~/.freshli" exists
-        And a blank file named "~/.freshli/freshli.db" exists
         And a blank file named "~/.freshli/nonsense.txt" exists
         When I run `freshli cache destroy --force`
         Then the directory named "~/.freshli" should exist
         And the file named "~/.freshli/nonsense.txt" should exist
-        And the file named "~/.freshli/freshli.db" should not exist
