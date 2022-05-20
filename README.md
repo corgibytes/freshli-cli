@@ -202,6 +202,15 @@ After making sure the `eclint` executable's in your path, it can be run with:
 eclint
 ```
 
+### [RuboCop](https://rubocop.org/)
+
+The `rubocop` project help us validate that the Ruby code we're writing conforms with the [Ruby Style Guide](https://rubystyle.guide/) that it is based on.
+
+After running `bundle install`, the following will run `rubocop`:
+
+```bash
+bundle exec rubocop
+```
 
 ## Acceptance Testing
 
