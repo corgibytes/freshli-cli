@@ -24,16 +24,16 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
         [MemberData(nameof(ScanOptionsArgs))]
         public void Send_Args_ReturnsScanOptions(string[] args, string expectedPath, FormatType expectedFormat, IList<OutputStrategyType> expectedOutput)
         {
-            CommandLineBuilder cmBuilder = Program.CreateCommandLineBuilder();
+            var cmBuilder = Program.CreateCommandLineBuilder();
             Parser parser = new(cmBuilder.Command);
 
-            ParseResult result = parser.Parse(args);
+            var result = parser.Parse(args);
 
-            DirectoryInfo path = result.GetArgumentValueByName<DirectoryInfo>("path");
-            FormatType formatType = result.GetOptionValueByName<FormatType>("format");
-            FormatType formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
-            IEnumerable<OutputStrategyType> outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output");
-            IEnumerable<OutputStrategyType> outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o");
+            var path = result.GetArgumentValueByName<DirectoryInfo>("path");
+            var formatType = result.GetOptionValueByName<FormatType>("format");
+            var formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
+            var outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output");
+            var outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o");
 
             formatType.Should().Be(formatTypeFromAlias);
 

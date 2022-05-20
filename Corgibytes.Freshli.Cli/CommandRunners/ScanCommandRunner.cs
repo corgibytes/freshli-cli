@@ -23,12 +23,12 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
                 throw new ArgumentNullException(nameof(options), CliOutput.ScanCommandRunner_Run_Path_should_not_be_null_or_empty);
             }
 
-            IOutputFormatter formatter = options.Format.ToFormatter(Services);
-            IEnumerable<IOutputStrategy> outputStrategies = options.Output.ToOutputStrategies(Services);
+            var formatter = options.Format.ToFormatter(Services);
+            var outputStrategies = options.Output.ToOutputStrategies(Services);
 
-            IList<ScanResult> results = Runner.Run(options.Path.FullName);
+            var results = Runner.Run(options.Path.FullName);
 
-            foreach (IOutputStrategy output in outputStrategies)
+            foreach (var output in outputStrategies)
             {
                 output.Send(results, formatter, options);
             }

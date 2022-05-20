@@ -13,8 +13,8 @@ namespace Corgibytes.Freshli.Cli.OutputStrategies
 
         public virtual void Send(IList<ScanResult> results, IOutputFormatter formatter, ScanCommandOptions options)
         {
-            string path = Path.Combine(options.Path?.FullName ?? string.Empty, $"freshli-scan-{DateTime.Now:yyyyMMddTHHmmss}.{options.Format}");
-            StreamWriter file = File.CreateText(path);
+            var path = Path.Combine(options.Path?.FullName ?? string.Empty, $"freshli-scan-{DateTime.Now:yyyyMMddTHHmmss}.{options.Format}");
+            var file = File.CreateText(path);
             file.WriteLine(formatter.Format(results));
         }
     }

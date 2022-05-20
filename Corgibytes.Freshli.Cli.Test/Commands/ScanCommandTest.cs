@@ -26,7 +26,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
 
             scanCommand.Arguments.Should().HaveCount(1);
 
-            Argument arg = scanCommand.Arguments.ElementAt(0);
+            var arg = scanCommand.Arguments.ElementAt(0);
 
             arg.Name.Should().Be("path");
             arg.Arity.Should().BeEquivalentTo(ArgumentArity.ExactlyOne);
