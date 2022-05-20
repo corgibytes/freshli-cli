@@ -219,7 +219,7 @@ The `dotnet format` command helps us make sure that our code is formatted consis
 To determine if any style changes are needed, you can run:
 
 ```bash
-dotnet format --verfiy-no-changes --severity info
+dotnet format --verify-no-changes --severity info
 ```
 
 To instruct `dotnet format` to attempt to correct the issues that it has found, you can run:
