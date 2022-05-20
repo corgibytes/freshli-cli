@@ -10,7 +10,9 @@ namespace Corgibytes.Freshli.Cli.Formatters
         public virtual string Format<T>(T entity)
         {
             if (entity == null)
+            {
                 throw new ArgumentNullException(nameof(entity));
+            }
 
             return Build<T>(entity);
         }
@@ -18,7 +20,9 @@ namespace Corgibytes.Freshli.Cli.Formatters
         public virtual string Format<T>(IList<T> entities)
         {
             if (entities == null)
+            {
                 throw new ArgumentNullException(nameof(entities));
+            }
 
             return Build<T>(entities);
         }
