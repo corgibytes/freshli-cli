@@ -193,6 +193,14 @@ RUN mkdir -p "$GEM_HOME" && chmod 777 "$GEM_HOME"
 # Install Aruba/Cucumber based acceptance testing tools
 RUN gem install bundler
 
+# Install [eclint](https://gitlab.com/greut/eclint)
+ENV ECLINT_VERSION=0.3.3
+RUN curl -L https://gitlab.com/greut/eclint/-/releases/v$ECLINT_VERSION/downloads/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -o /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz && \
+    mkdir -p /opt/eclint && \
+    tar -zxvf /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -C /opt/eclint && \
+    rm /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz
+ENV PATH /opt/eclint:$PATH
+
 # [Optional] Uncomment this section to install additional OS packages.
 # RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 #     && apt-get -y install --no-install-recommends <your-package-list-here>
