@@ -212,6 +212,22 @@ After running `bundle install`, the following will run `rubocop`:
 bundle exec rubocop
 ```
 
+### [`dotnet format`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-format)
+
+The `dotnet format` command helps us make sure that our code is formatted consistent with the .NET/C# specific settings that are present in the `.editorconfig` file along with sets of [validation rules](https://docs.microsoft.com/en-us/visualstudio/code-quality/roslyn-analyzers-overview?view=vs-2022) that the project has been configured to use.
+
+To determine if any style changes are needed, you can run:
+
+```bash
+dotnet format --verfiy-no-changes --severity info
+```
+
+To instruct `dotnet format` to attempt to correct the issues that it has found, you can run:
+
+```bash
+dotnet format --severity info
+```
+
 ## Acceptance Testing
 
 In addition to running `dotnet test` to run the project's unit and integration tests, you run Freshli's acceptance test suite, built using Aruba and Cucumber, which is pre-configured in the repository.
