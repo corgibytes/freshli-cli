@@ -451,9 +451,9 @@ Freshli.Cli/nuget.config
 nuget.config
 
 # ignore generic build locations
-bin/
 binpublish/
 exe/
+exepublish/
 
 # ignore cucumber/aruba temporary files
 tmp/
