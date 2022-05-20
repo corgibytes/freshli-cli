@@ -18,12 +18,16 @@ trim_trailing_whitespace = true
 end_of_line = lf
 tab_width = 8
 
-[project.json]
+[*.json]
 indent_size = 2
+insert_final_newline = unset
 
 # Generated code
 [*{_AssemblyInfo.cs,.notsupported.cs}]
 generated_code = true
+
+[*.sln]
+indent_style = tab
 
 # C# files
 [*.cs]
@@ -175,10 +179,11 @@ curly_bracket_next_line = true
 indent_brace_style = Allman
 
 # Xml project files
-[*.{csproj,vbproj,vcxproj,vcxproj.filters,proj,nativeproj,locproj}]
+[*.{vcxproj,vcxproj.filters}]
 indent_size = 2
 
 [*.{csproj,vbproj,proj,nativeproj,locproj}]
+indent_size = 2
 charset = utf-8
 
 # Xml build files
@@ -204,8 +209,19 @@ end_of_line = lf
 end_of_line = crlf
 
 # Ruby files
-[*.rb]
+[*.{rb,feature}]
 indent_size = 2
 
 [Gemfile]
 indent_size = 2
+
+[Gemfile.lock]
+indent_size = unset
+
+[LICENSE]
+indent_size = unset
+max_line_length = unset
+
+[CONTRIBUTING.md]
+indent_size = unset
+max_line_length = unset

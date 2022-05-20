@@ -48,17 +48,17 @@ namespace Corgibytes.Freshli.Cli.Test.OutputStrategies
 
 
         public static IEnumerable<object[]> OutputStrategies =>
-         new List<object[]>
-         {
+            new List<object[]>
+            {
                 new object[] { ConsoleOutputStrategy},
                 new object[] { FileOutputStrategy},
-         };
+            };
 
         public static IEnumerable<object[]> OutputStrategiesTypeCheckData =>
-          new List<object[]>
-          {
+            new List<object[]>
+            {
                 new object[] { ConsoleOutputStrategy, OutputStrategyType.Console},
                 new object[] { FileOutputStrategy, OutputStrategyType.File},
-          };
+            };
     }
 }
