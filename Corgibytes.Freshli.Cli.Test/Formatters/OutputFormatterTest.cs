@@ -32,7 +32,7 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
             CsvFormatter = new();
 
             DateTime date = new(2021, 11, 21);
-            string sha = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
+            var sha = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
             LibYearResult libYearResult = new();
             libYearResult.Add(new LibYearPackageResult("polyglot", "0.3.3", new DateTime(2011, 11, 01), "0.3.3", new DateTime(2011, 11, 01), 0.0, false, false));
 

@@ -27,8 +27,8 @@ namespace Corgibytes.Freshli.Cli.Commands
 
         private int Run(IHost host, InvocationContext context, CachePrepareCommandOptions options)
         {
-            using IServiceScope scope = host.Services.CreateScope();
-            ICommandRunner<CachePrepareCommandOptions> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<CachePrepareCommandOptions>>();
+            using var scope = host.Services.CreateScope();
+            var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<CachePrepareCommandOptions>>();
             return runner.Run(options);
         }
     }

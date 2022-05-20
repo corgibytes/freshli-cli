@@ -29,7 +29,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 
         public override int Run(CachePrepareCommandOptions options)
         {
-            bool success = Cache.Prepare(options.CacheDir);
+            var success = Cache.Prepare(options.CacheDir);
             return success ? 0 : 1;
         }
     }
