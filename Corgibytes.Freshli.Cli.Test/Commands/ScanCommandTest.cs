@@ -57,17 +57,5 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
             scanCommand.Handler.Should().NotBeNull();
         }
 
-        [Fact(Skip = "Will until we have a way to mock the freshli lib call")]
-        public async Task  Verify_handler_is_executed()
-        {
-            CommandLineBuilder cmdBuilder = Program.CreateCommandLineBuilder();
-            await cmdBuilder.UseDefaults()
-                .Build().InvokeAsync("scan http://github.com/corgibytes/freshli-ruby.git  -f yaml", _console);
-
-            _console.Out.ToString().Should().Contain("[ scan <.> [ -f <Csv> ]");
-            _console.Out.ToString().Should().Contain("Command Execution Invocation Started");
-            _console.Out.ToString().Should().Contain("Command Execution Invocation Ended");
-            _console.Out.ToString().Should().NotContain("Exception has been thrown by the target of an invocation");
-        }
     }
 }
