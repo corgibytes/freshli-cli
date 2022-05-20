@@ -11,14 +11,14 @@ namespace Corgibytes.Freshli.Cli.Functionality
 
         public static DirectoryInfo CacheDir = DefaultCacheDir;
 
-        private static readonly string cacheDbName = "freshli.db";
+        private static readonly string s_cacheDbName = "freshli.db";
         public string DbPath { get; }
 
         public DbSet<CachedProperty> CachedProperties { get; set; }
 
         public CacheContext()
         {
-            DbPath = Path.Join(CacheDir.ToString(), cacheDbName);
+            DbPath = Path.Join(CacheDir.ToString(), s_cacheDbName);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
