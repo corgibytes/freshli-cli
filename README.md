@@ -194,7 +194,14 @@ We use a few different automatted tools tools to help us keep the code in this r
 
 ### [eclint](https://gitlab.com/greut/eclint)
 
-The eclint project helps us validate that the files in the project are formatted consistently with respect to the rules that have been defined in the `.editorconfig` file.
+The `eclint` project helps us validate that the files in the project are formatted consistently with respect to the rules that have been defined in the `.editorconfig` file.
+
+After making sure the `eclint` executable's in your path, it can be run with:
+
+```bash
+eclint
+```
+
 
 ## Acceptance Testing
 
