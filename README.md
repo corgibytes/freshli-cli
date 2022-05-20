@@ -202,7 +202,7 @@ bundle
 From then on, you can run the Aruba tests with:
 
 ```bash
-dotnet build -o bin && bundle exec cucumber
+dotnet build -o exe && bundle exec cucumber
 ```
 
 ### Collecting Code Coverage for the Acceptance Tests
