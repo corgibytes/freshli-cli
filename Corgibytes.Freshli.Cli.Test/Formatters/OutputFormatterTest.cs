@@ -75,24 +75,24 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
         }
 
         public static IEnumerable<object[]> FormatterTypeCheckData =>
-          new List<object[]>
-          {
+            new List<object[]>
+            {
                 new object[] { JsonFormatter, FormatType.Json },
                 new object[] { YamlFormatter, FormatType.Yaml},
                 new object[] { CsvFormatter, FormatType.Csv},
-          };
+            };
 
         public static IEnumerable<object[]> Formatters =>
-           new List<object[]>
-           {
+            new List<object[]>
+            {
                 new object[] { JsonFormatter},
                 new object[] { YamlFormatter},
                 new object[] { CsvFormatter },
-           };
+            };
 
         public static IEnumerable<object[]> SerializedData =>
-   new List<object[]>
-   {
+            new List<object[]>
+            {
                 new object[] { JsonFormatter.Format(s_metricsResultTestData), JsonConvert.SerializeObject(s_metricsResultTestData, Formatting.Indented),JsonFormatter.Type },
                 new object[] { YamlFormatter.Format(s_metricsResultTestData), new Serializer().Serialize(s_metricsResultTestData), YamlFormatter.Type  },
                 new object[] { CsvFormatter.Format(s_metricsResultTestData), CsvSerializer.SerializeToCsv(new List<MetricsResult>() { s_metricsResultTestData }), CsvFormatter.Type },
@@ -104,6 +104,6 @@ namespace Corgibytes.Freshli.Cli.Test.Formatters
                 new object[] { JsonFormatter.Format<MetricsResult>(new List<MetricsResult>()), JsonConvert.SerializeObject(new List<MetricsResult>(), Formatting.Indented), JsonFormatter.Type },
                 new object[] { YamlFormatter.Format<MetricsResult>(new List<MetricsResult>()), new Serializer().Serialize(new List<MetricsResult>()), YamlFormatter.Type },
                 new object[] { CsvFormatter.Format<MetricsResult>(new List<MetricsResult>()), CsvSerializer.SerializeToCsv(new List<MetricsResult>()), CsvFormatter.Type },
-   };
+            };
     }
 }
