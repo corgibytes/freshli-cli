@@ -18,7 +18,7 @@ namespace Corgibytes.Freshli.Cli.Commands
         public ScanCommand() : base("scan", "Scan command returns metrics results for given local repository path")
         {
 
-            Option <FormatType> formatOption = new(new[] { "--format", "-f" },
+            Option<FormatType> formatOption = new(new[] { "--format", "-f" },
                 description: "Represents the output format type - It's value is case insensitive",
                 getDefaultValue: () => FormatType.Json)
             {

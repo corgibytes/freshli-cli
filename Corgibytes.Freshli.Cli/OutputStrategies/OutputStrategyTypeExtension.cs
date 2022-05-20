@@ -16,7 +16,7 @@ namespace Corgibytes.Freshli.Cli.OutputStrategies
                     return scope.ServiceProvider.GetRequiredNamedService<IOutputStrategy>(output);
                 });
 
-        return outputStrategies;
+            return outputStrategies;
         }
     }
 }
