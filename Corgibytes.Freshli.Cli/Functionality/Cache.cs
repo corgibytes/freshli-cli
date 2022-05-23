@@ -19,7 +19,6 @@ namespace Corgibytes.Freshli.Cli.Functionality
         }
         public static bool Prepare(DirectoryInfo cacheDir)
         {
-            CacheContext.CacheDir = cacheDir;
             Console.Out.WriteLine($"Preparing cache at {cacheDir}");
 
             // Create the directory if it doesn't already exist
@@ -28,7 +27,7 @@ namespace Corgibytes.Freshli.Cli.Functionality
                 cacheDir.Create();
             }
 
-            using var db = new CacheContext();
+            using var db = new CacheContext(cacheDir);
             try
             {
                 MigrateIfPending(db);

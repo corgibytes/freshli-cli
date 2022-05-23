@@ -6,18 +6,19 @@ namespace Corgibytes.Freshli.Cli.Functionality
 {
     public class CacheContext : DbContext
     {
-        public static readonly DirectoryInfo DefaultCacheDir =
+        public static DirectoryInfo DefaultCacheDir =>
             new(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
 
-        public static DirectoryInfo CacheDir = DefaultCacheDir;
+        public DirectoryInfo CacheDir { get; }
 
         private static readonly string s_cacheDbName = "freshli.db";
         public string DbPath { get; }
 
         public DbSet<CachedProperty> CachedProperties { get; set; }
 
-        public CacheContext()
+        public CacheContext(DirectoryInfo cacheDir)
         {
+            CacheDir = cacheDir;
             DbPath = Path.Join(CacheDir.ToString(), s_cacheDbName);
         }
 
