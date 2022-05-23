@@ -1,4 +1,6 @@
 using System;
+using System.CommandLine.Invocation;
+using System.CommandLine.IO;
 using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Extensions;
@@ -15,7 +17,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 
         }
 
-        public override int Run(CacheCommandOptions options)
+        public override int Run(CacheCommandOptions options, InvocationContext context)
         {
             return 0;
         }
@@ -29,9 +31,18 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 
         }
 
-        public override int Run(CachePrepareCommandOptions options)
+        public override int Run(CachePrepareCommandOptions options, InvocationContext context)
         {
-            return Cache.Prepare(options.CacheDir).ToExitCode();
+            context.Console.Out.WriteLine($"Preparing cache at {options.CacheDir}");
+            try
+            {
+                return Cache.Prepare(options.CacheDir).ToExitCode();
+            }
+            catch (CacheException e)
+            {
+                context.Console.Error.WriteLine(e.Message);
+                return false.ToExitCode();
+            }
         }
     }
 
@@ -43,26 +54,38 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
 
         }
 
-        public override int Run(CacheDestroyCommandOptions options)
+        public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
         {
-            // Skip prompt if the --force flag is passed
-            if (!options.Force)
+            // Unless the --force flag is passed, prompt the user whether they want to destroy the cache
+            if (!options.Force && !Confirm(
+                    $"Do you want to completely DELETE the directory {options.CacheDir.FullName}?",
+                    context,
+                    defaultYes: false)
+                )
             {
-                // Prompt the user whether they want to destroy the cache
-                Console.Out.Write($"Do you want to destroy the Freshli cache at {options.CacheDir.FullName}? [y/N] ");
-                string choice = Console.In.ReadLine();
-                string[] choicesToProceed = {"y", "Y"};
-                // If a "proceed" choice is not input, abort operation.
-                if (!choicesToProceed.Contains(choice))
-                {
-                    Console.Out.WriteLine("Operation aborted. Cache not destroyed.");
-                    return 0;
-                }
+                context.Console.Out.WriteLine("Operation aborted. Cache not destroyed.");
+                return true.ToExitCode();
             }
 
             // Destroy the cache
-            Console.Out.WriteLine("Destroying cache...");
-            return Cache.Destroy(options.CacheDir).ToExitCode();
+            context.Console.Out.WriteLine($"Destroying cache at {options.CacheDir}");
+            try
+            {
+                return Cache.Destroy(options.CacheDir).ToExitCode();
+            }
+            // Catch errors
+            catch (CacheException e)
+            {
+                context.Console.Error.WriteLine(e.Message);
+                return false.ToExitCode();
+            }
+            // catch non-fatal warnings
+            catch (CacheWarningException e)
+            {
+                context.Console.Error.WriteLine(e.Message);
+                return true.ToExitCode();
+            }
+
         }
     }
 }
