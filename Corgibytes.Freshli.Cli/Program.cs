@@ -29,7 +29,8 @@ namespace Corgibytes.Freshli.Cli
             {
                 // Add commands here!
                 new ScanCommand(),
-                new CacheCommand()
+                new CacheCommand(),
+                new GitCommand()
             };
 
             CommandLineBuilder builder = new CommandLineBuilder(command)

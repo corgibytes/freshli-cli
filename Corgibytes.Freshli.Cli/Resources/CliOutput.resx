@@ -93,4 +93,19 @@
   <data name="Exception_Cache_Destroy_NonCache" xml:space="preserve">
     <value>This directory is not a Freshli cache. Directory not destroyed.</value>
   </data>
+  <data name="Help_GitCommand_Description" xml:space="preserve">
+    <value>Manages repositorie cloned by Freshli</value>
+  </data>
+  <data name="Help_GitCloneCommand_Description" xml:space="preserve">
+    <value>Clone a repository for Freshli to examine</value>
+  </data>
+  <data name="Help_GitCloneCommand_Option_Git_Path" xml:space="preserve">
+    <value>The path to the Git executable to use</value>
+  </data>
+  <data name="Help_GitCloneCommand_Option_Branch" xml:space="preserve">
+    <value>The branch to check out on the repository</value>
+  </data>
+  <data name="Help_GitCloneCommand_Argument_Repo_Url" xml:space="preserve">
+    <value>The URL to the repository to clone</value>
+  </data>
 </root>

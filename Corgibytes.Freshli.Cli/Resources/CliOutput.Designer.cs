@@ -194,5 +194,35 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("Exception_Cache_Destroy_NonCache", resourceCulture);
             }
         }
+        
+        internal static string Help_GitCommand_Description {
+            get {
+                return ResourceManager.GetString("Help_GitCommand_Description", resourceCulture);
+            }
+        }
+        
+        internal static string Help_GitCloneCommand_Description {
+            get {
+                return ResourceManager.GetString("Help_GitCloneCommand_Description", resourceCulture);
+            }
+        }
+        
+        internal static string Help_GitCloneCommand_Option_Git_Path {
+            get {
+                return ResourceManager.GetString("Help_GitCloneCommand_Option_Git_Path", resourceCulture);
+            }
+        }
+        
+        internal static string Help_GitCloneCommand_Option_Branch {
+            get {
+                return ResourceManager.GetString("Help_GitCloneCommand_Option_Branch", resourceCulture);
+            }
+        }
+        
+        internal static string Help_GitCloneCommand_Argument_Repo_Url {
+            get {
+                return ResourceManager.GetString("Help_GitCloneCommand_Argument_Repo_Url", resourceCulture);
+            }
+        }
     }
 }
