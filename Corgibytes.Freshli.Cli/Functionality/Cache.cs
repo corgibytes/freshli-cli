@@ -1,11 +1,30 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Corgibytes.Freshli.Cli.Functionality
 {
+    [Serializable]
+    public class CacheException : Exception
+    {
+        public CacheException(string message, Exception innerException) : base(message, innerException) {}
+        public CacheException(string message) : base(message) {}
+        protected CacheException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+    }
+
+    [Serializable]
+    public class CacheWarningException : WarningException
+    {
+        public CacheWarningException(string message, Exception innerException) : base(message, innerException) {}
+
+        public CacheWarningException(string message) : base(message) {}
+        protected CacheWarningException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+    }
+
     public static class Cache
     {
         private static void MigrateIfPending(CacheContext context)
@@ -29,7 +48,6 @@ namespace Corgibytes.Freshli.Cli.Functionality
         public static bool Prepare(DirectoryInfo cacheDir)
         {
             CacheContext.CacheDir = cacheDir;
-            Console.Out.WriteLine($"Preparing cache at {cacheDir}");
 
             // Create the directory if it doesn't already exist
             if (!cacheDir.Exists)
@@ -38,8 +56,7 @@ namespace Corgibytes.Freshli.Cli.Functionality
             }
             else if (!ValidateDirIsCache(cacheDir))
             {
-                Console.Out.WriteLine($"We cannot use an existing non-empty directory as a cache directory.");
-                return false;
+                throw new CacheException($"We cannot use an existing non-empty directory as a cache directory.");
             }
 
             using var db = new CacheContext();
@@ -49,8 +66,7 @@ namespace Corgibytes.Freshli.Cli.Functionality
             }
             catch (Microsoft.Data.Sqlite.SqliteException e)
             {
-                Console.Out.WriteLine(e.Message);
-                return false;
+                throw new CacheException(e.Message, e);
             }
 
             return true;
@@ -61,14 +77,12 @@ namespace Corgibytes.Freshli.Cli.Functionality
             // If the directory doesn't exist, do nothing (be idempotent).
             if (!cacheDir.Exists)
             {
-                Console.Error.WriteLine("Cache directory already destroyed or does not exist.");
-                return true;
+                throw new CacheWarningException("Cache directory already destroyed or does not exist.");
             }
 
             if (!ValidateDirIsCache(cacheDir))
             {
-                Console.Out.WriteLine($"This directory is not a Freshli cache. Directory not destroyed.");
-                return false;
+                throw new CacheException($"This directory is not a Freshli cache. Directory not destroyed.");
             }
 
             cacheDir.Delete(true);

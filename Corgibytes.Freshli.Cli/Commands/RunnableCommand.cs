@@ -19,7 +19,7 @@ public abstract class RunnableCommand<T> : Command where T: CommandOptions.Comma
     {
         using IServiceScope scope = host.Services.CreateScope();
         ICommandRunner<T> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<T>>();
-        return runner.Run(options);
+        return runner.Run(options, context);
     }
 }
 #nullable restore
