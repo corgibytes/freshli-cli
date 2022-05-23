@@ -18,6 +18,14 @@ namespace Corgibytes.Freshli.Cli.Functionality
 
             context.Database.Migrate();
         }
+
+        private static bool ValidateDirIsCache(DirectoryInfo cacheDir)
+        {
+            List<string> dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
+            // Folder is valid cache if empty or if contains "freshli.db"
+            return (!dirContents.Any() || dirContents.Contains(CacheContext.CacheDbName));
+        }
+
         public static bool Prepare(DirectoryInfo cacheDir)
         {
             CacheContext.CacheDir = cacheDir;
@@ -28,13 +36,10 @@ namespace Corgibytes.Freshli.Cli.Functionality
             {
                 cacheDir.Create();
             }
-            else
+            else if (!ValidateDirIsCache(cacheDir))
             {
-                List<string> dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
-                if (dirContents.Any() && !dirContents.Contains(CacheContext.CacheDbName))
-                {
-                    Console.Out.WriteLine($"We cannot use an existing non-empty directory as a cache directory.");
-                }
+                Console.Out.WriteLine($"We cannot use an existing non-empty directory as a cache directory.");
+                return false;
             }
 
             using var db = new CacheContext();
@@ -59,17 +64,14 @@ namespace Corgibytes.Freshli.Cli.Functionality
                 Console.Error.WriteLine("Cache directory already destroyed or does not exist.");
                 return true;
             }
-            else
+
+            if (!ValidateDirIsCache(cacheDir))
             {
-                List<string> dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
-                if (dirContents.Any() && !dirContents.Contains(CacheContext.CacheDbName))
-                {
-                    Console.Out.WriteLine($"This directory is not a Freshli cache. Directory not destroyed.");
-                    return false;
-                }
+                Console.Out.WriteLine($"This directory is not a Freshli cache. Directory not destroyed.");
+                return false;
             }
 
-            cacheDir.Delete();
+            cacheDir.Delete(true);
             return true;
         }
     }
