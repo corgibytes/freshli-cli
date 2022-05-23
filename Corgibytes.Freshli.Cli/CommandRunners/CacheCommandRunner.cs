@@ -1,7 +1,6 @@
 using System;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
-using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -57,11 +56,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
         public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
         {
             // Unless the --force flag is passed, prompt the user whether they want to destroy the cache
-            if (!options.Force && !Confirm(
-                    $"Do you want to completely DELETE the directory {options.CacheDir.FullName}?",
-                    context,
-                    defaultYes: false)
-                )
+            if (!options.Force && !Confirm($"Do you want to completely DELETE the directory {options.CacheDir.FullName}?", context))
             {
                 context.Console.Out.WriteLine("Operation aborted. Cache not destroyed.");
                 return true.ToExitCode();
