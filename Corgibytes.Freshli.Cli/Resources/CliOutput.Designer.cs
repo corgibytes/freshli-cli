@@ -60,75 +60,154 @@ namespace Corgibytes.Freshli.Cli.Resources {
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to Executing auth command handler.
-        /// </summary>
-        internal static string AuthCommand_AuthCommand_Executing_auth_command_handler {
+        internal static string Help_MainCommand_Description {
             get {
-                return ResourceManager.GetString("AuthCommand_AuthCommand_Executing_auth_command_handler", resourceCulture);
+                return ResourceManager.GetString("Help_MainCommand_Description", resourceCulture);
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to Root Command Executed.
-        /// </summary>
-        internal static string MainCommand_MainCommand_Root_Command_Executed {
+        internal static string Help_Option_CacheDir_Description {
             get {
-                return ResourceManager.GetString("MainCommand_MainCommand_Root_Command_Executed", resourceCulture);
+                return ResourceManager.GetString("Help_Option_CacheDir_Description", resourceCulture);
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to Date (yyyy-MM-dd).
-        /// </summary>
+        internal static string Help_CacheCommand_Description {
+            get {
+                return ResourceManager.GetString("Help_CacheCommand_Description", resourceCulture);
+            }
+        }
+
+        internal static string Help_CachePrepareCommand_Description {
+            get {
+                return ResourceManager.GetString("Help_CachePrepareCommand_Description", resourceCulture);
+            }
+        }
+
+        internal static string Help_CacheDestroyCommand_Description {
+            get {
+                return ResourceManager.GetString("Help_CacheDestroyCommand_Description", resourceCulture);
+            }
+        }
+
+        internal static string Help_CacheDestoyCommand_Option_Force {
+            get {
+                return ResourceManager.GetString("Help_CacheDestoyCommand_Option_Force", resourceCulture);
+            }
+        }
+
+        internal static string Help_ScanCommand_Description {
+            get {
+                return ResourceManager.GetString("Help_ScanCommand_Description", resourceCulture);
+            }
+        }
+
+        internal static string Help_ScanCommand_Option_Format {
+            get {
+                return ResourceManager.GetString("Help_ScanCommand_Option_Format", resourceCulture);
+            }
+        }
+
+        internal static string Help_ScanCommand_Option_Output {
+            get {
+                return ResourceManager.GetString("Help_ScanCommand_Option_Output", resourceCulture);
+            }
+        }
+
+
+        internal static string Help_ScanCommand_Argument_Path {
+            get {
+                return ResourceManager.GetString("Help_ScanCommand_Argument_Path", resourceCulture);
+            }
+        }
+
         internal static string Output_Date {
             get {
                 return ResourceManager.GetString("Output_Date", resourceCulture);
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to LibYear.
-        /// </summary>
         internal static string Output_LibYear {
             get {
                 return ResourceManager.GetString("Output_LibYear", resourceCulture);
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to Skipped.
-        /// </summary>
         internal static string Output_Skipped {
             get {
                 return ResourceManager.GetString("Output_Skipped", resourceCulture);
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to UpgradesAvailable.
-        /// </summary>
         internal static string Output_UpgradesAvailable {
             get {
                 return ResourceManager.GetString("Output_UpgradesAvailable", resourceCulture);
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to Executing scan command handler.
-        /// </summary>
         internal static string ScanCommand_ScanCommand_Executing_scan_command_handler {
             get {
                 return ResourceManager.GetString("ScanCommand_ScanCommand_Executing_scan_command_handler", resourceCulture);
             }
         }
 
-        /// <summary>
-        ///   Looks up a localized string similar to Path should not be null or empty.
-        /// </summary>
+        internal static string MainCommand_MainCommand_Root_Command_Executed {
+            get {
+                return ResourceManager.GetString("MainCommand_MainCommand_Root_Command_Executed", resourceCulture);
+            }
+        }
+
+        internal static string AuthCommand_AuthCommand_Executing_auth_command_handler {
+            get {
+                return ResourceManager.GetString("AuthCommand_AuthCommand_Executing_auth_command_handler", resourceCulture);
+            }
+        }
+
         internal static string ScanCommandRunner_Run_Path_should_not_be_null_or_empty {
             get {
                 return ResourceManager.GetString("ScanCommandRunner_Run_Path_should_not_be_null_or_empty", resourceCulture);
+            }
+        }
+
+        internal static string CachePrepareCommandRunner_Run_Preparing_cache {
+            get {
+                return ResourceManager.GetString("CachePrepareCommandRunner_Run_Preparing_cache", resourceCulture);
+            }
+        }
+
+        internal static string CacheDestroyCommandRunner_Run_Prompt {
+            get {
+                return ResourceManager.GetString("CacheDestroyCommandRunner_Run_Prompt", resourceCulture);
+            }
+        }
+
+        internal static string CacheDestroyCommandRunner_Run_Abort {
+            get {
+                return ResourceManager.GetString("CacheDestroyCommandRunner_Run_Abort", resourceCulture);
+            }
+        }
+
+        internal static string CacheDestroyCommandRunner_Run_Destroying {
+            get {
+                return ResourceManager.GetString("CacheDestroyCommandRunner_Run_Destroying", resourceCulture);
+            }
+        }
+
+        internal static string Exception_Cache_Prepare_NonEmpty {
+            get {
+                return ResourceManager.GetString("Exception_Cache_Prepare_NonEmpty", resourceCulture);
+            }
+        }
+
+        internal static string Warning_Cache_Destroy_DoesNotExist {
+            get {
+                return ResourceManager.GetString("Warning_Cache_Destroy_DoesNotExist", resourceCulture);
+            }
+        }
+
+        internal static string Exception_Cache_Destroy_NonCache {
+            get {
+                return ResourceManager.GetString("Exception_Cache_Destroy_NonCache", resourceCulture);
             }
         }
     }
