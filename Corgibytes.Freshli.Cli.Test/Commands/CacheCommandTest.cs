@@ -12,8 +12,6 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
 {
     public class CacheCommandTest : FreshliTest
     {
-        private readonly TestConsole _console = new();
-
         public CacheCommandTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]

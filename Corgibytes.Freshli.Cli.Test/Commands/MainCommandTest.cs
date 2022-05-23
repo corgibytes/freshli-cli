@@ -10,8 +10,6 @@ namespace Corgibytes.Freshli.Cli.Test.Commands
 {
     public class MainCommandTest : FreshliTest
     {
-        private readonly TestConsole _console = new();
-
         public MainCommandTest(ITestOutputHelper output) : base(output) { }
 
         [Fact]
