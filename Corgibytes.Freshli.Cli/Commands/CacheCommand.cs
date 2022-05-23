@@ -1,4 +1,5 @@
 using System.CommandLine;
+using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Cli.Commands.Cache;
 
 namespace Corgibytes.Freshli.Cli.Commands;
@@ -6,7 +7,7 @@ namespace Corgibytes.Freshli.Cli.Commands;
 public class CacheCommand : Command
 {
     public CacheCommand()
-        : base("cache", "Manages the local cache database")
+        : base("cache", $"{CliOutput.Help_CacheCommand_Description}")
     {
         CachePrepareCommand prepare = new();
         AddCommand(prepare);

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.EntityFrameworkCore;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
@@ -62,7 +63,7 @@ public static class Cache
         }
         else if (!ValidateDirIsCache(cacheDir))
         {
-            throw new CacheException($"We cannot use an existing non-empty directory as a cache directory.");
+            throw new CacheException($"{CliOutput.Exception_Cache_Prepare_NonEmpty}");
         }
 
         using var db = new CacheContext();
@@ -83,12 +84,12 @@ public static class Cache
         // If the directory doesn't exist, do nothing (be idempotent).
         if (!cacheDir.Exists)
         {
-            throw new CacheException("Cache directory already destroyed or does not exist.") {IsWarning = true};
+            throw new CacheException($"{CliOutput.Warning_Cache_Destroy_DoesNotExist}") {IsWarning = true};
         }
 
         if (!ValidateDirIsCache(cacheDir))
         {
-            throw new CacheException($"This directory is not a Freshli cache. Directory not destroyed.");
+            throw new CacheException($"{CliOutput.Exception_Cache_Destroy_NonCache}");
         }
 
         cacheDir.Delete(true);
