@@ -47,7 +47,9 @@ namespace Corgibytes.Freshli.Cli.Functionality
         {
             List<string> dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
             // Folder is valid cache if empty or if contains "freshli.db"
-            return (!dirContents.Any() || dirContents.Contains(CacheContext.CacheDbName));
+            return
+                (!dirContents.Any() && !cacheDir.GetDirectories().Any())
+                || dirContents.Contains(CacheContext.CacheDbName);
         }
 
         public static bool Prepare(DirectoryInfo cacheDir)
