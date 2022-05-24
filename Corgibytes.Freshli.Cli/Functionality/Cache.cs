@@ -79,12 +79,38 @@ public static class Cache
         return true;
     }
 
+    public static DirectoryInfo GetDirectoryInCache(DirectoryInfo cacheDir, string[] directoryStructure)
+    {
+        Prepare(cacheDir);
+        var focus = cacheDir;
+
+        foreach (string directory in directoryStructure)
+        {
+            bool found = false;
+            foreach (var match in focus.GetDirectories(directory))
+            {
+                if (match.Name == directory)
+                {
+                    focus = match;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found)
+            {
+                focus = focus.CreateSubdirectory(directory);
+            }
+        }
+
+        return focus;
+    }
+
     public static bool Destroy(DirectoryInfo cacheDir)
     {
         // If the directory doesn't exist, do nothing (be idempotent).
         if (!cacheDir.Exists)
         {
-            throw new CacheException("Cache directory already destroyed or does not exist.") { IsWarning = true };
+            throw new CacheException("Cache directory already destroyed or does not exist.") {IsWarning = true};
         }
 
         if (!ValidateDirIsCache(cacheDir))
