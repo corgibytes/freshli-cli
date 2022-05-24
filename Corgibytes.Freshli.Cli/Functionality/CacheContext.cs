@@ -23,6 +23,7 @@ public class CacheContext : DbContext
     private string DbPath { get; }
 
     public DbSet<CachedProperty> CachedProperties { get; set; }
+    public DbSet<CachedGitRepo> CachedGitRepos { get; set; }
 
     public CacheContext()
     {
