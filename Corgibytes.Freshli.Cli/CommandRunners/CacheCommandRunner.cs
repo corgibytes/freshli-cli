@@ -69,16 +69,10 @@ namespace Corgibytes.Freshli.Cli.CommandRunners
                 return Cache.Destroy(options.CacheDir).ToExitCode();
             }
             // Catch errors
-            catch (CacheException e)
+            catch (CacheException error)
             {
-                context.Console.Error.WriteLine(e.Message);
-                return false.ToExitCode();
-            }
-            // catch non-fatal warnings
-            catch (CacheWarningException e)
-            {
-                context.Console.Error.WriteLine(e.Message);
-                return true.ToExitCode();
+                context.Console.Error.WriteLine(error.Message);
+                return error.IsWarning.ToExitCode();
             }
 
         }
