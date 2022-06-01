@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -11,18 +10,24 @@ namespace Corgibytes.Freshli.Cli.Functionality
     [Serializable]
     public class CacheException : Exception
     {
+        public bool IsWarning { get; init; }
+
         public CacheException(string message, Exception innerException) : base(message, innerException) {}
         public CacheException(string message) : base(message) {}
-        protected CacheException(SerializationInfo info, StreamingContext context) : base(info, context) {}
-    }
 
-    [Serializable]
-    public class CacheWarningException : WarningException
-    {
-        public CacheWarningException(string message, Exception innerException) : base(message, innerException) {}
+        protected CacheException(SerializationInfo info, StreamingContext context) : base(info, context)
+        {
+            IsWarning = info.GetBoolean("IsWarning");
+        }
 
-        public CacheWarningException(string message) : base(message) {}
-        protected CacheWarningException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+        public override void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            ArgumentNullException.ThrowIfNull(info);
+
+            info.AddValue("IsWarning", IsWarning);
+
+            base.GetObjectData(info, context);
+        }
     }
 
     public static class Cache
@@ -77,7 +82,7 @@ namespace Corgibytes.Freshli.Cli.Functionality
             // If the directory doesn't exist, do nothing (be idempotent).
             if (!cacheDir.Exists)
             {
-                throw new CacheWarningException("Cache directory already destroyed or does not exist.");
+                throw new CacheException("Cache directory already destroyed or does not exist.") {IsWarning = true};
             }
 
             if (!ValidateDirIsCache(cacheDir))
