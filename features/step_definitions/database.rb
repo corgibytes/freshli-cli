@@ -13,5 +13,5 @@ end
 Then('the {channel} should contain the version of {string}') do |channel, dll|
     command_output = `dotnet dll-props #{dll}`
     matches = /ProductVersion: (.*)/.match command_output
-    expect(last_command_started).to have_output match_output_string matches[1]
+    expect(last_command_started).to have_output output_string_eq matches[1]
 end
