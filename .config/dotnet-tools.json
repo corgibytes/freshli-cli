@@ -7,6 +7,12 @@
       "commands": [
         "coverlet"
       ]
+    },
+    "dllprops.tool": {
+      "version": "3.0.0",
+      "commands": [
+        "dll-props"
+      ]
     }
   }
 }
