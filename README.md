@@ -269,6 +269,7 @@ There are two ways to run the `codeclimate` linter, by using the `codeclimate` C
         --volume $PWD:/code \
         --volume /var/run/docker.sock:/var/run/docker.sock \
         --user vscode \
+        --workdir /code \
         freshli-cli-dev bash
     ```
 
