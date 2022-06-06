@@ -1,89 +1,26 @@
 <root>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="version">
-    <value>1.3</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="Help_MainCommand_Description" xml:space="preserve">
-    <value>Comando principal</value>
-  </data>
-  <data name="Help_Option_CacheDir_Description" xml:space="preserve">
-    <value>La ubicación para almacenamiento de archivos temporales</value>
-  </data>
-  <data name="Help_CacheCommand_Description" xml:space="preserve">
-    <value>Gestionar las base de datos y directorio local para cache</value>
-  </data>
-  <data name="Help_CachePrepareCommand_Description" xml:space="preserve">
-    <value>Asegura el directorio de cache existe y contiene un base de datos cache válido</value>
-  </data>
-  <data name="Help_CacheDestroyCommand_Description" xml:space="preserve">
-    <value>Eliminar el directorio de cache</value>
-  </data>
-  <data name="Help_CacheDestoyCommand_Option_Force" xml:space="preserve">
-    <value>No preguntar eliminar el directorio de cache</value>
-  </data>
-  <data name="Help_ScanCommand_Description" xml:space="preserve">
-    <value>Devolver los resultados de la métrica del escaneo para el repositorio local dado</value>
-  </data>
-  <data name="Help_ScanCommand_Option_Format" xml:space="preserve">
-    <value>Especificar cómo formatear el resultado. (Mayúsculas y minúsculas.)</value>
-  </data>
-  <data name="Help_ScanCommand_Option_Output" xml:space="preserve">
-    <value>Especificar cómo mostrar el resultado. (Mayúsculas y minúsculas.) Admite múltiples valores.</value>
-  </data>
-  <data name="Help_ScanCommand_Argument_Path" xml:space="preserve">
-    <value>El directorio del repositorio de código fuente.</value>
-  </data>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
   <data name="Output_Date" xml:space="preserve">
     <value>Fecha (aaaa-MM-dd)</value>
   </data>
-  <data name="Output_LibYear" xml:space="preserve">
-    <value>AñoLib</value>
-  </data>
+    <data name="Output_LibYear" xml:space="preserve">
+        <value>AñoLib</value>
+    </data>
   <data name="Output_Skipped" xml:space="preserve">
     <value>Omitida</value>
   </data>
   <data name="Output_UpgradesAvailable" xml:space="preserve">
     <value>ActualizaciónesDisponibles</value>
-  </data>
-  <data name="ScanCommand_ScanCommand_Executing_scan_command_handler" xml:space="preserve">
-    <value>Ejecutando el controlador de comandos de escaneo</value>
-  </data>
-  <data name="MainCommand_MainCommand_Root_Command_Executed" xml:space="preserve">
-    <value>El comando raíz fue ejecutado</value>
-  </data>
-  <data name="AuthCommand_AuthCommand_Executing_auth_command_handler" xml:space="preserve">
-    <value>Ejecutando el controlador de comandos de autenticación</value>
-  </data>
-  <data name="ScanCommandRunner_Run_Path_should_not_be_null_or_empty" xml:space="preserve">
-    <value>El directorio no debe ser nulo o vacío</value>
-  </data>
-  <data name="CachePrepareCommandRunner_Run_Preparing_cache" xml:space="preserve">
-    <value>Preparando el directorio de cache en</value>
-  </data>
-  <data name="CacheDestroyCommandRunner_Run_Prompt" xml:space="preserve">
-    <value>¿Te quieres ELIMINAR completamente el directorio</value>
-  </data>
-  <data name="CacheDestroyCommandRunner_Run_Abort" xml:space="preserve">
-    <value>La operación cancelada. El cache no era eliminado.</value>
-  </data>
-  <data name="CacheDestroyCommandRunner_Run_Destroying" xml:space="preserve">
-    <value>Eliminando el directorio de cache en</value>
-  </data>
-  <data name="Exception_Cache_Prepare_NonEmpty" xml:space="preserve">
-    <value>No se puede utilizar un directorio no vacío como un directorio de cache.</value>
-  </data>
-  <data name="Warning_Cache_Destroy_DoesNotExist" xml:space="preserve">
-    <value>El directorio de cache ya eliminó o no existe.</value>
-  </data>
-  <data name="Exception_Cache_Destroy_NonCache" xml:space="preserve">
-    <value>Este directorio no es un cache de Freshli, por lo que no se eliminó.</value>
   </data>
 </root>
