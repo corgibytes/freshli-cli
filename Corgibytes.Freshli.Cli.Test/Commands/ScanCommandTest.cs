@@ -12,6 +12,7 @@ using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands;
+
 public class ScanCommandTest : FreshliTest
 {
     private readonly TestConsole _console = new();

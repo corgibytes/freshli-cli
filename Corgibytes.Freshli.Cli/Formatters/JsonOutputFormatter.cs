@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Formatters;
+
 public class JsonOutputFormatter : OutputFormatter
 {
     public override FormatType Type => FormatType.Json;

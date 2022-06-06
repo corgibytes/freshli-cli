@@ -6,6 +6,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands;
+
 public class MainCommandTest : FreshliTest
 {
     public MainCommandTest(ITestOutputHelper output) : base(output) { }

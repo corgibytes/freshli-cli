@@ -11,6 +11,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.CommandOptions;
+
 public class ScanCommandOptionsTest : FreshliTest
 {
     private static string TempPath { get; } = Path.GetTempPath();

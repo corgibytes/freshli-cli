@@ -2,6 +2,7 @@
 using ServiceStack.Text;
 
 namespace Corgibytes.Freshli.Cli.Formatters;
+
 public class CsvOutputFormatter : OutputFormatter
 {
     public override FormatType Type => FormatType.Csv;

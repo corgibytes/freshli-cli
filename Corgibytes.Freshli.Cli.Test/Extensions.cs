@@ -4,6 +4,7 @@ using System.CommandLine.Parsing;
 using System.Linq;
 
 namespace Corgibytes.Freshli.Cli.Test;
+
 public static class ParseResultExtensions
 {
     private static Option<T> FindOption<T>(this ParseResult result, Func<Option, bool> finder)

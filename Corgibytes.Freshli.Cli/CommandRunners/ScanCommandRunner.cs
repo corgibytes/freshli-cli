@@ -8,6 +8,7 @@ using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
+
 public class ScanCommandRunner : CommandRunner<ScanCommandOptions>
 {
 

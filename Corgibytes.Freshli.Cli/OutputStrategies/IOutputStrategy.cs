@@ -4,6 +4,7 @@ using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.OutputStrategies;
+
 public interface IOutputStrategy
 {
     OutputStrategyType Type { get; }

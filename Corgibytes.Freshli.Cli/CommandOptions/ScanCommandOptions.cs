@@ -4,6 +4,7 @@ using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 
 namespace Corgibytes.Freshli.Cli.CommandOptions;
+
 public class ScanCommandOptions : CommandOptions
 {
     public FormatType Format { get; set; }

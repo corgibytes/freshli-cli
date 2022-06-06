@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.IoC;
+
 public class FreshliServiceBuilder
 {
     public IServiceCollection Services { get; }

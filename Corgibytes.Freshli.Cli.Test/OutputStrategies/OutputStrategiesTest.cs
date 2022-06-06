@@ -10,6 +10,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.OutputStrategies;
+
 public class OutputStrategiesTest : FreshliTest
 {
     public static ConsoleOutputStrategy ConsoleOutputStrategy { get; }

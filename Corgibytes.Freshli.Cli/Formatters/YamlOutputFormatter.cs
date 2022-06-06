@@ -2,6 +2,7 @@
 using YamlDotNet.Serialization;
 
 namespace Corgibytes.Freshli.Cli.Formatters;
+
 public class YamlOutputFormatter : OutputFormatter
 {
     public override FormatType Type => FormatType.Yaml;

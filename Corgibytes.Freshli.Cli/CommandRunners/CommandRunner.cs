@@ -4,6 +4,7 @@ using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
+
 public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOptions.CommandOptions
 {
     protected Runner Runner { get; }

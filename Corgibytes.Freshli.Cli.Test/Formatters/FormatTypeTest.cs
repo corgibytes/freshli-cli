@@ -9,6 +9,7 @@ using Xunit.Abstractions;
 
 
 namespace Corgibytes.Freshli.Cli.Test.Formatters;
+
 public class FormatTypeTest: FreshliTest
 {
     private readonly IServiceProvider _services;

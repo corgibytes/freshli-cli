@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 
 namespace Corgibytes.Freshli.Cli.Formatters;
+
 public interface IOutputFormatter
 {
     FormatType Type { get; }

@@ -12,6 +12,7 @@ using YamlDotNet.Serialization;
 
 
 namespace Corgibytes.Freshli.Cli.Test.Formatters;
+
 public class OutputFormatterTest : FreshliTest
 {
     private static JsonOutputFormatter JsonFormatter { get; }

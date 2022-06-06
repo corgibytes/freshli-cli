@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 namespace Corgibytes.Freshli.Cli.Formatters;
+
 public abstract class OutputFormatter : IOutputFormatter
 {
 public abstract FormatType Type { get; }

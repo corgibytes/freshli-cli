@@ -3,6 +3,7 @@ using System.IO;
 using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Commands;
+
 public class MainCommand : RootCommand
 {
     public MainCommand() : base("Root Command")
