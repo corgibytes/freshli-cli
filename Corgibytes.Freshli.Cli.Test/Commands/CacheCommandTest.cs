@@ -1,5 +1,6 @@
 using System.CommandLine;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.Commands.Cache;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
