@@ -7,11 +7,11 @@ Feature: Cache
         And we can open a SQLite connection to "~/.freshli/freshli.db"
 
     Scenario: Prepare with overridden cache-dir
-        Given a directory named "~/somewhere_else" does not exist
+        Given a directory named "somewhere_else" does not exist
         When I run `freshli cache prepare --cache-dir somewhere_else`
-        Then the directory named "~/somewhere_else" should exist
-        And a file named "~/somewhere_else/freshli.db" should exist
-        And we can open a SQLite connection to "~/somewhere_else/freshli.db"
+        Then the directory named "somewhere_else" should exist
+        And a file named "somewhere_else/freshli.db" should exist
+        And we can open a SQLite connection to "somewhere_else/freshli.db"
 
     Scenario: Destroy
         Given a directory named "~/.freshli" exists
@@ -20,10 +20,10 @@ Feature: Cache
         Then the directory named "~/.freshli" should not exist
 
     Scenario: Destroy with overridden cache-dir
-        Given a directory named "~/somewhere_else" exists
-        And a blank file named "~/somewhere_else/freshli.db" exists
+        Given a directory named "somewhere_else" exists
+        And a blank file named "somewhere_else/freshli.db" exists
         When I run `freshli cache destroy --cache-dir somewhere_else --force`
-        Then the directory named "~/somewhere_else" should not exist
+        Then the directory named "somewhere_else" should not exist
 
     Scenario: Destroy on non-cache folder
         Given a directory named "~/.freshli" exists
