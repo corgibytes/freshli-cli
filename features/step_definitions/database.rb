@@ -1,5 +1,3 @@
-require 'fileutils'
-require 'aruba/cucumber'
 require 'sqlite3'
 
 Then('we can open a SQLite connection to {string}') do |database|
