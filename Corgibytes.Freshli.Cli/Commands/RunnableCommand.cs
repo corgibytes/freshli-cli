@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.Commands;
 #nullable enable
 public abstract class RunnableCommand<T> : Command where T: CommandOptions.CommandOptions
 {
-    protected RunnableCommand(string name, string? description) : base(name, description)
+    protected RunnableCommand(string name, string? description = null) : base(name, description)
     {
         Handler = CommandHandler.Create<IHost, InvocationContext, T>(Run);
     }
