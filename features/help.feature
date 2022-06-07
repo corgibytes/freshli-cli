@@ -8,9 +8,9 @@ Feature: Freshli.Cli
         """
         And the output should contain:
         """
-          scan <path>  Scan command returns metrics results for given local repository path
+          scan <path>  Returns metrics results for given local repository path
         """
         And the output should contain:
         """
-          cache        Manages the local cache database
+          cache        Manages the local cache database and directory
         """
