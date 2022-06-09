@@ -1,6 +1,12 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
+require 'English'
 require 'optparse'
+
+require_relative './support/execute'
+
+enable_dotnet_command_colors
 
 perform_build = true
 
@@ -27,28 +33,20 @@ end
 
 begin
   parser.parse!
-rescue OptionParser::InvalidOption => error
-  puts error
+rescue OptionParser::InvalidOption => e
+  puts e
   puts parser
-  exit -1
+  exit(-1)
 end
 
-if perform_build
-  system("ruby #{File.dirname(__FILE__)}/build.rb")
+status = execute("ruby #{File.dirname(__FILE__)}/build.rb") if perform_build
+
+if status.success?
+  status = execute('bundle check > /dev/null')
+  status = execute('bundle install') unless status.success?
+
+  status = execute('dotnet test ./exe/Corgibytes.Freshli.Cli.Test.dll') if status.success?
+  status = execute('bundle exec cucumber --color') if status.success?
 end
 
-if $?.success?
-  system('bundle check > /dev/null')
-  unless $?.success?
-    system('bundle install')
-  end
-
-  if $?.success?
-    system('dotnet test ./exe/Corgibytes.Freshli.Cli.Test.dll')
-  end
-  if $?.success?
-    system('bundle exec cucumber')
-  end
-end
-
-exit($?.exitstatus)
+exit(status.exitstatus)
