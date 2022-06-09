@@ -244,7 +244,7 @@ There are two ways to run the `codeclimate` linter, by using the `codeclimate` C
 1. Using `docker`
 
     Since `codeclimate` CLI is a wrapper around the `codeclimate` docker image the following command can be used to run the analysis:
-    
+
     ```bash
     docker run \
         --interactive --tty --rm \
@@ -289,12 +289,12 @@ There are two ways to run the `codeclimate` linter, by using the `codeclimate` C
 
 ```bash
 docker run \
-  --interactive --tty --rm \
-  --env CODECLIMATE_CODE="$CODE_FOLDER" \
-  --volume "$CODE_FOLDER":/code \
-  --volume /var/run/docker.sock:/var/run/docker.sock \
-  --volume /tmp/cc:/tmp/cc \
-  codeclimate/codeclimate analyze
+    --interactive --tty --rm \
+    --env CODECLIMATE_CODE="$CODE_FOLDER" \
+    --volume "$CODE_FOLDER":/code \
+    --volume /var/run/docker.sock:/var/run/docker.sock \
+    --volume /tmp/cc:/tmp/cc \
+    codeclimate/codeclimate analyze
 ```
 
 ## Acceptance Testing
