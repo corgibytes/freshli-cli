@@ -3,6 +3,6 @@
 system('dotnet tool restore')
 if $?.success?
   system('dotnet build -o exe')
-end 
+end
 
 exit($?.exitstatus)
