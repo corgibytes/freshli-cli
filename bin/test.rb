@@ -8,9 +8,9 @@ parser = OptionParser.new do |options|
   options.banner = <<~BANNER
     Description:
         Test Runner
-    
+
     Usage:
-        test [options]
+        test.rb [options]
 
     Options:
   BANNER
