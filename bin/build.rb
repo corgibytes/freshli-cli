@@ -1,8 +1,13 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-system('dotnet tool restore')
-if $?.success?
-  system('dotnet build -o exe')
-end
+require 'English'
 
-exit($?.exitstatus)
+require_relative './support/execute'
+
+enable_dotnet_command_colors
+
+status = execute('dotnet tool restore')
+status = execute('dotnet build -o exe') if status.success?
+
+exit(status.exitstatus)
