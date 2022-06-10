@@ -29,8 +29,11 @@ namespace Corgibytes.Freshli.Cli
             {
                 // Add commands here!
                 new ScanCommand(),
-                new CacheCommand()
+                new CacheCommand(),
+                new AgentsCommand()
             };
+            
+            
 
             CommandLineBuilder builder = new CommandLineBuilder(command)
                 .UseHost(CreateHostBuilder)
@@ -54,7 +57,7 @@ namespace Corgibytes.Freshli.Cli
         public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
         {
             string commandLine = context.ParseResult.ToString();
-
+            
             try
             {
                 string callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
