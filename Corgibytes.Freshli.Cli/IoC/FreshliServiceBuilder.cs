@@ -23,6 +23,7 @@ namespace Corgibytes.Freshli.Cli.IoC
             RegisterBaseCommand();
             RegisterScanCommand();
             RegisterCacheCommand();
+            RegisterAgentsCommand();
         }
 
         public void RegisterBaseCommand()
@@ -48,6 +49,15 @@ namespace Corgibytes.Freshli.Cli.IoC
 
             Services.AddScoped<ICommandRunner<CachePrepareCommandOptions>, CachePrepareCommandRunner>();
             Services.AddOptions<CachePrepareCommandOptions>().BindCommandLine();
+        }
+
+        public void RegisterAgentsCommand(){
+            Services.AddScoped<ICommandRunner<AgentsCommandOptions>, AgentsCommandRunner>();
+            Services.AddOptions<AgentsCommandOptions>().BindCommandLine();
+
+            Services.AddScoped<ICommandRunner<AgentsDetectCommandOptions>, AgentsDetectCommandRunner>();
+            Services.AddOptions<AgentsDetectCommandOptions>().BindCommandLine();
+
         }
     }
 }
