@@ -92,7 +92,7 @@ jobs:
           echo "NUGET_PACKAGE_FILE=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
           echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
 
-      - name: "[Lint] - Run all linters"
+      - name: "[Lint] - Install eclint"
         env:
           ECLINT_VERSION: 0.3.3
         run: |
@@ -101,6 +101,9 @@ jobs:
           tar -zxvf /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -C /opt/eclint && \
           rm /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz
           echo "/opt/eclint" >> $GITHUB_PATH
+
+      - name: "[Lint] - Run all linters"
+        run: |
           bin/lint.rb
 
       - name: "[Test] - Test, Generate Code Coverage"
