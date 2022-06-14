@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
@@ -16,7 +17,7 @@ public class ScanCommandRunner : CommandRunner<ScanCommandOptions>
 
     }
 
-    public override int Run(ScanCommandOptions options)
+    public override int Run(ScanCommandOptions options, InvocationContext context)
     {
         if (string.IsNullOrWhiteSpace(options.Path?.FullName))
         {
