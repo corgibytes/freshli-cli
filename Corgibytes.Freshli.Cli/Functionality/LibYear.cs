@@ -1,0 +1,52 @@
+using System;
+
+namespace Corgibytes.Freshli.Cli.Functionality
+{
+    public class LibYear
+    {
+        private readonly DateTime _releaseDateCurrentVersion;
+        private readonly DateTime _releaseDateLatestVersion;
+
+        private LibYear(DateTime releaseDateCurrentVersion, DateTime releaseDateLatestVersion)
+        {
+            _releaseDateCurrentVersion = releaseDateCurrentVersion;
+            _releaseDateLatestVersion = releaseDateLatestVersion;
+        }
+
+        public static LibYear GivenReleaseDates(DateTime releaseDateCurrentVersion, DateTime releaseDateLatestVersion)
+        {
+            // .Duration() will always return an absolute value.
+            // So even if the latest version was released before the current version you'll end up with a positive number.
+            LibYear libYear = new LibYear(releaseDateCurrentVersion, releaseDateLatestVersion);
+            libYear.TimeSpan = releaseDateLatestVersion.Subtract(releaseDateCurrentVersion).Duration();
+
+            return libYear;
+        }
+
+        public double AsDecimalNumber(int precision = 2)
+        {
+            int numberOfLeapYearsBetween = LeapYears.NumberOfLeapYearsBetween(_releaseDateCurrentVersion.Year, _releaseDateLatestVersion.Year);
+
+            if (_releaseDateCurrentVersion.Year == _releaseDateLatestVersion.Year || numberOfLeapYearsBetween == 0)
+            {
+                return Math.Round((double) TimeSpan.Days / 365, precision);
+            }
+
+            // An example:
+            // Given release date current version 1990, and release date latest version 2021.
+            // There's 31 years between the two:
+            // 31 * 365 = 11315 days if no leap years present
+            // ((31 - 8) * 365) + (8 * 364) = 11307 days with leap years
+            // Average of 364.75 days per year when counting leap years.
+
+            int totalYears = Math.Abs(_releaseDateLatestVersion.Year - _releaseDateCurrentVersion.Year);
+            double averageNumberOfDaysPerYear = (double) (((totalYears - numberOfLeapYearsBetween) * 365) +
+                                                (numberOfLeapYearsBetween * 364)) / totalYears;
+
+
+            return Math.Round(TimeSpan.Days / averageNumberOfDaysPerYear, precision);
+        }
+
+        private TimeSpan TimeSpan { get; set; }
+    }
+}
