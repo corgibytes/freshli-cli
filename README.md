@@ -7,6 +7,7 @@ A tool for displaying historical metrics about a project's dependencies.  Run th
 
 ## Installing and Running
 
+The preferred way of running a development environment is described in [Working with the DevContainer](#working-with-the-devcontainer).
 First you need .NET 6.0 runtime installed which you can find [here](https://dotnet.microsoft.com/download/dotnet/6.0/runtime).  After .NET 6.0 is installed you download the latest Freshli executables [here](https://github.com/corgibytes/freshli-cli/releases/latest).  Pick the Zip file that matches you OS (Windows, Linux, or MacOs) then:
 
 1) Download it.
@@ -36,6 +37,20 @@ Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
 2017-02-01              0.0219  1                       0
 2017-03-01              0.0219  1                       0
 ...
+```
+
+Are you getting this error or something similar? You can solve it (for now) by installing version 5.0.0 as described, but that's not the preferred way. If developing, check out [Working with the DevContainer](#working-with-the-devcontainer).
+
+```
+It was not possible to find any compatible framework version
+The framework 'Microsoft.NETCore.App', version '5.0.0' (x64) was not found.
+  - The following frameworks were found:
+      6.0.5 at [/usr/share/dotnet/shared/Microsoft.NETCore.App]
+
+You can resolve the problem by installing the specified framework and/or SDK.
+
+The specified framework can be found at:
+  - https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=5.0.0&arch=x64&rid=pop.22.04-x64
 ```
 
 ### .NET Tool
