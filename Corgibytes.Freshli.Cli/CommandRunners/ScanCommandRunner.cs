@@ -6,34 +6,33 @@ using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Lib;
 
-namespace Corgibytes.Freshli.Cli.CommandRunners
+namespace Corgibytes.Freshli.Cli.CommandRunners;
+
+public class ScanCommandRunner : CommandRunner<ScanCommandOptions>
 {
-    public class ScanCommandRunner : CommandRunner<ScanCommandOptions>
+
+    public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner) : base(serviceProvider, runner)
     {
 
-        public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner) : base(serviceProvider, runner)
-        {
+    }
 
+    public override int Run(ScanCommandOptions options)
+    {
+        if (string.IsNullOrWhiteSpace(options.Path?.FullName))
+        {
+            throw new ArgumentNullException(nameof(options), CliOutput.ScanCommandRunner_Run_Path_should_not_be_null_or_empty);
         }
 
-        public override int Run(ScanCommandOptions options)
+        var formatter = options.Format.ToFormatter(Services);
+        var outputStrategies = options.Output.ToOutputStrategies(Services);
+
+        var results = Runner.Run(options.Path.FullName);
+
+        foreach (var output in outputStrategies)
         {
-            if (string.IsNullOrWhiteSpace(options.Path?.FullName))
-            {
-                throw new ArgumentNullException(nameof(options), CliOutput.ScanCommandRunner_Run_Path_should_not_be_null_or_empty);
-            }
-
-            var formatter = options.Format.ToFormatter(Services);
-            var outputStrategies = options.Output.ToOutputStrategies(Services);
-
-            var results = Runner.Run(options.Path.FullName);
-
-            foreach (var output in outputStrategies)
-            {
-                output.Send(results, formatter, options);
-            }
-
-            return 0;
+            output.Send(results, formatter, options);
         }
+
+        return 0;
     }
 }

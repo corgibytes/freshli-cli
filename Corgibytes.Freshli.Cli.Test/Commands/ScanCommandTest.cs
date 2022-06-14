@@ -11,51 +11,50 @@ using Xunit;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
 
-namespace Corgibytes.Freshli.Cli.Test.Commands
+namespace Corgibytes.Freshli.Cli.Test.Commands;
+
+public class ScanCommandTest : FreshliTest
 {
-    public class ScanCommandTest : FreshliTest
+    private readonly TestConsole _console = new();
+
+    public ScanCommandTest(ITestOutputHelper output) : base(output) { }
+
+    [Fact]
+    public void Verify_path_argument_configuration()
     {
-        private readonly TestConsole _console = new();
+        ScanCommand scanCommand = new();
 
-        public ScanCommandTest(ITestOutputHelper output) : base(output) { }
+        scanCommand.Arguments.Should().HaveCount(1);
 
-        [Fact]
-        public void Verify_path_argument_configuration()
-        {
-            ScanCommand scanCommand = new();
+        var arg = scanCommand.Arguments.ElementAt(0);
 
-            scanCommand.Arguments.Should().HaveCount(1);
+        arg.Name.Should().Be("path");
+        arg.Arity.Should().BeEquivalentTo(ArgumentArity.ExactlyOne);
+    }
 
-            var arg = scanCommand.Arguments.ElementAt(0);
+    [Theory]
+    [MethodData(nameof(DataForVerifyOptionConfigurations))]
+    public void VerifyOptionConfigurations(string alias, ArgumentArity arity, bool allowsMultiples)
+    {
+        TestHelpers.VerifyAlias<ScanCommand>(alias, arity, allowsMultiples);
+    }
 
-            arg.Name.Should().Be("path");
-            arg.Arity.Should().BeEquivalentTo(ArgumentArity.ExactlyOne);
-        }
-
-        [Theory]
-        [MethodData(nameof(DataForVerifyOptionConfigurations))]
-        public void VerifyOptionConfigurations(string alias, ArgumentArity arity, bool allowsMultiples)
-        {
-            TestHelpers.VerifyAlias<ScanCommand>(alias, arity, allowsMultiples);
-        }
-
-        private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations()
-        {
-            return new TheoryData<string, ArgumentArity, bool>()
+    private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations()
+    {
+        return new TheoryData<string, ArgumentArity, bool>()
             {
                 {"--format", ArgumentArity.ExactlyOne, false},
                 {"-f", ArgumentArity.ExactlyOne, false},
                 {"--output", ArgumentArity.OneOrMore, true},
                 {"-o", ArgumentArity.OneOrMore, true}
             };
-        }
-
-        [Fact]
-        public void Verify_handler_configuration()
-        {
-            ScanCommand scanCommand = new();
-            scanCommand.Handler.Should().NotBeNull();
-        }
-
     }
+
+    [Fact]
+    public void Verify_handler_configuration()
+    {
+        ScanCommand scanCommand = new();
+        scanCommand.Handler.Should().NotBeNull();
+    }
+
 }
