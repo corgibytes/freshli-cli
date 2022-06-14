@@ -1,6 +1,7 @@
 ﻿using System.CommandLine.Hosting;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
+using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Lib;
@@ -48,6 +49,9 @@ namespace Corgibytes.Freshli.Cli.IoC
 
             Services.AddScoped<ICommandRunner<CachePrepareCommandOptions>, CachePrepareCommandRunner>();
             Services.AddOptions<CachePrepareCommandOptions>().BindCommandLine();
+
+            Services.AddScoped<ICommandRunner<CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
+            Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
         }
     }
 }
