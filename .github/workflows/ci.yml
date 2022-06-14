@@ -110,9 +110,6 @@ jobs:
 
       - name: "[Lint] - Run all linters"
         run: |
-          echo "$PATH"
-          which eclint
-          ls -lah "$HOME/.local/opt/eclint"
           bin/lint.rb
 
       - name: "[Test] - Test, Generate Code Coverage"
