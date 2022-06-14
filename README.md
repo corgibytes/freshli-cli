@@ -203,9 +203,27 @@ Data (such as dates and numeric formatting) are NOT localized. Dates and numeric
 
 We are not sure how to handle documentation, such as this ReadMe, in different languages.  If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
 
+## Building
+
+The project can be built using the `bin/build.rb` script.
+
+To build manually, you first need to install the DotNet tools that are used by the project with:
+
+```bash
+dotnet tool restore
+```
+
+Then you can build the `freshli` executable and place it in the `exe` directory (where the acceptance tests expect it to be located) with:
+
+```bash
+dotnet build -o exe
+```
+
 ## Linting
 
 We use a few different automatted tools tools to help us keep the code in this repository in compliance with the Freshli project style guide.
+
+All of the following linters can be run together by running the `bin/lint.rb` script. You can also run the `bin/format.rb` script if you want to instruct the linters to correct any issues that are found. (Note: not all of the linters provide an auto-correct mechanism.)
 
 ### [eclint](https://gitlab.com/greut/eclint)
 
@@ -312,9 +330,21 @@ docker run \
     codeclimate/codeclimate analyze
 ```
 
-## Acceptance Testing
+## Testing
 
-In addition to running `dotnet test` to run the project's unit and integration tests, you run Freshli's acceptance test suite, built using Aruba and Cucumber, which is pre-configured in the repository.
+You can run the unit, integration, and acceptance tests by running the `bin/test.rb` script.
+
+### Unit and Integration Tests
+
+The project's unit and integration tests can be run with:
+
+```bash
+dotnet test
+```
+
+### Acceptance Tests
+
+Freshli's acceptance test suite, built using Aruba and Cucumber, is pre-configured in the repository.
 
 You will need Ruby installed on your system, and then run:
 
@@ -357,6 +387,7 @@ There are two paths to working with this DevContainer setup.
 
 
 ## Contributing
+
 If you have any questions, notice a bug, or have a suggestion/enhancment please let us know by opening a [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
 
 See the [Contributing guide](CONTRIBUTING.md) guide for developer documentation.
