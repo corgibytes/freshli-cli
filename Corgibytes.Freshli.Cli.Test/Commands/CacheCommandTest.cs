@@ -1,8 +1,6 @@
-using System.CommandLine.Builder;
-using System.CommandLine.IO;
-using System.CommandLine.Parsing;
-using System.Threading.Tasks;
+using System.CommandLine;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.Commands.Cache;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
@@ -26,5 +24,19 @@ public class CacheCommandTest : FreshliTest
     {
         CachePrepareCommand cachePrepareCommand = new();
         cachePrepareCommand.Handler.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Verify_destroy_handler_configuration()
+    {
+        CacheDestroyCommand cacheDestroyCommand = new();
+        cacheDestroyCommand.Handler.Should().NotBeNull();
+    }
+
+    [Theory]
+    [InlineData("--force")]
+    public void Verify_force_option_configuration(string alias)
+    {
+        TestHelpers.VerifyAlias<CacheDestroyCommand>(alias, ArgumentArity.ZeroOrOne, false);
     }
 }
