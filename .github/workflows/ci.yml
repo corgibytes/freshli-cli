@@ -94,7 +94,7 @@ jobs:
 
       - name: "[Lint] - Run all linters"
         env:
-          ECLINT_VERSION=0.3.3
+          ECLINT_VERSION: 0.3.3
         run: |
           curl -L https://gitlab.com/greut/eclint/-/releases/v$ECLINT_VERSION/downloads/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -o /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz && \
           mkdir -p /opt/eclint && \
