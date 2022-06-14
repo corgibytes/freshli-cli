@@ -6,31 +6,29 @@ using Corgibytes.Freshli.Cli.CommandRunners;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Corgibytes.Freshli.Cli.Commands
+namespace Corgibytes.Freshli.Cli.Commands;
+
+public class CacheCommand : Command
 {
-    public class CacheCommand : Command
+    public CacheCommand() : base("cache", "Manages the local cache database")
     {
-        public CacheCommand() : base("cache", "Manages the local cache database")
-        {
-            CachePrepareCommand prepare = new();
-            AddCommand(prepare);
-        }
+        CachePrepareCommand prepare = new();
+        AddCommand(prepare);
+    }
+}
+
+public class CachePrepareCommand : Command
+{
+    public CachePrepareCommand() : base("prepare",
+        "Ensures the cache directory exists and contains a valid cache database.")
+    {
+        Handler = CommandHandler.Create<IHost, InvocationContext, CachePrepareCommandOptions>(Run);
     }
 
-    public class CachePrepareCommand : Command
+    private int Run(IHost host, InvocationContext context, CachePrepareCommandOptions options)
     {
-        public CachePrepareCommand() : base("prepare",
-            "Ensures the cache directory exists and contains a valid cache database.")
-        {
-            Handler = CommandHandler.Create<IHost, InvocationContext, CachePrepareCommandOptions>(Run);
-        }
-
-        private int Run(IHost host, InvocationContext context, CachePrepareCommandOptions options)
-        {
-            using var scope = host.Services.CreateScope();
-            var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<CachePrepareCommandOptions>>();
-            return runner.Run(options);
-        }
+        using var scope = host.Services.CreateScope();
+        var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<CachePrepareCommandOptions>>();
+        return runner.Run(options);
     }
-
 }

@@ -12,53 +12,53 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Corgibytes.Freshli.Cli.Test.CommandOptions
+namespace Corgibytes.Freshli.Cli.Test.CommandOptions;
+
+public class ScanCommandOptionsTest : FreshliTest
 {
-    public class ScanCommandOptionsTest : FreshliTest
+    private static string TempPath { get; } = Path.GetTempPath();
+
+    public ScanCommandOptionsTest(ITestOutputHelper output) : base(output) { }
+
+    [Theory]
+    [MemberData(nameof(ScanOptionsArgs))]
+    public void Send_Args_ReturnsScanOptions(string[] args, string expectedPath, FormatType expectedFormat, IList<OutputStrategyType> expectedOutput)
     {
-        private static string TempPath { get; } = Path.GetTempPath();
+        var cmBuilder = Program.CreateCommandLineBuilder();
+        Parser parser = new(cmBuilder.Command);
 
-        public ScanCommandOptionsTest(ITestOutputHelper output) : base(output) { }
+        var result = parser.Parse(args);
 
-        [Theory]
-        [MemberData(nameof(ScanOptionsArgs))]
-        public void Send_Args_ReturnsScanOptions(string[] args, string expectedPath, FormatType expectedFormat, IList<OutputStrategyType> expectedOutput)
+        var path = result.GetArgumentValueByName<DirectoryInfo>("path");
+        var formatType = result.GetOptionValueByName<FormatType>("format");
+        var formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
+        var outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output");
+        var outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o");
+
+        formatType.Should().Be(formatTypeFromAlias);
+
+        outputStrategyTypes.Should().NotBeEmpty()
+            .And.Equal(outputStrategyTypesFromAlias);
+
+        path.Should().NotBeNull();
+        path.FullName.Should().NotBeEmpty()
+            .And.Be(expectedPath);
+
+        formatType.Should()
+            .Be(expectedFormat);
+
+        outputStrategyTypes.Should().NotContainNulls();
+
+        //Veryfy all required ones are present
+        expectedOutput.Should().BeSubsetOf(outputStrategyTypes);
+
+        //Veryfy there aren't extra output stragetegies added
+        outputStrategyTypes.Should().BeSubsetOf(expectedOutput);
+    }
+
+    public static IEnumerable<object[]> ScanOptionsArgs =>
+        new List<object[]>
         {
-            var cmBuilder = Program.CreateCommandLineBuilder();
-            Parser parser = new(cmBuilder.Command);
-
-            var result = parser.Parse(args);
-
-            var path = result.GetArgumentValueByName<DirectoryInfo>("path");
-            var formatType = result.GetOptionValueByName<FormatType>("format");
-            var formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
-            var outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output");
-            var outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o");
-
-            formatType.Should().Be(formatTypeFromAlias);
-
-            outputStrategyTypes.Should().NotBeEmpty()
-                .And.Equal(outputStrategyTypesFromAlias);
-
-            path.Should().NotBeNull();
-            path.FullName.Should().NotBeEmpty()
-                .And.Be(expectedPath);
-
-            formatType.Should()
-                .Be(expectedFormat);
-
-            outputStrategyTypes.Should().NotContainNulls();
-
-            //Veryfy all required ones are present
-            expectedOutput.Should().BeSubsetOf(outputStrategyTypes);
-
-            //Veryfy there aren't extra output stragetegies added
-            outputStrategyTypes.Should().BeSubsetOf(expectedOutput);
-        }
-
-        public static IEnumerable<object[]> ScanOptionsArgs =>
-            new List<object[]>
-            {
                 new object[] { new string[] { "scan", TempPath, "--format", "json", "--output", "console"}, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
                 new object[] { new string[] { "scan", TempPath, "--Format", "JSON", "--output", "CONSOLE" }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } },
                 new object[] { new string[] { "scan", TempPath, "--format", "csv", "--output", "file", "--output", "console" }, TempPath, FormatType.Csv, new List<OutputStrategyType>() { OutputStrategyType.File, OutputStrategyType.Console }},
@@ -80,6 +80,5 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions
 
                 //It should configure the default formatter and default output
                 new object[] { new string[] { "scan", TempPath }, TempPath, FormatType.Json, new List<OutputStrategyType>() { OutputStrategyType.Console } }
-            };
-    }
+        };
 }

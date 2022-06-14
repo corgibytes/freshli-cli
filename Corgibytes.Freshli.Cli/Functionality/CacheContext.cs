@@ -2,27 +2,26 @@ using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 
-namespace Corgibytes.Freshli.Cli.Functionality
+namespace Corgibytes.Freshli.Cli.Functionality;
+
+public class CacheContext : DbContext
 {
-    public class CacheContext : DbContext
+    public static DirectoryInfo DefaultCacheDir =>
+        new(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
+
+    public DirectoryInfo CacheDir { get; }
+
+    private static readonly string s_cacheDbName = "freshli.db";
+    public string DbPath { get; }
+
+    public DbSet<CachedProperty> CachedProperties { get; set; }
+
+    public CacheContext(DirectoryInfo cacheDir)
     {
-        public static DirectoryInfo DefaultCacheDir =>
-            new(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
-
-        public DirectoryInfo CacheDir { get; }
-
-        private static readonly string s_cacheDbName = "freshli.db";
-        public string DbPath { get; }
-
-        public DbSet<CachedProperty> CachedProperties { get; set; }
-
-        public CacheContext(DirectoryInfo cacheDir)
-        {
-            CacheDir = cacheDir;
-            DbPath = Path.Join(CacheDir.ToString(), s_cacheDbName);
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-            => options.UseSqlite($"Data Source={DbPath}");
+        CacheDir = cacheDir;
+        DbPath = Path.Join(CacheDir.ToString(), s_cacheDbName);
     }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+        => options.UseSqlite($"Data Source={DbPath}");
 }
