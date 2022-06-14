@@ -13,11 +13,10 @@ using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
-public class ScanCommand : Command
+public class ScanCommand : RunnableCommand<ScanCommandOptions>
 {
     public ScanCommand() : base("scan", "Scan command returns metrics results for given local repository path")
     {
-
         Option<FormatType> formatOption = new(new[] { "--format", "-f" },
             description: "Represents the output format type - It's value is case insensitive",
             getDefaultValue: () => FormatType.Json)
@@ -43,11 +42,10 @@ public class ScanCommand : Command
         };
 
         AddArgument(pathArgument);
-
-        Handler = CommandHandler.Create<IHost, InvocationContext, ScanCommandOptions>(Run);
     }
 
-    private int Run(IHost host, InvocationContext context, ScanCommandOptions options)
+
+    protected override int Run(IHost host, InvocationContext context, ScanCommandOptions options)
     {
         if (options == null)
         {
@@ -56,9 +54,6 @@ public class ScanCommand : Command
 
         context.Console.Out.Write($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
 
-        using var scope = host.Services.CreateScope();
-        var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<ScanCommandOptions>>();
-
-        return runner.Run(options);
+        return base.Run(host, context, options);
     }
 }

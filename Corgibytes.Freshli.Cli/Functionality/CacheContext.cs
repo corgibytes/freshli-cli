@@ -11,7 +11,7 @@ public class CacheContext : DbContext
 
     public DirectoryInfo CacheDir { get; }
 
-    private static readonly string s_cacheDbName = "freshli.db";
+    public const string CacheDbName = "freshli.db";
     public string DbPath { get; }
 
     public DbSet<CachedProperty> CachedProperties { get; set; }
@@ -19,9 +19,9 @@ public class CacheContext : DbContext
     public CacheContext(DirectoryInfo cacheDir)
     {
         CacheDir = cacheDir;
-        DbPath = Path.Join(CacheDir.ToString(), s_cacheDbName);
+        DbPath = Path.Join(CacheDir.ToString(), CacheDbName);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseSqlite($"Data Source={DbPath}");
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlite($"Data Source={DbPath}");
 }
