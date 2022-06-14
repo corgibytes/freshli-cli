@@ -92,6 +92,10 @@ jobs:
           echo "NUGET_PACKAGE_FILE=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
           echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
 
+      - name: "[Lint] - Run all linters"
+        run: |
+          bin/lint.rb
+
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
           dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
