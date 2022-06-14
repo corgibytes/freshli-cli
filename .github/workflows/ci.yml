@@ -36,6 +36,12 @@ jobs:
         with:
           versionSpec: '0.13.0'
 
+      - name: "[Setup] - Install Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1 # Not needed with a .ruby-version file
+          bundler-cache: true
+
       - name: "[Versioning] - GitVersion Config"
         uses: gittools/actions/gitversion/execute@v0.9.13
         with:
