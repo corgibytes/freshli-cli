@@ -45,7 +45,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-support (3.11.0)
-    sqlite3 (1.4.2)
+    sqlite3 (1.4.3)
     sys-uname (1.2.2)
       ffi (~> 1.1)
     thor (1.2.1)
