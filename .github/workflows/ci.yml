@@ -97,13 +97,16 @@ jobs:
           ECLINT_VERSION: 0.3.3
         run: |
           curl -L https://gitlab.com/greut/eclint/-/releases/v$ECLINT_VERSION/downloads/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -o /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz && \
-          mkdir -p /opt/eclint && \
-          tar -zxvf /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -C /opt/eclint && \
+          mkdir -p $HOME/.local/opt/eclint && \
+          tar -zxvf /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -C $HOME/.local/opt/eclint && \
           rm /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz
-          echo "/opt/eclint" >> $GITHUB_PATH
+          echo "$HOME/.local/opt/eclint" >> $GITHUB_PATH
 
       - name: "[Lint] - Run all linters"
         run: |
+          echo "$PATH"
+          which eclint
+          ls -lah "$HOME/.local/opt/eclint"
           bin/lint.rb
 
       - name: "[Test] - Test, Generate Code Coverage"
