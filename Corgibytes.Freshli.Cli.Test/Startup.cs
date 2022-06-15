@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Corgibytes.Freshli.Cli.IoC;
-using Corgibytes.Freshli.Lib;
+﻿using Corgibytes.Freshli.Cli.IoC;
 using Microsoft.Extensions.DependencyInjection;
-using Moq;
 
 namespace Corgibytes.Freshli.Cli.Test;
 
