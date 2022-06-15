@@ -36,25 +36,16 @@ namespace Corgibytes.Freshli.Cli.Test.Services
             Assert.Equal(6.64, _calculator.GivenTwoPackages(packageUrlCurrentlyInstalled, packageUrlLatestAvailable).AsDecimalNumber());
         }
 
-        [Fact]
-        public void It_can_not_handle_different_dependency_managers()
+        [Theory]
+        [InlineData("pkg:nuget/Newtonsoft.Json@13.0.1", "pkg:composer/superawesomepackage@6.0.4", "Package URLs provided have different package managers")]
+        [InlineData("pkg:loremipsum/BleepBloop@123.04", "pkg:loremipsum/BleepBloop@33.123848", "Invalid dependency manager given 'loremipsum'")]
+        public void It_can_not_handle_different_dependency_managers(string packageOne, string packageTwo, string expectedExceptionMessage)
         {
-            var nugetPackage = new PackageURL("pkg:nuget/Newtonsoft.Json@13.0.1");
-            var composerPackage = new PackageURL("pkg:composer/superawesomepackage@6.0.4");
+            var nugetPackage = new PackageURL(packageOne);
+            var composerPackage = new PackageURL(packageTwo);
 
             ArgumentException caughtException = Assert.Throws<ArgumentException>(() => _calculator.GivenTwoPackages(nugetPackage, composerPackage));
-            Assert.Equal("Package URLs provided have different package managers", caughtException.Message);
-        }
-
-        [Fact]
-        public void It_shrugs_off_unknown_dependency_managers()
-        {
-            // They got to be the same unknown managers
-            var loremIpsumPackage = new PackageURL("pkg:loremipsum/BleepBloop@123.04");
-            var anotherLoremIpsumPackage = new PackageURL("pkg:loremipsum/BleepBloop@33.123848");
-
-            ArgumentException caughtException = Assert.Throws<ArgumentException>(() => _calculator.GivenTwoPackages(loremIpsumPackage, anotherLoremIpsumPackage));
-            Assert.Equal("Invalid dependency manager given 'loremipsum'", caughtException.Message);
+            Assert.Equal(expectedExceptionMessage, caughtException.Message);
         }
 
         [Fact]
