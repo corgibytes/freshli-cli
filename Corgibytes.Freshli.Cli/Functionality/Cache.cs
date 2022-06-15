@@ -96,7 +96,7 @@ public static class Cache
                     break;
                 }
             }
-            if(!found)
+            if (!found)
             {
                 focus = focus.CreateSubdirectory(directory);
             }
@@ -110,7 +110,7 @@ public static class Cache
         // If the directory doesn't exist, do nothing (be idempotent).
         if (!cacheDir.Exists)
         {
-            throw new CacheException("Cache directory already destroyed or does not exist.") {IsWarning = true};
+            throw new CacheException("Cache directory already destroyed or does not exist.") { IsWarning = true };
         }
 
         if (!ValidateDirIsCache(cacheDir))
