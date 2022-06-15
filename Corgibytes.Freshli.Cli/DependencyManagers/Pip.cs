@@ -2,7 +2,7 @@ using System;
 
 namespace Corgibytes.Freshli.Cli.DependencyManagers
 {
-    public class Pip: IRepository
+    public class Pip: IDependencyManagerRepository
     {
         public DateTime GetReleaseDate(string name, string version) => throw new NotImplementedException();
 
