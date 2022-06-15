@@ -23,6 +23,8 @@ public class GitRepository
     private string Branch { get; }
     private DirectoryInfo Directory { get; }
 
+    private DirectoryInfo CacheDir { get; }
+
     private bool Cloned
     {
         get => Directory.GetFiles().Any() || Directory.GetDirectories().Any();
@@ -36,12 +38,13 @@ public class GitRepository
     public GitRepository(string hash, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.
-        Cache.Prepare(cacheDir);
+        CacheDir = cacheDir;
+        Cache.Prepare(CacheDir);
 
         Hash = hash;
 
         // Get existing entry via provided hash
-        using var db = new CacheContext();
+        using var db = new CacheContext(CacheDir);
         var entry = db.CachedGitRepos.Find(Hash);
         if (entry == null)
         {
@@ -52,21 +55,22 @@ public class GitRepository
         Branch = entry.Branch;
 
         // Ensure the directory exists in the cache for cloning the repository.
-        Directory = Cache.GetDirectoryInCache(cacheDir, new[] {"repositories", Hash});
+        Directory = Cache.GetDirectoryInCache(CacheDir, new[] {"repositories", Hash});
     }
     public GitRepository(string url, string branch, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.
-        Cache.Prepare(cacheDir);
+        CacheDir = cacheDir;
+        Cache.Prepare(CacheDir);
 
         Url = url;
         Branch = branch;
 
         // Generate a unique hash for the repository based on its URL and branch.
         using SHA256 sha256 = SHA256.Create();
-        byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(Url + Branch));
+        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(Url + Branch));
         var stringBuilder = new StringBuilder();
-        foreach (byte hashByte in hashBytes)
+        foreach (var hashByte in hashBytes)
         {
             stringBuilder.Append(hashByte.ToString("x2"));
         }
@@ -74,10 +78,10 @@ public class GitRepository
         Hash = stringBuilder.ToString();
 
         // Ensure the directory exists in the cache for cloning the repository.
-        Directory = Cache.GetDirectoryInCache(cacheDir, new[] {"repositories", Hash});
+        Directory = Cache.GetDirectoryInCache(CacheDir, new[] {"repositories", Hash});
 
         // Store ID, URL, branch, and folder path in the cache DB, if it doesn't already exist
-        using var db = new CacheContext();
+        using var db = new CacheContext(CacheDir);
         if (db.CachedGitRepos.Find(Hash) != null) { return; }
 
         var entry = new CachedGitRepo() {Id = Hash, Url = Url, Branch = Branch, LocalPath = Directory.FullName};
@@ -87,7 +91,7 @@ public class GitRepository
 
     private void Delete()
     {
-        using var db = new CacheContext();
+        using var db = new CacheContext(CacheDir);
         var entry = db.CachedGitRepos.Find(Hash);
         db.CachedGitRepos.Remove(entry!);
 

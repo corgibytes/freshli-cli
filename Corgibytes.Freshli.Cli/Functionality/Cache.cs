@@ -84,9 +84,9 @@ public static class Cache
         Prepare(cacheDir);
         var focus = cacheDir;
 
-        foreach (string directory in directoryStructure)
+        foreach (var directory in directoryStructure)
         {
-            bool found = false;
+            var found = false;
             foreach (var match in focus.GetDirectories(directory))
             {
                 if (match.Name == directory)
