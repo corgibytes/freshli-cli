@@ -4,7 +4,7 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers
 {
     public class SupportedDependencyManagers
     {
-        private readonly string _dependencyManager;
+        private string _dependencyManager;
 
         private const string _Composer = "composer";
         private const string _Bundler = "bundler";
@@ -59,6 +59,11 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers
         public static SupportedDependencyManagers Pip()
         {
             return new SupportedDependencyManagers(_Pip);
+        }
+
+        public string DependencyManager()
+        {
+            return _dependencyManager;
         }
 
         private SupportedDependencyManagers(string dependencyManager)
