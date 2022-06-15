@@ -13,7 +13,7 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers
             // 2. Use git to query tags and their publication date
         }
 
-        public SupportedDependencyManagers Supports() => SupportedDependencyManagers.Composer;
+        public SupportedDependencyManagers Supports() => SupportedDependencyManagers.Composer();
     }
 }
 
