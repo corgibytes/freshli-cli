@@ -1,11 +1,10 @@
 using System;
 
-namespace Corgibytes.Freshli.Cli.DependencyManagers
-{
-    public class Pip: IDependencyManagerRepository
-    {
-        public DateTime GetReleaseDate(string name, string version) => throw new NotImplementedException();
+namespace Corgibytes.Freshli.Cli.DependencyManagers;
 
-        public SupportedDependencyManagers Supports() => SupportedDependencyManagers.Pip();
-    }
+public class Pip : IDependencyManagerRepository
+{
+    public DateTime GetReleaseDate(string name, string version) => throw new NotImplementedException();
+
+    public SupportedDependencyManagers Supports() => SupportedDependencyManagers.Pip();
 }
