@@ -1,74 +1,67 @@
 using System;
 
-namespace Corgibytes.Freshli.Cli.DependencyManagers
+namespace Corgibytes.Freshli.Cli.DependencyManagers;
+
+public class SupportedDependencyManagers
 {
-    public class SupportedDependencyManagers
+    private readonly string _dependencyManager;
+
+    private const string ConstantComposer = "composer";
+    private const string ConstantBundler = "bundler";
+    private const string ConstantCarton = "carton";
+    private const string ConstantNuGet = "nuget";
+    private const string ConstantPip = "pip";
+
+    public static SupportedDependencyManagers FromString(string dependencyManager)
     {
-        private string _dependencyManager;
-
-        private const string _Composer = "composer";
-        private const string _Bundler = "bundler";
-        private const string _Carton = "carton";
-        private const string _NuGet = "nuget";
-        private const string _Pip = "pip";
-
-        public static SupportedDependencyManagers FromString(string dependencyManager)
+        return dependencyManager switch
         {
-            switch (dependencyManager)
-            {
-                case _Composer:
-                    return new SupportedDependencyManagers(_Composer);
-                case _Bundler:
-                    return new SupportedDependencyManagers(_Bundler);
-                case _Carton:
-                    return new SupportedDependencyManagers(_Carton);
-                case _NuGet:
-                    return new SupportedDependencyManagers(_NuGet);
-                case _Pip:
-                    return new SupportedDependencyManagers(_Pip);
-                default:
-                    throw new ArgumentException($"Invalid dependency manager given '{dependencyManager}'");
-            }
-        }
+            ConstantComposer => new SupportedDependencyManagers(ConstantComposer),
+            ConstantBundler => new SupportedDependencyManagers(ConstantBundler),
+            ConstantCarton => new SupportedDependencyManagers(ConstantCarton),
+            ConstantNuGet => new SupportedDependencyManagers(ConstantNuGet),
+            ConstantPip => new SupportedDependencyManagers(ConstantPip),
+            _ => throw new ArgumentException($"Invalid dependency manager given '{dependencyManager}'"),
+        };
+    }
 
-        public bool Equals(SupportedDependencyManagers other)
-        {
-            return _dependencyManager == other._dependencyManager;
-        }
+    public bool Equals(SupportedDependencyManagers other)
+    {
+        return _dependencyManager == other._dependencyManager;
+    }
 
-        public static SupportedDependencyManagers Composer()
-        {
-            return new SupportedDependencyManagers(_Composer);
-        }
+    public static SupportedDependencyManagers Composer()
+    {
+        return new SupportedDependencyManagers(ConstantComposer);
+    }
 
-        public static SupportedDependencyManagers Bundler()
-        {
-            return new SupportedDependencyManagers(_Bundler);
-        }
+    public static SupportedDependencyManagers Bundler()
+    {
+        return new SupportedDependencyManagers(ConstantBundler);
+    }
 
-        public static SupportedDependencyManagers Carton()
-        {
-            return new SupportedDependencyManagers(_Carton);
-        }
+    public static SupportedDependencyManagers Carton()
+    {
+        return new SupportedDependencyManagers(ConstantCarton);
+    }
 
-        public static SupportedDependencyManagers NuGet()
-        {
-            return new SupportedDependencyManagers(_NuGet);
-        }
+    public static SupportedDependencyManagers NuGet()
+    {
+        return new SupportedDependencyManagers(ConstantNuGet);
+    }
 
-        public static SupportedDependencyManagers Pip()
-        {
-            return new SupportedDependencyManagers(_Pip);
-        }
+    public static SupportedDependencyManagers Pip()
+    {
+        return new SupportedDependencyManagers(ConstantPip);
+    }
 
-        public string DependencyManager()
-        {
-            return _dependencyManager;
-        }
+    public string DependencyManager()
+    {
+        return _dependencyManager;
+    }
 
-        private SupportedDependencyManagers(string dependencyManager)
-        {
-            _dependencyManager = dependencyManager;
-        }
+    private SupportedDependencyManagers(string dependencyManager)
+    {
+        _dependencyManager = dependencyManager;
     }
 }
