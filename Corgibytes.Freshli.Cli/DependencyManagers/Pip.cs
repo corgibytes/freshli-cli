@@ -6,6 +6,6 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers
     {
         public DateTime GetReleaseDate(string name, string version) => throw new NotImplementedException();
 
-        public SupportedDependencyManagers Supports() => SupportedDependencyManagers.Pip;
+        public SupportedDependencyManagers Supports() => SupportedDependencyManagers.Pip();
     }
 }
