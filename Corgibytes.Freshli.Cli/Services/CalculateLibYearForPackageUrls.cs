@@ -8,9 +8,9 @@ namespace Corgibytes.Freshli.Cli.Services
 {
     public class CalculateLibYearForPackageUrls
     {
-        private readonly List<IRepository> _repositories;
+        private readonly List<IDependencyManagerRepository> _repositories;
 
-        public CalculateLibYearForPackageUrls(List<IRepository> repositories)
+        public CalculateLibYearForPackageUrls(List<IDependencyManagerRepository> repositories)
         {
             _repositories = repositories;
         }

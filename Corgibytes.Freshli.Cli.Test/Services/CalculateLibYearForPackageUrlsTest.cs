@@ -17,9 +17,9 @@ namespace Corgibytes.Freshli.Cli.Test.Services
         public CalculateLibYearForPackageUrlsTest(ITestOutputHelper output) : base(output)
         {
             _calculator = new CalculateLibYearForPackageUrls(
-                new List<IRepository>()
+                new List<IDependencyManagerRepository>()
                 {
-                    new MockNuGetRepository()
+                    new MockNuGetDependencyManagerRepository()
                 }
             );
         }
@@ -37,7 +37,7 @@ namespace Corgibytes.Freshli.Cli.Test.Services
         }
 
         [Fact]
-        public void It_can_not_calculate_libyear_for_different_dependency_managers()
+        public void It_can_not_handle_different_dependency_managers()
         {
             var nugetPackage = new PackageURL("pkg:nuget/Newtonsoft.Json@13.0.1");
             var composerPackage = new PackageURL("pkg:composer/superawesomepackage@6.0.4");
@@ -47,10 +47,11 @@ namespace Corgibytes.Freshli.Cli.Test.Services
         }
 
         [Fact]
-        public void It_can_not_calculate_libyear_for_unknown_dependency_managers()
+        public void It_shrugs_off_unknown_dependency_managers()
         {
+            // They got to be the same unknown managers
             var loremIpsumPackage = new PackageURL("pkg:loremipsum/BleepBloop@123.04");
-            var anotherLoremIpsumPackage = new PackageURL("pkg:loremipsum/BleepBloop@6.0.4");
+            var anotherLoremIpsumPackage = new PackageURL("pkg:loremipsum/BleepBloop@33.123848");
 
             ArgumentException caughtException = Assert.Throws<ArgumentException>(() => _calculator.GivenTwoPackages(loremIpsumPackage, anotherLoremIpsumPackage));
             Assert.Equal("Invalid dependency manager given 'loremipsum'", caughtException.Message);
@@ -62,7 +63,7 @@ namespace Corgibytes.Freshli.Cli.Test.Services
             var packageUrlLatestAvailable = new PackageURL("pkg:composer/Newtonsoft.Json@13.0.1");
             var packageUrlCurrentlyInstalled = new PackageURL("pkg:composer/Newtonsoft.Json@6.0.4");
 
-            var calculator = new CalculateLibYearForPackageUrls(new List<IRepository>());
+            var calculator = new CalculateLibYearForPackageUrls(new List<IDependencyManagerRepository>());
 
             var caughtException = Assert.Throws<ArgumentException>(() => calculator.GivenTwoPackages(packageUrlLatestAvailable, packageUrlCurrentlyInstalled));
 
