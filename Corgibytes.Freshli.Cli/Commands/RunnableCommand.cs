@@ -8,7 +8,7 @@ using Microsoft.Extensions.Hosting;
 namespace Corgibytes.Freshli.Cli.Commands;
 
 #nullable enable
-public abstract class RunnableCommand<T> : Command where T: CommandOptions.CommandOptions
+public abstract class RunnableCommand<T> : Command where T : CommandOptions.CommandOptions
 {
     protected RunnableCommand(string name, string? description = null) : base(name, description)
     {
@@ -17,8 +17,8 @@ public abstract class RunnableCommand<T> : Command where T: CommandOptions.Comma
 
     protected virtual int Run(IHost host, InvocationContext context, T options)
     {
-        using IServiceScope scope = host.Services.CreateScope();
-        ICommandRunner<T> runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<T>>();
+        using var scope = host.Services.CreateScope();
+        var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<T>>();
         return runner.Run(options, context);
     }
 }

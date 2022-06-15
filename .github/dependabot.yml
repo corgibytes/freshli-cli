@@ -6,11 +6,11 @@
 version: 2
 updates:
   - package-ecosystem: "nuget"
-    directory: "/" 
+    directory: "/"
     schedule:
       interval: "daily"
     labels:
-      - "dependencies"  
+      - "dependencies"
 
   - package-ecosystem: "github-actions"
     directory: "/"

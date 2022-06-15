@@ -36,6 +36,12 @@ jobs:
         with:
           versionSpec: '0.13.0'
 
+      - name: "[Setup] - Install Ruby"
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1 # Not needed with a .ruby-version file
+          bundler-cache: true
+
       - name: "[Versioning] - GitVersion Config"
         uses: gittools/actions/gitversion/execute@v0.9.13
         with:
@@ -92,6 +98,20 @@ jobs:
           echo "NUGET_PACKAGE_FILE=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
           echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
 
+      - name: "[Lint] - Install eclint"
+        env:
+          ECLINT_VERSION: 0.3.3
+        run: |
+          curl -L https://gitlab.com/greut/eclint/-/releases/v$ECLINT_VERSION/downloads/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -o /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz && \
+          mkdir -p $HOME/.local/opt/eclint && \
+          tar -zxvf /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -C $HOME/.local/opt/eclint && \
+          rm /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz
+          echo "$HOME/.local/opt/eclint" >> $GITHUB_PATH
+
+      - name: "[Lint] - Run all linters"
+        run: |
+          bin/lint.rb --skip-codeclimate
+
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
           dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
@@ -108,7 +128,7 @@ jobs:
 
       - name: "[Test] - Behavior Acceptance Tests with Coverage Collection"
         run: |
-          dotnet build -o bin && dotnet coverlet ./bin --target "bundle" --targetargs "exec cucumber" --output ./coverage-acceptance.info --format lcov
+          dotnet build -o exe && dotnet coverlet ./exe --target "bundle" --targetargs "exec cucumber" --output ./coverage-acceptance.info --format lcov
 
       - name: "[Test] - Send Code Coverage Data to Code Climate"
         uses: paambaati/codeclimate-action@v3.0.0
