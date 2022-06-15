@@ -1,9 +1,5 @@
 ﻿using System.CommandLine;
-using System.CommandLine.Builder;
-using System.CommandLine.IO;
-using System.CommandLine.Parsing;
 using System.Linq;
-using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
