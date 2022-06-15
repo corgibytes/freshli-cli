@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality
 
         [Theory]
         [ClassData(typeof(LibYearTestDataGenerator))]
-        public void Validate_calculate_difference(DateTime releaseDateCurrentVersion, DateTime releaseDateLatestVersion, double expectedLibYear, int precision)
+        public void Validate_expected_libyears(DateTime releaseDateCurrentVersion, DateTime releaseDateLatestVersion, double expectedLibYear, int precision)
         {
             Assert.Equal(expectedLibYear, LibYear.GivenReleaseDates(releaseDateCurrentVersion, releaseDateLatestVersion).AsDecimalNumber(precision));
         }
