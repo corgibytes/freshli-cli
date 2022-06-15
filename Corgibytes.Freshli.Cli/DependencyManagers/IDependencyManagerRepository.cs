@@ -1,7 +1,7 @@
 using System;
 
 namespace Corgibytes.Freshli.Cli.DependencyManagers {
-    public interface IRepository
+    public interface IDependencyManagerRepository
     {
         DateTime GetReleaseDate(string name, string version);
         SupportedDependencyManagers Supports();
