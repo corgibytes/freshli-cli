@@ -2,7 +2,7 @@ using System;
 
 namespace Corgibytes.Freshli.Cli.DependencyManagers
 {
-    public class Composer: IRepository
+    public class Composer: IDependencyManagerRepository
     {
         public DateTime GetReleaseDate(string name, string version)
         {
