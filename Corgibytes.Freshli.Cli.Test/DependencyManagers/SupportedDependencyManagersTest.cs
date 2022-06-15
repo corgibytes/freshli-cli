@@ -15,7 +15,7 @@ public class SupportedDependencyManagersTest : FreshliTest
     [Fact]
     public void It_can_not_instantiate_with_invalid_dependency_manager()
     {
-        ArgumentException caughtException =
+        var caughtException =
             Assert.Throws<ArgumentException>(() =>
                 SupportedDependencyManagers.FromString("prettysurethiscanneverwork"));
 
