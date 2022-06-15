@@ -11,48 +11,49 @@ using Corgibytes.Freshli.Cli.OutputStrategies;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Corgibytes.Freshli.Cli.Commands
+namespace Corgibytes.Freshli.Cli.Commands;
+
+public class ScanCommand : RunnableCommand<ScanCommandOptions>
 {
-    public class ScanCommand : RunnableCommand<ScanCommandOptions>
+    public ScanCommand() : base("scan", "Scan command returns metrics results for given local repository path")
     {
-        public ScanCommand() : base("scan", "Scan command returns metrics results for given local repository path")
+        Option<FormatType> formatOption = new(new[] { "--format", "-f" },
+            description: "Represents the output format type - It's value is case insensitive",
+            getDefaultValue: () => FormatType.Json)
         {
+            AllowMultipleArgumentsPerToken = false,
+            Arity = ArgumentArity.ExactlyOne,
+        };
 
-            Option <FormatType> formatOption = new(new[] { "--format", "-f" },
-                description: "Represents the output format type - It's value is case insensitive",
-                getDefaultValue: () => FormatType.Json)
-            {
-                AllowMultipleArgumentsPerToken = false,
-                Arity = ArgumentArity.ExactlyOne,
-            };
+        Option<IEnumerable<OutputStrategyType>> outputOption = new(new[] { "--output", "-o" },
+            description: "Represents where you want to output the result. This option is case sensitive and you can specify more than one by including it multiple times. Allowed values are [ console | file ]",
+            getDefaultValue: () => new List<OutputStrategyType>() { OutputStrategyType.Console })
+        {
+            AllowMultipleArgumentsPerToken = true,
+            Arity = ArgumentArity.OneOrMore,
+        };
 
-            Option<IEnumerable<OutputStrategyType>> outputOption = new(new[] { "--output", "-o" },
-                description: "Represents where you want to output the result. This option is case sensitive and you can specify more than one by including it multiple times. Allowed values are [ console | file ]",
-                getDefaultValue: () => new List<OutputStrategyType>() { OutputStrategyType.Console })
-            {
-                AllowMultipleArgumentsPerToken = true,
-                Arity = ArgumentArity.OneOrMore,
-            };
+        AddOption(formatOption);
+        AddOption(outputOption);
 
-            AddOption(formatOption);
-            AddOption(outputOption);
+        Argument<DirectoryInfo> pathArgument = new("path", "Source code repository path")
+        {
+            Arity = ArgumentArity.ExactlyOne
+        };
 
-            Argument<DirectoryInfo> pathArgument = new("path", "Source code repository path")
-            {
-                Arity = ArgumentArity.ExactlyOne
-            };
+        AddArgument(pathArgument);
+    }
 
-            AddArgument(pathArgument);
+
+    protected override int Run(IHost host, InvocationContext context, ScanCommandOptions options)
+    {
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
         }
 
-        protected override int Run(IHost host, InvocationContext context, ScanCommandOptions options)
-        {
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
+        context.Console.Out.Write($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
 
-            context.Console.Out.Write($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
-
-            return base.Run(host, context, options);
-        }
+        return base.Run(host, context, options);
     }
 }

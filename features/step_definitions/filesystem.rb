@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 
 Given('a blank file named {string} exists') do |filename|
