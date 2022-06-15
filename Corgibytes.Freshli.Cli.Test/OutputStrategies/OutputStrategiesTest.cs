@@ -5,7 +5,6 @@ using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Corgibytes.Freshli.Lib;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;

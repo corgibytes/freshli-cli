@@ -2,13 +2,10 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
-using System.CommandLine.NamingConventionBinder;
 using System.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
-using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands;
