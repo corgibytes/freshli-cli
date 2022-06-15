@@ -16,15 +16,15 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers
         {
             switch (dependencyManager)
             {
-                case SupportedDependencyManagers._Composer:
+                case _Composer:
                     return new SupportedDependencyManagers(_Composer);
-                case SupportedDependencyManagers._Bundler:
+                case _Bundler:
                     return new SupportedDependencyManagers(_Bundler);
-                case SupportedDependencyManagers._Carton:
+                case _Carton:
                     return new SupportedDependencyManagers(_Carton);
-                case SupportedDependencyManagers._NuGet:
+                case _NuGet:
                     return new SupportedDependencyManagers(_NuGet);
-                case SupportedDependencyManagers._Pip:
+                case _Pip:
                     return new SupportedDependencyManagers(_Pip);
                 default:
                     throw new ArgumentException($"Invalid dependency manager given '{dependencyManager}'");
@@ -33,7 +33,7 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers
 
         public bool Equals(SupportedDependencyManagers other)
         {
-            return this._dependencyManager == other._dependencyManager;
+            return _dependencyManager == other._dependencyManager;
         }
 
         public static SupportedDependencyManagers Composer()
