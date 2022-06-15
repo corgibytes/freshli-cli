@@ -29,7 +29,8 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommandOptions>
             description: "The path to the Git executable to use",
             getDefaultValue: () => "git")
         {
-            AllowMultipleArgumentsPerToken = false, Arity = ArgumentArity.ExactlyOne,
+            AllowMultipleArgumentsPerToken = false,
+            Arity = ArgumentArity.ExactlyOne,
         };
 
         AddOption(gitPathOption);
@@ -37,7 +38,8 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommandOptions>
         Option<string> branch = new("--branch",
             description: "The branch to check out on the repository")
         {
-            AllowMultipleArgumentsPerToken = false, Arity = ArgumentArity.ZeroOrOne
+            AllowMultipleArgumentsPerToken = false,
+            Arity = ArgumentArity.ZeroOrOne
         };
 
         AddOption(branch);

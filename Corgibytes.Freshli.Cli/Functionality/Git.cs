@@ -11,9 +11,9 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 [Serializable]
 public class GitException : Exception
 {
-    public GitException(string message, Exception innerException) : base(message, innerException) {}
-    public GitException(string message) : base(message) {}
-    protected GitException(SerializationInfo info, StreamingContext context) : base(info, context) {}
+    public GitException(string message, Exception innerException) : base(message, innerException) { }
+    public GitException(string message) : base(message) { }
+    protected GitException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 }
 
 public class GitRepository
@@ -55,7 +55,7 @@ public class GitRepository
         Branch = entry.Branch;
 
         // Ensure the directory exists in the cache for cloning the repository.
-        Directory = Cache.GetDirectoryInCache(CacheDir, new[] {"repositories", Hash});
+        Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
     }
     public GitRepository(string url, string branch, DirectoryInfo cacheDir)
     {
@@ -78,13 +78,13 @@ public class GitRepository
         Hash = stringBuilder.ToString();
 
         // Ensure the directory exists in the cache for cloning the repository.
-        Directory = Cache.GetDirectoryInCache(CacheDir, new[] {"repositories", Hash});
+        Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
 
         // Store ID, URL, branch, and folder path in the cache DB, if it doesn't already exist
         using var db = new CacheContext(CacheDir);
         if (db.CachedGitRepos.Find(Hash) != null) { return; }
 
-        var entry = new CachedGitRepo() {Id = Hash, Url = Url, Branch = Branch, LocalPath = Directory.FullName};
+        var entry = new CachedGitRepo() { Id = Hash, Url = Url, Branch = Branch, LocalPath = Directory.FullName };
         db.CachedGitRepos.Add(entry);
         db.SaveChanges();
     }
@@ -100,14 +100,16 @@ public class GitRepository
 
     private void Clone(string gitPath)
     {
-        var cloneProcess = new Process();
-        cloneProcess.StartInfo = new ProcessStartInfo()
+        var cloneProcess = new Process
         {
-            FileName = gitPath,
-            WorkingDirectory = Directory.FullName,
-            Arguments = $"clone {Url} .",  // clone directly in the working directory
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
+            StartInfo = new ProcessStartInfo()
+            {
+                FileName = gitPath,
+                WorkingDirectory = Directory.FullName,
+                Arguments = $"clone {Url} .",  // clone directly in the working directory
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            }
         };
         cloneProcess.Start();
         cloneProcess.WaitForExit();
@@ -121,14 +123,16 @@ public class GitRepository
 
     private void Checkout(string gitPath)
     {
-        var checkoutProcess = new Process();
-        checkoutProcess.StartInfo = new ProcessStartInfo()
+        var checkoutProcess = new Process
         {
-            FileName = gitPath,
-            WorkingDirectory = Directory.FullName,
-            Arguments = $"checkout {Branch}",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
+            StartInfo = new ProcessStartInfo()
+            {
+                FileName = gitPath,
+                WorkingDirectory = Directory.FullName,
+                Arguments = $"checkout {Branch}",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            }
         };
         checkoutProcess.Start();
         checkoutProcess.WaitForExit();
@@ -142,14 +146,16 @@ public class GitRepository
 
     private void Pull(string gitPath)
     {
-        var pullProcess = new Process();
-        pullProcess.StartInfo = new ProcessStartInfo()
+        var pullProcess = new Process
         {
-            FileName = gitPath,
-            WorkingDirectory = Directory.FullName,
-            Arguments = $"pull origin {Branch}",
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
+            StartInfo = new ProcessStartInfo()
+            {
+                FileName = gitPath,
+                WorkingDirectory = Directory.FullName,
+                Arguments = $"pull origin {Branch}",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            }
         };
         pullProcess.Start();
         pullProcess.WaitForExit();
