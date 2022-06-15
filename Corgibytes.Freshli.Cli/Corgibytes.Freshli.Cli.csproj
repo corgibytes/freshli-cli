@@ -28,7 +28,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0-preview.4.22229.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0-preview.5.22302.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-preview.4.22229.4" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0-preview.4.22229.4" />
     <PackageReference Include="NamedServices.Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
