@@ -10,7 +10,7 @@ public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOpti
     protected Runner Runner { get; }
     protected IServiceProvider Services { get; }
 
-    public CommandRunner(IServiceProvider serviceProvider, Runner runner)
+    protected CommandRunner(IServiceProvider serviceProvider, Runner runner)
     {
         Runner = runner;
         Services = serviceProvider;
