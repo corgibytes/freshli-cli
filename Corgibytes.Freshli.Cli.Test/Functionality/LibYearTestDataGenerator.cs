@@ -22,7 +22,11 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality
 
             // Case: new version released in 2021, current version from 1990
             // Higher precision, and we have to deal with leap years
-            new object[] {new DateTime(1990, 1, 3), new DateTime(2021, 1, 3), 31.04387, 5}
+            new object[] {new DateTime(1990, 1, 3), new DateTime(2021, 1, 3), 31.04387, 5},
+
+            // Case: new version released in 2004, current version from 2004
+            // This is a leap year, see if it still ends up as 1
+            new object[] {new DateTime(2004, 1, 1), new DateTime(2004, 12, 31), 1.00, 2}
         };
 
         public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();
