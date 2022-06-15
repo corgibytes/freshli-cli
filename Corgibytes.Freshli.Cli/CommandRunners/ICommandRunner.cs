@@ -1,9 +1,8 @@
 ﻿using System.CommandLine.Invocation;
 
-namespace Corgibytes.Freshli.Cli.CommandRunners
+namespace Corgibytes.Freshli.Cli.CommandRunners;
+
+public interface ICommandRunner<T> where T : CommandOptions.CommandOptions
 {
-    public interface ICommandRunner<T> where T : CommandOptions.CommandOptions
-    {
-        public int Run(T options, InvocationContext context);
-    }
+    public int Run(T options, InvocationContext context);
 }
