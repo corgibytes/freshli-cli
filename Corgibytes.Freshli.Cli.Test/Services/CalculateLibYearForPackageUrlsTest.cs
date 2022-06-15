@@ -28,10 +28,10 @@ namespace Corgibytes.Freshli.Cli.Test.Services
         public void Show_it_can_calculate_libyears_for_package_url()
         {
             // Latest, released 3/22/2021
-            PackageURL packageUrlLatestAvailable = new PackageURL("pkg:nuget/Newtonsoft.Json@3.22.2021");
+            var packageUrlLatestAvailable = new PackageURL("pkg:nuget/Newtonsoft.Json@3.22.2021");
 
             // Current, released 8/3/2014
-            PackageURL packageUrlCurrentlyInstalled = new PackageURL("pkg:nuget/Newtonsoft.Json@8.3.2014");
+            var packageUrlCurrentlyInstalled = new PackageURL("pkg:nuget/Newtonsoft.Json@8.3.2014");
 
             Assert.Equal(6.64, _calculator.GivenTwoPackages(packageUrlCurrentlyInstalled, packageUrlLatestAvailable).AsDecimalNumber());
         }
@@ -39,8 +39,8 @@ namespace Corgibytes.Freshli.Cli.Test.Services
         [Fact]
         public void It_can_not_calculate_libyear_for_different_dependency_managers()
         {
-            PackageURL nugetPackage = new PackageURL("pkg:nuget/Newtonsoft.Json@13.0.1");
-            PackageURL composerPackage = new PackageURL("pkg:composer/superawesomepackage@6.0.4");
+            var nugetPackage = new PackageURL("pkg:nuget/Newtonsoft.Json@13.0.1");
+            var composerPackage = new PackageURL("pkg:composer/superawesomepackage@6.0.4");
 
             ArgumentException caughtException = Assert.Throws<ArgumentException>(() => _calculator.GivenTwoPackages(nugetPackage, composerPackage));
             Assert.Equal("Package URLs provided have different package managers", caughtException.Message);
@@ -49,8 +49,8 @@ namespace Corgibytes.Freshli.Cli.Test.Services
         [Fact]
         public void It_can_not_calculate_libyear_for_unknown_dependency_managers()
         {
-            PackageURL loremIpsumPackage = new PackageURL("pkg:loremipsum/Newtonsoft.Json@13.0.1");
-            PackageURL anotherLoremIpsumPackage = new PackageURL("pkg:loremipsum/superawesomepackage@6.0.4");
+            var loremIpsumPackage = new PackageURL("pkg:loremipsum/Newtonsoft.Json@13.0.1");
+            var anotherLoremIpsumPackage = new PackageURL("pkg:loremipsum/superawesomepackage@6.0.4");
 
             ArgumentException caughtException = Assert.Throws<ArgumentException>(() => _calculator.GivenTwoPackages(loremIpsumPackage, anotherLoremIpsumPackage));
             Assert.Equal("Invalid dependency manager given 'loremipsum'", caughtException.Message);
@@ -59,8 +59,8 @@ namespace Corgibytes.Freshli.Cli.Test.Services
         [Fact]
         public void It_can_not_calculate_if_there_are_no_repositories_suitable()
         {
-            PackageURL packageUrlLatestAvailable = new PackageURL("pkg:composer/Newtonsoft.Json@13.0.1");
-            PackageURL packageUrlCurrentlyInstalled = new PackageURL("pkg:composer/Newtonsoft.Json@6.0.4");
+            var packageUrlLatestAvailable = new PackageURL("pkg:composer/Newtonsoft.Json@13.0.1");
+            var packageUrlCurrentlyInstalled = new PackageURL("pkg:composer/Newtonsoft.Json@6.0.4");
 
             var calculator = new CalculateLibYearForPackageUrls(new List<IRepository>());
 
