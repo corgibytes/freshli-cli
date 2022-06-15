@@ -4,7 +4,7 @@ using Corgibytes.Freshli.Cli.Test.Common;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Corgibytes.Freshli.Cli.Test;
+namespace Corgibytes.Freshli.Cli.Test.DependencyManagers;
 
 public class SupportedDependencyManagersTest : FreshliTest
 {
