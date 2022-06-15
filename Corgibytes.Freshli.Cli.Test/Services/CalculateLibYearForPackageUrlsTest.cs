@@ -49,8 +49,8 @@ namespace Corgibytes.Freshli.Cli.Test.Services
         [Fact]
         public void It_can_not_calculate_libyear_for_unknown_dependency_managers()
         {
-            var loremIpsumPackage = new PackageURL("pkg:loremipsum/Newtonsoft.Json@13.0.1");
-            var anotherLoremIpsumPackage = new PackageURL("pkg:loremipsum/superawesomepackage@6.0.4");
+            var loremIpsumPackage = new PackageURL("pkg:loremipsum/BleepBloop@123.04");
+            var anotherLoremIpsumPackage = new PackageURL("pkg:loremipsum/BleepBloop@6.0.4");
 
             ArgumentException caughtException = Assert.Throws<ArgumentException>(() => _calculator.GivenTwoPackages(loremIpsumPackage, anotherLoremIpsumPackage));
             Assert.Equal("Invalid dependency manager given 'loremipsum'", caughtException.Message);
