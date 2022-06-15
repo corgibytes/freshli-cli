@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
