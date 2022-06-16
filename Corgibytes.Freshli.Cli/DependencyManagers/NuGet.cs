@@ -5,6 +5,7 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers;
 public class NuGet : IDependencyManagerRepository
 {
     public DateTime GetReleaseDate(string name, string version) => throw new NotImplementedException();
+    public string GetLatestVersion(string name) => throw new NotImplementedException();
 
     public SupportedDependencyManagers Supports() => SupportedDependencyManagers.NuGet();
 }
