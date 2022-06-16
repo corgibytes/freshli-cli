@@ -45,7 +45,6 @@ public class LibYear
         var averageNumberOfDaysPerYear = (double)(((totalYears - numberOfLeapYearsBetween) * 365) +
                                             (numberOfLeapYearsBetween * 364)) / totalYears;
 
-
         return Math.Round(TimeSpan.Days / averageNumberOfDaysPerYear, precision);
     }
 
