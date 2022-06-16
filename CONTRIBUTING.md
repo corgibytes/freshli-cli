@@ -180,9 +180,8 @@ If you want to contribute with a formatter, you have to follow below instruction
 5) Register your new formatter class in the IoC Container. Open the _**FreshliServiceBuilder.cs**_ file, search for the **RegisterBaseCommand**
 method and add a new registration line for your formatter as follows
 
-    Example: Services.AddNamedScoped<IOutputFormatter,CustomOutputFormatter>(FormatType.Custom);
-
 ```csharp
+    Services.AddNamedScoped<IOutputFormatter,CustomOutputFormatter>(FormatType.Custom);
 ```
 
 6) In order to test your new formatter, build the solution and run a command (for example the scan command), and specify your new format as input for the format option. Example:
@@ -225,8 +224,8 @@ If you want to contribute with a new output strategy, you have to follow below i
 5) Register your new output strategy class in the IoC Container. Open the _**FreshliServiceBuilder.cs**_ file, search for the **RegisterBaseCommand**
 method and add a new registration line for your strategy as follows
 
-    Example: Services.AddNamedScoped<IOutputStrategy, CustomOutputStrategy>(OutputStrategyType.Custom);
 ```csharp
+    Services.AddNamedScoped<IOutputStrategy, CustomOutputStrategy>(OutputStrategyType.Custom);
 ```
 
 6) In order to test your new output strategy, build the solution and run a command (for example the scan command), and specify your new format as input for the output option. Example:
