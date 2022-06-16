@@ -59,7 +59,7 @@ Follow below steps if you want to contribute with a new command:
 
 Example: CustomCommandOptions
 
-```
+```csharp
     public class CustomCommandOptions : CommandOptions
     {
         public string YourArgument { get ; set; }
@@ -73,7 +73,7 @@ Example: CustomCommandOptions
 
     Example: CustomCommand
 
-```
+```csharp
     public class CustomCommand : RunnableCommand<CustomCommandOptions>
     {
         public CustomCommand() : base("custom", "Custom command description")
@@ -94,7 +94,7 @@ Example: CustomCommandOptions
 Typically you will not need to implement the **Run()** method for your **CustomCommand** class, as this is provided by **RunnableCommand<>**. However, if you want to augment this behavior
 apart from the **CommandRunner** (see step 3), you can override that method:
 
-```
+```csharp
         protected override int Run(IHost host, InvocationContext context, CustomCommandOptions options)
         {
             // your custom logic here
@@ -107,7 +107,7 @@ Implement the Run method.
 
 Example: CustomCommandRunners
 
-```
+```csharp
  public class CustomCommandRunner : CommandRunner<CustomCommandOptions>
  {
         public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner): base(serviceProvider,runner)
@@ -125,7 +125,7 @@ Example: CustomCommandRunners
 
 4) Configure your dependencies in the IoC Container. Go to the IoC folder, open the **FreshliServiceBuilder.cs** class and create a new method called
 
-```
+```csharp
         public void RegisterCustomCommand()
         {
             Services.AddScoped<ICommandRunner<CustomCommandOptions>, CustomCommandRunner>();
@@ -161,7 +161,7 @@ If you want to contribute with a formatter, you have to follow below instruction
 2) Add a new class called _**YourNewFormatOutputFormatter**_ into the _**Formatters folder**_ and inherit it from OutputFormatter. Implement required methods
   Example: CustomOutputFormatter
 
-```
+```csharp
     public class CustomOutputFormatter : OutputFormatter
     {
         public override FormatType Type => FormatType.Custom;
@@ -181,14 +181,14 @@ If you want to contribute with a formatter, you have to follow below instruction
 5) Register your new formatter class in the IoC Container. Open the _**FreshliServiceBuilder.cs**_ file, search for the **RegisterBaseCommand**
 method and add a new registration line for your formatter as follows
 
-```
     Example: Services.AddNamedScoped<IOutputFormatter,CustomOutputFormatter>(FormatType.Custom);
 
+```csharp
 ```
 
 6) In order to test your new formatter, build the solution and run a command (for example the scan command), and specify your new format as input for the format option. Example:
 
-        ```
+        ```bash
         freshli scan repository-path -f custom
 
         ```
@@ -211,7 +211,7 @@ If you want to contribute with a new output strategy, you have to follow below i
 2) Add a new class called _**YourNewOutputStrategy**_ into the _**OutputStrategies folder**_ and implement the _**IOutputStrategy**_ interface.
   Example: CustomOutputStrategy
 
-```
+```csharp
    public class CustomOutputStrategy : IOutputStrategy
     {
         public OutputStrategyType Type => OutputStrategyType.Custom;
@@ -226,13 +226,13 @@ If you want to contribute with a new output strategy, you have to follow below i
 5) Register your new output strategy class in the IoC Container. Open the _**FreshliServiceBuilder.cs**_ file, search for the **RegisterBaseCommand**
 method and add a new registration line for your strategy as follows
 
-```
     Example: Services.AddNamedScoped<IOutputStrategy, CustomOutputStrategy>(OutputStrategyType.Custom);
+```csharp
 ```
 
 6) In order to test your new output strategy, build the solution and run a command (for example the scan command), and specify your new format as input for the output option. Example:
 
-        ```
+        ```bash
         freshli scan repository-path -o custom
 
         ```
