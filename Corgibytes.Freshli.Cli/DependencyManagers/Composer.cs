@@ -13,6 +13,8 @@ public class Composer : IDependencyManagerRepository
         // 2. Use git to query tags and their publication date
     }
 
+    public string GetLatestVersion(string name) => throw new NotImplementedException();
+
     public SupportedDependencyManagers Supports() => SupportedDependencyManagers.Composer();
 }
 
