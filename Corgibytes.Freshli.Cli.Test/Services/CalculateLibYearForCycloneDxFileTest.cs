@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.DependencyManagers;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Corgibytes.Freshli.Cli.Test.DependencyManagers;
