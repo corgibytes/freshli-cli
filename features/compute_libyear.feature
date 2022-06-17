@@ -32,5 +32,5 @@ Feature: Compute libyear
     When I run `freshli compute-libyear cyclonedx.json`
     Then the output should contain:
     """
-    7.42
+    9.42
     """
