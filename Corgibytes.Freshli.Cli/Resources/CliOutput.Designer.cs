@@ -131,5 +131,14 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("ScanCommandRunner_Run_Path_should_not_be_null_or_empty", resourceCulture);
             }
         }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Filepath should not be null or empty.
+        /// </summary>
+        internal static string ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty {
+            get {
+                return ResourceManager.GetString("ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty", resourceCulture);
+            }
+        }
     }
 }
