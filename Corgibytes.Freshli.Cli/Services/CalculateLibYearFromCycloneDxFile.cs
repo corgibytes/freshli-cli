@@ -39,20 +39,16 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
                 throw new ArgumentException($"Repository not found that supports given dependency manager '{dependencyManager.DependencyManager()}'");
             }
 
-            var latestVersion = repository.GetLatestVersion(packageUrlCurrentlyInstalled.Name);
             var packageUrlLatestVersion = new PackageURL(
                 packageUrlCurrentlyInstalled.Type,
                 packageUrlCurrentlyInstalled.Namespace,
                 packageUrlCurrentlyInstalled.Name,
-                latestVersion,
+                repository.GetLatestVersion(packageUrlCurrentlyInstalled.Name),
                 packageUrlCurrentlyInstalled.Qualifiers,
                 packageUrlCurrentlyInstalled.Subpath
             );
 
-            libYear += _calculateLibYearForPackageUrls.GivenTwoPackages(
-                packageUrlCurrentlyInstalled,
-                packageUrlLatestVersion
-            ).AsDecimalNumber(precision);
+            libYear += _calculateLibYearForPackageUrls.GivenTwoPackages(packageUrlCurrentlyInstalled, packageUrlLatestVersion).AsDecimalNumber(precision);
         }
 
         return Math.Round(libYear, precision);
