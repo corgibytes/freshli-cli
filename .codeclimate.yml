@@ -2,3 +2,8 @@ exclude_patterns:
   - "Corgibytes.Freshli.Cli/obj/**"
   - "Corgibytes.Freshli.Cli.Test/obj/**"
   - "Corgibytes.Freshli.Cli/Migrations/**"
+
+checks:
+  similar-code:
+    config:
+      threshold: 70
