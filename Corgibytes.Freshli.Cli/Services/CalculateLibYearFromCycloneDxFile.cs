@@ -1,20 +1,21 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Functionality;
 using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Services;
 
-public class CalculateLibYearFromCycloneDxFile
+public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
 {
     private readonly ReadCycloneDxFile _readFile;
-    private readonly List<IDependencyManagerRepository> _repositories;
+    private readonly IEnumerable<IDependencyManagerRepository> _repositories;
     private readonly CalculateLibYearForPackageUrls _calculateLibYearForPackageUrls;
 
     public CalculateLibYearFromCycloneDxFile(
         ReadCycloneDxFile readFileService,
-        List<IDependencyManagerRepository> repositories,
+        IEnumerable<IDependencyManagerRepository> repositories,
         CalculateLibYearForPackageUrls calculateLibYearForPackageUrls
     )
     {
@@ -31,7 +32,7 @@ public class CalculateLibYearFromCycloneDxFile
         foreach (var packageUrlCurrentlyInstalled in packageUrls)
         {
             var dependencyManager = SupportedDependencyManagers.FromString(packageUrlCurrentlyInstalled.Type);
-            var repository = _repositories.Find(i => i.Supports().Equals(dependencyManager));
+            var repository = _repositories.ToList().Find(i => i.Supports().Equals(dependencyManager));
 
             if (repository == null)
             {

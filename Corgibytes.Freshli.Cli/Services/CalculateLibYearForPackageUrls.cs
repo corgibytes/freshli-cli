@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Functionality;
 using PackageUrl;
@@ -8,9 +9,9 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class CalculateLibYearForPackageUrls
 {
-    private readonly List<IDependencyManagerRepository> _repositories;
+    private readonly IEnumerable<IDependencyManagerRepository> _repositories;
 
-    public CalculateLibYearForPackageUrls(List<IDependencyManagerRepository> repositories)
+    public CalculateLibYearForPackageUrls(IEnumerable<IDependencyManagerRepository> repositories)
     {
         _repositories = repositories;
     }
@@ -27,7 +28,7 @@ public class CalculateLibYearForPackageUrls
         var dependencyManager = SupportedDependencyManagers.FromString(packageUrlCurrentlyInstalled.Type);
 
         // We got to find the repository that can give us information about the packages
-        var repository = _repositories.Find(i => i.Supports().Equals(dependencyManager));
+        var repository = _repositories.ToList().Find(i => i.Supports().Equals(dependencyManager));
 
         if (repository == null)
         {
