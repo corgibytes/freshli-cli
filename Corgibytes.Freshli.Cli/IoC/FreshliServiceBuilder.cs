@@ -2,8 +2,11 @@
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
+using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Formatters;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.OutputStrategies;
+using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
@@ -24,6 +27,7 @@ public class FreshliServiceBuilder
         RegisterBaseCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
+        RegisterComputeLibYearCommand();
     }
 
     public void RegisterBaseCommand()
@@ -52,5 +56,22 @@ public class FreshliServiceBuilder
 
         Services.AddScoped<ICommandRunner<CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
         Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
+    }
+
+    public void RegisterComputeLibYearCommand()
+    {
+        Services.AddScoped<ICommandRunner<ComputeLibYearCommandOptions>, ComputeLibYearCommandRunner>();
+        Services.AddOptions<ComputeLibYearCommandOptions>().BindCommandLine();
+
+        Services.AddTransient<CalculateLibYearFromCycloneDxFile>();
+        Services.AddTransient<CalculateLibYearForPackageUrls>();
+        Services.AddTransient<ReadCycloneDxFile>();
+        Services.AddScoped<IReadFile, ReadCycloneDxFileFromFileSystem>();
+
+        Services.AddTransient<IDependencyManagerRepository, DependencyManagers.Bundler>();
+        Services.AddTransient<IDependencyManagerRepository, DependencyManagers.Carton>();
+        Services.AddTransient<IDependencyManagerRepository, DependencyManagers.Composer>();
+        Services.AddTransient<IDependencyManagerRepository, DependencyManagers.NuGet>();
+        Services.AddTransient<IDependencyManagerRepository, DependencyManagers.Pip>();
     }
 }
