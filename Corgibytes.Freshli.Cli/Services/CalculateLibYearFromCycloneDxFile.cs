@@ -24,7 +24,7 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
         _calculateLibYearForPackageUrls = calculateLibYearForPackageUrls;
     }
 
-    public double AsDecimalNumber(string filePath, int precision)
+    public double AsDecimalNumber(string filePath, int precision = 2)
     {
         var packageUrls = _readFile.AsPackageURLs(filePath);
         var libYear = 0.0;
