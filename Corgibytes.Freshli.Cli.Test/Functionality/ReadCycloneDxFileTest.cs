@@ -45,15 +45,14 @@ public class ReadCycloneDxFileTest : FreshliTest
         {
             new("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"),
             new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
-            new("pkg:composer/org.corgibytes.tea/auto-cup-of-tea@112.0"),
-            new("pkg:composer/org.corgibytes.test/all-green-no-failing-tests@42.1.0")
+            new("pkg:composer/org.corgibytes.tea/auto-cup-of-tea@112.0")
         };
 
         Assert.Equivalent(expectedPackageUrls, _readCycloneDxFile.AsPackageURLs("This/is/a/filepath"));
     }
 
     [Fact]
-    public void Verify_it_does_nothing_when_it_cant_read_file()
+    public void Verify_it_throws_exception_when_no_filepath_was_given()
     {
         var caughtException = Assert.Throws<ArgumentException>(() => _readCycloneDxFile.AsPackageURLs(""));
 
