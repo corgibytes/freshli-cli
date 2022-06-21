@@ -60,7 +60,7 @@ Follow below steps if you want to contribute with a new command:
 Example: CustomCommandOptions
 
 ```
-    public class ScanCommandOptions : CommandOptions
+    public class CustomCommandOptions : CommandOptions
     {
         public string YourArgument { get ; set; }
         public string YourOption { get ; set; }
@@ -69,26 +69,37 @@ Example: CustomCommandOptions
     }
 ```
 
-2) Add a new class called _**YourNewCommandNameCommand**_ into the **Commands folder** and inherit it from the base class _**Command**_. You do not need to implement anything to allow the **cache-dir** option, as this is added globally.
+2) Add a new class called _**YourNewCommandNameCommand**_ into the **Commands folder** and inherit it from either the generic base class _**RunnableCommand<>**_ (for commands that be executed) or the base class _**Command**_ (for commands that only store subcommands). You do not need to implement anything to allow the **cache-dir** option, as this is added globally.
 
     Example: CustomCommand
 
 ```
-    public class CustomCommand : Command
+    public class CustomCommand : RunnableCommand<CustomCommandOptions>
     {
         public CustomCommand() : base("custom", "Custom command description")
         {
-          // add your arguments and/or options definitioins here. For detailed information
-          // you have to reference the command-line-api library documentation. Below are just
-          // examples. See the Commands/ScanCommand.cs for an example or go to the Command Line Api (https://github.com/dotnet/command-line-api) repository for detailed information.
+           // add your arguments and/or options definitioins here. For detailed information
+           // you have to reference the command-line-api library documentation. Below are just
+           // examples. See the Commands/ScanCommand.cs for an example or go to the Command Line Api (https://github.com/dotnet/command-line-api) repository for detailed information.
 
-           Option<string> yourOption= new(new[] { "--alias1", "alias2" }, description: "Option  Description");
-           AddOption(yourOption);
+            Option<string> yourOption= new(new[] { "--alias1", "alias2" }, description: "Option  Description");
+            AddOption(yourOption);
 
-           Argument<string> yourArgument = new("yourargumentname", "Argument Description")
-           AddArgument(yourArgument);
+            Argument<string> yourArgument = new("yourargumentname", "Argument Description")
+            AddArgument(yourArgument);
         }
     }
+```
+
+Typically you will not need to implement the **Run()** method for your **CustomCommand** class, as this is provided by **RunnableCommand<>**. However, if you want to augment this behavior
+apart from the **CommandRunner** (see step 3), you can override that method:
+
+```
+        protected override int Run(IHost host, InvocationContext context, CustomCommandOptions options)
+        {
+            // your custom logic here
+            return base.Run(host, context, options);
+        }
 ```
 
 3) Add a new class called _**YourNewCommandNameCommandRunner**_ into the **CommandRunners** folder and inherit it from **CommandRunner**.

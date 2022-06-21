@@ -10,8 +10,8 @@
 
 namespace Corgibytes.Freshli.Cli.Resources {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,15 +23,15 @@ namespace Corgibytes.Freshli.Cli.Resources {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CliOutput {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal CliOutput() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -45,7 +45,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Executing auth command handler.
         /// </summary>
@@ -68,7 +68,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("AuthCommand_AuthCommand_Executing_auth_command_handler", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Root Command Executed.
         /// </summary>
@@ -77,7 +77,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("MainCommand_MainCommand_Root_Command_Executed", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Date (yyyy-MM-dd).
         /// </summary>
@@ -86,7 +86,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("Output_Date", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to LibYear.
         /// </summary>
@@ -95,7 +95,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("Output_LibYear", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Skipped.
         /// </summary>
@@ -104,7 +104,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("Output_Skipped", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to UpgradesAvailable.
         /// </summary>
@@ -113,7 +113,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("Output_UpgradesAvailable", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Executing scan command handler.
         /// </summary>
@@ -122,7 +122,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("ScanCommand_ScanCommand_Executing_scan_command_handler", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Path should not be null or empty.
         /// </summary>
