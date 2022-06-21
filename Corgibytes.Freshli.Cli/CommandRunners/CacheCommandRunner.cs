@@ -1,37 +1,19 @@
 using System;
+using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Cli.CommandOptions;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Lib;
 
-namespace Corgibytes.Freshli.Cli.CommandRunners
+namespace Corgibytes.Freshli.Cli.CommandRunners;
+
+public class CacheCommandRunner : CommandRunner<CacheCommandOptions>
 {
-    public class CacheCommandRunner : CommandRunner<CacheCommandOptions>
+    public CacheCommandRunner(IServiceProvider serviceProvider, Runner runner)
+        : base(serviceProvider, runner)
     {
-        public CacheCommandRunner(IServiceProvider serviceProvider, Runner runner)
-            : base(serviceProvider, runner)
-        {
-
-        }
-
-        public override int Run(CacheCommandOptions options)
-        {
-            return 0;
-        }
     }
 
-    public class CachePrepareCommandRunner : CommandRunner<CachePrepareCommandOptions>
+    public override int Run(CacheCommandOptions options, InvocationContext context)
     {
-        public CachePrepareCommandRunner(IServiceProvider serviceProvider, Runner runner)
-            : base(serviceProvider, runner)
-        {
-
-        }
-
-        public override int Run(CachePrepareCommandOptions options)
-        {
-            bool success = Cache.Prepare(options.CacheDir);
-            return success ? 0 : 1;
-        }
+        return 0;
     }
 }
-

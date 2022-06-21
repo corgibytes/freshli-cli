@@ -9,23 +9,23 @@ using Corgibytes.Freshli.Cli.IoC;
 using Microsoft.Extensions.Hosting;
 using NLog;
 
-namespace Corgibytes.Freshli.Cli
+namespace Corgibytes.Freshli.Cli;
+
+public class Program
 {
-    public class Program
+    private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+
+    public static async Task<int> Main(string[] args)
     {
-        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+        var cmdBuilder = CreateCommandLineBuilder();
+        return await cmdBuilder.UseDefaults()
+            .Build()
+            .InvokeAsync(args);
+    }
 
-        public static async Task<int> Main(string[] args)
-        {
-            CommandLineBuilder cmdBuilder = CreateCommandLineBuilder();
-            return await cmdBuilder.UseDefaults()
-                .Build()
-                .InvokeAsync(args);
-        }
-
-        public static CommandLineBuilder CreateCommandLineBuilder()
-        {
-            var command = new MainCommand
+    public static CommandLineBuilder CreateCommandLineBuilder()
+    {
+        var command = new MainCommand
             {
                 // Add commands here!
                 new ScanCommand(),
@@ -35,48 +35,47 @@ namespace Corgibytes.Freshli.Cli
             
             
 
-            CommandLineBuilder builder = new CommandLineBuilder(command)
-                .UseHost(CreateHostBuilder)
-                .AddMiddleware(async (context, next) =>
-                {
-                    await LogExecution(context, next);
-                })
-                .UseExceptionHandler()
-                .UseHelp();
-
-            return builder;
-        }
-
-        static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-            .ConfigureServices((_, services) =>
+        var builder = new CommandLineBuilder(command)
+            .UseHost(CreateHostBuilder)
+            .AddMiddleware(async (context, next) =>
             {
-                new FreshliServiceBuilder(services).Register();
-            });
+                await LogExecution(context, next);
+            })
+            .UseExceptionHandler()
+            .UseHelp();
 
-        public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
+        return builder;
+    }
+
+    static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+        .ConfigureServices((_, services) =>
         {
-            string commandLine = context.ParseResult.ToString();
-            
-            try
-            {
-                string callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
-                string doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
+            new FreshliServiceBuilder(services).Register();
+        });
 
-                context.Console.Out.Write(callingMessage);
-                s_logger.Trace(callingMessage);
+    public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
+    {
+        var commandLine = context.ParseResult.ToString();
 
-                await next(context);
+        try
+        {
+            var callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
+            var doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
 
-                context.Console.Out.Write(doneMessage);
-                s_logger.Trace(doneMessage);
-            }
-            catch (Exception e)
-            {
-                string message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
-                context.Console.Out.Write($"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
-                s_logger.Error($"{message} - {e.StackTrace}");
-            }
+            context.Console.Out.Write(callingMessage);
+            s_logger.Trace(callingMessage);
+
+            await next(context);
+
+            context.Console.Out.Write(doneMessage);
+            s_logger.Trace(doneMessage);
+        }
+        catch (Exception e)
+        {
+            var message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
+            context.Console.Out.Write($"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
+            s_logger.Error($"{message} - {e.StackTrace}");
         }
     }
 }

@@ -24,19 +24,19 @@
       <Link>LICENSE</Link>
     </None>
     <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-preview.4.22229.2">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-preview.5.22302.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0-preview.4.22229.2" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-preview.4.22229.4" />
-    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0-preview.4.22229.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.0-preview.5.22302.2" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0-preview.5.22301.12" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0-preview.5.22301.12" />
     <PackageReference Include="NamedServices.Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta1" />
     <PackageReference Include="ServiceStack.Text" Version="6.1.0" />
-    <PackageReference Include="System.CommandLine" Version="2.0.0-beta3.22114.1" />
-    <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22114.1" />
-    <PackageReference Include="YamlDotNet" Version="11.2.1" /> 
+    <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
+    <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
+    <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\CliOutput.resx">
