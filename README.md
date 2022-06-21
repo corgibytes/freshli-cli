@@ -7,6 +7,7 @@ A tool for displaying historical metrics about a project's dependencies.  Run th
 
 ## Installing and Running
 
+The preferred way of running a development environment is described in [Working with the DevContainer](#working-with-the-devcontainer).
 First you need .NET 6.0 runtime installed which you can find [here](https://dotnet.microsoft.com/download/dotnet/6.0/runtime).  After .NET 6.0 is installed you download the latest Freshli executables [here](https://github.com/corgibytes/freshli-cli/releases/latest).  Pick the Zip file that matches you OS (Windows, Linux, or MacOs) then:
 
 1) Download it.
@@ -36,6 +37,20 @@ Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
 2017-02-01              0.0219  1                       0
 2017-03-01              0.0219  1                       0
 ...
+```
+
+Are you getting this error or something similar? You can solve it (for now) by installing version 5.0.0 as described, but that's not the preferred way. If developing, check out [Working with the DevContainer](#working-with-the-devcontainer).
+
+```
+It was not possible to find any compatible framework version
+The framework 'Microsoft.NETCore.App', version '5.0.0' (x64) was not found.
+  - The following frameworks were found:
+      6.0.5 at [/usr/share/dotnet/shared/Microsoft.NETCore.App]
+
+You can resolve the problem by installing the specified framework and/or SDK.
+
+The specified framework can be found at:
+  - https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=5.0.0&arch=x64&rid=pop.22.04-x64
 ```
 
 ### .NET Tool
@@ -188,9 +203,148 @@ Data (such as dates and numeric formatting) are NOT localized. Dates and numeric
 
 We are not sure how to handle documentation, such as this ReadMe, in different languages.  If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
 
-## Acceptance Testing
+## Building
 
-In addition to running `dotnet test` to run the project's unit and integration tests, you run Freshli's acceptance test suite, built using Aruba and Cucumber, which is pre-configured in the repository.
+The project can be built using the `bin/build.rb` script.
+
+To build manually, you first need to install the DotNet tools that are used by the project with:
+
+```bash
+dotnet tool restore
+```
+
+Then you can build the `freshli` executable and place it in the `exe` directory (where the acceptance tests expect it to be located) with:
+
+```bash
+dotnet build -o exe
+```
+
+## Linting
+
+We use a few different automatted tools tools to help us keep the code in this repository in compliance with the Freshli project style guide.
+
+All of the following linters can be run together by running the `bin/lint.rb` script. You can also run the `bin/format.rb` script if you want to instruct the linters to correct any issues that are found. (Note: not all of the linters provide an auto-correct mechanism.)
+
+### [eclint](https://gitlab.com/greut/eclint)
+
+The `eclint` project helps us validate that the files in the project are formatted consistently with respect to the rules that have been defined in the `.editorconfig` file.
+
+After making sure the `eclint` executable's in your path, it can be run with:
+
+```bash
+eclint
+```
+
+### [RuboCop](https://rubocop.org/)
+
+The `rubocop` project help us validate that the Ruby code we're writing conforms with the [Ruby Style Guide](https://rubystyle.guide/) that it is based on.
+
+After running `bundle install`, the following will run `rubocop`:
+
+```bash
+bundle exec rubocop
+```
+
+### [`dotnet format`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-format)
+
+The `dotnet format` command helps us make sure that our code is formatted consistent with the .NET/C# specific settings that are present in the `.editorconfig` file along with sets of [validation rules](https://docs.microsoft.com/en-us/visualstudio/code-quality/roslyn-analyzers-overview?view=vs-2022) that the project has been configured to use.
+
+To determine if any style changes are needed, you can run:
+
+```bash
+dotnet format --verify-no-changes --severity info
+```
+
+To instruct `dotnet format` to attempt to correct the issues that it has found, you can run:
+
+```bash
+dotnet format --severity info
+```
+
+### `codeclimate`
+
+There are two ways to run the `codeclimate` linter, by using the `codeclimate` CLI or by using `docker`. For both options, you'll need `docker` installed, because the `codeclimate` CLI is just a wrapper that makes it easy to run the `codeclimate` Docker image.
+
+1. Using the [`codeclimate` CLI](https://github.com/codeclimate/codeclimate)
+
+    Note: This option will not work if you're working with the DevContainer.
+
+    With the `codeclimate` CLI [in your path](https://github.com/codeclimate/codeclimate#installation), simply run the following to execute the CodeClimate analysis:
+
+    ```bash
+    codeclimate analyze
+    ```
+1. Using `docker`
+
+    Since `codeclimate` CLI is a wrapper around the `codeclimate` docker image the following command can be used to run the analysis:
+
+    ```bash
+    docker run \
+        --interactive --tty --rm \
+        --env CODECLIMATE_CODE="$PWD" \
+        --volume "$PWD":/code \
+        --volume /var/run/docker.sock:/var/run/docker.sock \
+        --volume /tmp/cc:/tmp/cc \
+        codeclimate/codeclimate analyze
+    ```
+
+    The above command will need to be changed if you're attempting to run `codeclimate` from within the DevContainer. This is because `$PWD` in the command above will expand to be the path to the project source code as it is mounted in the container. The `docker` command needs the path to the source code on your host system.
+
+    To address this you'll need to start the DevContainer with an environment variable that contains the path to the source code on the host system. Here, we'll use `$CODE_FOLDER`.
+
+    Another thing that needs to be done is to mount the socket that's used for communicating with Docker on the host system.
+
+    ```bash
+    docker build -t freshli-cli-dev .devcontainer
+    docker run \
+        --interactive --tty --rm \
+        --env CODE_FOLDER=$PWD \
+        --volume $PWD:/code \
+        --volume /var/run/docker.sock:/var/run/docker.sock \
+        --user vscode \
+        --workdir /code \
+        freshli-cli-dev bash
+    ```
+
+    And then from within that shell environment you can run `codeclimate` with:
+    ```bash
+    sudo docker run \
+        --interactive --tty --rm \
+        --env CODECLIMATE_CODE="$CODE_FOLDER" \
+        --volume "$CODE_FOLDER":/code \
+        --volume /var/run/docker.sock:/var/run/docker.sock \
+        --volume /tmp/cc:/tmp/cc \
+        codeclimate/codeclimate analyze
+    ```
+
+    Also, note in the above command that we're using `sudo` to run the `docker` command. This is because of the permissions that are required to access the Docker socket from the host system.
+
+
+```bash
+docker run \
+    --interactive --tty --rm \
+    --env CODECLIMATE_CODE="$CODE_FOLDER" \
+    --volume "$CODE_FOLDER":/code \
+    --volume /var/run/docker.sock:/var/run/docker.sock \
+    --volume /tmp/cc:/tmp/cc \
+    codeclimate/codeclimate analyze
+```
+
+## Testing
+
+You can run the unit, integration, and acceptance tests by running the `bin/test.rb` script.
+
+### Unit and Integration Tests
+
+The project's unit and integration tests can be run with:
+
+```bash
+dotnet test
+```
+
+### Acceptance Tests
+
+Freshli's acceptance test suite, built using Aruba and Cucumber, is pre-configured in the repository.
 
 You will need Ruby installed on your system, and then run:
 
@@ -202,7 +356,7 @@ bundle
 From then on, you can run the Aruba tests with:
 
 ```bash
-dotnet build -o bin && bundle exec cucumber
+dotnet build -o exe && bundle exec cucumber
 ```
 
 ### Collecting Code Coverage for the Acceptance Tests
@@ -233,8 +387,7 @@ There are two paths to working with this DevContainer setup.
 
 
 ## Contributing
+
 If you have any questions, notice a bug, or have a suggestion/enhancment please let us know by opening a [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
 
 See the [Contributing guide](CONTRIBUTING.md) guide for developer documentation.
-
-
