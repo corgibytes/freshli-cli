@@ -1,5 +1,5 @@
-﻿using System.CommandLine.Invocation;
 ﻿using System.CommandLine;
+using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Cli.CommandOptions;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
