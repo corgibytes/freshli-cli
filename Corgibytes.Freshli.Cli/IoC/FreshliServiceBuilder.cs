@@ -2,11 +2,14 @@
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
+using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Formatters;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Lib;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
+using Environment = System.Environment;
 
 namespace Corgibytes.Freshli.Cli.IoC;
 
@@ -21,6 +24,7 @@ public class FreshliServiceBuilder
 
     public void Register()
     {
+        Services.AddSingleton<IEnvironment, Functionality.Environment>();
         RegisterBaseCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
@@ -34,7 +38,7 @@ public class FreshliServiceBuilder
 
     public void RegisterScanCommand()
     {
-        Services.AddScoped<ICommandRunner<ScanCommandOptions>, ScanCommandRunner>();
+        Services.AddScoped<ICommandRunner<ScanCommand, ScanCommandOptions>, ScanCommandRunner>();
         Services.AddNamedScoped<IOutputFormatter, JsonOutputFormatter>(FormatType.Json);
         Services.AddNamedScoped<IOutputFormatter, CsvOutputFormatter>(FormatType.Csv);
         Services.AddNamedScoped<IOutputFormatter, YamlOutputFormatter>(FormatType.Yaml);
@@ -45,22 +49,24 @@ public class FreshliServiceBuilder
 
     public void RegisterCacheCommand()
     {
-        Services.AddScoped<ICommandRunner<CacheCommandOptions>, CacheCommandRunner>();
+        Services.AddScoped<ICommandRunner<CacheCommand, CacheCommandOptions>, CacheCommandRunner>();
         Services.AddOptions<CacheCommandOptions>().BindCommandLine();
 
-        Services.AddScoped<ICommandRunner<CachePrepareCommandOptions>, CachePrepareCommandRunner>();
+        Services.AddScoped<ICommandRunner<CacheCommand, CachePrepareCommandOptions>, CachePrepareCommandRunner>();
         Services.AddOptions<CachePrepareCommandOptions>().BindCommandLine();
 
-        Services.AddScoped<ICommandRunner<CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
+        Services.AddScoped<ICommandRunner<CacheCommand, CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
         Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
     }
 
     public void RegisterAgentsCommand()
     {
-        Services.AddScoped<ICommandRunner<AgentsCommandOptions>, AgentsCommandRunner>();
-        Services.AddOptions<AgentsCommandOptions>().BindCommandLine();
+        Services.AddTransient<AgentsDetector>();
 
-        Services.AddScoped<ICommandRunner<AgentsDetectCommandOptions>, AgentsDetectCommandRunner>();
-        Services.AddOptions<AgentsDetectCommandOptions>().BindCommandLine();
+        Services.AddScoped<ICommandRunner<AgentsCommand, EmptyCommandOptions>, AgentsCommandRunner>();
+        Services.AddOptions<EmptyCommandOptions>().BindCommandLine();
+
+        Services.AddScoped<ICommandRunner<AgentsDetectCommand, EmptyCommandOptions>, AgentsDetectCommandRunner>();
+        Services.AddOptions<EmptyCommandOptions>().BindCommandLine();
     }
 }
