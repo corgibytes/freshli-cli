@@ -16,10 +16,10 @@ public class JsonCycloneDx
 
         return JsonSerializer.Deserialize<JsonCycloneDx>(json, options);
     }
-}
 
-public class Component
-{
-    public string Purl { get; set; }
+    public class Component
+    {
+        public string Purl { get; set; }
+    }
 }
 
