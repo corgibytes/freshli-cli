@@ -1,21 +1,25 @@
-using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
-public partial class JsonCycloneDx
+public class JsonCycloneDx
 {
-    [JsonProperty("components")]
-    public Component[] Components { get; set; }
+    public IList<Component> Components { get; set; }
+
+    public static JsonCycloneDx FromJson(string json)
+    {
+        var options = new JsonSerializerOptions();
+        options.PropertyNameCaseInsensitive = true;
+        options.Converters.Add(new JsonStringEnumConverter());
+
+        return JsonSerializer.Deserialize<JsonCycloneDx>(json, options);
+    }
 }
 
-public partial class Component
+public class Component
 {
-    [JsonProperty("purl")]
     public string Purl { get; set; }
-}
-
-public partial class JsonCycloneDx
-{
-    public static JsonCycloneDx FromJson(string json) => JsonConvert.DeserializeObject<JsonCycloneDx>(json);
 }
 
