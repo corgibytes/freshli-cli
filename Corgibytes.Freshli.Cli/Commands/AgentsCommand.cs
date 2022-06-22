@@ -25,19 +25,10 @@ public class AgentsCommand : Command
     }
 }
 
-public class AgentsDetectCommand : Command
+public class AgentsDetectCommand : RunnableCommand<AgentsDetectCommand, EmptyCommandOptions>
 {
     public AgentsDetectCommand() : base("detect",
         "Outputs the detected language name and the path to the language agent binary in a tabular format")
     {
-        Handler = CommandHandler.Create<IHost, InvocationContext, EmptyCommandOptions>(Run);
-    }
-
-    private int Run(IHost host, InvocationContext context, EmptyCommandOptions options)
-    {
-        using var scope = host.Services.CreateScope();
-        var runner =
-            scope.ServiceProvider.GetRequiredService<ICommandRunner<AgentsDetectCommand, EmptyCommandOptions>>();
-        return runner.Run(options, context);
     }
 }
