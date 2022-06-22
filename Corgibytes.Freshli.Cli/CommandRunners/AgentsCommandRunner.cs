@@ -42,8 +42,6 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
         var agentsAndLocations = agents.ToDictionary(agentLocation => Path.GetFileName(agentLocation));
 
         var basicTable = new TextTable(2);
-        basicTable.SetColumnWidthRange(1, 60, 60);
-        basicTable.SetColumnWidthRange(0, 60, 60);
         basicTable.AddCell("Agent file");
         basicTable.AddCell("Agent path");
 
