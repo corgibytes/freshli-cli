@@ -32,18 +32,18 @@ public class CalculateLibYearForCycloneDxFileTest : FreshliTest
         // This file only resembles what we need from it. A typical CycloneDX file would contain more info
         var fileContents =
             @"{
-            'components': [
-                {
-                    'purl': 'pkg:nuget/org.corgibytes.calculatron/calculatron@14.6'
-                },
-                {
-                    'purl': 'pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0'
-                },
-                {
-                    'purl': 'pkg:nuget/org.corgibytes.tea/auto-cup-of-tea@112.0'
-                }
-            ]
-        }";
+    ""components"": [
+        {
+            ""purl"": ""pkg:nuget/org.corgibytes.calculatron/calculatron@14.6""
+        },
+        {
+            ""purl"": ""pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0""
+        },
+        {
+            ""purl"": ""pkg:nuget/org.corgibytes.tea/auto-cup-of-tea@112.0""
+        }
+    ]
+}";
 
         _readFileService.FeedJson(fileContents);
 
