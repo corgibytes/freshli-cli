@@ -2,7 +2,7 @@ using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
-public class MockReadFile : IReadFile
+public class MockFileReader : IFileReader
 {
     private string _jsonString;
 
