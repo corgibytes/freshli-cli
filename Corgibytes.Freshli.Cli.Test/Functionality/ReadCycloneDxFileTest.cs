@@ -12,12 +12,12 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality;
 public class ReadCycloneDxFileTest : FreshliTest
 {
     private readonly ReadCycloneDxFile _readCycloneDxFile;
-    private readonly MockReadFile _readFileService;
+    private readonly MockFileReader _fileReaderService;
 
     public ReadCycloneDxFileTest(ITestOutputHelper output) : base(output)
     {
-        _readFileService = new();
-        _readCycloneDxFile = new(_readFileService);
+        _fileReaderService = new();
+        _readCycloneDxFile = new(_fileReaderService);
     }
 
     [Fact]
@@ -39,7 +39,7 @@ public class ReadCycloneDxFileTest : FreshliTest
     ]
 }";
 
-        _readFileService.FeedJson(fileContents);
+        _fileReaderService.FeedJson(fileContents);
 
         var expectedPackageUrls = new List<PackageURL>
         {
