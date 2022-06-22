@@ -10,8 +10,10 @@ public class JsonCycloneDx
 
     public static JsonCycloneDx FromJson(string json)
     {
-        var options = new JsonSerializerOptions();
-        options.PropertyNameCaseInsensitive = true;
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
         options.Converters.Add(new JsonStringEnumConverter());
 
         return JsonSerializer.Deserialize<JsonCycloneDx>(json, options);
