@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Resources;
@@ -9,7 +10,7 @@ using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
-public class ScanCommandRunner : CommandRunner<ScanCommandOptions>
+public class ScanCommandRunner : CommandRunner<ScanCommand, ScanCommandOptions>
 {
 
     public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner) : base(serviceProvider, runner)

@@ -2,13 +2,14 @@ using System;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
-public class CachePrepareCommandRunner : CommandRunner<CachePrepareCommandOptions>
+public class CachePrepareCommandRunner : CommandRunner<CacheCommand, CachePrepareCommandOptions>
 {
     public CachePrepareCommandRunner(IServiceProvider serviceProvider, Runner runner)
         : base(serviceProvider, runner)

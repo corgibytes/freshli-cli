@@ -7,7 +7,7 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 public class CacheContext : DbContext
 {
     public static DirectoryInfo DefaultCacheDir =>
-        new(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
+        new(System.Environment.GetEnvironmentVariable("HOME") + "/.freshli");
 
     public DirectoryInfo CacheDir { get; }
 
