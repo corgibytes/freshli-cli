@@ -6,11 +6,11 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class ReadCycloneDxFile
 {
-    private readonly IReadFile _readFile;
+    private readonly IFileReader _fileReader;
 
-    public ReadCycloneDxFile(IReadFile readFileService)
+    public ReadCycloneDxFile(IFileReader fileReaderService)
     {
-        _readFile = readFileService;
+        _fileReader = fileReaderService;
     }
 
     public List<PackageURL> AsPackageURLs(string filePath)
@@ -20,7 +20,7 @@ public class ReadCycloneDxFile
             throw new ArgumentException("Can not read file, as no file path was given");
         }
 
-        var jsonCycloneDx = _readFile.ToJson(filePath);
+        var jsonCycloneDx = _fileReader.ToJson(filePath);
 
         var packageUrls = new List<PackageURL>();
 

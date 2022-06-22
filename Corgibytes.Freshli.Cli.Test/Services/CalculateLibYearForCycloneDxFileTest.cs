@@ -11,16 +11,16 @@ namespace Corgibytes.Freshli.Cli.Test.Services;
 
 public class CalculateLibYearForCycloneDxFileTest : FreshliTest
 {
-    private readonly MockReadFile _readFileService;
+    private readonly MockFileReader _fileReaderService;
     private readonly CalculateLibYearFromCycloneDxFile _calculateLibYearFromCycloneDxFile;
 
     public CalculateLibYearForCycloneDxFileTest(ITestOutputHelper output) : base(output)
     {
         var repositories = new List<IDependencyManagerRepository>() { new MockNuGetDependencyManagerRepository() };
 
-        _readFileService = new();
+        _fileReaderService = new();
         _calculateLibYearFromCycloneDxFile = new(
-            new(_readFileService),
+            new(_fileReaderService),
             repositories,
             new(repositories)
         );
@@ -45,7 +45,7 @@ public class CalculateLibYearForCycloneDxFileTest : FreshliTest
     ]
 }";
 
-        _readFileService.FeedJson(fileContents);
+        _fileReaderService.FeedJson(fileContents);
 
         Assert.Equal(9.42415, _calculateLibYearFromCycloneDxFile.AsDecimalNumber("this/is/a/file/path", 5));
     }

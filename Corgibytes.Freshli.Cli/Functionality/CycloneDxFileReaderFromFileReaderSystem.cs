@@ -4,7 +4,7 @@ using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
-public class ReadCycloneDxFileFromFileSystem : IReadFile
+public class CycloneDxFileReaderFromFileReaderSystem : IFileReader
 {
     public JsonCycloneDx ToJson(string filePath)
     {
