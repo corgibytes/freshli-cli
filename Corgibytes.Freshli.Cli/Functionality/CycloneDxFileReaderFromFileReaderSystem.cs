@@ -10,7 +10,7 @@ public class CycloneDxFileReaderFromFileReaderSystem : IFileReader
     {
         try
         {
-            var stream = new StreamReader(filePath);
+            using var stream = new StreamReader(filePath);
 
             return JsonCycloneDx.FromJson(stream.ReadToEnd());
         }
