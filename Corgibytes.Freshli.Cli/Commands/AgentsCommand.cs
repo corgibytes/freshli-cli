@@ -1,17 +1,17 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
+using System.IO;
+using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.IO;
-using System.Collections.Generic;
-using System.Collections;
-using System;
-using System.Linq;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.OutputStrategies;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 
 namespace Corgibytes.Freshli.Cli.Commands;
@@ -35,7 +35,7 @@ public class AgentsDetectCommand : Command
 
     private int Run(IHost host, InvocationContext context, EmptyCommandOptions options)
     {
-        using IServiceScope scope = host.Services.CreateScope();
+        using var scope = host.Services.CreateScope();
         var runner =
             scope.ServiceProvider.GetRequiredService<ICommandRunner<AgentsDetectCommand, EmptyCommandOptions>>();
         return runner.Run(options, context);
