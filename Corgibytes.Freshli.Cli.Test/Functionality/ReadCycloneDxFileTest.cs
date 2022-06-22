@@ -23,7 +23,7 @@ public class ReadCycloneDxFileTest : FreshliTest
     [Fact]
     public void Verify_it_can_create_a_json_object()
     {
-        // File was shortened the only show relevant information for this test
+        // File was shortened to only show relevant information for this test
         var fileContents =
         @"{
             'components': [
