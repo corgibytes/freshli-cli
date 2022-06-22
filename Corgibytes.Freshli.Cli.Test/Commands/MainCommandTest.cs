@@ -5,6 +5,7 @@ using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
+using System;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands;
 

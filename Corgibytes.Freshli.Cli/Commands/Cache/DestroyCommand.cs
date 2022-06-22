@@ -3,7 +3,7 @@ using Corgibytes.Freshli.Cli.CommandOptions;
 
 namespace Corgibytes.Freshli.Cli.Commands.Cache;
 
-public class CacheDestroyCommand : RunnableCommand<CacheDestroyCommandOptions>
+public class CacheDestroyCommand : RunnableCommand<CacheCommand, CacheDestroyCommandOptions>
 {
     public CacheDestroyCommand()
         : base("destroy", "Deletes the Freshli cache.")
