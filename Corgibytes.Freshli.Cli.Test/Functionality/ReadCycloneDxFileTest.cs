@@ -25,19 +25,19 @@ public class ReadCycloneDxFileTest : FreshliTest
     {
         // File was shortened to only show relevant information for this test
         var fileContents =
-        @"{
-            'components': [
-                {
-                    'purl': 'pkg:nuget/org.corgibytes.calculatron/calculatron@14.6'
-                },
-                {
-                    'purl': 'pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0'
-                },
-                {
-                    'purl': 'pkg:composer/org.corgibytes.tea/auto-cup-of-tea@112.0'
-                }
-            ]
-        }";
+            @"{
+    ""components"": [
+        {
+            ""purl"": ""pkg:nuget/org.corgibytes.calculatron/calculatron@14.6""
+        },
+        {
+            ""purl"": ""pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0""
+        },
+        {
+            ""purl"": ""pkg:composer/org.corgibytes.tea/auto-cup-of-tea@112.0""
+        }
+    ]
+}";
 
         _readFileService.FeedJson(fileContents);
 
