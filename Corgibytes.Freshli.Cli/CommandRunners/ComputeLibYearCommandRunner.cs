@@ -23,7 +23,7 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommandOp
             throw new ArgumentNullException(nameof(options), CliOutput.ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty);
         }
 
-        context.Console.Out.Write(_calculateLibYearFromCycloneDxFile.AsDecimalNumber(options.FilePath.ToString()).ToString());
+        context.Console.Out.Write(_calculateLibYearFromCycloneDxFile.TotalAsDecimalNumber(options.FilePath.ToString()).ToString());
 
         return 0;
     }
