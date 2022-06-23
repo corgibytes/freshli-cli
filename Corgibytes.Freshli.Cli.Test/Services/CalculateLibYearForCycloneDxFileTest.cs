@@ -21,8 +21,7 @@ public class CalculateLibYearForCycloneDxFileTest : FreshliTest
         _fileReaderService = new();
         _calculateLibYearFromCycloneDxFile = new(
             new(_fileReaderService),
-            repositories,
-            new(repositories)
+            repositories
         );
     }
 
