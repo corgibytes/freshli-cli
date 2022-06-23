@@ -4,16 +4,16 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class LibYear
 {
-    private readonly DateTime _releaseDateCurrentVersion;
-    private readonly DateTime _releaseDateLatestVersion;
+    private readonly DateTimeOffset _releaseDateCurrentVersion;
+    private readonly DateTimeOffset _releaseDateLatestVersion;
 
-    private LibYear(DateTime releaseDateCurrentVersion, DateTime releaseDateLatestVersion)
+    private LibYear(DateTimeOffset releaseDateCurrentVersion, DateTimeOffset releaseDateLatestVersion)
     {
         _releaseDateCurrentVersion = releaseDateCurrentVersion;
         _releaseDateLatestVersion = releaseDateLatestVersion;
     }
 
-    public static LibYear GivenReleaseDates(DateTime releaseDateCurrentVersion, DateTime releaseDateLatestVersion)
+    public static LibYear GivenReleaseDates(DateTimeOffset releaseDateCurrentVersion, DateTimeOffset releaseDateLatestVersion)
     {
         // .Duration() will always return an absolute value.
         // So even if the latest version was released before the current version you'll end up with a positive number.
