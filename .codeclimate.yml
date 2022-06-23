@@ -4,6 +4,9 @@ exclude_patterns:
   - "Corgibytes.Freshli.Cli/Migrations/**"
 
 checks:
+  method-lines:
+    config:
+      threshold: 35
   similar-code:
     config:
       threshold: 75
