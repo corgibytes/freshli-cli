@@ -16,7 +16,7 @@ public class CalculateLibYearForPackageUrlsTest : FreshliTest
 
     public CalculateLibYearForPackageUrlsTest(ITestOutputHelper output) : base(output)
     {
-        _calculator = new CalculateLibYearForPackageUrls(
+        _calculator = new(
             new List<IDependencyManagerRepository>()
             {
                 new MockNuGetDependencyManagerRepository()
@@ -24,16 +24,19 @@ public class CalculateLibYearForPackageUrlsTest : FreshliTest
         );
     }
 
-    [Fact]
-    public void Show_it_can_calculate_libyears_for_package_url()
+    [Theory]
+    [InlineData("pkg:nuget/Newtonsoft.Json@3.22.2021", "pkg:nuget/Newtonsoft.Json@8.3.2014", 6.64)]
+    // This test has a different timezone
+    [InlineData("pkg:nuget/DifferentTimezone@3.22.2021", "pkg:nuget/DifferentTimezone@8.3.2014", 6.64)]
+    public void Show_it_can_calculate_libyears_for_package_url(string latestPackage, string currentPackage, double expectedLibYear)
     {
         // Latest, released 3/22/2021
-        var packageUrlLatestAvailable = new PackageURL("pkg:nuget/Newtonsoft.Json@3.22.2021");
+        var packageUrlLatestAvailable = new PackageURL(latestPackage);
 
         // Current, released 8/3/2014
-        var packageUrlCurrentlyInstalled = new PackageURL("pkg:nuget/Newtonsoft.Json@8.3.2014");
+        var packageUrlCurrentlyInstalled = new PackageURL(currentPackage);
 
-        Assert.Equal(6.64, _calculator.GivenTwoPackages(packageUrlCurrentlyInstalled, packageUrlLatestAvailable).AsDecimalNumber());
+        Assert.Equal(expectedLibYear, _calculator.GivenTwoPackages(packageUrlCurrentlyInstalled, packageUrlLatestAvailable).AsDecimalNumber());
     }
 
     [Theory]

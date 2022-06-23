@@ -4,7 +4,7 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers;
 
 public interface IDependencyManagerRepository
 {
-    DateTime GetReleaseDate(string name, string version);
+    DateTimeOffset GetReleaseDate(string name, string version);
 
     string GetLatestVersion(string name);
 
