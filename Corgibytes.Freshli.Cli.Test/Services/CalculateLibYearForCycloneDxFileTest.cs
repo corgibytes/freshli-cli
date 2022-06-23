@@ -35,9 +35,6 @@ public class CalculateLibYearForCycloneDxFileTest : FreshliTest
             @"{
     ""components"": [
         {
-            ""purl"": ""pkg:nuget/org.corgibytes.calculatron/calculatron@14.6""
-        },
-        {
             ""purl"": ""pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0""
         },
         {
@@ -49,14 +46,6 @@ public class CalculateLibYearForCycloneDxFileTest : FreshliTest
         _fileReaderService.FeedJson(fileContents);
         var expectedList = new List<PackageLibYear>
         {
-            new(
-                "calculatron",
-                new(2019, 12, 31, 0, 0, 0, TimeSpan.Zero),
-                "14.6",
-                new(2022, 6, 16, 0, 0, 0, TimeSpan.Zero),
-                "21.3",
-                2.46
-            ),
             new(
                 "flyswatter",
                 new(1990, 1, 29, 0, 0, 0, TimeSpan.Zero),
