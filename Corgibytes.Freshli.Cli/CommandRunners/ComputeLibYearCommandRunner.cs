@@ -1,9 +1,11 @@
 using System;
 using System.CommandLine.Invocation;
+using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
+using TextTableFormatter;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
@@ -23,7 +25,33 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommandOp
             throw new ArgumentNullException(nameof(options), CliOutput.ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty);
         }
 
-        context.Console.Out.Write(_calculateLibYearFromCycloneDxFile.TotalAsDecimalNumber(options.FilePath.ToString()).ToString());
+        var LibYearPackages = _calculateLibYearFromCycloneDxFile.AsList(options.FilePath.ToString());
+        var LibYearTotal = LibYearPackages.Sum(libYear => libYear.LibYear);
+
+        var tableStyle = new CellStyle(CellHorizontalAlignment.Right);
+        var table = new TextTable(6, TableBordersStyle.DESIGN_FORMAL, TableVisibleBorders.SURROUND_HEADER_FOOTER_AND_COLUMNS);
+
+        table.AddCell("Package");
+        table.AddCell("Currently installed");
+        table.AddCell("Released at");
+        table.AddCell("Latest available");
+        table.AddCell("Released at");
+        table.AddCell("Libyear");
+
+        foreach (var libYearPackage in LibYearPackages)
+        {
+            table.AddCell(libYearPackage.PackageName);
+            table.AddCell(libYearPackage.CurrentVersion, tableStyle);
+            table.AddCell(libYearPackage.ReleaseDateCurrentVersion.ToString("d"), tableStyle);
+            table.AddCell(libYearPackage.LatestVersion, tableStyle);
+            table.AddCell(libYearPackage.ReleaseDateLatestVersion.ToString("d"), tableStyle);
+            table.AddCell(libYearPackage.LibYear.ToString(), tableStyle);
+        }
+
+        table.AddCell("Total", tableStyle, 5);
+        table.AddCell(LibYearTotal.ToString(), tableStyle);
+
+        Console.WriteLine(table.Render());
 
         return 0;
     }

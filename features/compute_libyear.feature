@@ -31,6 +31,23 @@ Feature: Compute libyear
     """
     When I run `freshli compute-libyear cyclonedx.json`
     Then the output should contain:
+    ## Libyear for calculatron
+    """
+    2.46
+    """
+    Then the output should contain:
+    ## Libyear for flyswatter
+    """
+    0
+    """
+    Then the output should contain:
+    ## Libyear for auto-cup-of-tea
+    """
+    6.96
+    """
+    Then the output should contain:
+    ## Total libyear
     """
     9.42
     """
+
