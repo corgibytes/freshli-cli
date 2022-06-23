@@ -64,7 +64,6 @@ public class FreshliServiceBuilder
         Services.AddOptions<ComputeLibYearCommandOptions>().BindCommandLine();
 
         Services.AddTransient<CalculateLibYearFromCycloneDxFile>();
-        Services.AddTransient<CalculateLibYearForPackageUrls>();
         Services.AddTransient<ReadCycloneDxFile>();
         Services.AddScoped<IFileReader, CycloneDxFileReaderFromFileReaderSystem>();
 
