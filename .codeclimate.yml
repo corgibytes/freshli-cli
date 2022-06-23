@@ -6,4 +6,4 @@ exclude_patterns:
 checks:
   similar-code:
     config:
-      threshold: 70
+      threshold: 75
