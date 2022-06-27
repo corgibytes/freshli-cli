@@ -24,19 +24,18 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
         var packageUrls = _readFile.AsPackageURLs(filePath);
         var libYearList = new List<PackageLibYear>();
 
-        foreach (var packageUrlCurrentlyInstalled in packageUrls)
+        foreach (var currentlyInstalled in packageUrls)
         {
             var latestVersion =
-                _repository.GetLatestVersion(packageUrlCurrentlyInstalled);
+                _repository.GetLatestVersion(currentlyInstalled);
             var releaseDatePackageCurrentlyInstalled =
-                _repository.GetReleaseDate(packageUrlCurrentlyInstalled);
+                _repository.GetReleaseDate(currentlyInstalled);
             var releaseDatePackageLatestAvailable =
-                _repository.GetReleaseDate(packageUrlCurrentlyInstalled);
+                _repository.GetReleaseDate(latestVersion);
 
             libYearList.Add(new(
-                packageUrlCurrentlyInstalled.Name,
                 releaseDatePackageCurrentlyInstalled,
-                packageUrlCurrentlyInstalled.Version,
+                currentlyInstalled,
                 releaseDatePackageLatestAvailable,
                 latestVersion,
                 LibYear.GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable).AsDecimalNumber(precision)
@@ -51,12 +50,14 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
         var packageUrls = _readFile.AsPackageURLs(filePath);
         var libYear = 0.0;
 
-        foreach (var packageUrlCurrentlyInstalled in packageUrls)
+        foreach (var currentlyInstalled in packageUrls)
         {
+            var latestVersion =
+                _repository.GetLatestVersion(currentlyInstalled);
             var releaseDatePackageCurrentlyInstalled =
-                _repository.GetReleaseDate(packageUrlCurrentlyInstalled);
+                _repository.GetReleaseDate(currentlyInstalled);
             var releaseDatePackageLatestAvailable =
-                _repository.GetReleaseDate(packageUrlCurrentlyInstalled);
+                _repository.GetReleaseDate(latestVersion);
 
             libYear += LibYear.GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable).AsDecimalNumber(precision);
         }

@@ -7,5 +7,5 @@ public interface IDependencyManagerRepository
 {
     DateTimeOffset GetReleaseDate(PackageURL packageUrl);
 
-    string GetLatestVersion(PackageURL packageUrl);
+    PackageURL GetLatestVersion(PackageURL packageUrl);
 }

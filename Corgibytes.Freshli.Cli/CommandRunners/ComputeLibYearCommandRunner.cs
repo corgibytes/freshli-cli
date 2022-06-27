@@ -40,10 +40,10 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommandOp
 
         foreach (var libYearPackage in LibYearPackages)
         {
-            table.AddCell(libYearPackage.PackageName);
-            table.AddCell(libYearPackage.CurrentVersion, tableStyle);
+            table.AddCell(libYearPackage.CurrentVersion.Name);
+            table.AddCell(libYearPackage.CurrentVersion.Version, tableStyle);
             table.AddCell(libYearPackage.ReleaseDateCurrentVersion.ToString("d"), tableStyle);
-            table.AddCell(libYearPackage.LatestVersion, tableStyle);
+            table.AddCell(libYearPackage.LatestVersion.Version, tableStyle);
             table.AddCell(libYearPackage.ReleaseDateLatestVersion.ToString("d"), tableStyle);
             table.AddCell(libYearPackage.LibYear.ToString(), tableStyle);
         }
