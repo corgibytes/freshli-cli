@@ -19,7 +19,9 @@ public class CachePrepareCommandRunner : CommandRunner<CachePrepareCommandOption
 
     public override int Run(CachePrepareCommandOptions options, InvocationContext context)
     {
-        context.Console.Out.WriteLine($"{CliOutput.CachePrepareCommandRunner_Run_Preparing_cache} {options.CacheDir}");
+        context.Console.Out.WriteLine(
+            string.Format(CliOutput.CachePrepareCommandRunner_Run_Preparing_cache, options.CacheDir)
+        );
         try
         {
             return Functionality.Cache.Prepare(options.CacheDir).ToExitCode();
