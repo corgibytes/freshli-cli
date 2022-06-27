@@ -24,7 +24,7 @@ Feature: Compute libyear
           "type": "library",
           "name": "auto-cup-of-tea",
           "version": "112.0",
-          "purl": "pkg:nuget/org.corgibytes.tea/auto-cup-of-tea@112.0"
+          "purl": "pkg:composer/org.corgibytes.tea/auto-cup-of-tea@112.0"
         }
       ]
     }
@@ -41,9 +41,9 @@ Feature: Compute libyear
     0
     """
     Then the output should contain:
-    ## Libyear for auto-cup-of-tea
+    ## For auto-cup-of-tea there is no agent available that can return the package urls
     """
-    6.96
+    No agents found that could process this package
     """
     Then the output should contain:
     ## Total libyear
