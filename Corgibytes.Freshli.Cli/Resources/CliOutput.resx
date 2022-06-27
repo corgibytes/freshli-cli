@@ -73,16 +73,16 @@
     <value>Path should not be null or empty</value>
   </data>
   <data name="CachePrepareCommandRunner_Run_Preparing_cache" xml:space="preserve">
-    <value>Preparing cache at</value>
+    <value>Preparing cache at {0}.</value>
   </data>
   <data name="CacheDestroyCommandRunner_Run_Prompt" xml:space="preserve">
-    <value>Do you want to completely DELETE the directory</value>
+    <value>Do you want to completely DELETE the directory {0}?</value>
   </data>
   <data name="CacheDestroyCommandRunner_Run_Abort" xml:space="preserve">
     <value>Operation aborted. Cache not destroyed.</value>
   </data>
   <data name="CacheDestroyCommandRunner_Run_Destroying" xml:space="preserve">
-    <value>Destroying the cache at</value>
+    <value>Destroying the cache at {0}.</value>
   </data>
   <data name="Exception_Cache_Prepare_NonEmpty" xml:space="preserve">
     <value>Cannot use an existing non-empty directory as a cache directory.</value>

@@ -66,16 +66,16 @@
     <value>El directorio no debe ser nulo o vacío</value>
   </data>
   <data name="CachePrepareCommandRunner_Run_Preparing_cache" xml:space="preserve">
-    <value>Preparando el directorio de cache en</value>
+    <value>Preparando el directorio de cache en {0}.</value>
   </data>
   <data name="CacheDestroyCommandRunner_Run_Prompt" xml:space="preserve">
-    <value>¿Te quieres ELIMINAR completamente el directorio</value>
+    <value>¿Te quieres ELIMINAR completamente el directorio {0}?</value>
   </data>
   <data name="CacheDestroyCommandRunner_Run_Abort" xml:space="preserve">
     <value>La operación cancelada. El cache no era eliminado.</value>
   </data>
   <data name="CacheDestroyCommandRunner_Run_Destroying" xml:space="preserve">
-    <value>Eliminando el directorio de cache en</value>
+    <value>Eliminando el directorio de cache en {0}.</value>
   </data>
   <data name="Exception_Cache_Prepare_NonEmpty" xml:space="preserve">
     <value>No se puede utilizar un directorio no vacío como un directorio de cache.</value>

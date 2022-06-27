@@ -20,14 +20,17 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheDestroyCommandOption
     public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
     {
         // Unless the --force flag is passed, prompt the user whether they want to destroy the cache
-        if (!options.Force && !Confirm($"{CliOutput.CacheDestroyCommandRunner_Run_Prompt} {options.CacheDir.FullName}?", context))
+        if (!options.Force && !Confirm(
+                string.Format(CliOutput.CacheDestroyCommandRunner_Run_Prompt, options.CacheDir.FullName),
+                context
+            ))
         {
             context.Console.Out.WriteLine($"{CliOutput.CacheDestroyCommandRunner_Run_Abort}");
             return true.ToExitCode();
         }
 
         // Destroy the cache
-        context.Console.Out.WriteLine($"{CliOutput.CacheDestroyCommandRunner_Run_Destroying} {options.CacheDir}");
+        context.Console.Out.WriteLine(string.Format(CliOutput.CacheDestroyCommandRunner_Run_Destroying, options.CacheDir));
         try
         {
             return Functionality.Cache.Destroy(options.CacheDir).ToExitCode();
