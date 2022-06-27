@@ -27,7 +27,7 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
         foreach (var packageUrlCurrentlyInstalled in packageUrls)
         {
             var latestVersion =
-                _repository.GetLatestVersion(packageUrlCurrentlyInstalled.Name);
+                _repository.GetLatestVersion(packageUrlCurrentlyInstalled);
             var releaseDatePackageCurrentlyInstalled =
                 _repository.GetReleaseDate(packageUrlCurrentlyInstalled);
             var releaseDatePackageLatestAvailable =
