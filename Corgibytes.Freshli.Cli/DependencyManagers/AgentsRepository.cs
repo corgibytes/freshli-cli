@@ -15,7 +15,7 @@ public class AgentsRepository : IDependencyManagerRepository
         _ => throw new ArgumentException("Mock date could not be returned. Forgot to add it?")
     };
 
-    public string GetLatestVersion(string name) => name switch
+    public string GetLatestVersion(PackageURL packageUrl) => packageUrl.Name switch
     {
         "calculatron" => "21.3",
         "flyswatter" => "1.1.0",
