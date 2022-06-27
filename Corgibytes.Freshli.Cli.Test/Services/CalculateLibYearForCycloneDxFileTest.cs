@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Cli.Test.Common;
@@ -18,12 +17,10 @@ public class CalculateLibYearForCycloneDxFileTest : FreshliTest
 
     public CalculateLibYearForCycloneDxFileTest(ITestOutputHelper output) : base(output)
     {
-        var repositories = new List<IDependencyManagerRepository>() { new MockNuGetDependencyManagerRepository() };
-
         _fileReaderService = new();
         _calculateLibYearFromCycloneDxFile = new(
             new(_fileReaderService),
-            repositories
+            new MockNuGetDependencyManagerRepository()
         );
     }
 
