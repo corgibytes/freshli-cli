@@ -14,10 +14,10 @@ namespace Corgibytes.Freshli.Cli.Commands;
 
 public class ScanCommand : RunnableCommand<ScanCommandOptions>
 {
-    public ScanCommand() : base("scan", $"{CliOutput.Help_ScanCommand_Description}")
+    public ScanCommand() : base("scan", CliOutput.Help_ScanCommand_Description)
     {
         Option<FormatType> formatOption = new(new[] { "--format", "-f" },
-            description: $"{CliOutput.Help_ScanCommand_Option_Format}",
+            description: CliOutput.Help_ScanCommand_Option_Format,
             getDefaultValue: () => FormatType.Json)
         {
             AllowMultipleArgumentsPerToken = false,
@@ -35,7 +35,7 @@ public class ScanCommand : RunnableCommand<ScanCommandOptions>
         AddOption(formatOption);
         AddOption(outputOption);
 
-        Argument<DirectoryInfo> pathArgument = new("path", $"{CliOutput.Help_ScanCommand_Argument_Path}")
+        Argument<DirectoryInfo> pathArgument = new("path", CliOutput.Help_ScanCommand_Argument_Path)
         {
             Arity = ArgumentArity.ExactlyOne
         };
@@ -51,7 +51,7 @@ public class ScanCommand : RunnableCommand<ScanCommandOptions>
             throw new ArgumentNullException(nameof(options));
         }
 
-        context.Console.Out.WriteLine($"{CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler}");
+        context.Console.Out.WriteLine(CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler);
 
         return base.Run(host, context, options);
     }

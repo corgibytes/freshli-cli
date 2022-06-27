@@ -53,8 +53,6 @@ public static class Cache
 
     public static bool Prepare(DirectoryInfo cacheDir)
     {
-        Console.Out.WriteLine($"Preparing cache at {cacheDir}");
-
         // Create the directory if it doesn't already exist
         if (!cacheDir.Exists)
         {
@@ -62,7 +60,7 @@ public static class Cache
         }
         else if (!ValidateDirIsCache(cacheDir))
         {
-            throw new CacheException($"{CliOutput.Exception_Cache_Prepare_NonEmpty}");
+            throw new CacheException(CliOutput.Exception_Cache_Prepare_NonEmpty);
         }
 
         using var db = new CacheContext(cacheDir);
@@ -83,12 +81,12 @@ public static class Cache
         // If the directory doesn't exist, do nothing (be idempotent).
         if (!cacheDir.Exists)
         {
-            throw new CacheException($"{CliOutput.Warning_Cache_Destroy_DoesNotExist}") { IsWarning = true };
+            throw new CacheException(CliOutput.Warning_Cache_Destroy_DoesNotExist) { IsWarning = true };
         }
 
         if (!ValidateDirIsCache(cacheDir))
         {
-            throw new CacheException($"{CliOutput.Exception_Cache_Destroy_NonCache}");
+            throw new CacheException(CliOutput.Exception_Cache_Destroy_NonCache);
         }
 
         cacheDir.Delete(true);
