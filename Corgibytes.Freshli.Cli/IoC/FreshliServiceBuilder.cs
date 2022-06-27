@@ -67,6 +67,6 @@ public class FreshliServiceBuilder
         Services.AddTransient<ReadCycloneDxFile>();
         Services.AddScoped<IFileReader, CycloneDxFileReaderFromFileReaderSystem>();
 
-        Services.AddTransient<IDependencyManagerRepository, DependencyManagers.NuGet>();
+        Services.AddTransient<IDependencyManagerRepository, AgentsRepository>();
     }
 }

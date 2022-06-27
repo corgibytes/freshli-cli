@@ -1,10 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Functionality;
-using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Services;
 
