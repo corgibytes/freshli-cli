@@ -2,7 +2,7 @@ using System;
 
 namespace Corgibytes.Freshli.Cli.DependencyManagers;
 
-public class NuGet : IDependencyManagerRepository
+public class AgentsRepository : IDependencyManagerRepository
 {
     public DateTimeOffset GetReleaseDate(string name, string version) => (name, version) switch
     {

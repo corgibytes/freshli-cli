@@ -3,7 +3,7 @@ using Corgibytes.Freshli.Cli.DependencyManagers;
 
 namespace Corgibytes.Freshli.Cli.Test.DependencyManagers;
 
-public class MockNuGetDependencyManagerRepository : IDependencyManagerRepository
+public class MockAgentsDetectDependencyManagerRepository : IDependencyManagerRepository
 {
     public DateTimeOffset GetReleaseDate(string name, string version) => (name, version) switch
     {
