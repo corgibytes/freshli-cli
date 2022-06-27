@@ -6,6 +6,6 @@ namespace Corgibytes.Freshli.Cli.Commands.Cache;
 public class CachePrepareCommand : RunnableCommand<CachePrepareCommandOptions>
 {
     public CachePrepareCommand()
-        : base("prepare", $"{CliOutput.Help_CachePrepareCommand_Description}")
+        : base("prepare", CliOutput.Help_CachePrepareCommand_Description)
     { }
 }

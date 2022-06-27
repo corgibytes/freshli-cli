@@ -25,7 +25,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheDestroyCommandOption
                 context
             ))
         {
-            context.Console.Out.WriteLine($"{CliOutput.CacheDestroyCommandRunner_Run_Abort}");
+            context.Console.Out.WriteLine(CliOutput.CacheDestroyCommandRunner_Run_Abort);
             return true.ToExitCode();
         }
 
