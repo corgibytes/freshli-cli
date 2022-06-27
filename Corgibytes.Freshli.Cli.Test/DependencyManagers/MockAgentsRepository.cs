@@ -20,11 +20,11 @@ public class MockAgentsRepository : IDependencyManagerRepository
         _ => throw new ArgumentException("Mock date could not be returned. Forgot to add it?")
     };
 
-    public string GetLatestVersion(PackageURL packageUrl) => packageUrl.Name switch
+    public PackageURL GetLatestVersion(PackageURL packageUrl) => packageUrl.Name switch
     {
-        "calculatron" => "21.3",
-        "flyswatter" => "1.1.0",
-        "auto-cup-of-tea" => "256.0",
+        "calculatron" => new("pkg:nuget/org.corgibytes.calculatron/calculatron@21.3"),
+        "flyswatter" => new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
+        "auto-cup-of-tea" => new("pkg:nuget/org.corgibytes.tea/auto-cup-of-tea@256.0"),
         _ => throw new ArgumentException("Mock date could not be returned. Forgot to add it?")
     };
 }

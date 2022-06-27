@@ -44,19 +44,17 @@ public class CalculateLibYearForCycloneDxFileTest : FreshliTest
         var expectedList = new List<PackageLibYear>
         {
             new(
-                "flyswatter",
                 new(1990, 1, 29, 0, 0, 0, TimeSpan.Zero),
-                "1.1.0",
+                new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
                 new(1990, 1, 29, 0, 0, 0, TimeSpan.Zero),
-                "1.1.0",
+                new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
                 0
             ),
             new(
-                "auto-cup-of-tea",
                 new(2004, 11, 11, 0, 0, 0, TimeSpan.Zero),
-                "112.0",
+                new("pkg:nuget/org.corgibytes.tea/auto-cup-of-tea@112.0"),
                 new(2011, 10, 26, 0, 0, 0, TimeSpan.Zero),
-                "256.0",
+                new("pkg:nuget/org.corgibytes.tea/auto-cup-of-tea@256.0"),
                 6.96
             )
         };
