@@ -29,9 +29,9 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
             var latestVersion =
                 _repository.GetLatestVersion(packageUrlCurrentlyInstalled.Name);
             var releaseDatePackageCurrentlyInstalled =
-                _repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, packageUrlCurrentlyInstalled.Version);
+                _repository.GetReleaseDate(packageUrlCurrentlyInstalled);
             var releaseDatePackageLatestAvailable =
-                _repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, latestVersion);
+                _repository.GetReleaseDate(packageUrlCurrentlyInstalled);
 
             libYearList.Add(new(
                 packageUrlCurrentlyInstalled.Name,
@@ -53,12 +53,10 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
 
         foreach (var packageUrlCurrentlyInstalled in packageUrls)
         {
-            var latestVersion =
-                _repository.GetLatestVersion(packageUrlCurrentlyInstalled.Name);
             var releaseDatePackageCurrentlyInstalled =
-                _repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, packageUrlCurrentlyInstalled.Version);
+                _repository.GetReleaseDate(packageUrlCurrentlyInstalled);
             var releaseDatePackageLatestAvailable =
-                _repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, latestVersion);
+                _repository.GetReleaseDate(packageUrlCurrentlyInstalled);
 
             libYear += LibYear.GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable).AsDecimalNumber(precision);
         }
