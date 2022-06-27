@@ -1,10 +1,11 @@
 using System;
+using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.DependencyManagers;
 
 public interface IDependencyManagerRepository
 {
-    DateTimeOffset GetReleaseDate(string name, string version);
+    DateTimeOffset GetReleaseDate(PackageURL packageUrl);
 
     string GetLatestVersion(string name);
 }
