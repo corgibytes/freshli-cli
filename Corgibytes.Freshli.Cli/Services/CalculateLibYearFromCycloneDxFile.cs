@@ -11,15 +11,15 @@ namespace Corgibytes.Freshli.Cli.Services;
 public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
 {
     private readonly ReadCycloneDxFile _readFile;
-    private readonly IEnumerable<IDependencyManagerRepository> _repositories;
+    private readonly IDependencyManagerRepository _repository;
 
     public CalculateLibYearFromCycloneDxFile(
         ReadCycloneDxFile readFileService,
-        IEnumerable<IDependencyManagerRepository> repositories
+        IDependencyManagerRepository repository
     )
     {
         _readFile = readFileService;
-        _repositories = repositories;
+        _repository = repository;
     }
 
     public IList<PackageLibYear> AsList(string filePath, int precision = 2)
@@ -29,20 +29,12 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
 
         foreach (var packageUrlCurrentlyInstalled in packageUrls)
         {
-            var dependencyManager = SupportedDependencyManagers.FromString(packageUrlCurrentlyInstalled.Type);
-            var repository = _repositories.ToList().Find(i => i.Supports().Equals(dependencyManager));
-
-            if (repository == null)
-            {
-                throw new ArgumentException($"Repository not found that supports given dependency manager '{dependencyManager.DependencyManager()}'");
-            }
-
-            var latestVersion = repository.GetLatestVersion(packageUrlCurrentlyInstalled.Name);
-
+            var latestVersion =
+                _repository.GetLatestVersion(packageUrlCurrentlyInstalled.Name);
             var releaseDatePackageCurrentlyInstalled =
-                repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, packageUrlCurrentlyInstalled.Version);
+                _repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, packageUrlCurrentlyInstalled.Version);
             var releaseDatePackageLatestAvailable =
-                repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, latestVersion);
+                _repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, latestVersion);
 
             libYearList.Add(new(
                 packageUrlCurrentlyInstalled.Name,
@@ -64,20 +56,12 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
 
         foreach (var packageUrlCurrentlyInstalled in packageUrls)
         {
-            var dependencyManager = SupportedDependencyManagers.FromString(packageUrlCurrentlyInstalled.Type);
-            var repository = _repositories.ToList().Find(i => i.Supports().Equals(dependencyManager));
-
-            if (repository == null)
-            {
-                throw new ArgumentException($"Repository not found that supports given dependency manager '{dependencyManager.DependencyManager()}'");
-            }
-
-            var latestVersion = repository.GetLatestVersion(packageUrlCurrentlyInstalled.Name);
-
+            var latestVersion =
+                _repository.GetLatestVersion(packageUrlCurrentlyInstalled.Name);
             var releaseDatePackageCurrentlyInstalled =
-                repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, packageUrlCurrentlyInstalled.Version);
+                _repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, packageUrlCurrentlyInstalled.Version);
             var releaseDatePackageLatestAvailable =
-                repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, latestVersion);
+                _repository.GetReleaseDate(packageUrlCurrentlyInstalled.Name, latestVersion);
 
             libYear += LibYear.GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable).AsDecimalNumber(precision);
         }

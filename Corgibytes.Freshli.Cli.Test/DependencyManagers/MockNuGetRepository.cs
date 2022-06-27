@@ -26,7 +26,5 @@ public class MockNuGetDependencyManagerRepository : IDependencyManagerRepository
         "auto-cup-of-tea" => "256.0",
         _ => throw new ArgumentException("Mock date could not be returned. Forgot to add it?")
     };
-
-    public SupportedDependencyManagers Supports() => SupportedDependencyManagers.NuGet();
 }
 
