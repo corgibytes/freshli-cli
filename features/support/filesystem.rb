@@ -12,5 +12,11 @@ def resolve_path(path)
       path = "#{config.home_directory}/#{path}"
     end
   end
+
+  # Resolve globs by returning first path that matches the globbing pattern
+  if path.include? '*'
+    path = Dir[path][0]
+  end
+
   path
 end
