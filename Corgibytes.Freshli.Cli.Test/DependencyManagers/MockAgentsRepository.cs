@@ -4,7 +4,7 @@ using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Test.DependencyManagers;
 
-public class MockAgentsDetectDependencyManagerRepository : IDependencyManagerRepository
+public class MockAgentsRepository : IDependencyManagerRepository
 {
     public DateTimeOffset GetReleaseDate(PackageURL packageUrl) => (packageUrl.Name + " " + packageUrl.Version) switch
     {
@@ -20,7 +20,7 @@ public class MockAgentsDetectDependencyManagerRepository : IDependencyManagerRep
         _ => throw new ArgumentException("Mock date could not be returned. Forgot to add it?")
     };
 
-    public string GetLatestVersion(string name) => name switch
+    public string GetLatestVersion(PackageURL packageUrl) => packageUrl.Name switch
     {
         "calculatron" => "21.3",
         "flyswatter" => "1.1.0",
