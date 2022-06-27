@@ -32,3 +32,8 @@ Feature: `git clone` command
     And a directory named "~/.freshli/repositories" does not exist
     When I run `freshli git clone https://github.com/corgibytes/freshli-fixture-ruby-nokotest`
     Then a Git repository exists at "~/.freshli/repositories/*" with a Git SHA "017031627f36deb582d69cddd381718be0044b02" checked out
+
+  Scenario: Clone Branch
+    Given I successfully run `freshli cache prepare`
+    When I run `freshli git clone https://github.com/corgibytes/freshli-fixture-ruby-nokotest --branch test_branch`
+    Then a Git repository exists at "~/.freshli/repositories/*" with a branch "test_branch" checked out
