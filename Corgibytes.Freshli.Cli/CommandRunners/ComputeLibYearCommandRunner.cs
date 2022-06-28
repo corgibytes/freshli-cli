@@ -48,19 +48,17 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommandOp
                 table.AddCell(libYearPackage.LatestVersion.Version, tableStyle);
                 table.AddCell(libYearPackage.ReleaseDateLatestVersion.ToString("d"), tableStyle);
                 table.AddCell(libYearPackage.LibYear.ToString(), tableStyle);
+                continue;
             }
-            else
-            {
-                table.AddCell(libYearPackage.PackageUrl.Name, tableStyle);
-                table.AddCell(libYearPackage.ExceptionMessage, tableStyle, 5);
-            }
+
+            table.AddCell(libYearPackage.PackageUrl.Name, tableStyle);
+            table.AddCell(libYearPackage.ExceptionMessage, tableStyle, 5);
         }
 
         table.AddCell("Total", tableStyle, 5);
-        table.AddCell(LibYearTotal.ToString(), tableStyle);
+        table.AddCell(libYearTotal.ToString(), tableStyle);
 
         Console.WriteLine(table.Render());
-
         return 0;
     }
 }
