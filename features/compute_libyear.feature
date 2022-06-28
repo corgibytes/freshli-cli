@@ -32,11 +32,11 @@ Feature: Compute libyear
     When I run `freshli compute-libyear cyclonedx.json`
     Then the output should contain:
     """
-    calculatron                    14.6  12/31/2019             21.3   6/16/2022    2.46
+    calculatron                    14.6  12/31/2019             21.3  10/16/2022     2.8
     """
     Then the output should contain:
     """
-    flyswatter                    1.1.0   1/29/1990            1.1.0   1/29/1990       0
+    flyswatter                    1.1.0  11/29/1990            1.1.0  11/29/1990       0
     """
     Then the output should contain:
     """
@@ -44,6 +44,6 @@ Feature: Compute libyear
     """
     Then the output should contain:
     """
-                                                                           Total    2.46
+                                                                           Total     2.8
     """
 
