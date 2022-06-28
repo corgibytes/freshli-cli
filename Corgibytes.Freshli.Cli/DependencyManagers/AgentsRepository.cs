@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -52,7 +53,22 @@ public class AgentsRepository : IDependencyManagerRepository
 
     public PackageURL GetLatestVersion(PackageURL packageUrl)
     {
-        return new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0");
+        foreach (var agentExecutable in _agentsDetector.Detect())
+        {
+            var packages = _agentReader.ListValidPackageUrls(agentExecutable, packageUrl);
+            if (packages.Count == 0)
+            {
+                continue;
+            }
+
+            var latestPackage = packages.MaxBy(package => package.ReleasedAt);
+            if (latestPackage != null)
+            {
+                return latestPackage.PackageUrl;
+            }
+        }
+
+        throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList(packageUrl);
     }
 }
 
