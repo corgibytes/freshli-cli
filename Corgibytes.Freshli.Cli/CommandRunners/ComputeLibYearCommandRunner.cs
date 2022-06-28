@@ -25,8 +25,8 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommandOp
             throw new ArgumentNullException(nameof(options), CliOutput.ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty);
         }
 
-        var LibYearPackages = _calculateLibYearFromCycloneDxFile.AsList(options.FilePath.ToString());
-        var LibYearTotal = LibYearPackages.Sum(libYear => libYear.LibYear);
+        var libYearPackages = _calculateLibYearFromCycloneDxFile.AsList(options.FilePath.ToString());
+        var libYearTotal = libYearPackages.Sum(libYear => libYear.LibYear);
 
         var tableStyle = new CellStyle(CellHorizontalAlignment.Right);
         var table = new TextTable(6, TableBordersStyle.DESIGN_FORMAL, TableVisibleBorders.SURROUND_HEADER_FOOTER_AND_COLUMNS);
@@ -38,7 +38,7 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommandOp
         table.AddCell("Released at");
         table.AddCell("Libyear");
 
-        foreach (var libYearPackage in LibYearPackages)
+        foreach (var libYearPackage in libYearPackages)
         {
             if (libYearPackage.ExceptionMessage == null)
             {
