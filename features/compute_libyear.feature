@@ -31,23 +31,19 @@ Feature: Compute libyear
     """
     When I run `freshli compute-libyear cyclonedx.json`
     Then the output should contain:
-    ## Libyear for calculatron
     """
-    2.46
-    """
-    Then the output should contain:
-    ## Libyear for flyswatter
-    """
-    0
+    calculatron                    14.6  12/31/2019             21.3   6/16/2022    2.46
     """
     Then the output should contain:
-    ## For auto-cup-of-tea there is no agent available that can return the package urls
     """
-    No agents found that could process this package
+    flyswatter                    1.1.0   1/29/1990            1.1.0   1/29/1990       0
     """
     Then the output should contain:
-    ## Total libyear
     """
-    9.42
+    auto-cup-of-tea       Latest version could not be found in list for this package url
+    """
+    Then the output should contain:
+    """
+                                                                           Total    2.46
     """
 

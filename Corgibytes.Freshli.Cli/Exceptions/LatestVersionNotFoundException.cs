@@ -1,5 +1,4 @@
 using System;
-using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Exceptions;
 
@@ -9,9 +8,9 @@ public class LatestVersionNotFoundException : ApplicationException
     {
     }
 
-    public static LatestVersionNotFoundException BecauseLatestCouldNotBeFoundInList(PackageURL packageUrl)
+    public static LatestVersionNotFoundException BecauseLatestCouldNotBeFoundInList()
     {
-        return new("Latest version could not be found in list for this package url: " + packageUrl);
+        return new("Latest version could not be found in list for this package url");
     }
 }
 

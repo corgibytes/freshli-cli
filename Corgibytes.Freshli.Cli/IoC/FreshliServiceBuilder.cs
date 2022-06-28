@@ -2,6 +2,7 @@
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
+using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -68,5 +69,7 @@ public class FreshliServiceBuilder
         Services.AddScoped<IFileReader, CycloneDxFileReaderFromFileReaderSystem>();
 
         Services.AddTransient<IDependencyManagerRepository, AgentsRepository>();
+        Services.AddTransient<IAgentsDetector, AgentsDetector>();
+        Services.AddTransient<IAgentReader, AgentReader>();
     }
 }

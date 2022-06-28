@@ -35,8 +35,8 @@ public class AgentsRepositoryTest : FreshliTest
     }
 
     [Theory]
-    [InlineData("pkg:this.cant.be.real/org.corgibytes.random_package/randompackage@1.1.0", "None of the agents returned results for this package url: pkg:this.cant.be.real/org.corgibytes.random_package/randompackage@1.1.0")]
-    [InlineData("pkg:ruby/org.corgibytes.no_release_date/no_release_date@1.1.0", "The returned list did not contain a release date for this package url: pkg:ruby/org.corgibytes.no_release_date/no_release_date@1.1.0")]
+    [InlineData("pkg:this.cant.be.real/org.corgibytes.random_package/randompackage@1.1.0", "None of the agents returned results for this package url")]
+    [InlineData("pkg:ruby/org.corgibytes.no_release_date/no_release_date@1.1.0", "The returned list did not contain a release date for this package url")]
     public void It_errors_when_it_can_not_find_the_release_date(string packageUrl, string expectedErrorMessage)
     {
         var givenPackageUrl = new PackageURL(packageUrl);
@@ -47,7 +47,7 @@ public class AgentsRepositoryTest : FreshliTest
     }
 
     [Theory]
-    [InlineData("pkg:this.cant.be.real/org.corgibytes.random_package/randompackage@1.1.0", "Latest version could not be found in list for this package url: pkg:this.cant.be.real/org.corgibytes.random_package/randompackage@1.1.0")]
+    [InlineData("pkg:this.cant.be.real/org.corgibytes.random_package/randompackage@1.1.0", "Latest version could not be found in list for this package url")]
     public void It_errors_when_it_can_not_find_the_latest_version(string packageUrl, string expectedErrorMessage)
     {
         var givenPackageUrl = new PackageURL(packageUrl);
