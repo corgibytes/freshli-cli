@@ -1,5 +1,4 @@
 using System;
-using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Exceptions;
 
@@ -9,14 +8,14 @@ public class ReleaseDateNotFoundException : ApplicationException
     {
     }
 
-    public static ReleaseDateNotFoundException BecauseNoAgentReturnedAnyResults(PackageURL packageUrl)
+    public static ReleaseDateNotFoundException BecauseNoAgentReturnedAnyResults()
     {
-        return new("None of the agents returned results for this package url: "  + packageUrl);
+        return new("None of the agents returned results for this package url");
     }
 
-    public static ReleaseDateNotFoundException BecauseReturnedListDidNotContainReleaseDate(PackageURL packageUrl)
+    public static ReleaseDateNotFoundException BecauseReturnedListDidNotContainReleaseDate()
     {
-        return new("The returned list did not contain a release date for this package url: "  + packageUrl);
+        return new("The returned list did not contain a release date for this package url");
     }
 }
 
