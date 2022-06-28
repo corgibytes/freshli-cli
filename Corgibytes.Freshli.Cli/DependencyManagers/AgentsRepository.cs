@@ -33,7 +33,7 @@ public class AgentsRepository : IDependencyManagerRepository
             return GetReleaseDateForList(validPackageUrls, packageUrl);
         }
 
-        throw ReleaseDateNotFoundException.BecauseNoAgentReturnedAnyResults(packageUrl);
+        throw ReleaseDateNotFoundException.BecauseNoAgentReturnedAnyResults();
     }
 
     private static DateTimeOffset GetReleaseDateForList(List<Package> validPackages, PackageURL packageUrl)
@@ -48,7 +48,7 @@ public class AgentsRepository : IDependencyManagerRepository
             }
         }
 
-        throw ReleaseDateNotFoundException.BecauseReturnedListDidNotContainReleaseDate(packageUrl);
+        throw ReleaseDateNotFoundException.BecauseReturnedListDidNotContainReleaseDate();
     }
 
     public PackageURL GetLatestVersion(PackageURL packageUrl)
@@ -68,7 +68,7 @@ public class AgentsRepository : IDependencyManagerRepository
             }
         }
 
-        throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList(packageUrl);
+        throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList();
     }
 }
 
