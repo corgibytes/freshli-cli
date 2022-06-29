@@ -29,7 +29,8 @@ public class Program
             {
                 // Add commands here!
                 new ScanCommand(),
-                new CacheCommand()
+                new CacheCommand(),
+                new GitCommand()
             };
 
         var builder = new CommandLineBuilder(command)
