@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
+using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -48,7 +49,7 @@ public class GitRepository
         var entry = db.CachedGitRepos.Find(Hash);
         if (entry == null)
         {
-            throw new CacheException("No repository with this hash exists in cache.");
+            throw new CacheException(CliOutput.Exception_Git_NoRepoWithHash);
         }
 
         Url = entry.Url;
@@ -117,7 +118,7 @@ public class GitRepository
         if (cloneProcess.ExitCode != 0)
         {
             Delete();
-            throw new GitException($"Git encountered an error:\n{cloneProcess.StandardError.ReadToEnd()}");
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{cloneProcess.StandardError.ReadToEnd()}");
         }
     }
 
@@ -140,7 +141,7 @@ public class GitRepository
         if (checkoutProcess.ExitCode != 0)
         {
             Delete();
-            throw new GitException($"Git encountered an error:\n{checkoutProcess.StandardError.ReadToEnd()}");
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{checkoutProcess.StandardError.ReadToEnd()}");
         }
     }
 
@@ -162,7 +163,7 @@ public class GitRepository
 
         if (pullProcess.ExitCode != 0)
         {
-            throw new GitException($"Git encountered an error:\n{pullProcess.StandardError.ReadToEnd()}");
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{pullProcess.StandardError.ReadToEnd()}");
         }
     }
 
