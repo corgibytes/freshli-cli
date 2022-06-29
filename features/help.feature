@@ -14,3 +14,7 @@ Feature: Freshli.Cli
         """
           cache        Manages the local cache database
         """
+        And the output should contain:
+        """
+          git          Uses git to traverse through a repository's history
+        """
