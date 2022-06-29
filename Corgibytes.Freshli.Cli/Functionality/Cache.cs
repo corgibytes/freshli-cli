@@ -48,7 +48,9 @@ public static class Cache
     {
         List<string> dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
         // Folder is valid cache if empty or if contains "freshli.db"
-        return (!dirContents.Any() || dirContents.Contains(CacheContext.CacheDbName));
+        return
+            (!dirContents.Any() && !cacheDir.GetDirectories().Any())
+            || dirContents.Contains(CacheContext.CacheDbName);
     }
 
     public static bool Prepare(DirectoryInfo cacheDir)
@@ -74,6 +76,32 @@ public static class Cache
         }
 
         return true;
+    }
+
+    public static DirectoryInfo GetDirectoryInCache(DirectoryInfo cacheDir, string[] directoryStructure)
+    {
+        Prepare(cacheDir);
+        var focus = cacheDir;
+
+        foreach (var directory in directoryStructure)
+        {
+            var found = false;
+            foreach (var match in focus.GetDirectories(directory))
+            {
+                if (match.Name == directory)
+                {
+                    focus = match;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found)
+            {
+                focus = focus.CreateSubdirectory(directory);
+            }
+        }
+
+        return focus;
     }
 
     public static bool Destroy(DirectoryInfo cacheDir)
