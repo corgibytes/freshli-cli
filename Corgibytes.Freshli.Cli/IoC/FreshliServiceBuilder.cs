@@ -2,6 +2,7 @@
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
+using Corgibytes.Freshli.Cli.CommandRunners.Git;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Lib;
@@ -24,6 +25,7 @@ public class FreshliServiceBuilder
         RegisterBaseCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
+        RegisterCheckoutHistoryCommand();
     }
 
     public void RegisterBaseCommand()
@@ -52,5 +54,14 @@ public class FreshliServiceBuilder
 
         Services.AddScoped<ICommandRunner<CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
         Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
+    }
+
+    public void RegisterCheckoutHistoryCommand()
+    {
+        Services.AddScoped<ICommandRunner<GitCommandOptions>, GitCommandRunner>();
+        Services.AddOptions<GitCommandOptions>().BindCommandLine();
+
+        Services.AddScoped<ICommandRunner<CheckoutHistoryCommandOptions>, CheckoutHistoryCommandRunner>();
+        Services.AddOptions<CheckoutHistoryCommandOptions>().BindCommandLine();
     }
 }
