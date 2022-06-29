@@ -15,28 +15,28 @@
     <value>Comando principal</value>
   </data>
   <data name="Help_Option_CacheDir_Description" xml:space="preserve">
-    <value>La ubicación para almacenamiento de archivos temporales</value>
+    <value>Directorio de almacenamiento de archivos temporales.</value>
   </data>
   <data name="Help_CacheCommand_Description" xml:space="preserve">
-    <value>Gestionar las base de datos y directorio local para cache</value>
+    <value>Gestión de base de datos y directorio local de cache.</value>
   </data>
   <data name="Help_CachePrepareCommand_Description" xml:space="preserve">
-    <value>Asegura el directorio de cache existe y contiene un base de datos cache válido</value>
+    <value>Verifica que el directorio de cache exista y contenga una base de datos de cache válida.</value>
   </data>
   <data name="Help_CacheDestroyCommand_Description" xml:space="preserve">
-    <value>Eliminar el directorio de cache</value>
+    <value>Eliminación del directorio de cache.</value>
   </data>
   <data name="Help_CacheDestoyCommand_Option_Force" xml:space="preserve">
-    <value>No preguntar eliminar el directorio de cache</value>
+    <value>Eliminación del directorio de cache sin preguntar por confirmación.</value>
   </data>
   <data name="Help_ScanCommand_Description" xml:space="preserve">
     <value>Devolver los resultados de la métrica del escaneo para el repositorio local dado</value>
   </data>
   <data name="Help_ScanCommand_Option_Format" xml:space="preserve">
-    <value>Especificar cómo formatear el resultado. (Mayúsculas y minúsculas.)</value>
+    <value>Indica el formato del resultado. (distingue entre mayúsculas y minúsculas.)</value>
   </data>
   <data name="Help_ScanCommand_Option_Output" xml:space="preserve">
-    <value>Especificar cómo mostrar el resultado. (Mayúsculas y minúsculas.) Admite múltiples valores.</value>
+    <value>Especifica cómo mostrar el resultado. (distingue entre mayúsculas y minúsculas.) Admite múltiples valores.</value>
   </data>
   <data name="Help_ScanCommand_Argument_Path" xml:space="preserve">
     <value>El directorio del repositorio de código fuente.</value>
@@ -48,16 +48,16 @@
     <value>AñoLib</value>
   </data>
   <data name="Output_Skipped" xml:space="preserve">
-    <value>Omitida</value>
+    <value>Omitido</value>
   </data>
   <data name="Output_UpgradesAvailable" xml:space="preserve">
-    <value>ActualizaciónesDisponibles</value>
+    <value>Existen actualizaciones disponibles.</value>
   </data>
   <data name="ScanCommand_ScanCommand_Executing_scan_command_handler" xml:space="preserve">
     <value>Ejecutando el controlador de comandos de escaneo</value>
   </data>
   <data name="MainCommand_MainCommand_Root_Command_Executed" xml:space="preserve">
-    <value>El comando raíz fue ejecutado</value>
+    <value>El comando principal fue ejecutado</value>
   </data>
   <data name="AuthCommand_AuthCommand_Executing_auth_command_handler" xml:space="preserve">
     <value>Ejecutando el controlador de comandos de autenticación</value>
