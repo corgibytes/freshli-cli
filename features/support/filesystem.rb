@@ -14,9 +14,7 @@ def resolve_path(path)
   end
 
   # Resolve globs by returning first path that matches the globbing pattern
-  if path.include? '*'
-    path = Dir[path][0]
-  end
+  path = Dir[path][0] if path.include? '*'
 
   path
 end
