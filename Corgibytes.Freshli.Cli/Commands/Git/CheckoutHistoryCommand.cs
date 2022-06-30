@@ -18,7 +18,7 @@ public class CheckoutHistoryCommand : RunnableCommand<CheckoutHistoryCommandOpti
             Arity = ArgumentArity.ExactlyOne
         };
 
-        Option<FileInfo> gitPath = new("git-path", "Path to the git binary. Default = 'git'");
+        Option<FileInfo> gitPath = new("--git-path", "Path to the git binary. Default = 'git'");
 
         AddArgument(repositoryId);
         AddArgument(sha);
