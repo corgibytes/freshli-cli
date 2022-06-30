@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.0-preview.4.22229.2");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.0-preview.5.22302.2");
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.Functionality.CachedGitRepo", b =>
                 {
@@ -25,9 +25,11 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("LocalPath")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Url")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -45,9 +47,11 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Key")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Value")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

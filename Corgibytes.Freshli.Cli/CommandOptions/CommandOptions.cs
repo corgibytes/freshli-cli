@@ -4,5 +4,5 @@ namespace Corgibytes.Freshli.Cli.CommandOptions;
 
 public abstract class CommandOptions
 {
-    public DirectoryInfo CacheDir { get; set; }
+    public DirectoryInfo CacheDir { get; set; } = null!;
 }

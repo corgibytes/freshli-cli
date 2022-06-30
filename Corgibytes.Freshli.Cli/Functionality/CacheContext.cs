@@ -15,8 +15,8 @@ public class CacheContext : DbContext
     public const string CacheDbName = "freshli.db";
     public string DbPath { get; }
 
-    public DbSet<CachedProperty> CachedProperties { get; set; }
-    public DbSet<CachedGitRepo> CachedGitRepos { get; set; }
+    public DbSet<CachedProperty> CachedProperties => Set<CachedProperty>();
+    public DbSet<CachedGitRepo> CachedGitRepos => Set<CachedGitRepo>();
 
     public CacheContext(DirectoryInfo cacheDir)
     {

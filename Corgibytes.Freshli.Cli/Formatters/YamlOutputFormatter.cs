@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using YamlDotNet.Serialization;
 
 namespace Corgibytes.Freshli.Cli.Formatters;
@@ -9,6 +10,11 @@ public class YamlOutputFormatter : OutputFormatter
 
     protected override string Build<T>(T entity)
     {
+        if (entity == null)
+        {
+            throw new ArgumentNullException(nameof(entity));
+        }
+
         return new Serializer().Serialize(entity);
     }
 

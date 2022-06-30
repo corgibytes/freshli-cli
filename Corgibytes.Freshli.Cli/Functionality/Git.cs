@@ -20,7 +20,7 @@ public class GitRepository
 {
     public string Hash { get; }
     private string Url { get; }
-    private string Branch { get; }
+    private string? Branch { get; }
     private DirectoryInfo Directory { get; }
 
     private DirectoryInfo CacheDir { get; }
@@ -57,7 +57,7 @@ public class GitRepository
         // Ensure the directory exists in the cache for cloning the repository.
         Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
     }
-    public GitRepository(string url, string branch, DirectoryInfo cacheDir)
+    public GitRepository(string url, string? branch, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.
         CacheDir = cacheDir;
