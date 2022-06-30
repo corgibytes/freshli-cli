@@ -28,6 +28,7 @@ public class FreshliServiceBuilder
         RegisterBaseCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
+        RegisterGitCommand();
         RegisterComputeLibYearCommand();
     }
 
@@ -57,6 +58,15 @@ public class FreshliServiceBuilder
 
         Services.AddScoped<ICommandRunner<CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
         Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
+    }
+
+    public void RegisterGitCommand()
+    {
+        Services.AddScoped<ICommandRunner<GitCommandOptions>, GitCommandRunner>();
+        Services.AddOptions<GitCommandOptions>().BindCommandLine();
+
+        Services.AddScoped<ICommandRunner<GitCloneCommandOptions>, GitCloneCommandRunner>();
+        Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
     }
 
     public void RegisterComputeLibYearCommand()

@@ -30,6 +30,7 @@ public class Program
                 // Add commands here!
                 new ScanCommand(),
                 new CacheCommand(),
+                new GitCommand(),
                 new ComputeLibYearCommand()
             };
 
