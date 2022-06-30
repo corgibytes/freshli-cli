@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Design;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -25,4 +26,17 @@ public class CacheContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlite($"Data Source={DbPath}");
+}
+
+public class CacheContextFactory : IDesignTimeDbContextFactory<CacheContext>
+{
+    public CacheContext CreateDbContext(string[] args)
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<CacheContext>();
+        var cacheDir = CacheContext.DefaultCacheDir;
+        var dbPath = Path.Join(cacheDir.ToString(), CacheContext.CacheDbName);
+        optionsBuilder.UseSqlite($"Data Source={dbPath}");
+
+        return new CacheContext(cacheDir);
+    }
 }
