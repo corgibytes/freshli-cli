@@ -25,7 +25,7 @@ public class FreshliServiceBuilder
         RegisterBaseCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
-        RegisterCheckoutHistoryCommand();
+        RegisterGitCommand();
     }
 
     public void RegisterBaseCommand()
@@ -56,12 +56,15 @@ public class FreshliServiceBuilder
         Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
     }
 
-    public void RegisterCheckoutHistoryCommand()
+    public void RegisterGitCommand()
     {
         Services.AddScoped<ICommandRunner<GitCommandOptions>, GitCommandRunner>();
         Services.AddOptions<GitCommandOptions>().BindCommandLine();
 
         Services.AddScoped<ICommandRunner<CheckoutHistoryCommandOptions>, CheckoutHistoryCommandRunner>();
         Services.AddOptions<CheckoutHistoryCommandOptions>().BindCommandLine();
+
+        Services.AddScoped<ICommandRunner<GitCloneCommandOptions>, GitCloneCommandRunner>();
+        Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
     }
 }
