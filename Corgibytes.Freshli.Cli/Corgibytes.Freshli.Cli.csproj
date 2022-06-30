@@ -18,6 +18,7 @@
     <PackageId>Corgibytes.Freshli.Cli</PackageId>
     <Company>Corgibytes</Company>
     <AssemblyName>freshli</AssemblyName>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="">
@@ -52,6 +53,8 @@
     </Compile>
     <Compile Remove="Commands\BaseCommand.cs" />
     <Compile Remove="Migrations\20220516170031_InitialCreate.Designer.cs" />
+    <Compile Remove="Migrations\20220630213145_Nullable.cs" />
+    <Compile Remove="Migrations\20220630213145_Nullable.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Migrations" />

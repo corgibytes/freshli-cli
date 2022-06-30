@@ -26,7 +26,7 @@ public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOpti
         var yesChoices = new List<string> { "y", "Y" };
         var noChoices = new List<string> { "n", "N" };
 
-        return (defaultYes ? !noChoices.Contains(choice) : yesChoices.Contains(choice));
+        return (defaultYes ? !noChoices.Contains(choice!) : yesChoices.Contains(choice!));
     }
 
     public abstract int Run(T options, InvocationContext context);
