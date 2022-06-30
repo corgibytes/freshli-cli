@@ -10,6 +10,6 @@ public class ScanCommandOptions : CommandOptions
     public FormatType Format { get; set; }
 
     public IList<OutputStrategyType> Output { get; set; } = new List<OutputStrategyType>();
-    public DirectoryInfo Path { get; set; }
+    public DirectoryInfo Path { get; set; } = null!;
 
 }

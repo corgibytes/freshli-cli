@@ -4,7 +4,8 @@ public class GitCommandOptions : CommandOptions { }
 
 public class GitCloneCommandOptions : CommandOptions
 {
-    public string GitPath { get; set; }
-    public string Branch { get; set; }
-    public string RepoUrl { get; set; }
+    public string GitPath { get; set; } = null!;
+    public string RepoUrl { get; set; } = null!;
+    public string? Branch { get; set; }
+
 }
