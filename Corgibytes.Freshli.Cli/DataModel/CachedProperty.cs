@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace Corgibytes.Freshli.Cli.Functionality;
+namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Key), IsUnique = true)]
 public class CachedProperty

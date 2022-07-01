@@ -1,4 +1,4 @@
-namespace Corgibytes.Freshli.Cli.Functionality;
+namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitCommitIdentifier
 {

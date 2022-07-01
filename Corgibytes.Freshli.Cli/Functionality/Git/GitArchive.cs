@@ -1,8 +1,7 @@
 using System.IO;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Repositories;
 
-namespace Corgibytes.Freshli.Cli.Services;
+namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitArchive
 {
@@ -17,8 +16,8 @@ public class GitArchive
 
     public string CreateArchive(string repositoryId, DirectoryInfo cacheDirectory, GitCommitIdentifier gitCommitIdentifier, string gitPath)
     {
-        GitRepository gitRepository = new(repositoryId, cacheDirectory, _cachedGitSourceRepository);
-        return _archiveProcess.Run(gitRepository, gitCommitIdentifier, gitPath, cacheDirectory);
+        GitSource gitSource = new(repositoryId, cacheDirectory, _cachedGitSourceRepository);
+        return _archiveProcess.Run(gitSource, gitCommitIdentifier, gitPath, cacheDirectory);
     }
 }
 

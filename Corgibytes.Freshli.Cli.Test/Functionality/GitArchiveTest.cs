@@ -1,5 +1,6 @@
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Services;
+using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Corgibytes.Freshli.Cli.Test.Repositories;
 using Corgibytes.Freshli.Cli.Test.Services;
