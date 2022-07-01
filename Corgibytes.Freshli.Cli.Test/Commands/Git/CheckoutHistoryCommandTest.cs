@@ -19,8 +19,8 @@ public class CheckoutHistoryCommandTest : FreshliTest
         CheckoutHistoryCommand checkoutHistoryCommand = new();
         var option = checkoutHistoryCommand.Options.ElementAt(0);
 
-        option.Name.Should().Be("--git-path");
-        option.Arity.Should().BeEquivalentTo(ArgumentArity.ExactlyOne);
+        option.Name.Should().Be("git-path");
+        option.Arity.Should().BeEquivalentTo(ArgumentArity.ZeroOrOne);
     }
 
     [Theory]
