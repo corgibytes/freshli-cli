@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
+using Corgibytes.Freshli.Cli.Repositories;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -21,7 +22,7 @@ public class GitRepository
     public string Hash { get; }
     private string Url { get; }
     private string Branch { get; }
-    private DirectoryInfo Directory { get; }
+    public DirectoryInfo Directory { get; }
 
     private DirectoryInfo CacheDir { get; }
 
@@ -35,21 +36,15 @@ public class GitRepository
         get => !string.IsNullOrEmpty(Branch);
     }
 
-    public GitRepository(string hash, DirectoryInfo cacheDir)
+    public GitRepository(string hash, DirectoryInfo cacheDir, ICachedGitSourceRepository cachedGitSourceRepository)
     {
         // Ensure the cache directory is ready for use.
         CacheDir = cacheDir;
         Cache.Prepare(CacheDir);
-
         Hash = hash;
 
         // Get existing entry via provided hash
-        using var db = new CacheContext(CacheDir);
-        var entry = db.CachedGitRepos.Find(Hash);
-        if (entry == null)
-        {
-            throw new CacheException("No repository with this hash exists in cache.");
-        }
+        var entry = cachedGitSourceRepository.FindOneByHash(hash, cacheDir);
 
         Url = entry.Url;
         Branch = entry.Branch;
