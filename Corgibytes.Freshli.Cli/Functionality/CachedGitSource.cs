@@ -2,10 +2,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 [Index(nameof(Id), IsUnique = true)]
-public class CachedGitRepo
+public class CachedGitSource
 {
     public string Id { get; set; }
     public string Url { get; set; }
     public string Branch { get; set; }
     public string LocalPath { get; set; }
+
+    public CachedGitSource(string id, string url, string branch, string localPath)
+    {
+        Id = id;
+        Url = url;
+        Branch = branch;
+        LocalPath = localPath;
+    }
 }
