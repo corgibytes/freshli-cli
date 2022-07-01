@@ -30,7 +30,7 @@
     <value>Eliminación del directorio de cache sin preguntar por confirmación.</value>
   </data>
   <data name="Help_ScanCommand_Description" xml:space="preserve">
-    <value>Devolver los resultados de la métrica del escaneo para el repositorio local dado</value>
+    <value>Devolución de resultados de las métricas de escaneo para el repositorio local indicado.</value>
   </data>
   <data name="Help_ScanCommand_Option_Format" xml:space="preserve">
     <value>Indica el formato del resultado. (distingue entre mayúsculas y minúsculas.)</value>
@@ -54,13 +54,13 @@
     <value>Existen actualizaciones disponibles.</value>
   </data>
   <data name="ScanCommand_ScanCommand_Executing_scan_command_handler" xml:space="preserve">
-    <value>Ejecutando el controlador de comandos de escaneo</value>
+    <value>Ejecutando el comando de escaneo.</value>
   </data>
   <data name="MainCommand_MainCommand_Root_Command_Executed" xml:space="preserve">
     <value>El comando principal fue ejecutado</value>
   </data>
   <data name="AuthCommand_AuthCommand_Executing_auth_command_handler" xml:space="preserve">
-    <value>Ejecutando el controlador de comandos de autenticación</value>
+    <value>Ejecutando el comando de autenticación.</value>
   </data>
   <data name="ScanCommandRunner_Run_Path_should_not_be_null_or_empty" xml:space="preserve">
     <value>El directorio no debe ser nulo o vacío</value>
@@ -69,10 +69,10 @@
     <value>Preparando el directorio de cache en {0}.</value>
   </data>
   <data name="CacheDestroyCommandRunner_Run_Prompt" xml:space="preserve">
-    <value>¿Te quieres ELIMINAR completamente el directorio {0}?</value>
+    <value>¿Estas seguro de que quieres eliminar por completo el directorio de cache {0}?</value>
   </data>
   <data name="CacheDestroyCommandRunner_Run_Abort" xml:space="preserve">
-    <value>La operación cancelada. El cache no era eliminado.</value>
+    <value>La operación fue cancelada. El cache no fue eliminado.</value>
   </data>
   <data name="CacheDestroyCommandRunner_Run_Destroying" xml:space="preserve">
     <value>Eliminando el directorio de cache en {0}.</value>
@@ -81,10 +81,10 @@
     <value>No se puede utilizar un directorio no vacío como un directorio de cache.</value>
   </data>
   <data name="Warning_Cache_Destroy_DoesNotExist" xml:space="preserve">
-    <value>El directorio de cache ya eliminó o no existe.</value>
+    <value>El directorio de cache ya fue eliminado o no existe.</value>
   </data>
   <data name="Exception_Cache_Destroy_NonCache" xml:space="preserve">
-    <value>Este directorio no es un cache de Freshli, por lo que no se eliminó.</value>
+    <value>El directorio especificado no fue eliminado ya que no es un cache de Freshli.</value>
   </data>
   <data name="Help_GitCommand_Description" xml:space="preserve">
     <value>Gestionar las repositorios clonado por Freshli</value>
