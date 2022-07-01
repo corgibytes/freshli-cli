@@ -2,7 +2,7 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class GitCommitIdentifier
 {
-    public string CommitId { get; }
+    private string CommitId { get; }
 
     public GitCommitIdentifier(string commitId)
     {
