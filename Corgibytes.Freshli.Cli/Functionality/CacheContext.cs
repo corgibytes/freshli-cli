@@ -15,7 +15,7 @@ public class CacheContext : DbContext
     public string DbPath { get; }
 
     public DbSet<CachedProperty> CachedProperties { get; set; }
-    public DbSet<CachedGitRepo> CachedGitRepos { get; set; }
+    public DbSet<CachedGitSource> CachedGitRepos { get; set; }
 
     public CacheContext(DirectoryInfo cacheDir)
     {

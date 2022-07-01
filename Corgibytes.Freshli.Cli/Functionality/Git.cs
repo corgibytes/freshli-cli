@@ -57,6 +57,7 @@ public class GitRepository
         // Ensure the directory exists in the cache for cloning the repository.
         Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
     }
+
     public GitRepository(string url, string branch, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.
@@ -84,7 +85,7 @@ public class GitRepository
         using var db = new CacheContext(CacheDir);
         if (db.CachedGitRepos.Find(Hash) != null) { return; }
 
-        var entry = new CachedGitRepo() { Id = Hash, Url = Url, Branch = Branch, LocalPath = Directory.FullName };
+        var entry = new CachedGitSource(Hash, Url, Branch, Directory.FullName);
         db.CachedGitRepos.Add(entry);
         db.SaveChanges();
     }
