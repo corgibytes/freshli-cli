@@ -1,8 +1,9 @@
 using System;
 using System.IO;
+using Corgibytes.Freshli.Cli.Functionality;
 using Microsoft.EntityFrameworkCore;
 
-namespace Corgibytes.Freshli.Cli.Functionality;
+namespace Corgibytes.Freshli.Cli.DataModel;
 
 public class CacheContext : DbContext
 {

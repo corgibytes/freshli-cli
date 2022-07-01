@@ -1,12 +1,11 @@
 using System.Diagnostics;
 using System.IO;
-using Corgibytes.Freshli.Cli.Functionality;
 
-namespace Corgibytes.Freshli.Cli.Services;
+namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitArchiveProcess : IGitArchiveProcess
 {
-    public string Run(GitRepository gitRepository, GitCommitIdentifier gitCommitIdentifier, string gitPath, DirectoryInfo cacheDirectory)
+    public string Run(GitSource gitSource, GitCommitIdentifier gitCommitIdentifier, string gitPath, DirectoryInfo cacheDirectory)
     {
         var historiesDirectoryPath = new DirectoryInfo(cacheDirectory.FullName + "/histories");
 
@@ -30,7 +29,7 @@ public class GitArchiveProcess : IGitArchiveProcess
             StartInfo = new()
             {
                 FileName = gitPath,
-                WorkingDirectory = gitRepository.Directory.FullName,
+                WorkingDirectory = gitSource.Directory.FullName,
                 Arguments = $"git archive --output={gitSourceTarget.FullName}/archive.zip --format=zip {gitCommitIdentifier}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true

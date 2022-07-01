@@ -5,9 +5,10 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Repositories;
 
-namespace Corgibytes.Freshli.Cli.Functionality;
+namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 [Serializable]
 public class GitException : Exception
@@ -17,7 +18,7 @@ public class GitException : Exception
     protected GitException(SerializationInfo info, StreamingContext context) : base(info, context) { }
 }
 
-public class GitRepository
+public class GitSource
 {
     public string Hash { get; }
     private string Url { get; }
@@ -36,7 +37,7 @@ public class GitRepository
         get => !string.IsNullOrEmpty(Branch);
     }
 
-    public GitRepository(string hash, DirectoryInfo cacheDir, ICachedGitSourceRepository cachedGitSourceRepository)
+    public GitSource(string hash, DirectoryInfo cacheDir, ICachedGitSourceRepository cachedGitSourceRepository)
     {
         // Ensure the cache directory is ready for use.
         CacheDir = cacheDir;
@@ -53,7 +54,7 @@ public class GitRepository
         Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
     }
 
-    public GitRepository(string url, string branch, DirectoryInfo cacheDir)
+    public GitSource(string url, string branch, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.
         CacheDir = cacheDir;
