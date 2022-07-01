@@ -13,5 +13,10 @@ public class GitCommitIdentifier
 
         CommitId = commitId;
     }
+
+    public override string ToString()
+    {
+        return CommitId;
+    }
 }
 
