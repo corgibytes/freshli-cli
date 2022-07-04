@@ -4,7 +4,9 @@ using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.CommandRunners.Git;
 using Corgibytes.Freshli.Cli.Formatters;
+using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.OutputStrategies;
+using Corgibytes.Freshli.Cli.Repositories;
 using Corgibytes.Freshli.Lib;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
@@ -66,5 +68,9 @@ public class FreshliServiceBuilder
 
         Services.AddScoped<ICommandRunner<GitCloneCommandOptions>, GitCloneCommandRunner>();
         Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
+
+        Services.AddScoped<GitArchive>();
+        Services.AddScoped<ICachedGitSourceRepository, CachedGitSourceRepository>();
+        Services.AddScoped<IGitArchiveProcess, GitArchiveProcess>();
     }
 }
