@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -8,42 +9,51 @@ public class GitArchiveProcess : IGitArchiveProcess
     public string Run(GitSource gitSource, GitCommitIdentifier gitCommitIdentifier, string gitPath, DirectoryInfo cacheDirectory)
     {
         var historiesDirectoryPath = new DirectoryInfo(cacheDirectory.FullName + "/histories");
-
         if (!Directory.Exists(historiesDirectoryPath.FullName))
         {
             cacheDirectory.CreateSubdirectory("histories");
         }
 
-        // If it exists, make sure to empty it so we are certain we start with a clean slate.
-        if (Directory.Exists(historiesDirectoryPath.FullName + "/" + gitCommitIdentifier))
+        var repositoryHistoriesDirectoryPath = new DirectoryInfo(cacheDirectory.FullName + "/histories/" + gitSource.Hash);
+        if (!Directory.Exists(repositoryHistoriesDirectoryPath.FullName))
         {
-            Directory.Delete(historiesDirectoryPath.FullName + "/" + gitCommitIdentifier);
+            historiesDirectoryPath.CreateSubdirectory(gitSource.Hash);
+        }
+
+        // If it exists, make sure to empty it so we are certain we start with a clean slate.
+        var gitSourceTarget = new DirectoryInfo(historiesDirectoryPath.FullName + "/" + gitSource.Hash + "/" + gitCommitIdentifier);
+        if (Directory.Exists(gitSourceTarget.FullName))
+        {
+            Directory.Delete(gitSourceTarget.FullName, recursive: true);
         }
 
         // Create the directory where we want to place the archive
-        historiesDirectoryPath.CreateSubdirectory(gitCommitIdentifier.ToString());
-        var gitSourceTarget = new DirectoryInfo(historiesDirectoryPath.FullName + "/" + gitCommitIdentifier);
+        repositoryHistoriesDirectoryPath.CreateSubdirectory(gitCommitIdentifier.ToString());
+        var archivePath = $"{gitSourceTarget.FullName}/archive.zip";
 
-        var cloneProcess = new Process
+        var archiveProcess = new Process
         {
             StartInfo = new()
             {
                 FileName = gitPath,
                 WorkingDirectory = gitSource.Directory.FullName,
-                Arguments = $"git archive --output={gitSourceTarget.FullName}/archive.zip --format=zip {gitCommitIdentifier}",
+                Arguments = $"archive --output={archivePath} --format=zip {gitCommitIdentifier}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             }
         };
-        cloneProcess.Start();
-        cloneProcess.WaitForExit();
+        archiveProcess.Start();
+        archiveProcess.WaitForExit();
 
-        if (cloneProcess.ExitCode != 0)
+        if (archiveProcess.ExitCode != 0)
         {
-            throw new GitException("Uh-oh");
+            throw new GitException($"Git encountered an error:\n{archiveProcess.StandardError.ReadToEnd()}");
         }
 
-        return "loremipsumdonec";
+        ZipFile.ExtractToDirectory($"{archivePath}", gitSourceTarget.FullName);
+        File.Delete($"{archivePath}");
+
+        return gitSourceTarget.FullName;
     }
 }
 
