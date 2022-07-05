@@ -14,7 +14,7 @@ public abstract class OutputFormatter : IOutputFormatter
             throw new ArgumentNullException(nameof(entity));
         }
 
-        return Build<T>(entity);
+        return Build(entity);
     }
 
     public virtual string Format<T>(IList<T> entities)
@@ -24,11 +24,10 @@ public abstract class OutputFormatter : IOutputFormatter
             throw new ArgumentNullException(nameof(entities));
         }
 
-        return Build<T>(entities);
+        return Build(entities);
     }
 
     protected abstract string Build<T>(T entity);
 
     protected abstract string Build<T>(IList<T> entities);
-
 }

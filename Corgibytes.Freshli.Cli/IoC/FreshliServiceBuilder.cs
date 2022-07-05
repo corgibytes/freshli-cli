@@ -12,12 +12,9 @@ namespace Corgibytes.Freshli.Cli.IoC;
 
 public class FreshliServiceBuilder
 {
-    public IServiceCollection Services { get; }
+    public FreshliServiceBuilder(IServiceCollection services) => Services = services;
 
-    public FreshliServiceBuilder(IServiceCollection services)
-    {
-        Services = services;
-    }
+    public IServiceCollection Services { get; }
 
     public void Register()
     {
@@ -27,10 +24,7 @@ public class FreshliServiceBuilder
         RegisterGitCommand();
     }
 
-    public void RegisterBaseCommand()
-    {
-        Services.AddScoped<Runner>();
-    }
+    public void RegisterBaseCommand() => Services.AddScoped<Runner>();
 
     public void RegisterScanCommand()
     {
