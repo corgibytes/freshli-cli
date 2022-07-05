@@ -8,27 +8,15 @@ public class GitArchiveProcess : IGitArchiveProcess
 {
     public string Run(GitSource gitSource, GitCommitIdentifier gitCommitIdentifier, string gitPath, DirectoryInfo cacheDirectory)
     {
-        var historiesDirectoryPath = new DirectoryInfo(cacheDirectory.FullName + "/histories");
-        if (!Directory.Exists(historiesDirectoryPath.FullName))
-        {
-            cacheDirectory.CreateSubdirectory("histories");
-        }
-
-        var repositoryHistoriesDirectoryPath = new DirectoryInfo(cacheDirectory.FullName + "/histories/" + gitSource.Hash);
-        if (!Directory.Exists(repositoryHistoriesDirectoryPath.FullName))
-        {
-            historiesDirectoryPath.CreateSubdirectory(gitSource.Hash);
-        }
-
         // If it exists, make sure to empty it so we are certain we start with a clean slate.
-        var gitSourceTarget = new DirectoryInfo(historiesDirectoryPath.FullName + "/" + gitSource.Hash + "/" + gitCommitIdentifier);
+        var gitSourceTarget = new DirectoryInfo(cacheDirectory.FullName + "/histories" + "/" + gitSource.Hash + "/" + gitCommitIdentifier);
         if (Directory.Exists(gitSourceTarget.FullName))
         {
             Directory.Delete(gitSourceTarget.FullName, recursive: true);
         }
 
         // Create the directory where we want to place the archive
-        repositoryHistoriesDirectoryPath.CreateSubdirectory(gitCommitIdentifier.ToString());
+        gitSourceTarget.Create();
         var archivePath = $"{gitSourceTarget.FullName}/archive.zip";
 
         var archiveProcess = new Process
