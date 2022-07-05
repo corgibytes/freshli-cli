@@ -10,7 +10,6 @@ namespace Corgibytes.Freshli.Cli.OutputStrategies;
 public class ConsoleOutputStrategy : IOutputStrategy
 {
     public OutputStrategyType Type => OutputStrategyType.Console;
-    public ConsoleOutputStrategy() { }
 
     public virtual void Send(IList<ScanResult> results, IOutputFormatter formatter, ScanCommandOptions options)
     {

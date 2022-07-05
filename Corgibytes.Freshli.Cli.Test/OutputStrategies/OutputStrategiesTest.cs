@@ -5,7 +5,6 @@ using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Corgibytes.Freshli.Lib;
 using FluentAssertions;
-using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -14,16 +13,33 @@ namespace Corgibytes.Freshli.Cli.Test.OutputStrategies;
 
 public class OutputStrategiesTest : FreshliTest
 {
-    public static ConsoleOutputStrategy ConsoleOutputStrategy { get; }
-    public static FileOutputStrategy FileOutputStrategy { get; }
-
-    public OutputStrategiesTest(ITestOutputHelper output) : base(output) { }
-
     static OutputStrategiesTest()
     {
         ConsoleOutputStrategy = new();
         FileOutputStrategy = new();
     }
+
+    public OutputStrategiesTest(ITestOutputHelper output) : base(output)
+    {
+    }
+
+    public static ConsoleOutputStrategy ConsoleOutputStrategy { get; }
+    public static FileOutputStrategy FileOutputStrategy { get; }
+
+
+    public static IEnumerable<object[]> OutputStrategies =>
+        new List<object[]>
+        {
+            new object[] { ConsoleOutputStrategy },
+            new object[] { FileOutputStrategy }
+        };
+
+    public static IEnumerable<object[]> OutputStrategiesTypeCheckData =>
+        new List<object[]>
+        {
+            new object[] { ConsoleOutputStrategy, OutputStrategyType.Console },
+            new object[] { FileOutputStrategy, OutputStrategyType.File }
+        };
 
     [Theory]
     [MemberData(nameof(OutputStrategies))]
@@ -40,24 +56,6 @@ public class OutputStrategiesTest : FreshliTest
 
     [Theory]
     [MemberData(nameof(OutputStrategiesTypeCheckData))]
-
-    public void Check_FormatterType_IsExpectedType(IOutputStrategy outputStrategy, OutputStrategyType expectedType)
-    {
+    public void Check_FormatterType_IsExpectedType(IOutputStrategy outputStrategy, OutputStrategyType expectedType) =>
         outputStrategy.Type.Should().Be(expectedType);
-    }
-
-
-    public static IEnumerable<object[]> OutputStrategies =>
-        new List<object[]>
-        {
-                new object[] { ConsoleOutputStrategy},
-                new object[] { FileOutputStrategy},
-        };
-
-    public static IEnumerable<object[]> OutputStrategiesTypeCheckData =>
-        new List<object[]>
-        {
-                new object[] { ConsoleOutputStrategy, OutputStrategyType.Console},
-                new object[] { FileOutputStrategy, OutputStrategyType.File},
-        };
 }

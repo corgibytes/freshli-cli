@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
+
 [Index(nameof(Id), IsUnique = true)]
 public class CachedGitRepo
 {
