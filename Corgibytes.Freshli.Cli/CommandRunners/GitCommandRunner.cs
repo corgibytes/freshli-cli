@@ -12,19 +12,18 @@ public class GitCommandRunner : CommandRunner<GitCommandOptions>
 {
     public GitCommandRunner(IServiceProvider serviceProvider, Runner runner)
         : base(serviceProvider, runner)
-    { }
-
-    public override int Run(GitCommandOptions options, InvocationContext context)
     {
-        return 0;
     }
+
+    public override int Run(GitCommandOptions options, InvocationContext context) => 0;
 }
 
 public class GitCloneCommandRunner : CommandRunner<GitCloneCommandOptions>
 {
     public GitCloneCommandRunner(IServiceProvider serviceProvider, Runner runner)
         : base(serviceProvider, runner)
-    { }
+    {
+    }
 
     public override int Run(GitCloneCommandOptions options, InvocationContext context)
     {
