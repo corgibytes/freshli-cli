@@ -1,10 +1,10 @@
 using System;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
+using CliWrap;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -100,69 +100,66 @@ public class GitRepository
 
     private void Clone(string gitPath)
     {
-        var cloneProcess = new Process
-        {
-            StartInfo = new ProcessStartInfo()
-            {
-                FileName = gitPath,
-                WorkingDirectory = Directory.FullName,
-                Arguments = $"clone {Url} .",  // clone directly in the working directory
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            }
-        };
-        cloneProcess.Start();
-        cloneProcess.WaitForExit();
+        var stdErrBuffer = new StringBuilder();
+        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
+                args => args
+                    .Add("clone")
+                    .Add(Url)
+                    .Add('.')
+            )
+            .WithValidation(CommandResultValidation.None)
+            .WithWorkingDirectory(Directory.FullName)
+            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
-        if (cloneProcess.ExitCode != 0)
+        var task = command.ExecuteAsync().Task;
+        task.Wait();
+
+        if (task.Result.ExitCode != 0)
         {
             Delete();
-            throw new GitException($"Git encountered an error:\n{cloneProcess.StandardError.ReadToEnd()}");
+            throw new GitException($"Git encountered an error:\n{stdErrBuffer}");
         }
     }
 
     private void Checkout(string gitPath)
     {
-        var checkoutProcess = new Process
-        {
-            StartInfo = new ProcessStartInfo()
-            {
-                FileName = gitPath,
-                WorkingDirectory = Directory.FullName,
-                Arguments = $"checkout {Branch}",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            }
-        };
-        checkoutProcess.Start();
-        checkoutProcess.WaitForExit();
+        var stdErrBuffer = new StringBuilder();
+        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
+                args => args
+                    .Add("checkout")
+                    .Add(Branch)
+            )
+            .WithWorkingDirectory(Directory.FullName)
+            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
-        if (checkoutProcess.ExitCode != 0)
+        var task = command.ExecuteAsync().Task;
+        task.Wait();
+
+        if (task.Result.ExitCode != 0)
         {
             Delete();
-            throw new GitException($"Git encountered an error:\n{checkoutProcess.StandardError.ReadToEnd()}");
+            throw new GitException($"Git encountered an error:\n{stdErrBuffer}");
         }
     }
 
     private void Pull(string gitPath)
     {
-        var pullProcess = new Process
-        {
-            StartInfo = new ProcessStartInfo()
-            {
-                FileName = gitPath,
-                WorkingDirectory = Directory.FullName,
-                Arguments = $"pull origin {Branch}",
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            }
-        };
-        pullProcess.Start();
-        pullProcess.WaitForExit();
+        var stdErrBuffer = new StringBuilder();
+        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
+                args => args
+                    .Add("pull")
+                    .Add("origin")
+                    .Add(Branch)
+            )
+            .WithWorkingDirectory(Directory.FullName)
+            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
-        if (pullProcess.ExitCode != 0)
+        var task = command.ExecuteAsync().Task;
+        task.Wait();
+
+        if (task.Result.ExitCode != 0)
         {
-            throw new GitException($"Git encountered an error:\n{pullProcess.StandardError.ReadToEnd()}");
+            throw new GitException($"Git encountered an error:\n{stdErrBuffer}");
         }
     }
 
