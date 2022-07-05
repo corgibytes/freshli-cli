@@ -14,7 +14,7 @@ end
 
 Then('a directory named {string} exists') do |dirname|
   dirname = resolve_path dirname
-  expect(Dir.exists?(dirname)).to match(true)
+  expect(Dir.exist?(dirname)).to match(true)
 end
 
 Then('a directory named {string} is not empty') do |dirname|

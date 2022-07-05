@@ -8,7 +8,7 @@ namespace Corgibytes.Freshli.Cli.Test.Repositories;
 
 public class MockCachedGitSourceRepository : ICachedGitSourceRepository
 {
-    private List<CachedGitSource> _list;
+    private readonly List<CachedGitSource> _list;
 
     public MockCachedGitSourceRepository() => _list = new();
 
