@@ -223,7 +223,7 @@ dotnet build -o exe
 
 We use a few different automatted tools tools to help us keep the code in this repository in compliance with the Freshli project style guide.
 
-All of the following linters can be run together by running the `bin/lint.rb` script. You can also run the `bin/format.rb` script if you want to instruct the linters to correct any issues that are found. (Note: not all of the linters provide an auto-correct mechanism.)
+All of the following linters (with the exception of `codeclimate`) can be run together by running the `bin/lint.rb` script. You can also run the `bin/format.rb` script if you want to instruct the linters to correct any issues that are found. (Note: not all of the linters provide an auto-correct mechanism.)
 
 ### [eclint](https://gitlab.com/greut/eclint)
 
