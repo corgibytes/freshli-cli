@@ -111,7 +111,7 @@ public class GitRepository
             .WithWorkingDirectory(Directory.FullName)
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
-        var task = command.ExecuteAsync().Task;
+        using var task = command.ExecuteAsync().Task;
         task.Wait();
 
         if (task.Result.ExitCode != 0)
@@ -132,7 +132,7 @@ public class GitRepository
             .WithWorkingDirectory(Directory.FullName)
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
-        var task = command.ExecuteAsync().Task;
+        using var task = command.ExecuteAsync().Task;
         task.Wait();
 
         if (task.Result.ExitCode != 0)
@@ -154,7 +154,7 @@ public class GitRepository
             .WithWorkingDirectory(Directory.FullName)
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
-        var task = command.ExecuteAsync().Task;
+        using var task = command.ExecuteAsync().Task;
         task.Wait();
 
         if (task.Result.ExitCode != 0)
