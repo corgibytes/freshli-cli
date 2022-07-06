@@ -1,3 +1,5 @@
+using System;
+using System.Collections;
 using System.CommandLine;
 using Corgibytes.Freshli.Cli.CommandOptions;
 
@@ -26,13 +28,29 @@ public class ComputeHistoryCommand : RunnableCommand<ComputeHistoryCommand, Comp
 
         Option<string> historyInterval = new(
             "--history-interval",
-            description: "As the analyze command moves backwards in time through the history of the project, what time interval should it use to determine the points in time that are sampled",
+            description: "As the analyze command moves backwards in time through the history of the project, what time interval should it use to determine the points in time that are sampled. Possible values: y(ears), m(onths), w(eeks), d(ays)",
             getDefaultValue: () => "m"
         )
         {
             AllowMultipleArgumentsPerToken = false,
             Arity = ArgumentArity.ZeroOrOne
         };
+
+        historyInterval.AddValidator(optionResult =>
+        {
+            var givenValue = optionResult.GetValueOrDefault<string>();
+            string[] possibleValues = { "y", "m", "w", "d" };
+
+            if (!Array.Exists(possibleValues, possibleValue => possibleValue == givenValue))
+            {
+                optionResult.ErrorMessage = string.Format(
+                    "Option {0} not valid. Possible options are {1}",
+                    givenValue,
+                    string.Join(", ", possibleValues)
+                );
+            }
+        });
+
         AddOption(historyInterval);
     }
 }
