@@ -1,5 +1,6 @@
 using System.CommandLine;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Commands.Git;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
@@ -10,6 +11,9 @@ public class GitCommand : Command
     {
         GitCloneCommand clone = new();
         AddCommand(clone);
+
+        ComputeHistoryCommand computeHistoryCommand = new();
+        AddCommand(computeHistoryCommand);
     }
 }
 
