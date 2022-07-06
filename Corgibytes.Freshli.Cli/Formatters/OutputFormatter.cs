@@ -9,22 +9,12 @@ public abstract class OutputFormatter : IOutputFormatter
 
     public virtual string Format<T>(T entity)
     {
-        if (entity == null)
-        {
-            throw new ArgumentNullException(nameof(entity));
-        }
-
-        return Build<T>(entity);
+        return Build<T>(entity ?? throw new ArgumentNullException(nameof(entity)));
     }
 
     public virtual string Format<T>(IList<T> entities)
     {
-        if (entities == null)
-        {
-            throw new ArgumentNullException(nameof(entities));
-        }
-
-        return Build<T>(entities);
+        return Build<T>(entities ?? throw new ArgumentNullException(nameof(entities)));
     }
 
     protected abstract string Build<T>(T entity);

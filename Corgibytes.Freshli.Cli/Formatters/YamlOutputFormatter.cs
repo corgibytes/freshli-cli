@@ -10,10 +10,7 @@ public class YamlOutputFormatter : OutputFormatter
 
     protected override string Build<T>(T entity)
     {
-        if (entity == null)
-        {
-            throw new ArgumentNullException(nameof(entity));
-        }
+        _ = entity ?? throw new ArgumentNullException(nameof(entity));
 
         return new Serializer().Serialize(entity);
     }
