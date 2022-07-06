@@ -47,13 +47,7 @@ public class ScanCommand : RunnableCommand<ScanCommandOptions>
 
     protected override int Run(IHost host, InvocationContext context, ScanCommandOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
-
         context.Console.Out.Write($"CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
-
-        return base.Run(host, context, options);
+        return base.Run(host, context, options ?? throw new ArgumentNullException(nameof(options)));
     }
 }
