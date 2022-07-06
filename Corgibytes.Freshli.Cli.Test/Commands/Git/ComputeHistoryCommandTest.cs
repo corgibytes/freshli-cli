@@ -41,7 +41,8 @@ public class ComputeHistoryCommandTest : FreshliTest
         return new()
         {
             {"commit-history", ArgumentArity.ZeroOrOne, 0},
-            {"history-interval", ArgumentArity.ZeroOrOne, 1}
+            {"history-interval", ArgumentArity.ZeroOrOne, 1},
+            {"git-path", ArgumentArity.ZeroOrOne, 2}
         };
     }
 }
