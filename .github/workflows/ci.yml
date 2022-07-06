@@ -110,7 +110,7 @@ jobs:
 
       - name: "[Lint] - Run all linters"
         run: |
-          bin/lint.rb --skip-codeclimate
+          bin/lint.rb
 
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
