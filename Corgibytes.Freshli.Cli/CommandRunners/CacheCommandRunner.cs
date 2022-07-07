@@ -12,8 +12,5 @@ public class CacheCommandRunner : CommandRunner<CacheCommandOptions>
     {
     }
 
-    public override int Run(CacheCommandOptions options, InvocationContext context)
-    {
-        return 0;
-    }
+    public override int Run(CacheCommandOptions options, InvocationContext context) => 0;
 }
