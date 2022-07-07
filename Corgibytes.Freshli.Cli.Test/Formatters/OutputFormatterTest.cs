@@ -125,6 +125,7 @@ public class OutputFormatterTest : FreshliTest
     public void Send_NullObject_ReturnsArgumentNullException(IOutputFormatter formatter)
     {
         MetricsResult result = null;
+        // ReSharper disable once ExpressionIsAlwaysNull
         formatter.Invoking(x => x.Format(result))
             .Should().Throw<ArgumentNullException>();
     }
@@ -134,6 +135,7 @@ public class OutputFormatterTest : FreshliTest
     public void Send_NullList_ReturnsArgumentNullException(IOutputFormatter formatter)
     {
         IList<MetricsResult> results = null;
+        // ReSharper disable once ExpressionIsAlwaysNull
         formatter.Invoking(x => x.Format(results))
             .Should().Throw<ArgumentNullException>();
     }
