@@ -1,9 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using Corgibytes.Freshli.Cli.Resources;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
@@ -11,15 +11,18 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 [Serializable]
 public class CacheException : Exception
 {
-    public bool IsWarning { get; init; }
-
-    public CacheException(string message, Exception innerException) : base(message, innerException) { }
-    public CacheException(string message) : base(message) { }
-
-    protected CacheException(SerializationInfo info, StreamingContext context) : base(info, context)
+    public CacheException(string message, Exception innerException) : base(message, innerException)
     {
-        IsWarning = info.GetBoolean("IsWarning");
     }
+
+    public CacheException(string message) : base(message)
+    {
+    }
+
+    protected CacheException(SerializationInfo info, StreamingContext context) : base(info, context) =>
+        IsWarning = info.GetBoolean("IsWarning");
+
+    public bool IsWarning { get; init; }
 
     public override void GetObjectData(SerializationInfo info, StreamingContext context)
     {
@@ -46,7 +49,7 @@ public static class Cache
 
     private static bool ValidateDirIsCache(DirectoryInfo cacheDir)
     {
-        List<string> dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
+        var dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
         // Folder is valid cache if empty or if contains "freshli.db"
         return
             (!dirContents.Any() && !cacheDir.GetDirectories().Any())
@@ -70,7 +73,7 @@ public static class Cache
         {
             MigrateIfPending(db);
         }
-        catch (Microsoft.Data.Sqlite.SqliteException e)
+        catch (SqliteException e)
         {
             throw new CacheException(e.Message, e);
         }
@@ -95,6 +98,7 @@ public static class Cache
                     break;
                 }
             }
+
             if (!found)
             {
                 focus = focus.CreateSubdirectory(directory);
