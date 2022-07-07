@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.CommandLine.Parsing;
 using System.IO;
+using System.Linq;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
@@ -133,8 +134,8 @@ public class ScanCommandOptionsTest : FreshliTest
         var path = result.GetArgumentValueByName<DirectoryInfo>("path");
         var formatType = result.GetOptionValueByName<FormatType>("format");
         var formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
-        var outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output");
-        var outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o");
+        var outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output").ToList();
+        var outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o").ToList();
 
         formatType.Should().Be(formatTypeFromAlias);
 
