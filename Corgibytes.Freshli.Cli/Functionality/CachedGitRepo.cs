@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 namespace Corgibytes.Freshli.Cli.Functionality;
 
 [Index(nameof(Id), IsUnique = true)]

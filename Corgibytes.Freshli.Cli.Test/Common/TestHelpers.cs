@@ -12,6 +12,7 @@ public static class TestHelpers
         var command = new T();
         var option = command.Options.FirstOrDefault(x => x.Aliases.Contains(alias));
         option.Should().NotBeNull();
+        // ReSharper disable once PossibleNullReferenceException
         option.AllowMultipleArgumentsPerToken.Should().Be(allowMultipleArgumentsPerToken);
         option.Arity.Should().BeEquivalentTo(arity);
     }
