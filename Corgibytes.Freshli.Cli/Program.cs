@@ -46,7 +46,7 @@ public static class Program
         Host.CreateDefaultBuilder(args)
             .ConfigureServices((_, services) => { new FreshliServiceBuilder(services).Register(); });
 
-    public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
+    private static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
     {
         var commandLine = context.ParseResult.ToString();
 

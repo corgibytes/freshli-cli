@@ -7,7 +7,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOptions.CommandOptions
 {
-    public CommandRunner(IServiceProvider serviceProvider, Runner runner)
+    protected CommandRunner(IServiceProvider serviceProvider, Runner runner)
     {
         Runner = runner;
         Services = serviceProvider;
