@@ -31,13 +31,13 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommandOptions>
             getDefaultValue: () => "git")
         {
             AllowMultipleArgumentsPerToken = false,
-            Arity = ArgumentArity.ExactlyOne,
+            Arity = ArgumentArity.ExactlyOne
         };
 
         AddOption(gitPathOption);
 
         Option<string> branch = new("--branch",
-            description: CliOutput.Help_GitCloneCommand_Option_Branch)
+            CliOutput.Help_GitCloneCommand_Option_Branch)
         {
             AllowMultipleArgumentsPerToken = false,
             Arity = ArgumentArity.ZeroOrOne
