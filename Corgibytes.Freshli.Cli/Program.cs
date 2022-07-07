@@ -11,7 +11,7 @@ using NLog;
 
 namespace Corgibytes.Freshli.Cli;
 
-public class Program
+public static class Program
 {
     private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
 
@@ -26,33 +26,27 @@ public class Program
     public static CommandLineBuilder CreateCommandLineBuilder()
     {
         var command = new MainCommand
-            {
-                // Add commands here!
-                new ScanCommand(),
-                new CacheCommand(),
-                new GitCommand()
-            };
+        {
+            // Add commands here!
+            new ScanCommand(),
+            new CacheCommand(),
+            new GitCommand()
+        };
 
         var builder = new CommandLineBuilder(command)
             .UseHost(CreateHostBuilder)
-            .AddMiddleware(async (context, next) =>
-            {
-                await LogExecution(context, next);
-            })
+            .AddMiddleware(async (context, next) => { await LogExecution(context, next); })
             .UseExceptionHandler()
             .UseHelp();
 
         return builder;
     }
 
-    static IHostBuilder CreateHostBuilder(string[] args) =>
+    private static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-        .ConfigureServices((_, services) =>
-        {
-            new FreshliServiceBuilder(services).Register();
-        });
+            .ConfigureServices((_, services) => { new FreshliServiceBuilder(services).Register(); });
 
-    public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
+    private static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
     {
         var commandLine = context.ParseResult.ToString();
 
@@ -72,7 +66,8 @@ public class Program
         catch (Exception e)
         {
             var message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
-            context.Console.Out.Write($"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
+            context.Console.Out.Write(
+                $"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
             s_logger.Error($"{message} - {e.StackTrace}");
         }
     }
