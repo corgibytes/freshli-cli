@@ -14,7 +14,7 @@ public class FreshliServiceBuilder
 {
     public FreshliServiceBuilder(IServiceCollection services) => Services = services;
 
-    public IServiceCollection Services { get; }
+    private IServiceCollection Services { get; }
 
     public void Register()
     {
@@ -24,9 +24,9 @@ public class FreshliServiceBuilder
         RegisterGitCommand();
     }
 
-    public void RegisterBaseCommand() => Services.AddScoped<Runner>();
+    private void RegisterBaseCommand() => Services.AddScoped<Runner>();
 
-    public void RegisterScanCommand()
+    private void RegisterScanCommand()
     {
         Services.AddScoped<ICommandRunner<ScanCommandOptions>, ScanCommandRunner>();
         Services.AddNamedScoped<IOutputFormatter, JsonOutputFormatter>(FormatType.Json);
@@ -37,7 +37,7 @@ public class FreshliServiceBuilder
         Services.AddOptions<ScanCommandOptions>().BindCommandLine();
     }
 
-    public void RegisterCacheCommand()
+    private void RegisterCacheCommand()
     {
         Services.AddScoped<ICommandRunner<CacheCommandOptions>, CacheCommandRunner>();
         Services.AddOptions<CacheCommandOptions>().BindCommandLine();
@@ -49,7 +49,7 @@ public class FreshliServiceBuilder
         Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
     }
 
-    public void RegisterGitCommand()
+    private void RegisterGitCommand()
     {
         Services.AddScoped<ICommandRunner<GitCommandOptions>, GitCommandRunner>();
         Services.AddOptions<GitCommandOptions>().BindCommandLine();

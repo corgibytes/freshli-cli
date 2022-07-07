@@ -26,6 +26,7 @@ public class GitException : Exception
 
 public class GitRepository
 {
+    // ReSharper disable once UnusedMember.Global
     public GitRepository(string hash, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.

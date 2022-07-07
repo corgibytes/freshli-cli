@@ -23,8 +23,8 @@ public class OutputStrategiesTest : FreshliTest
     {
     }
 
-    public static ConsoleOutputStrategy ConsoleOutputStrategy { get; }
-    public static FileOutputStrategy FileOutputStrategy { get; }
+    private static ConsoleOutputStrategy ConsoleOutputStrategy { get; }
+    private static FileOutputStrategy FileOutputStrategy { get; }
 
 
     public static IEnumerable<object[]> OutputStrategies =>
