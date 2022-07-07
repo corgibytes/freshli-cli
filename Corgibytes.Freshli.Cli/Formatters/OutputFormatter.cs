@@ -30,5 +30,4 @@ public abstract class OutputFormatter : IOutputFormatter
     protected abstract string Build<T>(T entity);
 
     protected abstract string Build<T>(IList<T> entities);
-
 }

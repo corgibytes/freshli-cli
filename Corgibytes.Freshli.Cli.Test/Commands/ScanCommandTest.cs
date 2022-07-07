@@ -11,7 +11,9 @@ namespace Corgibytes.Freshli.Cli.Test.Commands;
 
 public class ScanCommandTest : FreshliTest
 {
-    public ScanCommandTest(ITestOutputHelper output) : base(output) { }
+    public ScanCommandTest(ITestOutputHelper output) : base(output)
+    {
+    }
 
     [Fact]
     public void Verify_path_argument_configuration()
@@ -28,21 +30,17 @@ public class ScanCommandTest : FreshliTest
 
     [Theory]
     [MethodData(nameof(DataForVerifyOptionConfigurations))]
-    public void VerifyOptionConfigurations(string alias, ArgumentArity arity, bool allowsMultiples)
-    {
+    public void VerifyOptionConfigurations(string alias, ArgumentArity arity, bool allowsMultiples) =>
         TestHelpers.VerifyAlias<ScanCommand>(alias, arity, allowsMultiples);
-    }
 
-    private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations()
-    {
-        return new TheoryData<string, ArgumentArity, bool>()
-            {
-                {"--format", ArgumentArity.ExactlyOne, false},
-                {"-f", ArgumentArity.ExactlyOne, false},
-                {"--output", ArgumentArity.OneOrMore, true},
-                {"-o", ArgumentArity.OneOrMore, true}
-            };
-    }
+    private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations() =>
+        new()
+        {
+            { "--format", ArgumentArity.ExactlyOne, false },
+            { "-f", ArgumentArity.ExactlyOne, false },
+            { "--output", ArgumentArity.OneOrMore, true },
+            { "-o", ArgumentArity.OneOrMore, true }
+        };
 
     [Fact]
     public void Verify_handler_configuration()
@@ -50,5 +48,4 @@ public class ScanCommandTest : FreshliTest
         ScanCommand scanCommand = new();
         scanCommand.Handler.Should().NotBeNull();
     }
-
 }

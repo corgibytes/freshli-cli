@@ -5,8 +5,6 @@ namespace Corgibytes.Freshli.Cli.Test;
 
 public class Startup
 {
-    public virtual void ConfigureServices(IServiceCollection services)
-    {
+    public void ConfigureServices(IServiceCollection services) =>
         new FreshliServiceBuilder(services).Register();
-    }
 }
