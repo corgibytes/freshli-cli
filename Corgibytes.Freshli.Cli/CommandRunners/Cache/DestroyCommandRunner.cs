@@ -14,7 +14,6 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheDestroyCommandOption
     public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner)
         : base(serviceProvider, runner)
     {
-
     }
 
     public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
@@ -41,6 +40,5 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheDestroyCommandOption
             context.Console.Error.WriteLine(error.Message);
             return error.IsWarning.ToExitCode();
         }
-
     }
 }

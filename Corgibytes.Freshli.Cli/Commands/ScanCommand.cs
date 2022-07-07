@@ -21,7 +21,7 @@ public class ScanCommand : RunnableCommand<ScanCommandOptions>
             getDefaultValue: () => FormatType.Json)
         {
             AllowMultipleArgumentsPerToken = false,
-            Arity = ArgumentArity.ExactlyOne,
+            Arity = ArgumentArity.ExactlyOne
         };
 
         Option<IEnumerable<OutputStrategyType>> outputOption = new(new[] { "--output", "-o" },
@@ -29,7 +29,7 @@ public class ScanCommand : RunnableCommand<ScanCommandOptions>
             getDefaultValue: () => new List<OutputStrategyType>() { OutputStrategyType.Console })
         {
             AllowMultipleArgumentsPerToken = true,
-            Arity = ArgumentArity.OneOrMore,
+            Arity = ArgumentArity.OneOrMore
         };
 
         AddOption(formatOption);

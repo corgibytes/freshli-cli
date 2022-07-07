@@ -14,7 +14,6 @@ public class CachePrepareCommandRunner : CommandRunner<CachePrepareCommandOption
     public CachePrepareCommandRunner(IServiceProvider serviceProvider, Runner runner)
         : base(serviceProvider, runner)
     {
-
     }
 
     public override int Run(CachePrepareCommandOptions options, InvocationContext context)

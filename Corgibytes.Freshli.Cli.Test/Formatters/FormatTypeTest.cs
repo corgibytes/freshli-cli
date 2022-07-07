@@ -7,17 +7,13 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-
 namespace Corgibytes.Freshli.Cli.Test.Formatters;
 
 public class FormatTypeTest : FreshliTest
 {
     private readonly IServiceProvider _services;
 
-    public FormatTypeTest(ITestOutputHelper output, IServiceProvider services) : base(output)
-    {
-        _services = services;
-    }
+    public FormatTypeTest(ITestOutputHelper output, IServiceProvider services) : base(output) => _services = services;
 
 
     [Fact]

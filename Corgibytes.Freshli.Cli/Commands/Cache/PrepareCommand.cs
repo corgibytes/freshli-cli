@@ -7,5 +7,6 @@ public class CachePrepareCommand : RunnableCommand<CachePrepareCommandOptions>
 {
     public CachePrepareCommand()
         : base("prepare", CliOutput.Help_CachePrepareCommand_Description)
-    { }
+    {
+    }
 }
