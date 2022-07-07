@@ -12,8 +12,6 @@ namespace Corgibytes.Freshli.Cli.Test.Commands;
 
 public class ScanCommandTest : FreshliTest
 {
-    private readonly TestConsole _console = new();
-
     public ScanCommandTest(ITestOutputHelper output) : base(output)
     {
     }
