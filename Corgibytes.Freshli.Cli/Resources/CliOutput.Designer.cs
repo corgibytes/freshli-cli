@@ -9,21 +9,19 @@
 
 namespace Corgibytes.Freshli.Cli.Resources {
     using System;
-    
-    
+
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CliOutput {
-        
+
         private static System.Resources.ResourceManager resourceMan;
-        
         private static System.Globalization.CultureInfo resourceCulture;
-        
+
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal CliOutput() {
         }
-        
+
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         internal static System.Resources.ResourceManager ResourceManager {
             get {
@@ -34,7 +32,7 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return resourceMan;
             }
         }
-        
+
         [System.ComponentModel.EditorBrowsableAttribute(System.ComponentModel.EditorBrowsableState.Advanced)]
         internal static System.Globalization.CultureInfo Culture {
             get {
@@ -44,49 +42,49 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 resourceCulture = value;
             }
         }
-        
+
         internal static string Output_Date {
             get {
                 return ResourceManager.GetString("Output_Date", resourceCulture);
             }
         }
-        
+
         internal static string Output_LibYear {
             get {
                 return ResourceManager.GetString("Output_LibYear", resourceCulture);
             }
         }
-        
+
         internal static string Output_UpgradesAvailable {
             get {
                 return ResourceManager.GetString("Output_UpgradesAvailable", resourceCulture);
             }
         }
-        
+
         internal static string Output_Skipped {
             get {
                 return ResourceManager.GetString("Output_Skipped", resourceCulture);
             }
         }
-        
+
         internal static string ScanCommand_ScanCommand_Executing_scan_command_handler {
             get {
                 return ResourceManager.GetString("ScanCommand_ScanCommand_Executing_scan_command_handler", resourceCulture);
             }
         }
-        
+
         internal static string MainCommand_MainCommand_Root_Command_Executed {
             get {
                 return ResourceManager.GetString("MainCommand_MainCommand_Root_Command_Executed", resourceCulture);
             }
         }
-        
+
         internal static string AuthCommand_AuthCommand_Executing_auth_command_handler {
             get {
                 return ResourceManager.GetString("AuthCommand_AuthCommand_Executing_auth_command_handler", resourceCulture);
             }
         }
-        
+
         internal static string ScanCommandRunner_Run_Path_should_not_be_null_or_empty {
             get {
                 return ResourceManager.GetString("ScanCommandRunner_Run_Path_should_not_be_null_or_empty", resourceCulture);
