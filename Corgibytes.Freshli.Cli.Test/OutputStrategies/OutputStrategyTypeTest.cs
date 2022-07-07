@@ -7,17 +7,14 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
-
 namespace Corgibytes.Freshli.Cli.Test.OutputStrategies;
 
 public class OutputStrategyTypeTest : FreshliTest
 {
     private readonly IServiceProvider _services;
 
-    public OutputStrategyTypeTest(ITestOutputHelper output, IServiceProvider services) : base(output)
-    {
+    public OutputStrategyTypeTest(ITestOutputHelper output, IServiceProvider services) : base(output) =>
         _services = services;
-    }
 
 
     [Fact]
