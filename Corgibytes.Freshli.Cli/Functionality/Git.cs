@@ -11,30 +11,22 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 [Serializable]
 public class GitException : Exception
 {
-    public GitException(string message, Exception innerException) : base(message, innerException) { }
-    public GitException(string message) : base(message) { }
-    protected GitException(SerializationInfo info, StreamingContext context) : base(info, context) { }
+    public GitException(string message, Exception innerException) : base(message, innerException)
+    {
+    }
+
+    public GitException(string message) : base(message)
+    {
+    }
+
+    protected GitException(SerializationInfo info, StreamingContext context) : base(info, context)
+    {
+    }
 }
 
 public class GitRepository
 {
-    public string Hash { get; }
-    private string Url { get; }
-    private string Branch { get; }
-    private DirectoryInfo Directory { get; }
-
-    private DirectoryInfo CacheDir { get; }
-
-    private bool Cloned
-    {
-        get => Directory.GetFiles().Any() || Directory.GetDirectories().Any();
-    }
-
-    private bool BranchDefined
-    {
-        get => !string.IsNullOrEmpty(Branch);
-    }
-
+    // ReSharper disable once UnusedMember.Global
     public GitRepository(string hash, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.
@@ -57,6 +49,7 @@ public class GitRepository
         // Ensure the directory exists in the cache for cloning the repository.
         Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
     }
+
     public GitRepository(string url, string branch, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.
@@ -67,7 +60,7 @@ public class GitRepository
         Branch = branch;
 
         // Generate a unique hash for the repository based on its URL and branch.
-        using SHA256 sha256 = SHA256.Create();
+        using var sha256 = SHA256.Create();
         var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(Url + Branch));
         var stringBuilder = new StringBuilder();
         foreach (var hashByte in hashBytes)
@@ -82,12 +75,32 @@ public class GitRepository
 
         // Store ID, URL, branch, and folder path in the cache DB, if it doesn't already exist
         using var db = new CacheContext(CacheDir);
-        if (db.CachedGitRepos.Find(Hash) != null) { return; }
+        if (db.CachedGitRepos.Find(Hash) != null)
+        {
+            return;
+        }
 
-        var entry = new CachedGitRepo() { Id = Hash, Url = Url, Branch = Branch, LocalPath = Directory.FullName };
+        var entry = new CachedGitRepo
+        {
+            Id = Hash,
+            Url = Url,
+            Branch = Branch,
+            LocalPath = Directory.FullName
+        };
         db.CachedGitRepos.Add(entry);
         db.SaveChanges();
     }
+
+    public string Hash { get; }
+    private string Url { get; }
+    private string Branch { get; }
+    private DirectoryInfo Directory { get; }
+
+    private DirectoryInfo CacheDir { get; }
+
+    private bool Cloned => Directory.GetFiles().Any() || Directory.GetDirectories().Any();
+
+    private bool BranchDefined => !string.IsNullOrEmpty(Branch);
 
     private void Delete()
     {
@@ -102,11 +115,11 @@ public class GitRepository
     {
         var cloneProcess = new Process
         {
-            StartInfo = new ProcessStartInfo()
+            StartInfo = new()
             {
                 FileName = gitPath,
                 WorkingDirectory = Directory.FullName,
-                Arguments = $"clone {Url} .",  // clone directly in the working directory
+                Arguments = $"clone {Url} .", // clone directly in the working directory
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
             }
@@ -125,7 +138,7 @@ public class GitRepository
     {
         var checkoutProcess = new Process
         {
-            StartInfo = new ProcessStartInfo()
+            StartInfo = new()
             {
                 FileName = gitPath,
                 WorkingDirectory = Directory.FullName,
@@ -148,7 +161,7 @@ public class GitRepository
     {
         var pullProcess = new Process
         {
-            StartInfo = new ProcessStartInfo()
+            StartInfo = new()
             {
                 FileName = gitPath,
                 WorkingDirectory = Directory.FullName,
