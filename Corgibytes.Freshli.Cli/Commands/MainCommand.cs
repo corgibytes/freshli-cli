@@ -11,8 +11,8 @@ public class MainCommand : RootCommand
         Option<DirectoryInfo> cacheDirOption = new(
             new[] { "--cache-dir" },
             description: "The location for storing temporary files",
-            getDefaultValue: () => CacheContext.DefaultCacheDir) { Arity = ArgumentArity.ExactlyOne };
-
+            getDefaultValue: () => CacheContext.DefaultCacheDir)
+        { Arity = ArgumentArity.ExactlyOne };
         AddGlobalOption(cacheDirOption);
     }
 }
