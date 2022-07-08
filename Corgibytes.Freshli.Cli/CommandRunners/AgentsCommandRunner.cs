@@ -4,11 +4,9 @@ using System.IO;
 using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Lib;
-using Microsoft.VisualBasic;
 using TextTableFormatter;
-using Environment = System.Environment;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
@@ -17,29 +15,24 @@ public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOpti
     public AgentsCommandRunner(IServiceProvider serviceProvider, Runner runner)
         : base(serviceProvider, runner)
     {
-
     }
 
-    public override int Run(EmptyCommandOptions options, InvocationContext context)
-    {
-        return 0;
-    }
+    public override int Run(EmptyCommandOptions options, InvocationContext context) => 0;
 }
 
 public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, EmptyCommandOptions>
 {
-    public AgentsDetector AgentsDetector { get; }
     public AgentsDetectCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsDetector agentsDetector)
-        : base(serviceProvider, runner)
-    {
+        : base(serviceProvider, runner) =>
         AgentsDetector = agentsDetector;
-    }
+
+    private AgentsDetector AgentsDetector { get; }
 
     public override int Run(EmptyCommandOptions options, InvocationContext context)
     {
         var agents = AgentsDetector.Detect();
 
-        var agentsAndLocations = agents.ToDictionary(agentLocation => Path.GetFileName(agentLocation));
+        var agentsAndLocations = agents.ToDictionary(Path.GetFileName);
 
         var basicTable = new TextTable(2);
         basicTable.AddCell("Agent file");
@@ -49,18 +42,12 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
         {
             basicTable.AddCell(agentAndLocation.Key);
             basicTable.AddCell(agentAndLocation.Value);
+        }
 
-        }
-        if (agentsAndLocations.Count == 0)
-        {
-            Console.WriteLine("No detected agents found");
-        }
-        else
-        {
-            Console.WriteLine(basicTable.Render());
-        }
+        Console.WriteLine(agentsAndLocations.Count == 0
+            ? CliOutput.AgentsDetectCommandRunner_Run_No_detected_agents_found
+            : basicTable.Render());
 
         return 0;
     }
 }
-

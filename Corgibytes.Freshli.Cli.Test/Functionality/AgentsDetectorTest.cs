@@ -1,6 +1,5 @@
 using System.Collections.Generic;
-using Corgibytes.Freshli.Cli.CommandRunners;
-using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Commands;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
@@ -11,7 +10,7 @@ public class AgentsDetectorTest
     public void TestingAgentsDetect()
     {
         var agentsDetector = new AgentsDetector(new MockEnvironment());
-        var expectedResults = new List<string>()
+        var expectedResults = new List<string>
         {
             "/usr/local/bin/freshli-agent-java",
             "/usr/local/bin/freshli-agent-javascript",

@@ -9,34 +9,28 @@ using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Lib;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
-using Environment = System.Environment;
 
 namespace Corgibytes.Freshli.Cli.IoC;
 
 public class FreshliServiceBuilder
 {
-    public IServiceCollection Services { get; }
+    public FreshliServiceBuilder(IServiceCollection services) => Services = services;
 
-    public FreshliServiceBuilder(IServiceCollection services)
-    {
-        Services = services;
-    }
+    private IServiceCollection Services { get; }
 
     public void Register()
     {
-        Services.AddSingleton<IEnvironment, Functionality.Environment>();
+        Services.AddSingleton<IEnvironment, Environment>();
         RegisterBaseCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
         RegisterAgentsCommand();
+        RegisterGitCommand();
     }
 
-    public void RegisterBaseCommand()
-    {
-        Services.AddScoped<Runner>();
-    }
+    private void RegisterBaseCommand() => Services.AddScoped<Runner>();
 
-    public void RegisterScanCommand()
+    private void RegisterScanCommand()
     {
         Services.AddScoped<ICommandRunner<ScanCommand, ScanCommandOptions>, ScanCommandRunner>();
         Services.AddNamedScoped<IOutputFormatter, JsonOutputFormatter>(FormatType.Json);
@@ -47,7 +41,7 @@ public class FreshliServiceBuilder
         Services.AddOptions<ScanCommandOptions>().BindCommandLine();
     }
 
-    public void RegisterCacheCommand()
+    private void RegisterCacheCommand()
     {
         Services.AddScoped<ICommandRunner<CacheCommand, CacheCommandOptions>, CacheCommandRunner>();
         Services.AddOptions<CacheCommandOptions>().BindCommandLine();
@@ -59,7 +53,7 @@ public class FreshliServiceBuilder
         Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
     }
 
-    public void RegisterAgentsCommand()
+    private void RegisterAgentsCommand()
     {
         Services.AddTransient<AgentsDetector>();
 
@@ -68,5 +62,14 @@ public class FreshliServiceBuilder
 
         Services.AddScoped<ICommandRunner<AgentsDetectCommand, EmptyCommandOptions>, AgentsDetectCommandRunner>();
         Services.AddOptions<EmptyCommandOptions>().BindCommandLine();
+    }
+
+    private void RegisterGitCommand()
+    {
+        Services.AddScoped<ICommandRunner<GitCommand, GitCommandOptions>, GitCommandRunner>();
+        Services.AddOptions<GitCommandOptions>().BindCommandLine();
+
+        Services.AddScoped<ICommandRunner<GitCloneCommand, GitCloneCommandOptions>, GitCloneCommandRunner>();
+        Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
     }
 }
