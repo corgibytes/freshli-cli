@@ -15,7 +15,6 @@ public class MainCommand : RootCommand
         {
             Arity = ArgumentArity.ExactlyOne
         };
-
         AddGlobalOption(cacheDirOption);
     }
 }
