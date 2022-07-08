@@ -7,17 +7,16 @@ using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
-public abstract class RunnableCommand<T> : Command where T : CommandOptions.CommandOptions
+public abstract class RunnableCommand<TCommand, TCommandOptions> : Command where TCommand : Command
+    where TCommandOptions : CommandOptions.CommandOptions
 {
-    protected RunnableCommand(string name, string? description = null) : base(name, description)
-    {
-        Handler = CommandHandler.Create<IHost, InvocationContext, T>(Run);
-    }
+    protected RunnableCommand(string name, string? description = null) : base(name, description) =>
+        Handler = CommandHandler.Create<IHost, InvocationContext, TCommandOptions>(Run);
 
-    protected virtual int Run(IHost host, InvocationContext context, T options)
+    protected virtual int Run(IHost host, InvocationContext context, TCommandOptions options)
     {
         using var scope = host.Services.CreateScope();
-        var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<T>>();
+        var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<TCommand, TCommandOptions>>();
         return runner.Run(options, context);
     }
 }
