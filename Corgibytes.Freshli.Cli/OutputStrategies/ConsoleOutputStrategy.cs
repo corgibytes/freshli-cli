@@ -10,10 +10,10 @@ namespace Corgibytes.Freshli.Cli.OutputStrategies;
 public class ConsoleOutputStrategy : IOutputStrategy
 {
     public OutputStrategyType Type => OutputStrategyType.Console;
-    public ConsoleOutputStrategy() { }
 
-    public virtual void Send(IList<ScanResult> results, IOutputFormatter formatter, ScanCommandOptions options)
+    public void Send(IList<ScanResult> results, IOutputFormatter formatter, ScanCommandOptions options)
     {
+        // ReSharper disable once LocalizableElement
         Console.WriteLine("Sending metrics to Console");
         Console.Out.WriteLine(formatter.Format(results));
     }

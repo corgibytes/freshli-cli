@@ -98,6 +98,10 @@ jobs:
           echo "NUGET_PACKAGE_FILE=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
           echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
 
+      - name: "[Build] - Setup for Acceptance Test Coverage Collection, and for running the linters"
+        run: |
+          dotnet tool restore
+
       - name: "[Lint] - Install eclint"
         env:
           ECLINT_VERSION: 0.3.3
@@ -110,7 +114,7 @@ jobs:
 
       - name: "[Lint] - Run all linters"
         run: |
-          bin/lint.rb --skip-codeclimate
+          bin/lint.rb
 
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
@@ -121,10 +125,6 @@ jobs:
         with:
           ruby-version: 3.1 # Not needed with a .ruby-version file
           bundler-cache: true
-
-      - name: "[Test] - Setup for Acceptance Test Coverage Collection"
-        run: |
-          dotnet tool restore
 
       - name: "[Test] - Behavior Acceptance Tests with Coverage Collection"
         run: |
