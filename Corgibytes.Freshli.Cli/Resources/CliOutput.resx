@@ -42,4 +42,7 @@
   <data name="ScanCommandRunner_Run_Path_should_not_be_null_or_empty" xml:space="preserve">
     <value>Path should not be null or empty</value>
   </data>
+  <data name="AgentsDetectCommandRunner_Run_No_detected_agents_found" xml:space="preserve">
+    <value>No detected agents found</value>
+  </data>
 </root>

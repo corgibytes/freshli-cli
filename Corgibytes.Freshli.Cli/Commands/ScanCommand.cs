@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
-public class ScanCommand : RunnableCommand<ScanCommandOptions>
+public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
 {
     public ScanCommand() : base("scan", "Scan command returns metrics results for given local repository path")
     {
