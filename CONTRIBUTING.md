@@ -39,7 +39,7 @@ BDD is a customer-centric process. It helps ensure that we're describing the exp
 
 In this project, we're using the [Gherkin language](https://cucumber.io/docs/gherkin/reference/) to define behavior specifications of the `freshli` executable. The behavior specifactions are run as executable programs by [Cucumber](https://cucumber.io/docs/cucumber/) and it's companion [Aruba](https://github.com/cucumber/aruba).
 
-Ideally, the addition or change of a Gherkin `.feature` file will be the first commit in your pull request. This makes it clear that you've taken a behavior-centric and customer-centric approach to developing the functionality.
+Ideally, the addition or change of a Gherkin `.feature` file will be the first commit in a pull request. This makes it clear that a behavior-centric and customer-centric approach to developing the functionality has been taken.
 
 For more information on working with Cucumber, Aruba, and Behavior Driven Development, please take a peek at [_The Cucumber Book, Second Edition_ by Matt Wynne and Aslak Hellesøy, with Steve Tooke](https://pragprog.com/titles/hwcuc2/the-cucumber-book-second-edition/). In addition to buying directly from the publishler, [Pragmatic Programmers](https://pragprog.com/), the book is [available via the O'Reilly Learning Library](https://learning.oreilly.com/library/view/the-cucumber-book). Chapter 16 of the book details using Aruba to specify and verify the behavior of a command line application.
 
