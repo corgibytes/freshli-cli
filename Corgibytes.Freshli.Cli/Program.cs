@@ -2,6 +2,7 @@ using System;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
+using System.CommandLine.IO;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
@@ -30,6 +31,7 @@ public static class Program
             // Add commands here!
             new ScanCommand(),
             new CacheCommand(),
+            new AgentsCommand(),
             new GitCommand()
         };
 
@@ -66,9 +68,33 @@ public static class Program
         catch (Exception e)
         {
             var message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
-            context.Console.Out.Write(
+            context.Console.Out.WriteLine(
                 $"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
+
+            LogException(context.Console.Out, s_logger, e);
             s_logger.Error($"{message} - {e.StackTrace}");
         }
+    }
+
+    private static void LogException(IStandardStreamWriter output, Logger logger, Exception error)
+    {
+        logger.Error(error.Message);
+        output.WriteLine(error.Message);
+        if (error.StackTrace != null)
+        {
+            logger.Error(error.StackTrace);
+            output.WriteLine(error.StackTrace);
+        }
+
+        if (error.InnerException == null)
+        {
+            return;
+        }
+
+        logger.Error("==Inner Exception==");
+        output.WriteLine("==Inner Exception==");
+        LogException(output, logger, error.InnerException);
+        logger.Error("==End Inner Exception==");
+        output.WriteLine("==End Inner Exception==");
     }
 }

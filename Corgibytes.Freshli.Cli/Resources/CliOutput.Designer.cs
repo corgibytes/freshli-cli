@@ -10,12 +10,14 @@
 namespace Corgibytes.Freshli.Cli.Resources {
     using System;
 
+
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CliOutput {
 
         private static System.Resources.ResourceManager resourceMan;
+
         private static System.Globalization.CultureInfo resourceCulture;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
@@ -88,6 +90,12 @@ namespace Corgibytes.Freshli.Cli.Resources {
         internal static string ScanCommandRunner_Run_Path_should_not_be_null_or_empty {
             get {
                 return ResourceManager.GetString("ScanCommandRunner_Run_Path_should_not_be_null_or_empty", resourceCulture);
+            }
+        }
+
+        internal static string AgentsDetectCommandRunner_Run_No_detected_agents_found {
+            get {
+                return ResourceManager.GetString("AgentsDetectCommandRunner_Run_No_detected_agents_found", resourceCulture);
             }
         }
     }
