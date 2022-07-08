@@ -2,7 +2,6 @@ using System;
 using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
@@ -14,8 +13,5 @@ public class CacheCommandRunner : CommandRunner<CacheCommand, CacheCommandOption
     {
     }
 
-    public override int Run(CacheCommandOptions options, InvocationContext context)
-    {
-        return 0;
-    }
+    public override int Run(CacheCommandOptions options, InvocationContext context) => 0;
 }

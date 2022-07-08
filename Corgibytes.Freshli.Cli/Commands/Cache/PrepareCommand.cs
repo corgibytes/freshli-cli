@@ -6,5 +6,6 @@ public class CachePrepareCommand : RunnableCommand<CacheCommand, CachePrepareCom
 {
     public CachePrepareCommand()
         : base("prepare", "Ensures the cache directory exists and contains a valid cache database.")
-    { }
+    {
+    }
 }

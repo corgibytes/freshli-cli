@@ -1,23 +1,15 @@
-
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using Corgibytes.Freshli.Cli.Functionality;
-using ServiceStack.Text;
 
-namespace Corgibytes.Freshli.Cli.CommandRunners;
+namespace Corgibytes.Freshli.Cli.Commands;
 
 public class AgentsDetector
 {
-    public IEnvironment Environment
-    {
-        get;
-    }
-    public AgentsDetector(IEnvironment environment)
-    {
-        Environment = environment;
-    }
+    public AgentsDetector(IEnvironment environment) => Environment = environment;
+
+    private IEnvironment Environment { get; }
+
     public IList<string> Detect()
     {
         var paths = Environment.DirectoriesInSearchPath;

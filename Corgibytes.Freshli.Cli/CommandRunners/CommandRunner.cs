@@ -6,16 +6,19 @@ using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
-public abstract class CommandRunner<TCommand, TCommandOptions> : ICommandRunner<TCommand, TCommandOptions> where TCommand : Command where TCommandOptions : CommandOptions.CommandOptions
+public abstract class CommandRunner<TCommand, TCommandOptions> : ICommandRunner<TCommand, TCommandOptions>
+    where TCommand : Command where TCommandOptions : CommandOptions.CommandOptions
 {
-    protected Runner Runner { get; }
-    protected IServiceProvider Services { get; }
-
-    public CommandRunner(IServiceProvider serviceProvider, Runner runner)
+    protected CommandRunner(IServiceProvider serviceProvider, Runner runner)
     {
         Runner = runner;
         Services = serviceProvider;
     }
+
+    protected Runner Runner { get; }
+    protected IServiceProvider Services { get; }
+
+    public abstract int Run(TCommandOptions options, InvocationContext context);
 
     protected static bool Confirm(string message, InvocationContext context, bool defaultYes = false)
     {
@@ -24,12 +27,17 @@ public abstract class CommandRunner<TCommand, TCommandOptions> : ICommandRunner<
         context.Console.Out.Write($"{message} {prompt} ");
         var choice = Console.In.ReadLine();
 
-        var yesChoices = new List<string> { "y", "Y" };
-        var noChoices = new List<string> { "n", "N" };
+        var yesChoices = new List<string>
+        {
+            "y",
+            "Y"
+        };
+        var noChoices = new List<string>
+        {
+            "n",
+            "N"
+        };
 
-        return (defaultYes ? !noChoices.Contains(choice) : yesChoices.Contains(choice));
+        return defaultYes ? !noChoices.Contains(choice) : yesChoices.Contains(choice);
     }
-
-    public abstract int Run(TCommandOptions options, InvocationContext context);
-
 }
