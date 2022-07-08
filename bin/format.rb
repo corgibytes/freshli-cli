@@ -14,6 +14,9 @@ status = execute('bundle install') unless status.success?
 
 rubocop_status = execute('bundle exec rubocop --autocorrect --color') if status.success?
 
-composite_exitstatus = dotnet_format_status.exitstatus + rubocop_status.exitstatus + eclint_status.exitstatus
+resharper_status = execute('dotnet jb cleanupcode freshli-cli.sln') if status.success?
+
+composite_exitstatus =
+  dotnet_format_status.exitstatus + rubocop_status.exitstatus + resharper_status.exitstatus + eclint_status.exitstatus
 
 exit(composite_exitstatus)

@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-
 namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class Environment : IEnvironment
@@ -11,7 +10,7 @@ public class Environment : IEnvironment
     {
         try
         {
-            var files = Directory.GetFiles(directory).Select(file => Path.GetFileName(file)).ToList();
+            var files = Directory.GetFiles(directory).Select(Path.GetFileName).ToList();
             files.Sort();
             return files;
         }
@@ -21,19 +20,8 @@ public class Environment : IEnvironment
         }
     }
 
-    public IList<string> DirectoriesInSearchPath
-    {
-        get
-        {
-            return System.Environment.GetEnvironmentVariable("PATH").Split(Path.PathSeparator).ToList();
-        }
-    }
+    public IList<string> DirectoriesInSearchPath =>
+        System.Environment.GetEnvironmentVariable("PATH")!.Split(Path.PathSeparator).ToList();
 
-    public string HomeDirectory
-    {
-        get
-        {
-            return System.Environment.GetEnvironmentVariable("HOME");
-        }
-    }
+    public string HomeDirectory => System.Environment.GetEnvironmentVariable("HOME");
 }
