@@ -13,7 +13,7 @@ public class GitCommand : Command
     }
 }
 
-public class GitCloneCommand : RunnableCommand<GitCloneCommandOptions>
+public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandOptions>
 {
     public GitCloneCommand()
         : base("clone", "Clone a repository for Freshli to examine")

@@ -12,7 +12,9 @@ public class MainCommand : RootCommand
             new[] { "--cache-dir" },
             description: "The location for storing temporary files",
             getDefaultValue: () => CacheContext.DefaultCacheDir)
-        { Arity = ArgumentArity.ExactlyOne };
+        {
+            Arity = ArgumentArity.ExactlyOne
+        };
         AddGlobalOption(cacheDirOption);
     }
 }
