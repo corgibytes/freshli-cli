@@ -184,6 +184,10 @@ dotnet_code_quality.CA1802.api_surface = private, internal
 dotnet_code_quality.CA1822.api_surface = private, internal
 dotnet_code_quality.CA2208.api_surface = public
 
+# Nullables
+resharper_c_sharp_warnings_cs8632_highlighting = false
+resharper_c_sharp_warnings_cs8669_highlighting = false
+
 # C++ Files
 [*.{cpp,h,in}]
 curly_bracket_next_line = true
