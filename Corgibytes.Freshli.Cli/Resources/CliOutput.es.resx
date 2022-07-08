@@ -23,4 +23,19 @@
   <data name="Output_UpgradesAvailable" xml:space="preserve">
     <value>ActualizaciónesDisponibles</value>
   </data>
+  <data name="ScanCommand_ScanCommand_Executing_scan_command_handler" xml:space="preserve">
+    <value>This is just a placeholder</value>
+  </data>
+  <data name="MainCommand_MainCommand_Root_Command_Executed" xml:space="preserve">
+    <value>This is just a placeholder</value>
+  </data>
+  <data name="AuthCommand_AuthCommand_Executing_auth_command_handler" xml:space="preserve">
+    <value>This is just a placeholder</value>
+  </data>
+  <data name="ScanCommandRunner_Run_Path_should_not_be_null_or_empty" xml:space="preserve">
+    <value>This is just a placeholder</value>
+  </data>
+  <data name="AgentsDetectCommandRunner_Run_No_detected_agents_found" xml:space="preserve">
+    <value>No se encontró agente detectado</value>
+  </data>
 </root>

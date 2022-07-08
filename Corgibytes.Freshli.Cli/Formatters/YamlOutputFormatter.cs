@@ -8,15 +8,8 @@ public class YamlOutputFormatter : OutputFormatter
 {
     public override FormatType Type => FormatType.Yaml;
 
-    protected override string Build<T>(T entity)
-    {
-        _ = entity ?? throw new ArgumentNullException(nameof(entity));
+    protected override string Build<T>(T entity) =>
+        new Serializer().Serialize(entity ?? throw new ArgumentNullException(nameof(entity)));
 
-        return new Serializer().Serialize(entity);
-    }
-
-    protected override string Build<T>(IList<T> entities)
-    {
-        return new Serializer().Serialize(entities);
-    }
+    protected override string Build<T>(IList<T> entities) => new Serializer().Serialize(entities);
 }

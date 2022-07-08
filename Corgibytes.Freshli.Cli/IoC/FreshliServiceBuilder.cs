@@ -2,7 +2,9 @@
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
+using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Formatters;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Lib;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,29 +14,25 @@ namespace Corgibytes.Freshli.Cli.IoC;
 
 public class FreshliServiceBuilder
 {
-    public IServiceCollection Services { get; }
+    public FreshliServiceBuilder(IServiceCollection services) => Services = services;
 
-    public FreshliServiceBuilder(IServiceCollection services)
-    {
-        Services = services;
-    }
+    private IServiceCollection Services { get; }
 
     public void Register()
     {
+        Services.AddSingleton<IEnvironment, Environment>();
         RegisterBaseCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
+        RegisterAgentsCommand();
         RegisterGitCommand();
     }
 
-    public void RegisterBaseCommand()
-    {
-        Services.AddScoped<Runner>();
-    }
+    private void RegisterBaseCommand() => Services.AddScoped<Runner>();
 
-    public void RegisterScanCommand()
+    private void RegisterScanCommand()
     {
-        Services.AddScoped<ICommandRunner<ScanCommandOptions>, ScanCommandRunner>();
+        Services.AddScoped<ICommandRunner<ScanCommand, ScanCommandOptions>, ScanCommandRunner>();
         Services.AddNamedScoped<IOutputFormatter, JsonOutputFormatter>(FormatType.Json);
         Services.AddNamedScoped<IOutputFormatter, CsvOutputFormatter>(FormatType.Csv);
         Services.AddNamedScoped<IOutputFormatter, YamlOutputFormatter>(FormatType.Yaml);
@@ -43,24 +41,35 @@ public class FreshliServiceBuilder
         Services.AddOptions<ScanCommandOptions>().BindCommandLine();
     }
 
-    public void RegisterCacheCommand()
+    private void RegisterCacheCommand()
     {
-        Services.AddScoped<ICommandRunner<CacheCommandOptions>, CacheCommandRunner>();
+        Services.AddScoped<ICommandRunner<CacheCommand, CacheCommandOptions>, CacheCommandRunner>();
         Services.AddOptions<CacheCommandOptions>().BindCommandLine();
 
-        Services.AddScoped<ICommandRunner<CachePrepareCommandOptions>, CachePrepareCommandRunner>();
+        Services.AddScoped<ICommandRunner<CacheCommand, CachePrepareCommandOptions>, CachePrepareCommandRunner>();
         Services.AddOptions<CachePrepareCommandOptions>().BindCommandLine();
 
-        Services.AddScoped<ICommandRunner<CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
+        Services.AddScoped<ICommandRunner<CacheCommand, CacheDestroyCommandOptions>, CacheDestroyCommandRunner>();
         Services.AddOptions<CacheDestroyCommandOptions>().BindCommandLine();
     }
 
-    public void RegisterGitCommand()
+    private void RegisterAgentsCommand()
     {
-        Services.AddScoped<ICommandRunner<GitCommandOptions>, GitCommandRunner>();
+        Services.AddTransient<AgentsDetector>();
+
+        Services.AddScoped<ICommandRunner<AgentsCommand, EmptyCommandOptions>, AgentsCommandRunner>();
+        Services.AddOptions<EmptyCommandOptions>().BindCommandLine();
+
+        Services.AddScoped<ICommandRunner<AgentsDetectCommand, EmptyCommandOptions>, AgentsDetectCommandRunner>();
+        Services.AddOptions<EmptyCommandOptions>().BindCommandLine();
+    }
+
+    private void RegisterGitCommand()
+    {
+        Services.AddScoped<ICommandRunner<GitCommand, GitCommandOptions>, GitCommandRunner>();
         Services.AddOptions<GitCommandOptions>().BindCommandLine();
 
-        Services.AddScoped<ICommandRunner<GitCloneCommandOptions>, GitCloneCommandRunner>();
+        Services.AddScoped<ICommandRunner<GitCloneCommand, GitCloneCommandOptions>, GitCloneCommandRunner>();
         Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
     }
 }
