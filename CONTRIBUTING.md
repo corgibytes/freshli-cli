@@ -37,11 +37,11 @@ Start all of your submissions with a behavior specification. We sometimes call t
 
 BDD is a customer-centric process. It helps ensure that we're describing the expected behavior of the `freshli` application from the perspective of the human that will be using it. Additionally, by taking this approach, we're able to have a hirer degree of confidence that the application behaves the way that we expect it to.
 
-In this project, we're using the [Gherkin language](https://cucumber.io/docs/gherkin/reference/) to define behavior specifications of the `freshli` executable. The behavior specifactions are run as executable programs by [Cucumber](https://cucumber.io/docs/cucumber/) and it's companion [Aruba](https://github.com/cucumber/aruba).
+In this project, we're using the [Gherkin language](https://cucumber.io/docs/gherkin/reference/) to define behavior specifications of the `freshli` executable. The behavior specification are run as executable programs by [Cucumber](https://cucumber.io/docs/cucumber/) and it's companion [Aruba](https://github.com/cucumber/aruba).
 
 Ideally, the addition or change of a Gherkin `.feature` file will be the first commit in a pull request. This makes it clear that a behavior-centric and customer-centric approach to developing the functionality has been taken.
 
-For more information on working with Cucumber, Aruba, and Behavior Driven Development, please take a peek at [_The Cucumber Book, Second Edition_ by Matt Wynne and Aslak Hellesøy, with Steve Tooke](https://pragprog.com/titles/hwcuc2/the-cucumber-book-second-edition/). In addition to buying directly from the publishler, [Pragmatic Programmers](https://pragprog.com/), the book is [available via the O'Reilly Learning Library](https://learning.oreilly.com/library/view/the-cucumber-book). Chapter 16 of the book details using Aruba to specify and verify the behavior of a command line application.
+For more information on working with Cucumber, Aruba, and Behavior Driven Development, please take a peek at [_The Cucumber Book, Second Edition_ by Matt Wynne and Aslak Hellesøy, with Steve Tooke](https://pragprog.com/titles/hwcuc2/the-cucumber-book-second-edition/). In addition to buying directly from the publisher, [Pragmatic Programmers](https://pragprog.com/), the book is [available via the O'Reilly Learning Library](https://learning.oreilly.com/library/view/the-cucumber-book). Chapter 16 of the book details using Aruba to specify and verify the behavior of a command line application.
 
 ### Practice Test Driven Design/Development (TDD)
 
@@ -53,7 +53,7 @@ The TDD process forces us to design our solutions from the point of view of the 
 
 ### Why BDD and TDD?
 
-It is only natural to wonder why we choose to develop software this way. Here are some of our reasons. This is not an exhaustive list, just some of the reasons that we consider particuarly important.
+It is only natural to wonder why we choose to develop software this way. Here are some of our reasons. This is not an exhaustive list, just some of the reasons that we consider particularly important.
 
 **Ensure Testability:**
 
@@ -61,15 +61,15 @@ Testability is an important quality of any software system. However, it is easy 
 
 **Maintain Empathy:**
 
-When building software systems, it's also important to keep your audience in mind. BDD and TDD make it very difficult to ignore the needs of your code's audience. While it is possible to keep your audience in mind when wrting test automation after an implementation has been created, it is also very easy to become overly focused on the details of your solution and forget the needs of those who are going to interact with it.
+When building software systems, it's also important to keep your audience in mind. BDD and TDD make it very difficult to ignore the needs of your code's audience. While it is possible to keep your audience in mind when writing test automation after an implementation has been created, it is also very easy to become overly focused on the details of your solution and forget the needs of those who are going to interact with it.
 
 **Avoid False Positives:**
 
-When writing an implementation first and then writing automatted tests for it, it is very possible to construct tests that always pass. It's also possible to create tests that don't fail when the functionality that they are testing breaks. Because the BDD/TDD process starts with a failing test and then adds code to make that test pass, you can have a very high degree of confidence that the test is correctly validating the code that was authored.
+When writing an implementation first and then writing automated tests for it, it is very possible to construct tests that always pass. It's also possible to create tests that don't fail when the functionality that they are testing breaks. Because the BDD/TDD process starts with a failing test and then adds code to make that test pass, you can have a very high degree of confidence that the test is correctly validating the code that was authored.
 
 ### Follow Coding Style
 
-On this project, we have automatted compliance with the team style guide by using linting tools to help us validate that the code is styled correctly. However, there is not good tooling for summarizing all of the choices that are embedded in the configuration files for the linting tools that we're using.
+On this project, we have automated compliance with the team style guide by using linting tools to help us validate that the code is styled correctly. However, there is not good tooling for summarizing all of the choices that are embedded in the configuration files for the linting tools that we're using.
 
 **A starting point:**
 
@@ -99,11 +99,11 @@ if (available)
 
 **Embrace the use of the `var` and `new()`**
 
-C# is a language with a strict type system. The compilier and the runtime both enforce type checking. Older versions of the C# language required specifying these types in many different locations, even when the compiler already had enough information to determine the correct type that could be used.
+C# is a language with a strict type system. The compiler and the runtime both enforce type checking. Older versions of the C# language required specifying these types in many different locations, even when the compiler already had enough information to determine the correct type that could be used.
 
 The `var` keyword was introduced to allow programmers to omit the when declaring a variable. This keyword is only permitted by the compiler when it has enough information to figure out the variable's type.
 
-Similary, the `new()` keyword function call was included in the C# language to allow programmers to omit a type's name when invoking its constructor. Again, this syntax is only permitted when the compiler is able to determine the correct constructor to use.
+Similarly, the `new()` keyword function call was included in the C# language to allow programmers to omit a type's name when invoking its constructor. Again, this syntax is only permitted when the compiler is able to determine the correct constructor to use.
 
 On this project, we are embracing these additions to the C# language by using them everywhere that is permitted.
 
@@ -148,7 +148,7 @@ While some feel that this approach makes it harder to determine the type that's 
 
 #### Ruby
 
-The Ruby Style Guide includes rules for [how conditional assigments should be used and indented](https://rubystyle.guide/#indent-conditional-assignment).
+The Ruby Style Guide includes rules for [how conditional assignments should be used and indented](https://rubystyle.guide/#indent-conditional-assignment).
 
 On this project we are not indenting conditional assignments, and we are not always utilizing conditional assignment when all branches of a control flow structure assign to the same variable.
 
@@ -224,7 +224,7 @@ Adds testing steps to the README.md file
 
 **Formatting rules**
 
-Commit messages are structured similar to email messages. The first line of the commit message is the "subject". (Some Git clients even separate this part of the message into its own textbox to make this distinction clear.) The rest of the commit message is used for the message body.
+Commit messages are structured similar to email messages. The first line of the commit message is the "subject". (Some Git clients even separate this part of the message into its own text box to make this distinction clear.) The rest of the commit message is used for the message body.
 
 The subject should be no more than 50 characters in length. It is sometimes very challenging to comply with this limit, so it is not strictly enforced on this project. However, please try to stay within this boundary.
 
@@ -232,13 +232,13 @@ The lines of the body part of the commit message should be no longer than 72 cha
 
 **Provide Context**
 
-If you think someone might lookt at this commit and ask themselves, "Why was it done this way?", then you should include a commit message body that describes your reasoning for making the choices that you made.
+If you think someone might look at this commit and ask themselves, "Why was it done this way?", then you should include a commit message body that describes your reasoning for making the choices that you made.
 
 ### Use Rebase Rarely
 
 Rebase is a very powerful, and at times a very helpful, feature that's provided by the Git. It does have its drawbacks. One of these is that it rewrites history and makes it appear that was performed at a different pace than it was originally authored.
 
-Rebase is often used to update the contents of a branch so that it contains the changes from the `main` branch. Instead of relying on rebasing to accomplish this, on this project, we prefer performming merges to accomplish the same goal.
+Rebase is often used to update the contents of a branch so that it contains the changes from the `main` branch. Instead of relying on rebasing to accomplish this, on this project, we prefer performing merges to accomplish the same goal.
 
 Rebase can also be used to combine multiple commits into a single commit or to split a single commit into multiple commits. If you feel the need to do this for a branch that has been pushed to `origin`/GitHub or for a pull request that is already open, then please consider creating a new branch with the alternative set of commits.
 
