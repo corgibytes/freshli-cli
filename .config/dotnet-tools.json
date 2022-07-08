@@ -13,6 +13,12 @@
       "commands": [
         "dll-props"
       ]
+    },
+    "jetbrains.resharper.globaltools": {
+      "version": "2022.1.2",
+      "commands": [
+        "jb"
+      ]
     }
   }
 }

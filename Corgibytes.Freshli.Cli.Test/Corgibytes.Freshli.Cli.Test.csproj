@@ -33,4 +33,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Corgibytes.Freshli.Cli\Corgibytes.Freshli.Cli.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Fixtures\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
