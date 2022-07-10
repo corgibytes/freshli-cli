@@ -62,6 +62,11 @@ public class FreshliServiceBuilder
 
         Services.AddScoped<ICommandRunner<AgentsDetectCommand, EmptyCommandOptions>, AgentsDetectCommandRunner>();
         Services.AddOptions<EmptyCommandOptions>().BindCommandLine();
+
+        Services.AddTransient<AgentsVerifier>();
+
+        Services.AddScoped<ICommandRunner<AgentsVerifyCommand, AgentsVerifyCommandOptions>, AgentsVerifyCommandRunner>();
+        Services.AddOptions<AgentsVerifyCommandOptions>().BindCommandLine();
     }
 
     private void RegisterGitCommand()
