@@ -7,6 +7,8 @@ using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Lib;
 using TextTableFormatter;
+using Environment = System.Environment;
+using System.CommandLine;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
@@ -51,3 +53,38 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
         return 0;
     }
 }
+
+public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, AgentsVerifyCommandOptions>
+{
+    public AgentsVerifier AgentsVerifier { get; }
+    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsVerifier agentsVerifier)
+        : base(serviceProvider, runner)
+    {
+        AgentsVerifier = agentsVerifier;
+    }
+
+    public override int Run(AgentsVerifyCommandOptions options, InvocationContext context)
+    {
+        var agents = AgentsVerifier.Verify();
+        System.Console.WriteLine(AgentsVerifier + " Dona dona verify");
+        Argument<string> languageNames = new Argument<string>("language-name");
+        Argument<string> languageName = new("language-name", "Name of the language")
+        {
+            Arity = ArgumentArity.OneOrMore
+        };
+
+        foreach (string langName in Environment.GetCommandLineArgs()) 
+        {
+            Console.WriteLine("donas lang " + langName);
+        }
+        System.Console.WriteLine ("dona finds " + context.ParseResult.FindResultFor(languageName));
+        
+
+        System.Console.WriteLine(Environment.GetCommandLineArgs().ToString() + " Dona dona context");
+        System.Console.WriteLine(context.ParseResult.GetValueForArgument(languageName) + " Dona dona context");
+
+        return 0;
+    }
+}
+
+
