@@ -261,6 +261,14 @@ To instruct `dotnet format` to attempt to correct the issues that it has found, 
 dotnet format --severity info
 ```
 
+### `dotnet jb`
+
+> :exclamation: Known Issue https://youtrack.jetbrains.com/issue/RSRP-485906
+> If you encounter linter errors that persist despite being explicitly suppressed, try clearing the cache for JetBrains
+> inspect code.
+> On Windows the cache is located here `%LocalAppData%\JetBrains\Transient\InspectCode\v212\SolutionCaches`
+> On Linux and macOS the cache is located here `~/.local/share/JetBrains/Transient/InspectCode/v221/SolutionCaches`
+
 ### `codeclimate`
 
 There are two ways to run the `codeclimate` linter, by using the `codeclimate` CLI or by using `docker`. For both options, you'll need `docker` installed, because the `codeclimate` CLI is just a wrapper that makes it easy to run the `codeclimate` Docker image.
