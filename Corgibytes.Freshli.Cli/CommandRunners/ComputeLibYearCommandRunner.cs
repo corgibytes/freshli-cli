@@ -1,5 +1,6 @@
 using System;
 using System.CommandLine.Invocation;
+using System.Globalization;
 using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -12,10 +13,12 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, ComputeLibYearCommandOptions>
 {
-    private readonly CalculateLibYearFromCycloneDxFile _calculateLibYearFromCycloneDxFile;
+    private readonly ICalculateLibYearFromFile _calculateLibYearFromCycloneDxFile;
 
-    public ComputeLibYearCommandRunner(IServiceProvider serviceProvider, Runner runner,
-        CalculateLibYearFromCycloneDxFile calculateLibYearFromCycloneDxFile) : base(serviceProvider, runner) =>
+    public ComputeLibYearCommandRunner(
+        IServiceProvider serviceProvider, Runner runner,
+        ICalculateLibYearFromFile calculateLibYearFromCycloneDxFile
+    ) : base(serviceProvider, runner) =>
         _calculateLibYearFromCycloneDxFile = calculateLibYearFromCycloneDxFile;
 
     public override int Run(ComputeLibYearCommandOptions options, InvocationContext context)
@@ -49,7 +52,7 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, 
                 table.AddCell(libYearPackage.ReleaseDateCurrentVersion.ToString("d"), tableStyle);
                 table.AddCell(libYearPackage.LatestVersion.Version, tableStyle);
                 table.AddCell(libYearPackage.ReleaseDateLatestVersion.ToString("d"), tableStyle);
-                table.AddCell(libYearPackage.LibYear.ToString(), tableStyle);
+                table.AddCell(libYearPackage.LibYear.ToString(CultureInfo.InvariantCulture.NumberFormat), tableStyle);
                 continue;
             }
 
@@ -58,7 +61,7 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, 
         }
 
         table.AddCell("Total", tableStyle, 5);
-        table.AddCell(libYearTotal.ToString(), tableStyle);
+        table.AddCell(libYearTotal.ToString(CultureInfo.InvariantCulture.NumberFormat), tableStyle);
 
         Console.WriteLine(table.Render());
         return 0;

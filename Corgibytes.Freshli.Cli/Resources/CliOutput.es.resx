@@ -38,4 +38,7 @@
   <data name="AgentsDetectCommandRunner_Run_No_detected_agents_found" xml:space="preserve">
     <value>No se encontró agente detectado</value>
   </data>
+  <data name="ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty" xml:space="preserve">
+    <value>Filepath no debe ser nula o vacía</value>
+  </data>
 </root>
