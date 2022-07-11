@@ -44,6 +44,6 @@ Feature: Compute libyear
     """
     Then the output should contain:
     """
-                                                                           Total     2.8
+    Total     2.8
     """
 

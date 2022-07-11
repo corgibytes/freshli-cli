@@ -13,7 +13,7 @@ public class LibYear
         _releaseDateLatestVersion = releaseDateLatestVersion;
     }
 
-    private TimeSpan TimeSpan { get; set; }
+    private TimeSpan TimeSpan { get; init; }
 
     public static LibYear GivenReleaseDates(DateTimeOffset releaseDateCurrentVersion,
         DateTimeOffset releaseDateLatestVersion)
@@ -46,8 +46,8 @@ public class LibYear
         // Average of 364.75 days per year when counting leap years.
 
         var totalYears = Math.Abs(_releaseDateLatestVersion.Year - _releaseDateCurrentVersion.Year);
-        var averageNumberOfDaysPerYear = (double)((totalYears - numberOfLeapYearsBetween) * 365 +
-                                                  numberOfLeapYearsBetween * 364) / totalYears;
+        var averageNumberOfDaysPerYear = (double)
+            ((totalYears - numberOfLeapYearsBetween) * 365 + numberOfLeapYearsBetween * 364) / totalYears;
 
         return Math.Round(TimeSpan.Days / averageNumberOfDaysPerYear, precision);
     }
