@@ -9,4 +9,3 @@ public class ComputeHistoryCommandOptions : CommandOptions
     public string HistoryInterval { get; set; }
     public FileInfo GitPath { get; set; }
 }
-
