@@ -53,12 +53,5 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CliOutput.resx</DependentUpon>
     </Compile>
-    <Compile Remove="Commands\BaseCommand.cs" />
-    <Compile Remove="Migrations\20220516170031_InitialCreate.Designer.cs" />
-    <Compile Remove="Migrations\20220630213145_Nullable.cs" />
-    <Compile Remove="Migrations\20220630213145_Nullable.Designer.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations" />
   </ItemGroup>
 </Project>
