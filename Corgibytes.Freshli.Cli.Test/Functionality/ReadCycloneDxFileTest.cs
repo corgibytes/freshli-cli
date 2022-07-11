@@ -5,14 +5,13 @@ using Corgibytes.Freshli.Cli.Test.Common;
 using PackageUrl;
 using Xunit;
 using Xunit.Abstractions;
-using Assert = Xunit.Assert;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
 public class ReadCycloneDxFileTest : FreshliTest
 {
-    private readonly ReadCycloneDxFile _readCycloneDxFile;
     private readonly MockFileReader _fileReaderService;
+    private readonly ReadCycloneDxFile _readCycloneDxFile;
 
     public ReadCycloneDxFileTest(ITestOutputHelper output) : base(output)
     {
@@ -59,4 +58,3 @@ public class ReadCycloneDxFileTest : FreshliTest
         Assert.Equal("Can not read file, as no file path was given", caughtException.Message);
     }
 }
-

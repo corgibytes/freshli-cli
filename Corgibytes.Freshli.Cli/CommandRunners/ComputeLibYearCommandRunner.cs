@@ -2,6 +2,7 @@ using System;
 using System.CommandLine.Invocation;
 using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
@@ -9,27 +10,28 @@ using TextTableFormatter;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
-public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommandOptions>
+public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, ComputeLibYearCommandOptions>
 {
     private readonly CalculateLibYearFromCycloneDxFile _calculateLibYearFromCycloneDxFile;
 
-    public ComputeLibYearCommandRunner(IServiceProvider serviceProvider, Runner runner, CalculateLibYearFromCycloneDxFile calculateLibYearFromCycloneDxFile) : base(serviceProvider, runner)
-    {
+    public ComputeLibYearCommandRunner(IServiceProvider serviceProvider, Runner runner,
+        CalculateLibYearFromCycloneDxFile calculateLibYearFromCycloneDxFile) : base(serviceProvider, runner) =>
         _calculateLibYearFromCycloneDxFile = calculateLibYearFromCycloneDxFile;
-    }
 
     public override int Run(ComputeLibYearCommandOptions options, InvocationContext context)
     {
         if (string.IsNullOrWhiteSpace(options.FilePath?.FullName))
         {
-            throw new ArgumentNullException(nameof(options), CliOutput.ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty);
+            throw new ArgumentNullException(nameof(options),
+                CliOutput.ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty);
         }
 
         var libYearPackages = _calculateLibYearFromCycloneDxFile.AsList(options.FilePath.ToString());
         var libYearTotal = libYearPackages.Sum(libYear => libYear.LibYear);
 
         var tableStyle = new CellStyle(CellHorizontalAlignment.Right);
-        var table = new TextTable(6, TableBordersStyle.DESIGN_FORMAL, TableVisibleBorders.SURROUND_HEADER_FOOTER_AND_COLUMNS);
+        var table = new TextTable(6, TableBordersStyle.DESIGN_FORMAL,
+            TableVisibleBorders.SURROUND_HEADER_FOOTER_AND_COLUMNS);
 
         table.AddCell("Package");
         table.AddCell("Currently installed");
@@ -62,4 +64,3 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommandOp
         return 0;
     }
 }
-

@@ -6,4 +6,3 @@ public class ComputeLibYearCommandOptions : CommandOptions
 {
     public FileInfo FilePath { get; set; }
 }
-

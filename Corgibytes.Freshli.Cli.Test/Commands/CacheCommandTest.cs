@@ -10,7 +10,9 @@ namespace Corgibytes.Freshli.Cli.Test.Commands;
 
 public class CacheCommandTest : FreshliTest
 {
-    public CacheCommandTest(ITestOutputHelper output) : base(output) { }
+    public CacheCommandTest(ITestOutputHelper output) : base(output)
+    {
+    }
 
     [Fact]
     public void Verify_no_cache_handler_configuration()
@@ -35,8 +37,6 @@ public class CacheCommandTest : FreshliTest
 
     [Theory]
     [InlineData("--force")]
-    public void Verify_force_option_configuration(string alias)
-    {
+    public void Verify_force_option_configuration(string alias) =>
         TestHelpers.VerifyAlias<CacheDestroyCommand>(alias, ArgumentArity.ZeroOrOne, false);
-    }
 }

@@ -12,8 +12,8 @@ namespace Corgibytes.Freshli.Cli.Test.Services;
 
 public class CalculateLibYearForCycloneDxFileTest : FreshliTest
 {
-    private readonly MockFileReader _fileReaderService;
     private readonly CalculateLibYearFromCycloneDxFile _calculateLibYearFromCycloneDxFile;
+    private readonly MockFileReader _fileReaderService;
 
     public CalculateLibYearForCycloneDxFileTest(ITestOutputHelper output) : base(output)
     {
@@ -88,4 +88,3 @@ public class CalculateLibYearForCycloneDxFileTest : FreshliTest
         Assert.Equal(9.42415, _calculateLibYearFromCycloneDxFile.TotalAsDecimalNumber("this/is/a/file/path", 5));
     }
 }
-

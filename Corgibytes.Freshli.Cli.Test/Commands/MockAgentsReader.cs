@@ -14,9 +14,12 @@ public class MockAgentsReader : IAgentReader
         {
             "flyswatter" => new()
             {
-                new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"), new(1990, 1, 29, 0, 0, 0, TimeSpan.Zero)),
-                new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.2.0"), new(2001, 3, 14, 0, 0, 0, TimeSpan.Zero)),
-                new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.3.0"), new(2020, 8, 21, 0, 0, 0, TimeSpan.Zero))
+                new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
+                    new(1990, 1, 29, 0, 0, 0, TimeSpan.Zero)),
+                new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.2.0"),
+                    new(2001, 3, 14, 0, 0, 0, TimeSpan.Zero)),
+                new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.3.0"),
+                    new(2020, 8, 21, 0, 0, 0, TimeSpan.Zero))
             },
             _ => new()
         },
@@ -26,11 +29,11 @@ public class MockAgentsReader : IAgentReader
         {
             "no_release_date" => new()
             {
-                new(new("pkg:ruby/org.corgibytes.no_release_date/no_release_date@2.3.0"), new(1990, 1, 29, 0, 0, 0, TimeSpan.Zero))
+                new(new("pkg:ruby/org.corgibytes.no_release_date/no_release_date@2.3.0"),
+                    new(1990, 1, 29, 0, 0, 0, TimeSpan.Zero))
             },
             _ => new()
         },
         _ => new()
     };
 }
-
