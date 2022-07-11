@@ -11,8 +11,8 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers;
 
 public class AgentsRepository : IDependencyManagerRepository
 {
-    private readonly IAgentsDetector _agentsDetector;
     private readonly IAgentReader _agentReader;
+    private readonly IAgentsDetector _agentsDetector;
 
     public AgentsRepository(IAgentsDetector agentsDetector, IAgentReader agentReader)
     {
@@ -36,21 +36,6 @@ public class AgentsRepository : IDependencyManagerRepository
         throw ReleaseDateNotFoundException.BecauseNoAgentReturnedAnyResults();
     }
 
-    private static DateTimeOffset GetReleaseDateForList(List<Package> validPackages, PackageURL packageUrl)
-    {
-        foreach (var package in validPackages)
-        {
-            // String comparing is not the neatest way, but it's the most reliable way
-            // Otherwise we have to override the Equals method in PackageURL which we can't as it's a third-party library.
-            if (package.PackageUrl.ToString() == packageUrl.ToString())
-            {
-                return package.ReleasedAt;
-            }
-        }
-
-        throw ReleaseDateNotFoundException.BecauseReturnedListDidNotContainReleaseDate();
-    }
-
     public PackageURL GetLatestVersion(PackageURL packageUrl)
     {
         foreach (var agentExecutable in _agentsDetector.Detect())
@@ -70,5 +55,19 @@ public class AgentsRepository : IDependencyManagerRepository
 
         throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList();
     }
-}
 
+    private static DateTimeOffset GetReleaseDateForList(List<Package> validPackages, PackageURL packageUrl)
+    {
+        foreach (var package in validPackages)
+        {
+            // String comparing is not the neatest way, but it's the most reliable way
+            // Otherwise we have to override the Equals method in PackageURL which we can't as it's a third-party library.
+            if (package.PackageUrl.ToString() == packageUrl.ToString())
+            {
+                return package.ReleasedAt;
+            }
+        }
+
+        throw ReleaseDateNotFoundException.BecauseReturnedListDidNotContainReleaseDate();
+    }
+}

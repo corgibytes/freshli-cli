@@ -8,10 +8,7 @@ public class ReadCycloneDxFile
 {
     private readonly IFileReader _fileReader;
 
-    public ReadCycloneDxFile(IFileReader fileReaderService)
-    {
-        _fileReader = fileReaderService;
-    }
+    public ReadCycloneDxFile(IFileReader fileReaderService) => _fileReader = fileReaderService;
 
     public List<PackageURL> AsPackageURLs(string filePath)
     {
@@ -35,7 +32,5 @@ public class ReadCycloneDxFile
         }
 
         return packageUrls;
-
     }
 }
-

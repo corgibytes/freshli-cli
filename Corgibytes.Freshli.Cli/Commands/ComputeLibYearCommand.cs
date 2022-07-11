@@ -7,7 +7,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
-public class ComputeLibYearCommand : RunnableCommand<ComputeLibYearCommandOptions>
+public class ComputeLibYearCommand : RunnableCommand<ComputeLibYearCommand, ComputeLibYearCommandOptions>
 {
     public ComputeLibYearCommand() : base("compute-libyear", "Computes the libyear for a given CycloneDX file")
     {
@@ -29,4 +29,3 @@ public class ComputeLibYearCommand : RunnableCommand<ComputeLibYearCommandOption
         return base.Run(host, context, options);
     }
 }
-

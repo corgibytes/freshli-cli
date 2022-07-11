@@ -1,21 +1,44 @@
 using System.Collections.Generic;
+using System.IO;
+using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
-// NOTE: This implementation should not be used like this
-// This serves as a placeholder until this PR is done & merged:
-// https://github.com/corgibytes/freshli-cli/pull/96
-public class AgentsDetector : IAgentsDetector
+public class AgentsDetector
 {
+    public AgentsDetector(IEnvironment environment) => Environment = environment;
+
+    private IEnvironment Environment { get; }
+
     public IList<string> Detect()
     {
-        return new List<string>
+        var paths = Environment.DirectoriesInSearchPath;
+        IList<string> agents = new List<string>();
+        foreach (var path in paths)
         {
-            "/usr/local/bin/freshli-agent-csharp",
-            "/usr/local/bin/freshli-agent-javascript",
-            "/usr/local/agents/bin/freshli-agent-csharp",
-            "/home/freshli-user/bin/agents/freshli-agent-ruby"
-        };
+            var searchPath = path;
+            IList<string> filesResults;
+            if (path.Contains("~/"))
+            {
+                var homePath = Environment.HomeDirectory;
+                homePath += Path.DirectorySeparatorChar;
+                searchPath = path.Replace("~/", homePath);
+                filesResults = Environment.GetListOfFiles(searchPath);
+            }
+            else
+            {
+                filesResults = Environment.GetListOfFiles(searchPath);
+            }
+
+            foreach (var file in filesResults)
+            {
+                if (Path.GetFileName(file).StartsWith("freshli-agent-"))
+                {
+                    agents.Add(Path.Combine(searchPath, file));
+                }
+            }
+        }
+
+        return agents;
     }
 }
-

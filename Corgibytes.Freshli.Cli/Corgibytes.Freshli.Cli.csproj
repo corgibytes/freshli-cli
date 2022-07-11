@@ -23,6 +23,7 @@
     <None Include="..\LICENSE" Pack="true" PackagePath="">
       <Link>LICENSE</Link>
     </None>
+    <PackageReference Include="CliWrap" Version="3.4.4" />
     <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-preview.5.22302.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

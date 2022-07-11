@@ -70,10 +70,11 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
             var releaseDatePackageLatestAvailable =
                 _repository.GetReleaseDate(latestVersion);
 
-            libYear += LibYear.GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable).AsDecimalNumber(precision);
+            libYear += LibYear
+                .GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable)
+                .AsDecimalNumber(precision);
         }
 
         return Math.Round(libYear, precision);
     }
 }
-
