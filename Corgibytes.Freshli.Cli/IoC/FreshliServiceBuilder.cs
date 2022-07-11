@@ -3,8 +3,8 @@ using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.CommandRunners.Git;
-using Corgibytes.Freshli.Cli.Commands.Git;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.Commands.Git;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.OutputStrategies;
@@ -74,7 +74,9 @@ public class FreshliServiceBuilder
         Services.AddScoped<ICommandRunner<GitCloneCommand, GitCloneCommandOptions>, GitCloneCommandRunner>();
         Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
 
-        Services.AddScoped<ICommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>, ComputeHistoryCommandRunner>();
+        Services
+            .AddScoped<ICommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>,
+                ComputeHistoryCommandRunner>();
         Services.AddOptions<ComputeHistoryCommandOptions>().BindCommandLine();
     }
 }
