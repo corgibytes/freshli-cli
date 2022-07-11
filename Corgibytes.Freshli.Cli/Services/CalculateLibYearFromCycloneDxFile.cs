@@ -21,7 +21,7 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
 
     public IList<PackageLibYear> AsList(string filePath, int precision = 2)
     {
-        var packageUrls = _readFile.AsPackageURLs(filePath);
+        var packageUrls = _readFile.AsPackageUrls(filePath);
         var libYearList = new List<PackageLibYear>();
 
         foreach (var currentlyInstalled in packageUrls)
@@ -54,27 +54,5 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
         }
 
         return libYearList;
-    }
-
-    public double TotalAsDecimalNumber(string filePath, int precision = 2)
-    {
-        var packageUrls = _readFile.AsPackageURLs(filePath);
-        var libYear = 0.0;
-
-        foreach (var currentlyInstalled in packageUrls)
-        {
-            var latestVersion =
-                _repository.GetLatestVersion(currentlyInstalled);
-            var releaseDatePackageCurrentlyInstalled =
-                _repository.GetReleaseDate(currentlyInstalled);
-            var releaseDatePackageLatestAvailable =
-                _repository.GetReleaseDate(latestVersion);
-
-            libYear += LibYear
-                .GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable)
-                .AsDecimalNumber(precision);
-        }
-
-        return Math.Round(libYear, precision);
     }
 }

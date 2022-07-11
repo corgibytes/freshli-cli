@@ -76,7 +76,7 @@ public class FreshliServiceBuilder
         Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
     }
 
-    public void RegisterComputeLibYearCommand()
+    private void RegisterComputeLibYearCommand()
     {
         Services
             .AddScoped<ICommandRunner<ComputeLibYearCommand, ComputeLibYearCommandOptions>,

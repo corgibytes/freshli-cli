@@ -10,7 +10,7 @@ public class ReadCycloneDxFile
 
     public ReadCycloneDxFile(IFileReader fileReaderService) => _fileReader = fileReaderService;
 
-    public List<PackageURL> AsPackageURLs(string filePath)
+    public List<PackageURL> AsPackageUrls(string filePath)
     {
         if (filePath == "")
         {

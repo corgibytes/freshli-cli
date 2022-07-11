@@ -63,28 +63,4 @@ public class CalculateLibYearForCycloneDxFileTest : FreshliTest
 
         Assert.Equivalent(expectedList, actualList);
     }
-
-    [Fact]
-    public void Verify_it_can_process_an_entire_file()
-    {
-        // This file only resembles what we need from it. A typical CycloneDX file would contain more info
-        var fileContents =
-            @"{
-    ""components"": [
-        {
-            ""purl"": ""pkg:nuget/org.corgibytes.calculatron/calculatron@14.6""
-        },
-        {
-            ""purl"": ""pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0""
-        },
-        {
-            ""purl"": ""pkg:nuget/org.corgibytes.tea/auto-cup-of-tea@112.0""
-        }
-    ]
-}";
-
-        _fileReaderService.FeedJson(fileContents);
-
-        Assert.Equal(9.42415, _calculateLibYearFromCycloneDxFile.TotalAsDecimalNumber("this/is/a/file/path", 5));
-    }
 }
