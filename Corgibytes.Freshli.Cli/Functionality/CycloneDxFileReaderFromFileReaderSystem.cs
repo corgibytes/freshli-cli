@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -20,4 +19,3 @@ public class CycloneDxFileReaderFromFileReaderSystem : IFileReader
         }
     }
 }
-

@@ -13,11 +13,14 @@ public class LibYear
         _releaseDateLatestVersion = releaseDateLatestVersion;
     }
 
-    public static LibYear GivenReleaseDates(DateTimeOffset releaseDateCurrentVersion, DateTimeOffset releaseDateLatestVersion)
+    private TimeSpan TimeSpan { get; set; }
+
+    public static LibYear GivenReleaseDates(DateTimeOffset releaseDateCurrentVersion,
+        DateTimeOffset releaseDateLatestVersion)
     {
         // .Duration() will always return an absolute value.
         // So even if the latest version was released before the current version you'll end up with a positive number.
-        LibYear libYear = new LibYear(releaseDateCurrentVersion, releaseDateLatestVersion)
+        var libYear = new LibYear(releaseDateCurrentVersion, releaseDateLatestVersion)
         {
             TimeSpan = releaseDateLatestVersion.Subtract(releaseDateCurrentVersion).Duration()
         };
@@ -27,7 +30,8 @@ public class LibYear
 
     public double AsDecimalNumber(int precision = 2)
     {
-        var numberOfLeapYearsBetween = LeapYears.NumberOfLeapYearsBetween(_releaseDateCurrentVersion.Year, _releaseDateLatestVersion.Year);
+        var numberOfLeapYearsBetween =
+            LeapYears.NumberOfLeapYearsBetween(_releaseDateCurrentVersion.Year, _releaseDateLatestVersion.Year);
 
         if (_releaseDateCurrentVersion.Year == _releaseDateLatestVersion.Year || numberOfLeapYearsBetween == 0)
         {
@@ -42,11 +46,9 @@ public class LibYear
         // Average of 364.75 days per year when counting leap years.
 
         var totalYears = Math.Abs(_releaseDateLatestVersion.Year - _releaseDateCurrentVersion.Year);
-        var averageNumberOfDaysPerYear = (double)(((totalYears - numberOfLeapYearsBetween) * 365) +
-                                            (numberOfLeapYearsBetween * 364)) / totalYears;
+        var averageNumberOfDaysPerYear = (double)((totalYears - numberOfLeapYearsBetween) * 365 +
+                                                  numberOfLeapYearsBetween * 364) / totalYears;
 
         return Math.Round(TimeSpan.Days / averageNumberOfDaysPerYear, precision);
     }
-
-    private TimeSpan TimeSpan { get; set; }
 }
