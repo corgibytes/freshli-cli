@@ -58,7 +58,7 @@ public class FreshliServiceBuilder
 
     private void RegisterAgentsCommand()
     {
-        Services.AddTransient<AgentsDetector>();
+        Services.AddScoped<IAgentsDetector, AgentsDetector>();
 
         Services.AddScoped<ICommandRunner<AgentsCommand, EmptyCommandOptions>, AgentsCommandRunner>();
         Services.AddOptions<EmptyCommandOptions>().BindCommandLine();
@@ -83,7 +83,7 @@ public class FreshliServiceBuilder
                 ComputeLibYearCommandRunner>();
         Services.AddOptions<ComputeLibYearCommandOptions>().BindCommandLine();
 
-        Services.AddTransient<CalculateLibYearFromCycloneDxFile>();
+        Services.AddScoped<ICalculateLibYearFromFile, CalculateLibYearFromCycloneDxFile>();
         Services.AddTransient<ReadCycloneDxFile>();
         Services.AddScoped<IFileReader, CycloneDxFileReaderFromFileReaderSystem>();
 
