@@ -134,8 +134,8 @@ public class ScanCommandOptionsTest : FreshliTest
         var path = result.GetArgumentValueByName<DirectoryInfo>("path");
         var formatType = result.GetOptionValueByName<FormatType>("format");
         var formatTypeFromAlias = result.GetOptionValueByAlias<FormatType>("-f");
-        var outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output").ToList();
-        var outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o").ToList();
+        var outputStrategyTypes = result.GetOptionValueByName<IEnumerable<OutputStrategyType>>("output")!.ToList();
+        var outputStrategyTypesFromAlias = result.GetOptionValueByAlias<IEnumerable<OutputStrategyType>>("-o")!.ToList();
 
         formatType.Should().Be(formatTypeFromAlias);
 
