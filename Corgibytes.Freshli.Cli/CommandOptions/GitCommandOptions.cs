@@ -12,5 +12,4 @@ public class GitCloneCommandOptions : CommandOptions
     public string GitPath { get; set; } = null!;
     public string RepoUrl { get; set; } = null!;
     public string? Branch { get; set; }
-
 }

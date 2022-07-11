@@ -37,7 +37,8 @@ public class GitRepository
 
         // Get existing entry via provided hash
         using var db = new CacheContext(CacheDir);
-        var entry = db.CachedGitRepos.Find(Hash) ?? throw new CacheException("No repository with this hash exists in cache.");
+        var entry = db.CachedGitRepos.Find(Hash) ??
+                    throw new CacheException("No repository with this hash exists in cache.");
 
         Url = entry.Url;
         Branch = entry.Branch;

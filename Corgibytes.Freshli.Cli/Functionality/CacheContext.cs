@@ -38,6 +38,6 @@ public class CacheContextFactory : IDesignTimeDbContextFactory<CacheContext>
         var dbPath = Path.Join(cacheDir.ToString(), CacheContext.CacheDbName);
         optionsBuilder.UseSqlite($"Data Source={dbPath}");
 
-        return new CacheContext(cacheDir);
+        return new(cacheDir);
     }
 }
