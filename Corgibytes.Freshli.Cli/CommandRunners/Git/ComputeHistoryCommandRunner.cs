@@ -14,4 +14,3 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
 
     public override int Run(ComputeHistoryCommandOptions options, InvocationContext context) => 0;
 }
-
