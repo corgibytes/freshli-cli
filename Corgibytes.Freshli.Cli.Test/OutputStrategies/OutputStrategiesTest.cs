@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
@@ -47,10 +48,11 @@ public class OutputStrategiesTest : FreshliTest
     {
         var formatterMock = new Mock<IOutputFormatter>();
         var result = new List<ScanResult>();
-        var optionsMock = new Mock<ScanCommandOptions>();
+        // We cannot mock DirectoryInfo, so we need to provide a real path (pwd for running test will do)
+        var options = new ScanCommandOptions {Path = new(".")};
 
         formatterMock.Setup(f => f.Format<ScanResult>(result)).Returns("formatted text");
-        strategy.Send(result, formatterMock.Object, optionsMock.Object);
+        strategy.Send(result, formatterMock.Object, options);
         formatterMock.Verify(f => f.Format<ScanResult>(result), Times.Once());
     }
 
