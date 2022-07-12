@@ -20,14 +20,36 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
 
     public override int Run(ComputeHistoryCommandOptions options, InvocationContext context)
     {
-        foreach (var historyIntervalStop in
-                 _computeHistory.ComputeWithHistoryInterval(options.RepositoryId, options.GitPath.FullName, options.HistoryInterval))
+        if (options.CommitHistory)
+        {
+            WriteStopsToLines(_computeHistory.ComputeCommitHistory(options.RepositoryId, options.GitPath.FullName), context);
+            return 0;
+        }
+
+
+        var historyIntervalDuration = options.HistoryInterval switch
+        {
+            "d" => "day",
+            "w" => "week",
+            "m" => "month",
+            "y" => "year",
+            _ => ""
+        };
+
+        WriteStopsToLines(_computeHistory.
+            ComputeWithHistoryInterval(options.RepositoryId, options.GitPath.FullName, historyIntervalDuration), context
+        );
+
+        return 0;
+    }
+
+    private static void WriteStopsToLines(IEnumerable<HistoryIntervalStop> historyIntervalStops, InvocationContext context)
+    {
+        foreach (var historyIntervalStop in historyIntervalStops)
         {
             context.Console.WriteLine(
                 historyIntervalStop.CommittedAt.ToString(CultureInfo.InvariantCulture) + " " + historyIntervalStop.GitCommitIdentifier
             );
         }
-
-        return 0;
     }
 }

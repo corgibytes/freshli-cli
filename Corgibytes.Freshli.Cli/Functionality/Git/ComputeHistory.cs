@@ -11,24 +11,21 @@ public class ComputeHistory
 
     public ComputeHistory(IGitCommitRepository gitCommitRepository) => _gitCommitRepository = gitCommitRepository;
 
+    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(string repositoryId, string gitPath)
+    {
+        var commitHistory = _gitCommitRepository.ListCommits(repositoryId, gitPath);
+        return commitHistory.Select(gitCommit => new HistoryIntervalStop(gitCommit.CommittedAt, gitCommit.ShaIdentifier)).ToList();
+    }
+
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
         string repositoryId,
         string gitPath,
         string historyInterval
     )
     {
-        var historyIntervalDuration = historyInterval switch
-        {
-            "d" => "day",
-            "w" => "week",
-            "m" => "month",
-            "y" => "year",
-            _ => ""
-        };
-
         var commitHistory = _gitCommitRepository.ListCommits(repositoryId, gitPath);
 
-        var groupedHistories = historyIntervalDuration switch
+        var groupedHistories = historyInterval switch
         {
             // Group by day of year instead of just Date otherwise the object returned it's key value is a DateTime.
             // This is different from the other checks as their key value is an integer.
