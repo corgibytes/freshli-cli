@@ -14,7 +14,8 @@ public class ComputeHistory
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(string repositoryId, string gitPath)
     {
         var commitHistory = _gitCommitRepository.ListCommits(repositoryId, gitPath);
-        return commitHistory.Select(gitCommit => new HistoryIntervalStop(gitCommit.CommittedAt, gitCommit.ShaIdentifier)).ToList();
+        return commitHistory
+            .Select(gitCommit => new HistoryIntervalStop(gitCommit.CommittedAt, gitCommit.ShaIdentifier)).ToList();
     }
 
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
@@ -35,8 +36,8 @@ public class ComputeHistory
             // So if the year starts on a Thursday and the Day of Week is set to Sunday, it'll see the next week as the first week.
             // See also https://docs.microsoft.com/en-us/dotnet/api/system.globalization.calendarweekrule?view=net-6.0
             "week" => commitHistory.GroupBy(commit =>
-                CultureInfo.CurrentCulture.Calendar.
-                    GetWeekOfYear(commit.CommittedAt.Date, CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday)),
+                CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(commit.CommittedAt.Date,
+                    CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday)),
 
             // Grouped by month
             "month" => commitHistory.GroupBy(commit => commit.CommittedAt.Month),
