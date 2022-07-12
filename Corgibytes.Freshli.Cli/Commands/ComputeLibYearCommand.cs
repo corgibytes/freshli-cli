@@ -21,10 +21,7 @@ public class ComputeLibYearCommand : RunnableCommand<ComputeLibYearCommand, Comp
 
     protected override int Run(IHost host, InvocationContext context, ComputeLibYearCommandOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
+        _ = options ?? throw new ArgumentNullException(nameof(options));
 
         return base.Run(host, context, options);
     }
