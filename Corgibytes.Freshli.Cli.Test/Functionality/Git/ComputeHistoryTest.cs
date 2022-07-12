@@ -39,10 +39,11 @@ public class ComputeHistoryTest : FreshliTest
 
     [Theory]
     [MethodData(nameof(ExpectedStopsForCommitHistory))]
-    public void Verify_it_can_find_sha_identifiers_and_dates_for_the_all_commits(List<HistoryIntervalStop> expectedStops) =>
+    public void Verify_it_can_find_sha_identifiers_and_dates_for_the_all_commits(
+        List<HistoryIntervalStop> expectedStops) =>
         Assert.Equivalent(expectedStops,
-        _computeHistory.ComputeCommitHistory("repository.identifier", "git")
-    );
+            _computeHistory.ComputeCommitHistory("repository.identifier", "git")
+        );
 
     private static TheoryData<List<HistoryIntervalStop>, string> ExpectedStopsForDayInterval() =>
         new()
