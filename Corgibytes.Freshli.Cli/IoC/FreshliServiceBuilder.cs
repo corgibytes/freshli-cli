@@ -7,10 +7,12 @@ using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Commands.Git;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Lib;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
+using GitRepository = Corgibytes.Freshli.Cli.Functionality.Git.GitRepository;
 
 namespace Corgibytes.Freshli.Cli.IoC;
 
@@ -75,8 +77,10 @@ public class FreshliServiceBuilder
         Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
 
         Services
-            .AddScoped<ICommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>,
-                ComputeHistoryCommandRunner>();
+            .AddScoped<ICommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>, ComputeHistoryCommandRunner>();
         Services.AddOptions<ComputeHistoryCommandOptions>().BindCommandLine();
+
+        Services.AddTransient<ComputeHistory>();
+        Services.AddScoped<IGitCommitRepository, GitRepository>();
     }
 }
