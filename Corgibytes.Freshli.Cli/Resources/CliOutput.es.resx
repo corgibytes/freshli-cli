@@ -41,4 +41,19 @@
   <data name="ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty" xml:space="preserve">
     <value>Filepath no debe ser nula o vacía</value>
   </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Currently_Installed" xml:space="preserve">
+    <value>Actualmente instalado</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Latest_Available" xml:space="preserve">
+    <value>Último disponible</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Libyear" xml:space="preserve">
+    <value>Libyear</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Package" xml:space="preserve">
+    <value>Paquete</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Released_at" xml:space="preserve">
+    <value>Publicado en</value>
+  </data>
 </root>

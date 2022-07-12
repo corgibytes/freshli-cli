@@ -36,12 +36,12 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, 
         var table = new TextTable(6, TableBordersStyle.DESIGN_FORMAL,
             TableVisibleBorders.SURROUND_HEADER_FOOTER_AND_COLUMNS);
 
-        table.AddCell("Package");
-        table.AddCell("Currently installed");
-        table.AddCell("Released at");
-        table.AddCell("Latest available");
-        table.AddCell("Released at");
-        table.AddCell("Libyear");
+        table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Package);
+        table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Currently_Installed);
+        table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Released_at);
+        table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Latest_Available);
+        table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Released_at);
+        table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Libyear);
 
         foreach (var libYearPackage in libYearPackages)
         {
