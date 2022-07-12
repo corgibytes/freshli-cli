@@ -48,4 +48,19 @@
   <data name="AgentsDetectCommandRunner_Run_No_detected_agents_found" xml:space="preserve">
     <value>No detected agents found</value>
   </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Package" xml:space="preserve">
+    <value>Package</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Currently_Installed" xml:space="preserve">
+    <value>Currently installed</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Released_at" xml:space="preserve">
+    <value>Released at</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Latest_Available" xml:space="preserve">
+    <value>Latest available</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Libyear" xml:space="preserve">
+    <value>Libyear</value>
+  </data>
 </root>
