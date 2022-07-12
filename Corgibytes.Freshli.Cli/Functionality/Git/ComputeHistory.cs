@@ -14,9 +14,18 @@ public class ComputeHistory
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
         string repositoryId,
         string gitPath,
-        string historyIntervalDuration
+        string historyInterval
     )
     {
+        var historyIntervalDuration = historyInterval switch
+        {
+            "d" => "day",
+            "w" => "week",
+            "m" => "month",
+            "y" => "year",
+            _ => ""
+        };
+
         var commitHistory = _gitCommitRepository.ListCommits(repositoryId, gitPath);
 
         var groupedHistories = historyIntervalDuration switch
