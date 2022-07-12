@@ -71,8 +71,8 @@ public class ComputeHistoryTest : FreshliTest
                 new()
                 {
                     new(
-                        new(2021, 2, 4, 16, 23, 05, TimeSpan.Zero),
-                        "b12d487b94e6010e968fda109d2a726c9499e4e5"
+                        new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero),
+                        "b2bd95f16a8587dd0bd618ea3415fc8928832c91"
                     ),
                     new(
                         new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero),
