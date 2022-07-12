@@ -77,7 +77,8 @@ public class FreshliServiceBuilder
         Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
 
         Services
-            .AddScoped<ICommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>, ComputeHistoryCommandRunner>();
+            .AddScoped<ICommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>,
+                ComputeHistoryCommandRunner>();
         Services.AddOptions<ComputeHistoryCommandOptions>().BindCommandLine();
 
         Services.AddTransient<ComputeHistory>();

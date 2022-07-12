@@ -14,16 +14,15 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
 {
     private readonly ComputeHistory _computeHistory;
 
-    public ComputeHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner, ComputeHistory computeHistory) : base(serviceProvider, runner)
-    {
-        _computeHistory = computeHistory;
-    }
+    public ComputeHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner, ComputeHistory computeHistory) :
+        base(serviceProvider, runner) => _computeHistory = computeHistory;
 
     public override int Run(ComputeHistoryCommandOptions options, InvocationContext context)
     {
         if (options.CommitHistory)
         {
-            WriteStopsToLines(_computeHistory.ComputeCommitHistory(options.RepositoryId, options.GitPath.FullName), context);
+            WriteStopsToLines(_computeHistory.ComputeCommitHistory(options.RepositoryId, options.GitPath.FullName),
+                context);
             return 0;
         }
 
@@ -37,19 +36,22 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
             _ => ""
         };
 
-        WriteStopsToLines(_computeHistory.
-            ComputeWithHistoryInterval(options.RepositoryId, options.GitPath.FullName, historyIntervalDuration), context
+        WriteStopsToLines(
+            _computeHistory.ComputeWithHistoryInterval(options.RepositoryId, options.GitPath.FullName,
+                historyIntervalDuration), context
         );
 
         return 0;
     }
 
-    private static void WriteStopsToLines(IEnumerable<HistoryIntervalStop> historyIntervalStops, InvocationContext context)
+    private static void WriteStopsToLines(IEnumerable<HistoryIntervalStop> historyIntervalStops,
+        InvocationContext context)
     {
         foreach (var historyIntervalStop in historyIntervalStops)
         {
             context.Console.WriteLine(
-                historyIntervalStop.CommittedAt.ToString(CultureInfo.InvariantCulture) + " " + historyIntervalStop.GitCommitIdentifier
+                historyIntervalStop.CommittedAt.ToString(CultureInfo.InvariantCulture) + " " +
+                historyIntervalStop.GitCommitIdentifier
             );
         }
     }
