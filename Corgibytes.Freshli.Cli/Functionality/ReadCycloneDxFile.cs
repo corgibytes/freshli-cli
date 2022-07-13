@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Corgibytes.Freshli.Cli.Resources;
 using PackageUrl;
+using ServiceStack;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -14,7 +16,7 @@ public class ReadCycloneDxFile
     {
         if (filePath == "")
         {
-            throw new ArgumentException("Can not read file, as no file path was given");
+            throw new ArgumentException(CliOutput.ReadCycloneDxFile_Exception_Can_Not_Read_File);
         }
 
         var jsonCycloneDx = _fileReader.ToJson(filePath);

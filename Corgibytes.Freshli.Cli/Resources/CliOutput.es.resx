@@ -56,4 +56,7 @@
   <data name="ComputeLibYearCommandRunner_Table_Header_Released_at" xml:space="preserve">
     <value>Publicado en</value>
   </data>
+  <data name="ReadCycloneDxFile_Exception_Can_Not_Read_File" xml:space="preserve">
+    <value>No se puede leer el archivo, ya que no se proporcionó la ruta del archivo</value>
+  </data>
 </root>
