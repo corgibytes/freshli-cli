@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Xunit;
@@ -16,52 +15,38 @@ public class LibYearTest : FreshliTest
 
     [Theory]
     [MethodData(nameof(ExpectedLibYears))]
-    public void Validate_expected_libyears(DateTimeOffset releaseDateCurrentVersion, DateTimeOffset releaseDateLatestVersion, double expectedLibYear,
+    public void Validate_expected_libyears(DateTimeOffset releaseDateCurrentVersion,
+        DateTimeOffset releaseDateLatestVersion, double expectedLibYear,
         int precision) => Assert.Equal(expectedLibYear,
         LibYear.GivenReleaseDates(releaseDateCurrentVersion, releaseDateLatestVersion).AsDecimalNumber(precision));
 
     private static TheoryData<DateTimeOffset, DateTimeOffset, double, int> ExpectedLibYears() =>
-    new()
-    {
+        new()
         {
-            // Release date current version, release date latest version, expected libyear
-            // Case: new version released in 2021, current version from 2019
-            new(2019, 1, 3, 0, 0, 0, TimeSpan.Zero),
-            new(2021, 8, 25, 0, 0, 0, TimeSpan.Zero),
-            2.65,
-            2
-        },
-        {
-            // Case: new version released in 2021, current version from 2019
-            // Higher precision
-            new(2019, 1, 3, 0, 0, 0, TimeSpan.Zero),
-            new(2021, 8, 25, 0, 0, 0, TimeSpan.Zero),
-            2.64746,
-            5
-        },
-        {
-            // Case: new version released in 2020, current version from 2021.
-            // Example: Symfony 4 is maintained, and gets security updates til 2024. Latest version is Symfony 6. Symfony 6 last release was 2021, Symfony 4 had a security update in 2022.
-            new(2022, 6, 14, 0, 0, 0, TimeSpan.Zero),
-            new(2021, 9, 21, 0, 0, 0, TimeSpan.Zero),
-            0.73,
-            2
-        },
-        {
-            // Case: new version released in 2021, current version from 1990
-            // Higher precision, and we have to deal with leap years
-            new(1990, 1, 3, 0, 0, 0, TimeSpan.Zero),
-            new(2021, 1, 3, 0, 0, 0, TimeSpan.Zero),
-            31.04387,
-            5
-        },
-        {
-            // Case: new version released in 2004, current version from 2004
-            // This is a leap year, see if it still ends up as 1
-            new(2004, 1, 1, 0, 0, 0, TimeSpan.Zero),
-            new(2004, 12, 31, 0, 0, 0, TimeSpan.Zero),
-            1.00,
-            2
-        }
-    };
+            {
+                // Release date current version, release date latest version, expected libyear
+                // Case: new version released in 2021, current version from 2019
+                new(2019, 1, 3, 0, 0, 0, TimeSpan.Zero), new(2021, 8, 25, 0, 0, 0, TimeSpan.Zero), 2.65, 2
+            },
+            {
+                // Case: new version released in 2021, current version from 2019
+                // Higher precision
+                new(2019, 1, 3, 0, 0, 0, TimeSpan.Zero), new(2021, 8, 25, 0, 0, 0, TimeSpan.Zero), 2.64746, 5
+            },
+            {
+                // Case: new version released in 2020, current version from 2021.
+                // Example: Symfony 4 is maintained, and gets security updates til 2024. Latest version is Symfony 6. Symfony 6 last release was 2021, Symfony 4 had a security update in 2022.
+                new(2022, 6, 14, 0, 0, 0, TimeSpan.Zero), new(2021, 9, 21, 0, 0, 0, TimeSpan.Zero), 0.73, 2
+            },
+            {
+                // Case: new version released in 2021, current version from 1990
+                // Higher precision, and we have to deal with leap years
+                new(1990, 1, 3, 0, 0, 0, TimeSpan.Zero), new(2021, 1, 3, 0, 0, 0, TimeSpan.Zero), 31.04387, 5
+            },
+            {
+                // Case: new version released in 2004, current version from 2004
+                // This is a leap year, see if it still ends up as 1
+                new(2004, 1, 1, 0, 0, 0, TimeSpan.Zero), new(2004, 12, 31, 0, 0, 0, TimeSpan.Zero), 1.00, 2
+            }
+        };
 }
