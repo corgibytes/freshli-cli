@@ -60,9 +60,6 @@
   <data name="ComputeLibYearCommandRunner_Table_Header_Latest_Available" xml:space="preserve">
     <value>Latest available</value>
   </data>
-  <data name="ComputeLibYearCommandRunner_Table_Header_Libyear" xml:space="preserve">
-    <value>Libyear</value>
-  </data>
   <data name="ReadCycloneDxFile_Exception_Can_Not_Read_File" xml:space="preserve">
     <value>Can not read file, as no file path was given</value>
   </data>
