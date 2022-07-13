@@ -22,11 +22,11 @@ public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOpti
 
 public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, EmptyCommandOptions>
 {
-    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsDetector agentsDetector)
+    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, Runner runner, IAgentsDetector agentsDetector)
         : base(serviceProvider, runner) =>
         AgentsDetector = agentsDetector;
 
-    private AgentsDetector AgentsDetector { get; }
+    private IAgentsDetector AgentsDetector { get; }
 
     public override int Run(EmptyCommandOptions options, InvocationContext context)
     {
