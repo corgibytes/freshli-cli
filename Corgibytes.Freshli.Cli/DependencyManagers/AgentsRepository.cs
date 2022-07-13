@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Exceptions;
+using Corgibytes.Freshli.Cli.ExtensionMethods;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
 using PackageUrl;
@@ -58,14 +59,9 @@ public class AgentsRepository : IDependencyManagerRepository
 
     private static DateTimeOffset GetReleaseDateForList(List<Package> validPackages, PackageURL packageUrl)
     {
-        foreach (var package in validPackages)
+        foreach (var package in validPackages.Where(package => package.PackageUrl.PackageUrlEquals(packageUrl)))
         {
-            // String comparing is not the neatest way, but it's the most reliable way
-            // Otherwise we have to override the Equals method in PackageURL which we can't as it's a third-party library.
-            if (package.PackageUrl.ToString() == packageUrl.ToString())
-            {
-                return package.ReleasedAt;
-            }
+            return package.ReleasedAt;
         }
 
         throw ReleaseDateNotFoundException.BecauseReturnedListDidNotContainReleaseDate();
