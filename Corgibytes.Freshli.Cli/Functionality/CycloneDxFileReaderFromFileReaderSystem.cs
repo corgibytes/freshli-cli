@@ -11,7 +11,7 @@ public class CycloneDxFileReaderFromFileReaderSystem : IFileReader
         {
             using var stream = new StreamReader(filePath);
 
-            return JsonCycloneDx.FromJson(stream.ReadToEnd());
+            return JsonCycloneDx.FromJson(stream.ReadToEnd()) ?? throw new InvalidOperationException();
         }
         catch (IOException)
         {
