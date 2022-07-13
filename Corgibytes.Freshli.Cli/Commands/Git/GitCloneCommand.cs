@@ -3,7 +3,7 @@ using Corgibytes.Freshli.Cli.CommandOptions;
 
 namespace Corgibytes.Freshli.Cli.Commands.Git;
 
-public class GitCloneCommand : RunnableCommand<GitCloneCommandOptions>
+public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandOptions>
 {
     public GitCloneCommand()
         : base("clone", "Clone a repository for Freshli to examine")

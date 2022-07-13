@@ -4,7 +4,7 @@ using Corgibytes.Freshli.Cli.CommandOptions;
 
 namespace Corgibytes.Freshli.Cli.Commands.Git;
 
-public class CheckoutHistoryCommand : RunnableCommand<CheckoutHistoryCommandOptions>
+public class CheckoutHistoryCommand : RunnableCommand<CheckoutHistoryCommand, CheckoutHistoryCommandOptions>
 {
     public CheckoutHistoryCommand() : base("checkout-history", "Used to checkout a specific historical point for a given repository.")
     {

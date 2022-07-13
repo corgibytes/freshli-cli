@@ -2,14 +2,14 @@ using System;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Commands.Git;
 using Corgibytes.Freshli.Cli.Extensions;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners.Git;
 
-public class GitCloneCommandRunner : CommandRunner<GitCloneCommandOptions>
+public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneCommandOptions>
 {
     public GitCloneCommandRunner(IServiceProvider serviceProvider, Runner runner)
         : base(serviceProvider, runner)
