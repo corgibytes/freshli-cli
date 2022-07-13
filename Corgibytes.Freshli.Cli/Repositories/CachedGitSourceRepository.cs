@@ -9,7 +9,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     public CachedGitSource FindOneByHash(string hash, DirectoryInfo cacheDir)
     {
         using var db = new CacheContext(cacheDir);
-        var entry = db.CachedGitRepos.Find(hash);
+        var entry = db.CachedGitSources.Find(hash);
         if (entry == null)
         {
             throw new CacheException("No repository with this hash exists in cache.");

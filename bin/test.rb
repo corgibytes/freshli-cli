@@ -46,7 +46,7 @@ if status.success?
   status = execute('bundle install') unless status.success?
 
   status = execute('dotnet test ./exe/Corgibytes.Freshli.Cli.Test.dll') if status.success?
-  status = execute('bundle exec cucumber --color') if status.success?
+  status = execute('bundle exec cucumber --color --backtrace') if status.success?
 end
 
 exit(status.exitstatus)

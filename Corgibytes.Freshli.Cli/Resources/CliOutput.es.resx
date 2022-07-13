@@ -23,4 +23,37 @@
   <data name="Output_UpgradesAvailable" xml:space="preserve">
     <value>ActualizaciónesDisponibles</value>
   </data>
+  <data name="ScanCommand_ScanCommand_Executing_scan_command_handler" xml:space="preserve">
+    <value>This is just a placeholder</value>
+  </data>
+  <data name="MainCommand_MainCommand_Root_Command_Executed" xml:space="preserve">
+    <value>This is just a placeholder</value>
+  </data>
+  <data name="AuthCommand_AuthCommand_Executing_auth_command_handler" xml:space="preserve">
+    <value>This is just a placeholder</value>
+  </data>
+  <data name="ScanCommandRunner_Run_Path_should_not_be_null_or_empty" xml:space="preserve">
+    <value>This is just a placeholder</value>
+  </data>
+  <data name="AgentsDetectCommandRunner_Run_No_detected_agents_found" xml:space="preserve">
+    <value>No se encontró agente detectado</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty" xml:space="preserve">
+    <value>Filepath no debe ser nula o vacía</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Currently_Installed" xml:space="preserve">
+    <value>Actualmente instalado</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Latest_Available" xml:space="preserve">
+    <value>Último disponible</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Package" xml:space="preserve">
+    <value>Paquete</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Released_at" xml:space="preserve">
+    <value>Publicado en</value>
+  </data>
+  <data name="ReadCycloneDxFile_Exception_Can_Not_Read_File" xml:space="preserve">
+    <value>No se puede leer el archivo, ya que no se proporcionó la ruta del archivo</value>
+  </data>
 </root>
