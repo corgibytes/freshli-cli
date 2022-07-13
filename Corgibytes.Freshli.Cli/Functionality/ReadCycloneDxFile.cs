@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Resources;
 using PackageUrl;
-using ServiceStack;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
