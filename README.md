@@ -223,7 +223,7 @@ dotnet build -o exe
 
 We use a few different automatted tools tools to help us keep the code in this repository in compliance with the Freshli project style guide.
 
-All of the following linters can be run together by running the `bin/lint.rb` script. You can also run the `bin/format.rb` script if you want to instruct the linters to correct any issues that are found. (Note: not all of the linters provide an auto-correct mechanism.)
+All of the following linters (with the exception of `codeclimate`) can be run together by running the `bin/lint.rb` script. You can also run the `bin/format.rb` script if you want to instruct the linters to correct any issues that are found. (Note: not all of the linters provide an auto-correct mechanism.)
 
 ### [eclint](https://gitlab.com/greut/eclint)
 
@@ -383,7 +383,7 @@ There are two paths to working with this DevContainer setup.
 
 1. [Install the `devcontainer` CLI](https://code.visualstudio.com/docs/remote/devcontainer-cli) and then run `devcontainer build` followed by `devcontainer open`. That will open Visual Studio Code running from inside of a container with everything needed to build the project.
 
-2. Run `docker` directly. Run `docker -t freshli-cli-dev .devcontainer/` to build the container. Then you'll be able to run `docker run --rm -it -v $PWD:/code -w /code freshli-cli-dev bash` to create a shell session inside of a running container with everything set up for you. (Note, you may need to run `bundle install` when you first start the container to install the ruby-based dependencies. This step is performed for you if you use the `devcontainer` CLI to open a Visual Studio Code instance.)
+2. Run `docker` directly. Run `docker build -t freshli-cli-dev .devcontainer/` to build the container. Then you'll be able to run `docker run --rm -it -v $PWD:/code -w /code freshli-cli-dev bash` to create a shell session inside of a running container with everything set up for you. (Note, you may need to run `bundle install` when you first start the container to install the ruby-based dependencies. This step is performed for you if you use the `devcontainer` CLI to open a Visual Studio Code instance.)
 
 
 ## Contributing

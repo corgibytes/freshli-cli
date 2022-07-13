@@ -2,12 +2,13 @@ using System;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Commands.Git;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners.Git;
 
-public class CheckoutHistoryCommandRunner : CommandRunner<CheckoutHistoryCommandOptions>
+public class CheckoutHistoryCommandRunner : CommandRunner<CheckoutHistoryCommand, CheckoutHistoryCommandOptions>
 {
     private readonly GitArchive _gitArchive;
 

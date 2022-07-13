@@ -21,7 +21,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.0-preview.4.22229.2");
 
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.Functionality.CachedGitRepo", b =>
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.Functionality.CachedGitSource", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
@@ -40,7 +40,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("CachedGitRepos");
+                    b.ToTable("CachedGitSources");
                 });
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.Functionality.CachedProperty", b =>
