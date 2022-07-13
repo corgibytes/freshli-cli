@@ -47,9 +47,6 @@
   <data name="ComputeLibYearCommandRunner_Table_Header_Latest_Available" xml:space="preserve">
     <value>Último disponible</value>
   </data>
-  <data name="ComputeLibYearCommandRunner_Table_Header_Libyear" xml:space="preserve">
-    <value>Libyear</value>
-  </data>
   <data name="ComputeLibYearCommandRunner_Table_Header_Package" xml:space="preserve">
     <value>Paquete</value>
   </data>

@@ -129,12 +129,6 @@ namespace Corgibytes.Freshli.Cli.Resources {
             }
         }
         
-        internal static string ComputeLibYearCommandRunner_Table_Header_Libyear {
-            get {
-                return ResourceManager.GetString("ComputeLibYearCommandRunner_Table_Header_Libyear", resourceCulture);
-            }
-        }
-        
         internal static string ReadCycloneDxFile_Exception_Can_Not_Read_File {
             get {
                 return ResourceManager.GetString("ReadCycloneDxFile_Exception_Can_Not_Read_File", resourceCulture);
