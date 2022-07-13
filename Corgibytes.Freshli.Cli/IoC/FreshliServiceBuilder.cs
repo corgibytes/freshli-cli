@@ -3,9 +3,11 @@ using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.OutputStrategies;
+using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
@@ -26,6 +28,7 @@ public class FreshliServiceBuilder
         RegisterCacheCommand();
         RegisterAgentsCommand();
         RegisterGitCommand();
+        RegisterComputeLibYearCommand();
     }
 
     private void RegisterBaseCommand() => Services.AddScoped<Runner>();
@@ -55,7 +58,7 @@ public class FreshliServiceBuilder
 
     private void RegisterAgentsCommand()
     {
-        Services.AddTransient<AgentsDetector>();
+        Services.AddScoped<IAgentsDetector, AgentsDetector>();
 
         Services.AddScoped<ICommandRunner<AgentsCommand, EmptyCommandOptions>, AgentsCommandRunner>();
         Services.AddOptions<EmptyCommandOptions>().BindCommandLine();
@@ -71,5 +74,20 @@ public class FreshliServiceBuilder
 
         Services.AddScoped<ICommandRunner<GitCloneCommand, GitCloneCommandOptions>, GitCloneCommandRunner>();
         Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
+    }
+
+    private void RegisterComputeLibYearCommand()
+    {
+        Services
+            .AddScoped<ICommandRunner<ComputeLibYearCommand, ComputeLibYearCommandOptions>,
+                ComputeLibYearCommandRunner>();
+        Services.AddOptions<ComputeLibYearCommandOptions>().BindCommandLine();
+
+        Services.AddScoped<ICalculateLibYearFromFile, CalculateLibYearFromCycloneDxFile>();
+        Services.AddTransient<ReadCycloneDxFile>();
+        Services.AddScoped<IFileReader, CycloneDxFileReaderFromFileReaderSystem>();
+
+        Services.AddTransient<IDependencyManagerRepository, AgentsRepository>();
+        Services.AddTransient<IAgentReader, AgentReader>();
     }
 }
