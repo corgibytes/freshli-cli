@@ -41,7 +41,7 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, 
         table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Released_at);
         table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Latest_Available);
         table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Released_at);
-        table.AddCell(CliOutput.ComputeLibYearCommandRunner_Table_Header_Libyear);
+        table.AddCell("Libyear");
 
         foreach (var libYearPackage in libYearPackages)
         {
