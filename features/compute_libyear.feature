@@ -1,6 +1,9 @@
 Feature: Compute libyear
   Scenario: Compute
-    Given a file named "cyclonedx.json" with:
+    Given the directory named "~/bin"
+    And an empty file named "~/bin/freshli-agent-test"
+    And the directory named "~/bin" is prepended to the PATH environment variable
+    And a file named "cyclonedx.json" with:
     """
     {
       "bomFormat": "CycloneDX",
