@@ -8,7 +8,7 @@ public class MockGitArchiveProcess : IGitArchiveProcess
 {
     public string Run(GitSource gitSource, GitCommitIdentifier gitCommitIdentifier, string gitPath, DirectoryInfo cacheDirectory)
     {
-        return "tmp/.freshli/histories/" + gitSource.Hash + "/" + gitCommitIdentifier;
+        return Path.Combine("tmp", ".freshli", "histories", gitSource.Hash, gitCommitIdentifier);
     }
 }
 
