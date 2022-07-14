@@ -1,6 +1,7 @@
 using System.CommandLine;
 using System.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.CommandOptions.Git;
 
 namespace Corgibytes.Freshli.Cli.Commands.Git;
 

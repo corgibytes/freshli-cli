@@ -1,5 +1,6 @@
 ﻿using System.CommandLine.Hosting;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.CommandOptions.Git;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.CommandRunners.Git;

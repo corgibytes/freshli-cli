@@ -1,4 +1,4 @@
-namespace Corgibytes.Freshli.Cli.CommandOptions;
+namespace Corgibytes.Freshli.Cli.CommandOptions.Git;
 
 public class GitCloneCommandOptions : CommandOptions
 {
