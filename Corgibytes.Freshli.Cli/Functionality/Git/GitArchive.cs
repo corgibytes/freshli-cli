@@ -1,23 +1,57 @@
+using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using Corgibytes.Freshli.Cli.Repositories;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitArchive
 {
-    private readonly IGitArchiveProcess _archiveProcess;
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
-    public GitArchive(ICachedGitSourceRepository cachedGitSourceRepository, IGitArchiveProcess archiveProcess)
+    public GitArchive(ICachedGitSourceRepository cachedGitSourceRepository)
     {
         _cachedGitSourceRepository = cachedGitSourceRepository;
-        _archiveProcess = archiveProcess;
     }
 
     public string CreateArchive(string repositoryId, DirectoryInfo cacheDirectory,
         GitCommitIdentifier gitCommitIdentifier, string gitPath)
     {
         GitSource gitSource = new(repositoryId, cacheDirectory, _cachedGitSourceRepository);
-        return _archiveProcess.Run(gitSource, gitCommitIdentifier, gitPath, cacheDirectory);
+
+        // If it exists, make sure to empty it so we are certain we start with a clean slate.
+        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory.FullName, "histories", gitSource.Hash, gitCommitIdentifier.ToString()));
+        if (Directory.Exists(gitSourceTarget.FullName))
+        {
+            Directory.Delete(gitSourceTarget.FullName, true);
+        }
+
+        // Create the directory where we want to place the archive
+        gitSourceTarget.Create();
+        var archivePath = Path.Combine(gitSourceTarget.FullName, "archive.zip");
+
+        var archiveProcess = new Process
+        {
+            StartInfo = new()
+            {
+                FileName = gitPath,
+                WorkingDirectory = gitSource.Directory.FullName,
+                Arguments = $"archive --output={archivePath} --format=zip {gitCommitIdentifier}",
+                RedirectStandardOutput = true,
+                RedirectStandardError = true
+            }
+        };
+        archiveProcess.Start();
+        archiveProcess.WaitForExit();
+
+        if (archiveProcess.ExitCode != 0)
+        {
+            throw new GitException($"Git encountered an error:\n{archiveProcess.StandardError.ReadToEnd()}");
+        }
+
+        ZipFile.ExtractToDirectory($"{archivePath}", gitSourceTarget.FullName);
+        File.Delete($"{archivePath}");
+
+        return gitSourceTarget.FullName;
     }
 }
