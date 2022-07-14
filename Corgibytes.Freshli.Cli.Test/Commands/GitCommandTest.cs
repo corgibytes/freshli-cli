@@ -20,4 +20,3 @@ public class GitCommandTest
         gitCloneCommand.Handler.Should().NotBeNull();
     }
 }
-

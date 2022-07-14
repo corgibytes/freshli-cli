@@ -1,6 +1,5 @@
 using System.IO;
 using Corgibytes.Freshli.Cli.DataModel;
-using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Repositories;
 

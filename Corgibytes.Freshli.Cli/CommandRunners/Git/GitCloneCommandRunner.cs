@@ -13,7 +13,8 @@ public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneComm
 {
     public GitCloneCommandRunner(IServiceProvider serviceProvider, Runner runner)
         : base(serviceProvider, runner)
-    { }
+    {
+    }
 
     public override int Run(GitCloneCommandOptions options, InvocationContext context)
     {
@@ -34,4 +35,3 @@ public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneComm
         return true.ToExitCode();
     }
 }
-

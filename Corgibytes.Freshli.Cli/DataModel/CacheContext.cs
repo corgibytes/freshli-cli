@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,7 +15,7 @@ public class CacheContext : DbContext
     }
 
     public static DirectoryInfo DefaultCacheDir =>
-        new(System.Environment.GetEnvironmentVariable("HOME") + "/.freshli");
+        new(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
 
     private DirectoryInfo CacheDir { get; }
     private string DbPath { get; }
