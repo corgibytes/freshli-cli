@@ -6,5 +6,5 @@ namespace Corgibytes.Freshli.Cli.Test.Services;
 public class MockGitArchiveProcess : IGitArchiveProcess
 {
     public string Run(GitSource gitSource, GitCommitIdentifier gitCommitIdentifier, string gitPath,
-        DirectoryInfo cacheDirectory) => "tmp/.freshli/histories/" + gitSource.Hash + "/" + gitCommitIdentifier;
+        DirectoryInfo cacheDirectory) => Path.Combine("tmp", ".freshli", "histories", gitSource.Hash, gitCommitIdentifier.ToString());
 }
