@@ -1,7 +1,9 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using Corgibytes.Freshli.Cli.Repositories;
+using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -46,7 +48,7 @@ public class GitArchive
 
         if (archiveProcess.ExitCode != 0)
         {
-            throw new GitException($"Git encountered an error:\n{archiveProcess.StandardError.ReadToEnd()}");
+            throw new GitException(string.Format(CliOutput.GitArchive_Git_Exception, archiveProcess.StandardError.ReadToEnd()));
         }
 
         ZipFile.ExtractToDirectory($"{archivePath}", gitSourceTarget.FullName);
