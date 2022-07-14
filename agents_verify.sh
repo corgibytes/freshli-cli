@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $1  == 'validating-repositories' ]
-then 
+then
 echo "www.google.com"
 fi
 
