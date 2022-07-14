@@ -76,7 +76,9 @@ public class FreshliServiceBuilder
         Services.AddScoped<ICommandRunner<GitCommand, GitCommandOptions>, GitCommandRunner>();
         Services.AddOptions<GitCommandOptions>().BindCommandLine();
 
-        Services.AddScoped<ICommandRunner<CheckoutHistoryCommand, CheckoutHistoryCommandOptions>, CheckoutHistoryCommandRunner>();
+        Services
+            .AddScoped<ICommandRunner<CheckoutHistoryCommand, CheckoutHistoryCommandOptions>,
+                CheckoutHistoryCommandRunner>();
         Services.AddOptions<CheckoutHistoryCommandOptions>().BindCommandLine();
 
         Services.AddScoped<ICommandRunner<GitCloneCommand, GitCloneCommandOptions>, GitCloneCommandRunner>();

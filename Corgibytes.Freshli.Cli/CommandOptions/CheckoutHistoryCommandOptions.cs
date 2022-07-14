@@ -6,4 +6,3 @@ public class CheckoutHistoryCommandOptions : CommandOptions
     public string Sha { get; set; }
     public string GitPath { get; set; } = "git";
 }
-
