@@ -10,8 +10,7 @@ public class GitArchiveProcess : IGitArchiveProcess
         DirectoryInfo cacheDirectory)
     {
         // If it exists, make sure to empty it so we are certain we start with a clean slate.
-        var gitSourceTarget = new DirectoryInfo(cacheDirectory.FullName + "/histories" + "/" + gitSource.Hash + "/" +
-                                                gitCommitIdentifier);
+        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory.FullName, "histories", gitSource.Hash, gitCommitIdentifier.ToString()));
         if (Directory.Exists(gitSourceTarget.FullName))
         {
             Directory.Delete(gitSourceTarget.FullName, true);
@@ -19,7 +18,7 @@ public class GitArchiveProcess : IGitArchiveProcess
 
         // Create the directory where we want to place the archive
         gitSourceTarget.Create();
-        var archivePath = $"{gitSourceTarget.FullName}/archive.zip";
+        var archivePath = Path.Combine(gitSourceTarget.FullName, "archive.zip");
 
         var archiveProcess = new Process
         {
