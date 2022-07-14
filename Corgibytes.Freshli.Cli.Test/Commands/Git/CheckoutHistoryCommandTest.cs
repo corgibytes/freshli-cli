@@ -11,7 +11,9 @@ namespace Corgibytes.Freshli.Cli.Test.Commands.Git;
 
 public class CheckoutHistoryCommandTest : FreshliTest
 {
-    public CheckoutHistoryCommandTest(ITestOutputHelper output) : base(output) { }
+    public CheckoutHistoryCommandTest(ITestOutputHelper output) : base(output)
+    {
+    }
 
     [Fact]
     public void Verify_git_path_option_configuration()
@@ -34,13 +36,10 @@ public class CheckoutHistoryCommandTest : FreshliTest
         argument.Arity.Should().BeEquivalentTo(arity);
     }
 
-    private static TheoryData<string, ArgumentArity, int> DataForVerifyArgumentConfiguration()
-    {
-        return new()
+    private static TheoryData<string, ArgumentArity, int> DataForVerifyArgumentConfiguration() =>
+        new()
         {
-            {"repository-id", ArgumentArity.ExactlyOne, 0},
-            {"sha", ArgumentArity.ExactlyOne, 1}
+            { "repository-id", ArgumentArity.ExactlyOne, 0 },
+            { "sha", ArgumentArity.ExactlyOne, 1 }
         };
-    }
 }
-

@@ -12,10 +12,8 @@ public class CheckoutHistoryCommandRunner : CommandRunner<CheckoutHistoryCommand
 {
     private readonly GitArchive _gitArchive;
 
-    public CheckoutHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner, GitArchive gitArchive) : base(serviceProvider, runner)
-    {
-        _gitArchive = gitArchive;
-    }
+    public CheckoutHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner, GitArchive gitArchive) :
+        base(serviceProvider, runner) => _gitArchive = gitArchive;
 
     public override int Run(CheckoutHistoryCommandOptions options, InvocationContext context)
     {
@@ -31,4 +29,3 @@ public class CheckoutHistoryCommandRunner : CommandRunner<CheckoutHistoryCommand
         return 0;
     }
 }
-

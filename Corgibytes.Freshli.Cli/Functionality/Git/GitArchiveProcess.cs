@@ -6,13 +6,15 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitArchiveProcess : IGitArchiveProcess
 {
-    public string Run(GitSource gitSource, GitCommitIdentifier gitCommitIdentifier, string gitPath, DirectoryInfo cacheDirectory)
+    public string Run(GitSource gitSource, GitCommitIdentifier gitCommitIdentifier, string gitPath,
+        DirectoryInfo cacheDirectory)
     {
         // If it exists, make sure to empty it so we are certain we start with a clean slate.
-        var gitSourceTarget = new DirectoryInfo(cacheDirectory.FullName + "/histories" + "/" + gitSource.Hash + "/" + gitCommitIdentifier);
+        var gitSourceTarget = new DirectoryInfo(cacheDirectory.FullName + "/histories" + "/" + gitSource.Hash + "/" +
+                                                gitCommitIdentifier);
         if (Directory.Exists(gitSourceTarget.FullName))
         {
-            Directory.Delete(gitSourceTarget.FullName, recursive: true);
+            Directory.Delete(gitSourceTarget.FullName, true);
         }
 
         // Create the directory where we want to place the archive
@@ -44,4 +46,3 @@ public class GitArchiveProcess : IGitArchiveProcess
         return gitSourceTarget.FullName;
     }
 }
-

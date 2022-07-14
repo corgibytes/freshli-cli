@@ -18,4 +18,3 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         return entry;
     }
 }
-

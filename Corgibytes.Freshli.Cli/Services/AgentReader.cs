@@ -20,20 +20,20 @@ public class AgentReader : IAgentReader
     };
 
     private static List<Package> ReturnListOfPackages(PackageURL packageUrl) =>
-    packageUrl.Name switch
-    {
-        "flyswatter" => new()
+        packageUrl.Name switch
         {
-            new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
-                new(1990, 11, 29, 0, 0, 0, TimeSpan.Zero))
-        },
-        "calculatron" => new()
-        {
-            new(new("pkg:nuget/org.corgibytes.calculatron/calculatron@21.3"),
-                new(2022, 10, 16, 0, 0, 0, TimeSpan.Zero)),
-            new(new("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"),
-                new(2019, 12, 31, 0, 0, 0, TimeSpan.Zero))
-        },
-        _ => new()
-    };
+            "flyswatter" => new()
+            {
+                new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
+                    new(1990, 11, 29, 0, 0, 0, TimeSpan.Zero))
+            },
+            "calculatron" => new()
+            {
+                new(new("pkg:nuget/org.corgibytes.calculatron/calculatron@21.3"),
+                    new(2022, 10, 16, 0, 0, 0, TimeSpan.Zero)),
+                new(new("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"),
+                    new(2019, 12, 31, 0, 0, 0, TimeSpan.Zero))
+            },
+            _ => new()
+        };
 }

@@ -6,4 +6,3 @@ public class GitCloneCommandOptions : CommandOptions
     public string Branch { get; set; }
     public string RepoUrl { get; set; }
 }
-
