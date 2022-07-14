@@ -4,19 +4,32 @@
 require 'digest'
 require 'securerandom'
 
+release_history = {
+  "pkg:nuget/org.corgibytes.flyswatter/flyswatter" => [
+    "1.1.0\t1990-01-29T12:15:25Z",
+    "1.2.0\t1990-04-17T13:14:45Z"
+  ]
+}
+
 case ARGV[0]
 when 'validating-package-urls'
   puts "pkg:nuget/org.corgibytes.flyswatter/flyswatter"
 when 'retrieve-release-history'
-  puts "1.1.0\t1990-01-29T12:15:25Z"
-  puts "1.2.0\t1990-04-17T13:14:45Z"
+  exit 1 unless ARGV.count == 2
+  begin
+    puts release_history[ARGV[1]].join("\n")
+  rescue NoMethodError
+    puts "Unable to retrieve release history for #{ARGV[1]}"
+  end
 when 'validating-repositories'
   puts "https://github.com/corgibytes/freshli-fixture-ruby-nokotest"
 when 'process-manifests'
+  exit 1 unless ARGV.count == 3
   puts "freshli-fixture-ruby-nokotest/Gemfile\tfreshli-fixture-ruby-nokotest/Gemfile-pinned\tfreshli-fixture-ruby-nokotest/Gemfile-pinned.bom"
   puts "freshli-fixture-ruby-nokotest/Gemfile.lock\tfreshli-fixture-ruby-nokotest/Gemfile.lock\tfreshli-fixture-ruby-nokotest/Gemfile.lock.bom"
 
 when 'detect-manifests'
+  exit 1 unless ARGV.count == 2
   manifest_id = Digest::SHA1.hexdigest SecureRandom.uuid
   repo_id = Digest::SHA256.hexdigest "https://github.com/corgibytes/freshli-fixture-ruby-nokotestmaster"
 
