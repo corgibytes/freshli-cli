@@ -87,7 +87,6 @@ public class FreshliServiceBuilder
 
         Services.AddScoped<GitArchive>();
         Services.AddScoped<ICachedGitSourceRepository, CachedGitSourceRepository>();
-        Services.AddScoped<IGitArchiveProcess, GitArchiveProcess>();
     }
 
     private void RegisterComputeLibYearCommand()
