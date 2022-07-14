@@ -2,6 +2,7 @@ using System;
 using System.CommandLine.Invocation;
 using System.IO;
 using System.Linq;
+using System.Text;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Resources;
@@ -9,7 +10,8 @@ using Corgibytes.Freshli.Lib;
 using TextTableFormatter;
 using Environment = System.Environment;
 using System.CommandLine;
-
+using System.Reflection;
+using CliWrap;
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOptions>
@@ -37,8 +39,7 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
         var agentsAndLocations = agents.ToDictionary(Path.GetFileName);
 
         var basicTable = new TextTable(2);
-        basicTable.AddCell("Agent file");
-        basicTable.AddCell("Agent path");
+        
 
         foreach (var agentAndLocation in agentsAndLocations)
         {
@@ -67,24 +68,45 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
     {
         var agents = AgentsVerifier.Verify();
         System.Console.WriteLine(AgentsVerifier + " Dona dona verify");
-        Argument<string> languageNames = new Argument<string>("language-name");
-        Argument<string> languageName = new("language-name", "Name of the language")
-        {
-            Arity = ArgumentArity.OneOrMore
-        };
+        context.Console.WriteLine(options.LanguageName + " Dona's lang argument");
 
-        foreach (string langName in Environment.GetCommandLineArgs()) 
+        StringBuilder stdOutBuffer = new StringBuilder();
+        var executionLocation = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).Directory;
+        var executable = new FileInfo(executionLocation.FullName + "/freshli");
+        var command = CliWrap.Cli.Wrap(executable.FullName).WithArguments(
+                args => args
+                    .Add("agents")
+                    .Add("detect")
+                    
+            )
+            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer));
+
+            using var task = command.ExecuteAsync().Task;
+            task.Wait();
+
+            Console.WriteLine( " Dona dona \n" + stdOutBuffer.ToString() + "\n Dona dona123finish");
+
+            
+            
+            foreach(string x in stdOutBuffer.ToString().Split('|',StringSplitOptions.None)){
+                if (x.Length != 0)
+                {
+                    Console.WriteLine("Dona string x: 123 ");
+                    Console.WriteLine("Dona string x: " + x);
+                    Console.WriteLine("Dona string x.length: " + x.Length);
+                }
+            }
+
+        if (options.LanguageName.Length == 0) {
+            
+            Console.WriteLine("length is zero");
+        } else 
         {
-            Console.WriteLine("donas lang " + langName);
+            Console.WriteLine(options.LanguageName.Length + " my word length");
         }
-        System.Console.WriteLine ("dona finds " + context.ParseResult.FindResultFor(languageName));
-        
 
-        System.Console.WriteLine(Environment.GetCommandLineArgs().ToString() + " Dona dona context");
-        System.Console.WriteLine(context.ParseResult.GetValueForArgument(languageName) + " Dona dona context");
-
+        context.Console.WriteLine(options.Workers + 1 + " Dona's workers found");
         return 0;
     }
 }
-
 
