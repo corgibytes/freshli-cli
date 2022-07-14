@@ -2,6 +2,7 @@ using System;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.CommandOptions.Git;
 using Corgibytes.Freshli.Cli.Commands.Git;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Lib;
