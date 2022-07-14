@@ -1,6 +1,7 @@
 using System.IO;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Repositories;
 
@@ -12,7 +13,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         var entry = db.CachedGitSources.Find(hash);
         if (entry == null)
         {
-            throw new CacheException("No repository with this hash exists in cache.");
+            throw new CacheException(CliOutput.CachedGitSourceRepository_No_Repository_Found_In_Cache);
         }
 
         return entry;
