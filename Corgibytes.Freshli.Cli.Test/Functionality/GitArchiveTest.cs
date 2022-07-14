@@ -1,3 +1,4 @@
+using System.IO;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Test.Common;
@@ -26,15 +27,15 @@ public class GitArchiveTest : FreshliTest
             "6a2c5b97bc5113bda4845c09637043aef3d499f5b62eb252314a6bbcc7afd589",
             "http://any.url",
             "main",
-            "tmp/.freshli"
+            Path.Combine("tmp", ".freshli")
         );
         _repository.addToList(cachedGitSource);
 
         Assert.Equal(
-            "tmp/.freshli/histories/6a2c5b97bc5113bda4845c09637043aef3d499f5b62eb252314a6bbcc7afd589/583d813db3e28b9b44a29db352e2f0e1b4c6e420",
+            Path.Combine("tmp", "freshli", "histories", "6a2c5b97bc5113bda4845c09637043aef3d499f5b62eb252314a6bbcc7afd589", "583d813db3e28b9b44a29db352e2f0e1b4c6e420"),
             _gitArchive.CreateArchive(
                 "6a2c5b97bc5113bda4845c09637043aef3d499f5b62eb252314a6bbcc7afd589",
-                new("tmp/.freshli/histories"),
+                new(Path.Combine("tmp", ".freshli", "histories")),
                 new("583d813db3e28b9b44a29db352e2f0e1b4c6e420"),
                 "git"
             )
