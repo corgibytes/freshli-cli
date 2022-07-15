@@ -1,6 +1,6 @@
 ﻿using System.CommandLine;
 using System.IO;
-using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.DataModel;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 

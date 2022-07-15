@@ -2,8 +2,7 @@ using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
-
-namespace Corgibytes.Freshli.Cli.Functionality;
+namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Key), IsUnique = true)]
 public class CachedProperty

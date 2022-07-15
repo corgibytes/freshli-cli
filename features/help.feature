@@ -16,7 +16,7 @@ Feature: Freshli.Cli
         """
         And the output should contain:
         """
-          git                          Manages repositories cloned by Freshli
+          git                          Uses git to traverse through a repository's history
         """
         And the output should contain:
         """
