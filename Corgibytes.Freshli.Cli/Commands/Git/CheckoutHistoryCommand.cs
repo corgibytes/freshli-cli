@@ -1,6 +1,4 @@
 using System.CommandLine;
-using System.IO;
-using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandOptions.Git;
 
 namespace Corgibytes.Freshli.Cli.Commands.Git;
@@ -21,9 +19,7 @@ public class CheckoutHistoryCommand : RunnableCommand<CheckoutHistoryCommand, Ch
             "--git-path",
             description: "Path to the git binary. Default = 'git'",
             getDefaultValue: () => "git")
-        {
-            Arity = ArgumentArity.ZeroOrOne
-        };
+        { Arity = ArgumentArity.ZeroOrOne };
 
         AddArgument(repositoryId);
         AddArgument(sha);

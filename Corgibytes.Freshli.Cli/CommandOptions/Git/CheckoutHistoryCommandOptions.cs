@@ -1,3 +1,5 @@
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
 namespace Corgibytes.Freshli.Cli.CommandOptions.Git;
 
 public class CheckoutHistoryCommandOptions : CommandOptions
