@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using CliWrap;
+using CliWrap.Builders;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Repositories;
 
@@ -149,12 +150,16 @@ public class GitSource
     private void Pull(string gitPath)
     {
         var stdErrBuffer = new StringBuilder();
-        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
-                args => args
-                    .Add("pull")
-                    .Add("origin")
-                    .Add(Branch)
-            )
+
+        var arguments = new ArgumentsBuilder();
+        arguments.Add("pull").Add("origin");
+
+        if (BranchDefined)
+        {
+            arguments.Add(Branch);
+        }
+
+        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(arguments.Build())
             .WithWorkingDirectory(Directory.FullName)
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
