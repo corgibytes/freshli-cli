@@ -1,7 +1,8 @@
+using System;
 using System.IO;
 using Microsoft.EntityFrameworkCore;
 
-namespace Corgibytes.Freshli.Cli.Functionality;
+namespace Corgibytes.Freshli.Cli.DataModel;
 
 public class CacheContext : DbContext
 {
@@ -13,8 +14,9 @@ public class CacheContext : DbContext
         DbPath = Path.Join(CacheDir.ToString(), CacheDbName);
     }
 
+    // ReSharper disable once UnusedMember.Global
     public static DirectoryInfo DefaultCacheDir =>
-        new(System.Environment.GetEnvironmentVariable("HOME") + "/.freshli");
+        new(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
 
     private DirectoryInfo CacheDir { get; }
     private string DbPath { get; }
@@ -23,7 +25,7 @@ public class CacheContext : DbContext
     public DbSet<CachedProperty> CachedProperties { get; set; }
 
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
-    public DbSet<CachedGitRepo> CachedGitRepos { get; set; }
+    public DbSet<CachedGitSource> CachedGitSources { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlite($"Data Source={DbPath}");
