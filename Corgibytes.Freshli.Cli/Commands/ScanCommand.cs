@@ -6,6 +6,7 @@ using System.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
+using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands;
@@ -45,13 +46,8 @@ public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
 
     protected override int Run(IHost host, InvocationContext context, ScanCommandOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
-
-        context.Console.Out.Write("CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler\n");
-
+        _ = options ?? throw new ArgumentNullException(nameof(options));
+        context.Console.Out.Write($"{CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler}\n");
         return base.Run(host, context, options);
     }
 }
