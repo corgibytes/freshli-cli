@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable MemberInitializerValueIgnored
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
