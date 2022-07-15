@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Invocation;
+using System.CommandLine.IO;
 using System.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Formatters;
@@ -13,10 +14,10 @@ namespace Corgibytes.Freshli.Cli.Commands;
 
 public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
 {
-    public ScanCommand() : base("scan", "Scan command returns metrics results for given local repository path")
+    public ScanCommand() : base("scan", CliOutput.Help_ScanCommand_Description)
     {
         Option<FormatType> formatOption = new(new[] { "--format", "-f" },
-            description: "Represents the output format type - It's value is case insensitive",
+            description: CliOutput.Help_ScanCommand_Option_Format,
             getDefaultValue: () => FormatType.Json)
         {
             AllowMultipleArgumentsPerToken = false,
@@ -24,8 +25,7 @@ public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
         };
 
         Option<IEnumerable<OutputStrategyType>> outputOption = new(new[] { "--output", "-o" },
-            description:
-            "Represents where you want to output the result. This option is case sensitive and you can specify more than one by including it multiple times. Allowed values are [ console | file ]",
+            description: $"{CliOutput.Help_ScanCommand_Option_Output} [ console | file ]",
             getDefaultValue: () => new List<OutputStrategyType> { OutputStrategyType.Console })
         {
             AllowMultipleArgumentsPerToken = true,
@@ -35,7 +35,7 @@ public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
         AddOption(formatOption);
         AddOption(outputOption);
 
-        Argument<DirectoryInfo> pathArgument = new("path", "Source code repository path")
+        Argument<DirectoryInfo> pathArgument = new("path", CliOutput.Help_ScanCommand_Argument_Path)
         {
             Arity = ArgumentArity.ExactlyOne
         };
@@ -47,7 +47,7 @@ public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
     protected override int Run(IHost host, InvocationContext context, ScanCommandOptions options)
     {
         _ = options ?? throw new ArgumentNullException(nameof(options));
-        context.Console.Out.Write($"{CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler}\n");
+        context.Console.Out.WriteLine(CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler);
         return base.Run(host, context, options);
     }
 }

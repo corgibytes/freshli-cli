@@ -1,14 +1,15 @@
 using System.CommandLine;
 using Corgibytes.Freshli.Cli.CommandOptions.Git;
+using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Commands.Git;
 
 public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandOptions>
 {
     public GitCloneCommand()
-        : base("clone", "Clone a repository for Freshli to examine")
+        : base("clone", CliOutput.Help_GitCloneCommand_Description)
     {
-        Argument<string> repoUrlArgument = new("repo-url", "The URL to the repository to clone")
+        Argument<string> repoUrlArgument = new("repo-url", CliOutput.Help_GitCloneCommand_Argument_Repo_Url)
         {
             Arity = ArgumentArity.ExactlyOne
         };
@@ -16,7 +17,7 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandO
         AddArgument(repoUrlArgument);
 
         Option<string> gitPathOption = new("--git-path",
-            description: "The path to the Git executable to use",
+            description: CliOutput.Help_GitCloneCommand_Option_Git_Path,
             getDefaultValue: () => "git")
         {
             AllowMultipleArgumentsPerToken = false,
@@ -26,7 +27,7 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandO
         AddOption(gitPathOption);
 
         Option<string> branch = new("--branch",
-            "The branch to check out on the repository")
+            CliOutput.Help_GitCloneCommand_Option_Branch)
         {
             AllowMultipleArgumentsPerToken = false,
             Arity = ArgumentArity.ZeroOrOne
