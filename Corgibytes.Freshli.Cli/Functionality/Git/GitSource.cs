@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using CliWrap;
-using CliWrap.Builders;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Repositories;
 
@@ -48,7 +47,7 @@ public class GitSource
         Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
     }
 
-    public GitSource(string url, string branch, DirectoryInfo cacheDir)
+    public GitSource(string url, string? branch, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.
         CacheDir = cacheDir;
@@ -85,7 +84,7 @@ public class GitSource
 
     public string Hash { get; }
     private string Url { get; }
-    private string Branch { get; }
+    private string? Branch { get; }
     public DirectoryInfo Directory { get; }
 
     private DirectoryInfo CacheDir { get; }
@@ -132,7 +131,7 @@ public class GitSource
         var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
                 args => args
                     .Add("checkout")
-                    .Add(Branch)
+                    .Add(Branch ?? "")
             )
             .WithWorkingDirectory(Directory.FullName)
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
@@ -150,16 +149,12 @@ public class GitSource
     private void Pull(string gitPath)
     {
         var stdErrBuffer = new StringBuilder();
-
-        var arguments = new ArgumentsBuilder();
-        arguments.Add("pull").Add("origin");
-
-        if (BranchDefined)
-        {
-            arguments.Add(Branch);
-        }
-
-        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(arguments.Build())
+        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
+                args => args
+                    .Add("pull")
+                    .Add("origin")
+                    .Add(Branch ?? "")
+            )
             .WithWorkingDirectory(Directory.FullName)
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 

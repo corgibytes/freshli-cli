@@ -457,3 +457,7 @@ exepublish/
 
 # ignore cucumber/aruba temporary files
 tmp/
+
+# ignore Ruby bundle/vendor files
+.bundle/
+vendor/
