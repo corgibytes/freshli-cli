@@ -94,7 +94,7 @@
     <value>This directory is not a Freshli cache. Directory not destroyed.</value>
   </data>
   <data name="Help_GitCommand_Description" xml:space="preserve">
-    <value>Manages repositories cloned by Freshli</value>
+    <value>Uses git to traverse through a repository's history</value>
   </data>
   <data name="Help_GitCloneCommand_Description" xml:space="preserve">
     <value>Clone a repository for Freshli to examine</value>
