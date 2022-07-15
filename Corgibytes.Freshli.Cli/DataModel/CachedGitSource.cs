@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
+// ReSharper disable MemberInitializerValueIgnored
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -10,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 [Index(nameof(Id), IsUnique = true)]
 public class CachedGitSource
 {
-    public CachedGitSource(string id, string url, string branch, string localPath)
+    public CachedGitSource(string id, string url, string? branch, string localPath)
     {
         Id = id;
         Url = url;
@@ -24,6 +25,7 @@ public class CachedGitSource
 
     public string? Branch { get; set; }
 
+    // ReSharper disable once MemberCanBePrivate.Global
     [Required] public string LocalPath { get; set; } = null!;
 
 }
