@@ -12,7 +12,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
-public class ScanCommand : RunnableCommand<ScanCommandOptions>
+public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
 {
     public ScanCommand() : base("scan", CliOutput.Help_ScanCommand_Description)
     {
@@ -26,7 +26,7 @@ public class ScanCommand : RunnableCommand<ScanCommandOptions>
 
         Option<IEnumerable<OutputStrategyType>> outputOption = new(new[] { "--output", "-o" },
             description: $"{CliOutput.Help_ScanCommand_Option_Output} [ console | file ]",
-            getDefaultValue: () => new List<OutputStrategyType>() { OutputStrategyType.Console })
+            getDefaultValue: () => new List<OutputStrategyType> { OutputStrategyType.Console })
         {
             AllowMultipleArgumentsPerToken = true,
             Arity = ArgumentArity.OneOrMore
@@ -46,13 +46,8 @@ public class ScanCommand : RunnableCommand<ScanCommandOptions>
 
     protected override int Run(IHost host, InvocationContext context, ScanCommandOptions options)
     {
-        if (options == null)
-        {
-            throw new ArgumentNullException(nameof(options));
-        }
-
+        _ = options ?? throw new ArgumentNullException(nameof(options));
         context.Console.Out.WriteLine(CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler);
-
         return base.Run(host, context, options);
     }
 }

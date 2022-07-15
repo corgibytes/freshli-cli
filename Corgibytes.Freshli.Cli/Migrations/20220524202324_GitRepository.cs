@@ -11,7 +11,7 @@ public partial class GitRepository : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.CreateTable(
-            name: "CachedGitRepos",
+            name: "CachedGitSources",
             columns: table => new
             {
                 Id = table.Column<string>(type: "TEXT", nullable: false),
@@ -21,12 +21,12 @@ public partial class GitRepository : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_CachedGitRepos", x => x.Id);
+                table.PrimaryKey("PK_CachedGitSources", x => x.Id);
             });
 
         migrationBuilder.CreateIndex(
-            name: "IX_CachedGitRepos_Id",
-            table: "CachedGitRepos",
+            name: "IX_CachedGitSources_Id",
+            table: "CachedGitSources",
             column: "Id",
             unique: true);
     }
@@ -35,6 +35,6 @@ public partial class GitRepository : Migration
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropTable(
-            name: "CachedGitRepos");
+            name: "CachedGitSources");
     }
 }
