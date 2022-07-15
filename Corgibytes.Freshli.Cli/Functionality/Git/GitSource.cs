@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using CliWrap;
-using CliWrap.Builders;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Repositories;
 
