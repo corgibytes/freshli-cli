@@ -27,8 +27,4 @@ public class CachedGitSource
 
     // ReSharper disable once MemberCanBePrivate.Global
     [Required] public string LocalPath { get; set; } = null!;
-
 }
-
-
-

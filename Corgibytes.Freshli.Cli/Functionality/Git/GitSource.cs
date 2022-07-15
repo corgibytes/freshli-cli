@@ -7,6 +7,7 @@ using System.Text;
 using CliWrap;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Repositories;
+using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -121,7 +122,7 @@ public class GitSource
         if (task.Result.ExitCode != 0)
         {
             Delete();
-            throw new GitException($"Git encountered an error:\n{stdErrBuffer}");
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{stdErrBuffer}");
         }
     }
 
@@ -142,7 +143,7 @@ public class GitSource
         if (task.Result.ExitCode != 0)
         {
             Delete();
-            throw new GitException($"Git encountered an error:\n{stdErrBuffer}");
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{stdErrBuffer}");
         }
     }
 
@@ -163,7 +164,7 @@ public class GitSource
 
         if (task.Result.ExitCode != 0)
         {
-            throw new GitException($"Git encountered an error:\n{stdErrBuffer}");
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{stdErrBuffer}");
         }
     }
 
