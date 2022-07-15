@@ -1,11 +1,7 @@
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace Corgibytes.Freshli.Cli.CommandOptions;
-
-public class GitCommandOptions : CommandOptions
-{
-}
+namespace Corgibytes.Freshli.Cli.CommandOptions.Git;
 
 public class GitCloneCommandOptions : CommandOptions
 {

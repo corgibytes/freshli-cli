@@ -5,8 +5,11 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using CliWrap;
+using CliWrap.Builders;
+using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Repositories;
 
-namespace Corgibytes.Freshli.Cli.Functionality;
+namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 [Serializable]
 public class GitException : Exception
@@ -24,10 +27,10 @@ public class GitException : Exception
     }
 }
 
-public class GitRepository
+public class GitSource
 {
     // ReSharper disable once UnusedMember.Global
-    public GitRepository(string hash, DirectoryInfo cacheDir)
+    public GitSource(string hash, DirectoryInfo cacheDir, ICachedGitSourceRepository cachedGitSourceRepository)
     {
         // Ensure the cache directory is ready for use.
         CacheDir = cacheDir;
@@ -36,9 +39,7 @@ public class GitRepository
         Hash = hash;
 
         // Get existing entry via provided hash
-        using var db = new CacheContext(CacheDir);
-        var entry = db.CachedGitRepos.Find(Hash) ??
-                    throw new CacheException("No repository with this hash exists in cache.");
+        var entry = cachedGitSourceRepository.FindOneByHash(hash, cacheDir);
 
         Url = entry.Url;
         Branch = entry.Branch;
@@ -47,7 +48,7 @@ public class GitRepository
         Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
     }
 
-    public GitRepository(string url, string? branch, DirectoryInfo cacheDir)
+    public GitSource(string url, string? branch, DirectoryInfo cacheDir)
     {
         // Ensure the cache directory is ready for use.
         CacheDir = cacheDir;
@@ -72,26 +73,20 @@ public class GitRepository
 
         // Store ID, URL, branch, and folder path in the cache DB, if it doesn't already exist
         using var db = new CacheContext(CacheDir);
-        if (db.CachedGitRepos.Find(Hash) != null)
+        if (db.CachedGitSources.Find(Hash) != null)
         {
             return;
         }
 
-        var entry = new CachedGitRepo
-        {
-            Id = Hash,
-            Url = Url,
-            Branch = Branch,
-            LocalPath = Directory.FullName
-        };
-        db.CachedGitRepos.Add(entry);
+        var entry = new CachedGitSource(Hash, Url, Branch, Directory.FullName);
+        db.CachedGitSources.Add(entry);
         db.SaveChanges();
     }
 
     public string Hash { get; }
     private string Url { get; }
     private string? Branch { get; }
-    private DirectoryInfo Directory { get; }
+    public DirectoryInfo Directory { get; }
 
     private DirectoryInfo CacheDir { get; }
 
@@ -102,8 +97,8 @@ public class GitRepository
     private void Delete()
     {
         using var db = new CacheContext(CacheDir);
-        var entry = db.CachedGitRepos.Find(Hash);
-        db.CachedGitRepos.Remove(entry!);
+        var entry = db.CachedGitSources.Find(Hash);
+        db.CachedGitSources.Remove(entry!);
 
         Directory.Delete(true);
     }
