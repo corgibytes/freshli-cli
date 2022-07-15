@@ -4,7 +4,7 @@ using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Commands.Cache;
 
-public class CacheDestroyCommand : RunnableCommand<CacheDestroyCommandOptions>
+public class CacheDestroyCommand : RunnableCommand<CacheCommand, CacheDestroyCommandOptions>
 {
     public CacheDestroyCommand()
         : base("destroy", CliOutput.Help_CacheDestroyCommand_Description)

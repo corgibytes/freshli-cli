@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
-public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOptions.CommandOptions
+public abstract class CommandRunner<TCommand, TCommandOptions> : ICommandRunner<TCommand, TCommandOptions>
+    where TCommand : Command where TCommandOptions : CommandOptions.CommandOptions
 {
     protected CommandRunner(IServiceProvider serviceProvider, Runner runner)
     {
@@ -16,7 +18,7 @@ public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOpti
     protected Runner Runner { get; }
     protected IServiceProvider Services { get; }
 
-    public abstract int Run(T options, InvocationContext context);
+    public abstract int Run(TCommandOptions options, InvocationContext context);
 
     protected static bool Confirm(string message, InvocationContext context, bool defaultYes = false)
     {
@@ -36,6 +38,6 @@ public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOpti
             "N"
         };
 
-        return defaultYes ? !noChoices.Contains(choice) : yesChoices.Contains(choice);
+        return defaultYes ? !noChoices.Contains(choice!) : yesChoices.Contains(choice!);
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Resources;
@@ -9,7 +10,7 @@ using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
-public class CacheDestroyCommandRunner : CommandRunner<CacheDestroyCommandOptions>
+public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestroyCommandOptions>
 {
     public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner)
         : base(serviceProvider, runner)
@@ -29,7 +30,8 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheDestroyCommandOption
         }
 
         // Destroy the cache
-        context.Console.Out.WriteLine(string.Format(CliOutput.CacheDestroyCommandRunner_Run_Destroying, options.CacheDir));
+        context.Console.Out.WriteLine(string.Format(CliOutput.CacheDestroyCommandRunner_Run_Destroying,
+            options.CacheDir));
         try
         {
             return Functionality.Cache.Destroy(options.CacheDir).ToExitCode();
