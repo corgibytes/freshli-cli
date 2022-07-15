@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
 namespace Corgibytes.Freshli.Cli.DataModel;
 
@@ -15,8 +16,8 @@ public class CachedGitSource
         LocalPath = localPath;
     }
 
-    public string Id { get; init; }
-    public string Url { get; }
-    public string Branch { get; }
-    public string LocalPath { get; }
+    public string Id { get; set; }
+    public string Url { get; set;  }
+    public string Branch { get; set; }
+    public string LocalPath { get; set; }
 }
