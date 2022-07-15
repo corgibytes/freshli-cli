@@ -63,4 +63,10 @@
   <data name="ReadCycloneDxFile_Exception_Can_Not_Read_File" xml:space="preserve">
     <value>Can not read file, as no file path was given</value>
   </data>
+  <data name="CachedGitSourceRepository_No_Repository_Found_In_Cache" xml:space="preserve">
+    <value>No repository with this hash exists in cache.</value>
+  </data>
+  <data name="GitArchive_Git_Exception" xml:space="preserve">
+    <value>Git encountered an error: {0}</value>
+  </data>
 </root>

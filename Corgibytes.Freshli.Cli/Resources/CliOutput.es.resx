@@ -56,4 +56,10 @@
   <data name="ReadCycloneDxFile_Exception_Can_Not_Read_File" xml:space="preserve">
     <value>No se puede leer el archivo, ya que no se proporcionó la ruta del archivo</value>
   </data>
+  <data name="CachedGitSourceRepository_No_Repository_Found_In_Cache" xml:space="preserve">
+    <value>No existe ningún repositorio con este hash en caché.</value>
+  </data>
+  <data name="GitArchive_Git_Exception" xml:space="preserve">
+    <value>Git encontró un error: {0}</value>
+  </data>
 </root>
