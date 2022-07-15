@@ -261,6 +261,14 @@ To instruct `dotnet format` to attempt to correct the issues that it has found, 
 dotnet format --severity info
 ```
 
+### `dotnet jb`
+
+> :exclamation: Known Issue https://youtrack.jetbrains.com/issue/RSRP-485906
+> If you encounter linter errors that persist despite being explicitly suppressed, try clearing the cache for JetBrains
+> inspect code.
+> On Windows the cache is located here `%LocalAppData%\JetBrains\Transient\InspectCode\v212\SolutionCaches`
+> On Linux and macOS the cache is located here `~/.local/share/JetBrains/Transient/InspectCode/v221/SolutionCaches`
+
 ### `codeclimate`
 
 There are two ways to run the `codeclimate` linter, by using the `codeclimate` CLI or by using `docker`. For both options, you'll need `docker` installed, because the `codeclimate` CLI is just a wrapper that makes it easy to run the `codeclimate` Docker image.
@@ -383,7 +391,7 @@ There are two paths to working with this DevContainer setup.
 
 1. [Install the `devcontainer` CLI](https://code.visualstudio.com/docs/remote/devcontainer-cli) and then run `devcontainer build` followed by `devcontainer open`. That will open Visual Studio Code running from inside of a container with everything needed to build the project.
 
-2. Run `docker` directly. Run `docker -t freshli-cli-dev .devcontainer/` to build the container. Then you'll be able to run `docker run --rm -it -v $PWD:/code -w /code freshli-cli-dev bash` to create a shell session inside of a running container with everything set up for you. (Note, you may need to run `bundle install` when you first start the container to install the ruby-based dependencies. This step is performed for you if you use the `devcontainer` CLI to open a Visual Studio Code instance.)
+2. Run `docker` directly. Run `docker build -t freshli-cli-dev .devcontainer/` to build the container. Then you'll be able to run `docker run --rm -it -v $PWD:/code -w /code freshli-cli-dev bash` to create a shell session inside of a running container with everything set up for you. (Note, you may need to run `bundle install` when you first start the container to install the ruby-based dependencies. This step is performed for you if you use the `devcontainer` CLI to open a Visual Studio Code instance.)
 
 
 ## Contributing

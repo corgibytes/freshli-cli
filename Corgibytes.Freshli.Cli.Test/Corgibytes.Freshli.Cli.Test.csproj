@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
 
     <IsPackable>false</IsPackable>
-
+    <Nullable>enable</Nullable>
     <LangVersion>latestmajor</LangVersion>
   </PropertyGroup>
 
@@ -33,4 +33,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Corgibytes.Freshli.Cli\Corgibytes.Freshli.Cli.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Fixtures\**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

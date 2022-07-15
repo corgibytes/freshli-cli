@@ -114,4 +114,31 @@
   <data name="Exception_Git_EncounteredError" xml:space="preserve">
     <value>Git encountered an error:</value>
   </data>
+  <data name="ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty" xml:space="preserve">
+    <value>Filepath should not be null or empty</value>
+  </data>
+  <data name="AgentsDetectCommandRunner_Run_No_detected_agents_found" xml:space="preserve">
+    <value>No detected agents found</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Package" xml:space="preserve">
+    <value>Package</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Currently_Installed" xml:space="preserve">
+    <value>Currently installed</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Released_at" xml:space="preserve">
+    <value>Released at</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Latest_Available" xml:space="preserve">
+    <value>Latest available</value>
+  </data>
+  <data name="ReadCycloneDxFile_Exception_Can_Not_Read_File" xml:space="preserve">
+    <value>Can not read file, as no file path was given</value>
+  </data>
+  <data name="CachedGitSourceRepository_No_Repository_Found_In_Cache" xml:space="preserve">
+    <value>No repository with this hash exists in cache.</value>
+  </data>
+  <data name="GitArchive_Git_Exception" xml:space="preserve">
+    <value>Git encountered an error: {0}</value>
+  </data>
 </root>

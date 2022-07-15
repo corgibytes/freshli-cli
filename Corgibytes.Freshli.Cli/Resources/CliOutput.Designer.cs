@@ -236,5 +236,59 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("Exception_Git_EncounteredError", resourceCulture);
             }
         }
+
+        internal static string ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty {
+            get {
+                return ResourceManager.GetString("ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty", resourceCulture);
+            }
+        }
+
+        internal static string AgentsDetectCommandRunner_Run_No_detected_agents_found {
+            get {
+                return ResourceManager.GetString("AgentsDetectCommandRunner_Run_No_detected_agents_found", resourceCulture);
+            }
+        }
+
+        internal static string ComputeLibYearCommandRunner_Table_Header_Package {
+            get {
+                return ResourceManager.GetString("ComputeLibYearCommandRunner_Table_Header_Package", resourceCulture);
+            }
+        }
+
+        internal static string ComputeLibYearCommandRunner_Table_Header_Currently_Installed {
+            get {
+                return ResourceManager.GetString("ComputeLibYearCommandRunner_Table_Header_Currently_Installed", resourceCulture);
+            }
+        }
+
+        internal static string ComputeLibYearCommandRunner_Table_Header_Released_at {
+            get {
+                return ResourceManager.GetString("ComputeLibYearCommandRunner_Table_Header_Released_at", resourceCulture);
+            }
+        }
+
+        internal static string ComputeLibYearCommandRunner_Table_Header_Latest_Available {
+            get {
+                return ResourceManager.GetString("ComputeLibYearCommandRunner_Table_Header_Latest_Available", resourceCulture);
+            }
+        }
+
+        internal static string ReadCycloneDxFile_Exception_Can_Not_Read_File {
+            get {
+                return ResourceManager.GetString("ReadCycloneDxFile_Exception_Can_Not_Read_File", resourceCulture);
+            }
+        }
+
+        internal static string CachedGitSourceRepository_No_Repository_Found_In_Cache {
+            get {
+                return ResourceManager.GetString("CachedGitSourceRepository_No_Repository_Found_In_Cache", resourceCulture);
+            }
+        }
+
+        internal static string GitArchive_Git_Exception {
+            get {
+                return ResourceManager.GetString("GitArchive_Git_Exception", resourceCulture);
+            }
+        }
     }
 }
