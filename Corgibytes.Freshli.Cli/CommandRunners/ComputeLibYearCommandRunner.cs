@@ -23,7 +23,7 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, 
 
     public override int Run(ComputeLibYearCommandOptions options, InvocationContext context)
     {
-        if (string.IsNullOrWhiteSpace(options.FilePath?.FullName))
+        if (string.IsNullOrWhiteSpace(options.FilePath.FullName))
         {
             throw new ArgumentNullException(nameof(options),
                 CliOutput.ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty);
@@ -47,6 +47,11 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, 
         {
             if (libYearPackage.ExceptionMessage == null)
             {
+                _ = libYearPackage.CurrentVersion ??
+                    throw new NullReferenceException("libYearPackage has no CurrentVersion");
+                _ = libYearPackage.LatestVersion ??
+                    throw new NullReferenceException("libYearPackage has no LatestVersion");
+
                 table.AddCell(libYearPackage.CurrentVersion.Name);
                 table.AddCell(libYearPackage.CurrentVersion.Version, tableStyle);
                 table.AddCell(libYearPackage.ReleaseDateCurrentVersion.ToString("d"), tableStyle);
@@ -55,6 +60,8 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, 
                 table.AddCell(libYearPackage.LibYear.ToString(CultureInfo.InvariantCulture.NumberFormat), tableStyle);
                 continue;
             }
+
+            _ = libYearPackage.PackageUrl ?? throw new NullReferenceException("libYearPackage has no LatestVersion");
 
             table.AddCell(libYearPackage.PackageUrl.Name, tableStyle);
             table.AddCell(libYearPackage.ExceptionMessage, tableStyle, 5);

@@ -5,13 +5,13 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class PackageLibYear
 {
-    public readonly PackageURL CurrentVersion;
-    public readonly string ExceptionMessage;
-    public readonly PackageURL LatestVersion;
-    public readonly double LibYear;
-    public readonly PackageURL PackageUrl;
-    public DateTimeOffset ReleaseDateCurrentVersion;
-    public DateTimeOffset ReleaseDateLatestVersion;
+    public PackageURL? CurrentVersion { get; }
+    public string? ExceptionMessage { get; }
+    public PackageURL? LatestVersion { get; }
+    public double LibYear { get; }
+    public PackageURL? PackageUrl { get; }
+    public DateTimeOffset ReleaseDateCurrentVersion { get; }
+    public DateTimeOffset ReleaseDateLatestVersion { get; }
 
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear)

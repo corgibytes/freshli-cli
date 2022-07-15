@@ -1,13 +1,18 @@
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
-// ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
+// ReSharper disable PropertyCanBeMadeInitOnly.Global
+// ReSharper disable UnusedMember.Global
+
 namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Key), IsUnique = true)]
 public class CachedProperty
 {
-    public int Id { get; set; }
-    public string Key { get; set; }
-    public string Value { get; set; }
+    [Required] public int Id { get; set; }
+
+    [Required] public string Key { get; set; } = null!;
+
+    [Required] public string Value { get; set; } = null!;
 }

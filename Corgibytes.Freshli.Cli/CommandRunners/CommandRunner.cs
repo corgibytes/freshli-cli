@@ -38,6 +38,6 @@ public abstract class CommandRunner<TCommand, TCommandOptions> : ICommandRunner<
             "N"
         };
 
-        return defaultYes ? !noChoices.Contains(choice) : yesChoices.Contains(choice);
+        return defaultYes ? !noChoices.Contains(choice!) : yesChoices.Contains(choice!);
     }
 }
