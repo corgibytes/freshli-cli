@@ -134,5 +134,17 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("ReadCycloneDxFile_Exception_Can_Not_Read_File", resourceCulture);
             }
         }
+
+        internal static string CachedGitSourceRepository_No_Repository_Found_In_Cache {
+            get {
+                return ResourceManager.GetString("CachedGitSourceRepository_No_Repository_Found_In_Cache", resourceCulture);
+            }
+        }
+
+        internal static string GitArchive_Git_Exception {
+            get {
+                return ResourceManager.GetString("GitArchive_Git_Exception", resourceCulture);
+            }
+        }
     }
 }
