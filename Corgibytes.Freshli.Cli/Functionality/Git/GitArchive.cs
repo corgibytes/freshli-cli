@@ -1,4 +1,3 @@
-using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -11,10 +10,8 @@ public class GitArchive
 {
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
-    public GitArchive(ICachedGitSourceRepository cachedGitSourceRepository)
-    {
+    public GitArchive(ICachedGitSourceRepository cachedGitSourceRepository) =>
         _cachedGitSourceRepository = cachedGitSourceRepository;
-    }
 
     public string CreateArchive(string repositoryId, DirectoryInfo cacheDirectory,
         GitCommitIdentifier gitCommitIdentifier, string gitPath)
@@ -22,7 +19,8 @@ public class GitArchive
         GitSource gitSource = new(repositoryId, cacheDirectory, _cachedGitSourceRepository);
 
         // If it exists, make sure to empty it so we are certain we start with a clean slate.
-        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory.FullName, "histories", gitSource.Hash, gitCommitIdentifier.ToString()));
+        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory.FullName, "histories", gitSource.Hash,
+            gitCommitIdentifier.ToString()));
         if (Directory.Exists(gitSourceTarget.FullName))
         {
             Directory.Delete(gitSourceTarget.FullName, true);
@@ -48,7 +46,8 @@ public class GitArchive
 
         if (archiveProcess.ExitCode != 0)
         {
-            throw new GitException(string.Format(CliOutput.GitArchive_Git_Exception, archiveProcess.StandardError.ReadToEnd()));
+            throw new GitException(string.Format(CliOutput.GitArchive_Git_Exception,
+                archiveProcess.StandardError.ReadToEnd()));
         }
 
         ZipFile.ExtractToDirectory($"{archivePath}", gitSourceTarget.FullName);
