@@ -18,8 +18,7 @@ public class CheckoutHistoryCommand : RunnableCommand<CheckoutHistoryCommand, Ch
         Option<string> gitPath = new(
             "--git-path",
             description: "Path to the git binary. Default = 'git'",
-            getDefaultValue: () => "git")
-        { Arity = ArgumentArity.ZeroOrOne };
+            getDefaultValue: () => "git") { Arity = ArgumentArity.ZeroOrOne };
 
         AddArgument(repositoryId);
         AddArgument(sha);
