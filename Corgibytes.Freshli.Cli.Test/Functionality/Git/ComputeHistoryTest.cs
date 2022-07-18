@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Xunit;
@@ -11,11 +12,13 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 public class ComputeHistoryTest : FreshliTest
 {
     private readonly ComputeHistory _computeHistory;
+    private readonly DirectoryInfo _cacheDir;
 
     public ComputeHistoryTest(ITestOutputHelper output) : base(output)
     {
         MockListCommits listCommits = new();
         _computeHistory = new(listCommits);
+        _cacheDir = new DirectoryInfo("/this/is/a/path");
 
         listCommits.HasCommitsAvailable(new List<GitCommit>
         {
@@ -35,14 +38,14 @@ public class ComputeHistoryTest : FreshliTest
     [MethodData(nameof(ExpectedStopsForYearInterval))]
     public void Verify_it_can_find_sha_identifiers_and_dates_for_interval(List<HistoryIntervalStop> expectedStops,
         string interval) => Assert.Equivalent(expectedStops,
-        _computeHistory.ComputeWithHistoryInterval("repository.identifier", "git", interval));
+        _computeHistory.ComputeWithHistoryInterval("repository.identifier", "git", interval, _cacheDir));
 
     [Theory]
     [MethodData(nameof(ExpectedStopsForCommitHistory))]
     public void Verify_it_can_find_sha_identifiers_and_dates_for_the_all_commits(
         List<HistoryIntervalStop> expectedStops) =>
         Assert.Equivalent(expectedStops,
-            _computeHistory.ComputeCommitHistory("repository.identifier", "git")
+            _computeHistory.ComputeCommitHistory("repository.identifier", "git", _cacheDir)
         );
 
     private static TheoryData<List<HistoryIntervalStop>, string> ExpectedStopsForDayInterval() =>
