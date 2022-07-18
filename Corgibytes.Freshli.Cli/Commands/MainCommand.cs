@@ -12,8 +12,7 @@ public class MainCommand : RootCommand
         Option<DirectoryInfo> cacheDirOption = new(
             new[] { "--cache-dir" },
             description: CliOutput.Help_Option_CacheDir_Description,
-            getDefaultValue: () => CacheContext.DefaultCacheDir)
-        { Arity = ArgumentArity.ExactlyOne };
+            getDefaultValue: () => CacheContext.DefaultCacheDir) { Arity = ArgumentArity.ExactlyOne };
         AddGlobalOption(cacheDirOption);
     }
 }
