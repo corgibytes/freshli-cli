@@ -21,7 +21,7 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
     {
         if (options.CommitHistory)
         {
-            WriteStopsToLines(_computeHistory.ComputeCommitHistory(options.RepositoryId, options.GitPath.FullName),
+            WriteStopsToLines(_computeHistory.ComputeCommitHistory(options.RepositoryId, options.GitPath.FullName, options.CacheDir),
                 context);
             return 0;
         }
@@ -37,8 +37,9 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
         };
 
         WriteStopsToLines(
-            _computeHistory.ComputeWithHistoryInterval(options.RepositoryId, options.GitPath.FullName,
-                historyIntervalDuration), context
+            _computeHistory
+                .ComputeWithHistoryInterval(options.RepositoryId, options.GitPath.FullName, historyIntervalDuration, options.CacheDir),
+            context
         );
 
         return 0;
