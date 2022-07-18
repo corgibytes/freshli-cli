@@ -22,17 +22,22 @@ public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOpti
 
 public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, EmptyCommandOptions>
 {
-    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsDetector agentsDetector)
+    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, Runner runner, IAgentsDetector agentsDetector)
         : base(serviceProvider, runner) =>
         AgentsDetector = agentsDetector;
 
-    private AgentsDetector AgentsDetector { get; }
+    private IAgentsDetector AgentsDetector { get; }
 
     public override int Run(EmptyCommandOptions options, InvocationContext context)
     {
         var agents = AgentsDetector.Detect();
 
-        var agentsAndLocations = agents.ToDictionary(Path.GetFileName);
+        // Path.GetFileName returns string?, but ToDictionary needs string. We resolve this with the following, and
+        // then tell the compiler to stop complaining that GetFileName(x) is never null; this is about the return type.
+        // ReSharper disable once ConstantNullCoalescingCondition
+        var agentsAndLocations = agents.ToDictionary(
+            x => Path.GetFileName(x) ?? throw new ArgumentException("No file name for given path.")
+        );
 
         var basicTable = new TextTable(2);
         basicTable.AddCell("Agent file");

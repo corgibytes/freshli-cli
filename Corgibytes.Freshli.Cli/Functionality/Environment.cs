@@ -10,7 +10,7 @@ public class Environment : IEnvironment
     {
         try
         {
-            var files = Directory.GetFiles(directory).Select(Path.GetFileName).ToList();
+            var files = Directory.GetFiles(directory).Select(Path.GetFileName).Cast<string>().ToList();
             files.Sort();
             return files;
         }
@@ -23,5 +23,5 @@ public class Environment : IEnvironment
     public IList<string> DirectoriesInSearchPath =>
         System.Environment.GetEnvironmentVariable("PATH")!.Split(Path.PathSeparator).ToList();
 
-    public string HomeDirectory => System.Environment.GetEnvironmentVariable("HOME");
+    public string HomeDirectory => System.Environment.GetEnvironmentVariable("HOME")!;
 }

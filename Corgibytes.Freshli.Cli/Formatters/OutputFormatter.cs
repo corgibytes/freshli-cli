@@ -7,25 +7,10 @@ public abstract class OutputFormatter : IOutputFormatter
 {
     public abstract FormatType Type { get; }
 
-    public virtual string Format<T>(T entity)
-    {
-        if (entity == null)
-        {
-            throw new ArgumentNullException(nameof(entity));
-        }
+    public virtual string Format<T>(T entity) => Build(entity ?? throw new ArgumentNullException(nameof(entity)));
 
-        return Build(entity);
-    }
-
-    public virtual string Format<T>(IList<T> entities)
-    {
-        if (entities == null)
-        {
-            throw new ArgumentNullException(nameof(entities));
-        }
-
-        return Build(entities);
-    }
+    public virtual string Format<T>(IList<T> entities) =>
+        Build(entities ?? throw new ArgumentNullException(nameof(entities)));
 
     protected abstract string Build<T>(T entity);
 

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
-#nullable enable
 public abstract class RunnableCommand<TCommand, TCommandOptions> : Command where TCommand : Command
     where TCommandOptions : CommandOptions.CommandOptions
 {
@@ -21,4 +20,3 @@ public abstract class RunnableCommand<TCommand, TCommandOptions> : Command where
         return runner.Run(options, context);
     }
 }
-#nullable restore

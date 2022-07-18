@@ -5,6 +5,7 @@ using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
@@ -19,15 +20,18 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
     public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
     {
         // Unless the --force flag is passed, prompt the user whether they want to destroy the cache
-        if (!options.Force && !Confirm($"Do you want to completely DELETE the directory {options.CacheDir.FullName}?",
-                context))
+        if (!options.Force && !Confirm(
+                string.Format(CliOutput.CacheDestroyCommandRunner_Run_Prompt, options.CacheDir.FullName),
+                context
+            ))
         {
-            context.Console.Out.WriteLine("Operation aborted. Cache not destroyed.");
+            context.Console.Out.WriteLine(CliOutput.CacheDestroyCommandRunner_Run_Abort);
             return true.ToExitCode();
         }
 
         // Destroy the cache
-        context.Console.Out.WriteLine($"Destroying cache at {options.CacheDir}");
+        context.Console.Out.WriteLine(string.Format(CliOutput.CacheDestroyCommandRunner_Run_Destroying,
+            options.CacheDir));
         try
         {
             return Functionality.Cache.Destroy(options.CacheDir).ToExitCode();
