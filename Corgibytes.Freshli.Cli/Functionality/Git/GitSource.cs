@@ -149,14 +149,47 @@ public class GitSource
 
     private void Pull(string gitPath)
     {
+        var stdOutBuffer = new StringBuilder();
+        var branch = Branch;
+        if (Branch == null)
+        {
+            branch = FetchCurrentBranch(gitPath);
+        }
+
         var stdErrBuffer = new StringBuilder();
         var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
                 args => args
                     .Add("pull")
                     .Add("origin")
-                    .Add(Branch ?? "")
+                    .Add(branch ?? "")
             )
             .WithWorkingDirectory(Directory.FullName)
+            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
+
+        using var task = command.ExecuteAsync().Task;
+        task.Wait();
+
+        var commandOutput = stdOutBuffer.ToString().Replace("\n", "");
+
+        if (task.Result.ExitCode != 0 && commandOutput.Equals("Already up to date.") == false)
+        {
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{stdErrBuffer}");
+        }
+    }
+
+    private string FetchCurrentBranch(string gitPath)
+    {
+        var stdErrBuffer = new StringBuilder();
+        var stdOutBuffer = new StringBuilder();
+
+        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
+                args => args
+                    .Add("branch")
+                    .Add("--show-current")
+            )
+            .WithWorkingDirectory(Directory.FullName)
+            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
         using var task = command.ExecuteAsync().Task;
@@ -166,6 +199,8 @@ public class GitSource
         {
             throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{stdErrBuffer}");
         }
+
+        return stdOutBuffer.ToString().Replace("\n", "");
     }
 
     public void CloneOrPull(string gitPath)
