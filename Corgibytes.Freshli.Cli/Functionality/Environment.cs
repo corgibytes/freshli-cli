@@ -10,7 +10,7 @@ public class Environment : IEnvironment
     {
         try
         {
-            var files = Directory.GetFiles(directory).Select(Path.GetFileName).Cast<string>().ToList();
+            var files = Directory.GetFiles(directory).Select(Path.GetFileName).ToList();
             files.Sort();
             return files;
         }
