@@ -4,7 +4,7 @@ using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
-public class AgentsDetector
+public class AgentsDetector : IAgentsDetector
 {
     public AgentsDetector(IEnvironment environment) => Environment = environment;
 
