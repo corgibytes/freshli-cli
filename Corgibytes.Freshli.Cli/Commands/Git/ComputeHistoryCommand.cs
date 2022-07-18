@@ -1,6 +1,5 @@
 using System;
 using System.CommandLine;
-using System.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 
 namespace Corgibytes.Freshli.Cli.Commands.Git;
@@ -56,7 +55,11 @@ public class ComputeHistoryCommand : RunnableCommand<ComputeHistoryCommand, Comp
 
         AddOption(historyInterval);
 
-        Option<FileInfo> gitPath = new("--git-path", "Path to the git binary. Default = 'git'")
+        Option<string> gitPath = new(
+            "--git-path",
+            description: "Path to the git binary. Default = 'git'",
+            getDefaultValue: () => "git"
+        )
         {
             Arity = ArgumentArity.ZeroOrOne
         };
