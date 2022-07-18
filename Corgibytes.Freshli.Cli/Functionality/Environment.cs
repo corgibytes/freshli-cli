@@ -6,7 +6,7 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class Environment : IEnvironment
 {
-    public IList<string> GetListOfFiles(string directory)
+    public IList<string?> GetListOfFiles(string directory)
     {
         try
         {
@@ -16,7 +16,7 @@ public class Environment : IEnvironment
         }
         catch (DirectoryNotFoundException)
         {
-            return new List<string>();
+            return new List<string?>();
         }
     }
 
