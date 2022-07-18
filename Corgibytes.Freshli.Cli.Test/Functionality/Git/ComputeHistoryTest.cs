@@ -14,10 +14,10 @@ public class ComputeHistoryTest : FreshliTest
 
     public ComputeHistoryTest(ITestOutputHelper output) : base(output)
     {
-        MockGitCommitRepository gitCommitRepository = new();
-        _computeHistory = new(gitCommitRepository);
+        MockListCommits listCommits = new();
+        _computeHistory = new(listCommits);
 
-        gitCommitRepository.HasCommitsAvailable(new List<GitCommit>
+        listCommits.HasCommitsAvailable(new List<GitCommit>
         {
             new("583d813db3e28b9b44a29db352e2f0e1b4c6e420", new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)),
             new("75c7fcc7336ee718050c4a5c8dfb5598622787b2", new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)),

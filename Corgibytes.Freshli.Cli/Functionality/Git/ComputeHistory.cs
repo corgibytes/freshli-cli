@@ -7,13 +7,13 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class ComputeHistory
 {
-    private readonly IGitCommitRepository _gitCommitRepository;
+    private readonly IListCommits _listCommits;
 
-    public ComputeHistory(IGitCommitRepository gitCommitRepository) => _gitCommitRepository = gitCommitRepository;
+    public ComputeHistory(IListCommits listCommits) => _listCommits = listCommits;
 
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(string repositoryId, string gitPath)
     {
-        var commitHistory = _gitCommitRepository.ListCommits(repositoryId, gitPath);
+        var commitHistory = _listCommits.ForRepository(repositoryId, gitPath);
         return commitHistory
             .Select(gitCommit => new HistoryIntervalStop(gitCommit.CommittedAt, gitCommit.ShaIdentifier)).ToList();
     }
@@ -24,7 +24,7 @@ public class ComputeHistory
         string historyInterval
     )
     {
-        var commitHistory = _gitCommitRepository.ListCommits(repositoryId, gitPath);
+        var commitHistory = _listCommits.ForRepository(repositoryId, gitPath);
 
         var groupedHistories = historyInterval switch
         {
