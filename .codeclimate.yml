@@ -9,5 +9,4 @@ checks:
     config:
       threshold: 45
   similar-code:
-    config:
-      threshold: 130
+    enabled: false
