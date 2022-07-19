@@ -12,6 +12,7 @@ using Environment = System.Environment;
 using System.CommandLine;
 using System.Reflection;
 using CliWrap;
+using System.Diagnostics;
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOptions>
@@ -37,19 +38,16 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
         var agents = AgentsDetector.Detect();
 
         var agentsAndLocations = agents.ToDictionary(Path.GetFileName);
-
-        var basicTable = new TextTable(2);
-        
-
         foreach (var agentAndLocation in agentsAndLocations)
         {
-            basicTable.AddCell(agentAndLocation.Key);
-            basicTable.AddCell(agentAndLocation.Value);
+            Console.WriteLine("file\t" + $"{agentAndLocation.Key}");
+            Console.WriteLine("path\t" +  $"{agentAndLocation.Value}");
         }
 
-        Console.WriteLine(agentsAndLocations.Count == 0
-            ? CliOutput.AgentsDetectCommandRunner_Run_No_detected_agents_found
-            : basicTable.Render());
+        if (agentsAndLocations.Count == 0)
+        {
+            Console.WriteLine(CliOutput.AgentsDetectCommandRunner_Run_No_detected_agents_found);
+        }
 
         return 0;
     }
@@ -57,56 +55,77 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
 
 public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, AgentsVerifyCommandOptions>
 {
+    private readonly AgentsDetector _agentsDetector;
     public AgentsVerifier AgentsVerifier { get; }
-    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsVerifier agentsVerifier)
+    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsVerifier agentsVerifier, AgentsDetector agentsDetector)
         : base(serviceProvider, runner)
     {
+        _agentsDetector = agentsDetector;
         AgentsVerifier = agentsVerifier;
     }
 
     public override int Run(AgentsVerifyCommandOptions options, InvocationContext context)
     {
-        var agents = AgentsVerifier.Verify();
-        System.Console.WriteLine(AgentsVerifier + " Dona dona verify");
-        context.Console.WriteLine(options.LanguageName + " Dona's lang argument");
+        var agents = _agentsDetector.Detect();
 
-        StringBuilder stdOutBuffer = new StringBuilder();
-        var executionLocation = new FileInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).Directory;
-        var executable = new FileInfo(executionLocation.FullName + "/freshli");
-        var command = CliWrap.Cli.Wrap(executable.FullName).WithArguments(
-                args => args
-                    .Add("agents")
-                    .Add("detect")
-                    
-            )
-            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer));
 
-            using var task = command.ExecuteAsync().Task;
-            task.Wait();
-
-            Console.WriteLine( " Dona dona \n" + stdOutBuffer.ToString() + "\n Dona dona123finish");
-
-            
-            
-            foreach(string x in stdOutBuffer.ToString().Split('|',StringSplitOptions.None)){
-                if (x.Length != 0)
-                {
-                    Console.WriteLine("Dona string x: 123 ");
-                    Console.WriteLine("Dona string x: " + x);
-                    Console.WriteLine("Dona string x.length: " + x.Length);
-                }
-            }
-
-        if (options.LanguageName.Length == 0) {
-            
-            Console.WriteLine("length is zero");
-        } else 
+        if (options.LanguageName == null)
         {
-            Console.WriteLine(options.LanguageName.Length + " my word length");
-        }
+            
+            foreach (var agentsAndPath in agents)
+            {
+             
+            //  AgentsVerifier.RunProcessOutput(agentsAndPath,"validating-repositories");
+            //  AgentsVerifier.RunProcessOutput(agentsAndPath,"detect-manifests");
+            //  AgentsVerifier.RunProcessOutput(agentsAndPath,"process-manifests");
+            }
+        } else
+        {
+            
+            foreach (var agentsAndPath in agents)
+            {
+                if(agentsAndPath.ToLower().Contains(options.LanguageName.ToLower())){
+                
+                AgentsVerifier.RunAgentsVerify(agentsAndPath,"validating-repositories", options.CacheDir, options.LanguageName);
+                // AgentsVerifier.RunProcessOutput(agentsAndPath,"detect-manifests");
+                // AgentsVerifier.RunProcessOutput(agentsAndPath,"process-manifests");
 
-        context.Console.WriteLine(options.Workers + 1 + " Dona's workers found");
+                }
+                
+            }
+            Console.WriteLine(options.LanguageName + " my word length");
+        }
+        
+       
+        
+
+
+        // string executableFile = "/Users/dona/Desktop/projects/freshli-cli/agents_verify.sh";
+        // var processInfo = new ProcessStartInfo();
+        // processInfo.UseShellExecute = false;
+        // processInfo.FileName = executableFile;   // 'sh' for bash
+        //
+        // var stdErrBuffer = new StringBuilder();
+        // var stdOutBuffer = new StringBuilder();
+        // var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
+        //         args => args
+        //             .Add("log")
+        //             // Commit hash, author date, strict ISO 8601 format
+        //             // Lists commits as '583d813db3e28b9b44a29db352e2f0e1b4c6e420 2021-05-19T15:24:24-04:00'
+        //             // Source: https://git-scm.com/docs/pretty-formats
+        //             .Add("--pretty=format:%H %aI")
+        //     )
+        //     .WithValidation(CommandResultValidation.None)
+        //     .WithWorkingDirectory(gitSource.Directory.FullName)
+        //     .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+        //     .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
+        //
+        // using var task = command.ExecuteAsync().Task;
+        // task.Wait();
+
+        
+
+        context.Console.WriteLine(options.Workers + " Dona's workers found");
         return 0;
     }
 }
-
