@@ -50,7 +50,7 @@ public class GitRepository
         Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
     }
 
-    public GitRepository(string url, string branch, DirectoryInfo cacheDir)
+    public GitRepository(string url, string branch, DirectoryInfo cacheDir, string directory ="")
     {
         // Ensure the cache directory is ready for use.
         CacheDir = cacheDir;
@@ -71,7 +71,7 @@ public class GitRepository
         Hash = stringBuilder.ToString();
 
         // Ensure the directory exists in the cache for cloning the repository.
-        Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
+        Directory = Cache.GetDirectoryInCache(CacheDir, new[] { directory.Length == 0 ? "repositories" : directory, Hash });
 
         // Store ID, URL, branch, and folder path in the cache DB, if it doesn't already exist
         using var db = new CacheContext(CacheDir);
@@ -158,6 +158,7 @@ public class GitRepository
     private void Pull(string gitPath)
     {
         var stdErrBuffer = new StringBuilder();
+
         var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
                 args => args
                     .Add("pull")
