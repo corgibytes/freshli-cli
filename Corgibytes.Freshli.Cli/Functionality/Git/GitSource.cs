@@ -170,7 +170,7 @@ public class GitSource
         using var task = command.ExecuteAsync().Task;
         task.Wait();
 
-        var commandOutput = stdOutBuffer.ToString().Replace("\n", "");
+        var commandOutput = stdOutBuffer.ToString().Replace("\n", " ");
 
         if (task.Result.ExitCode != 0 && commandOutput.Equals("Already up to date.") == false)
         {
