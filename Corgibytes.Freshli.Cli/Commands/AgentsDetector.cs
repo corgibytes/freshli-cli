@@ -17,7 +17,7 @@ public class AgentsDetector : IAgentsDetector
         foreach (var path in paths)
         {
             var searchPath = path;
-            IList<string> filesResults;
+            IList<string?> filesResults;
             if (path.Contains("~/"))
             {
                 var homePath = Environment.HomeDirectory;
@@ -32,7 +32,7 @@ public class AgentsDetector : IAgentsDetector
 
             foreach (var file in filesResults)
             {
-                if (Path.GetFileName(file).StartsWith("freshli-agent-"))
+                if (file != null && Path.GetFileName(file).StartsWith("freshli-agent-"))
                 {
                     agents.Add(Path.Combine(searchPath, file));
                 }
