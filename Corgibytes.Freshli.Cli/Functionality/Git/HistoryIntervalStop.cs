@@ -4,10 +4,10 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class HistoryIntervalStop
 {
-    public HistoryIntervalStop(DateTimeOffset committedAt, string gitCommitIdentifier)
+    public HistoryIntervalStop(string gitCommitIdentifier, DateTimeOffset committedAt)
     {
-        CommittedAt = committedAt;
         GitCommitIdentifier = gitCommitIdentifier;
+        CommittedAt = committedAt;
     }
 
     public string GitCommitIdentifier { get; }

@@ -55,20 +55,20 @@ public class ComputeHistoryTest : FreshliTest
                 new()
                 {
                     new(
-                        new(2021, 2, 1, 19, 27, 42, TimeSpan.Zero),
-                        "a4792063da2ebb7628b66b9f238cba300b18ab00"
+                        "a4792063da2ebb7628b66b9f238cba300b18ab00",
+                        new(2021, 2, 1, 19, 27, 42, TimeSpan.Zero)
                     ),
                     new(
-                        new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero),
-                        "b2bd95f16a8587dd0bd618ea3415fc8928832c91"
+                        "b2bd95f16a8587dd0bd618ea3415fc8928832c91",
+                        new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero)
                     ),
                     new(
-                        new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero),
-                        "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                        "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                        new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
                     ),
                     new(
-                        new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero),
-                        "583d813db3e28b9b44a29db352e2f0e1b4c6e420"
+                        "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
+                        new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                     )
                 },
                 "day"
@@ -82,16 +82,16 @@ public class ComputeHistoryTest : FreshliTest
                 new()
                 {
                     new(
-                        new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero),
-                        "b2bd95f16a8587dd0bd618ea3415fc8928832c91"
+                        "b2bd95f16a8587dd0bd618ea3415fc8928832c91",
+                        new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero)
                     ),
                     new(
-                        new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero),
-                        "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                        "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                        new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
                     ),
                     new(
-                        new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero),
-                        "583d813db3e28b9b44a29db352e2f0e1b4c6e420"
+                        "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
+                        new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                     )
                 },
                 "week"
@@ -105,12 +105,12 @@ public class ComputeHistoryTest : FreshliTest
                 new()
                 {
                     new(
-                        new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero),
-                        "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                        "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                        new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
                     ),
                     new(
-                        new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero),
-                        "583d813db3e28b9b44a29db352e2f0e1b4c6e420"
+                        "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
+                        new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                     )
                 },
                 "month"
@@ -124,8 +124,8 @@ public class ComputeHistoryTest : FreshliTest
                 new()
                 {
                     new(
-                        new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero),
-                        "583d813db3e28b9b44a29db352e2f0e1b4c6e420"
+                        "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
+                        new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                     )
                 },
                 "year"
@@ -138,28 +138,28 @@ public class ComputeHistoryTest : FreshliTest
             new()
             {
                 new(
-                    new(2021, 2, 1, 19, 26, 16, TimeSpan.Zero),
-                    "9cd8467fe93714da66bce9056d527d360c6389df"
+                    "9cd8467fe93714da66bce9056d527d360c6389df",
+                    new(2021, 2, 1, 19, 26, 16, TimeSpan.Zero)
                 ),
                 new(
-                    new(2021, 2, 1, 19, 27, 42, TimeSpan.Zero),
-                    "a4792063da2ebb7628b66b9f238cba300b18ab00"
+                    "a4792063da2ebb7628b66b9f238cba300b18ab00",
+                    new(2021, 2, 1, 19, 27, 42, TimeSpan.Zero)
                 ),
                 new(
-                    new(2021, 2, 2, 10, 13, 46, TimeSpan.Zero),
-                    "57e5112ae54b7bec8a5294b7cbba2fd9bbd0a75c"
+                    "57e5112ae54b7bec8a5294b7cbba2fd9bbd0a75c",
+                    new(2021, 2, 2, 10, 13, 46, TimeSpan.Zero)
                 ),
                 new(
-                    new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero),
-                    "b2bd95f16a8587dd0bd618ea3415fc8928832c91"
+                    "b2bd95f16a8587dd0bd618ea3415fc8928832c91",
+                    new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero)
                 ),
                 new(
-                    new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero),
-                    "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                    "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                    new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
                 ),
                 new(
-                    new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero),
-                    "583d813db3e28b9b44a29db352e2f0e1b4c6e420"
+                    "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
+                    new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                 )
             }
         };
