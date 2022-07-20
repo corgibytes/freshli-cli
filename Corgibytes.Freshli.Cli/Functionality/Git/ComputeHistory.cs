@@ -54,10 +54,10 @@ public class ComputeHistory
         return (
                 from groupedHistory in groupedHistories
                 select groupedHistory.MaxBy(i => i.CommittedAt)
-                into mostRecentCommitForThisDay
-                where mostRecentCommitForThisDay != null
-                select new HistoryIntervalStop(mostRecentCommitForThisDay.CommittedAt,
-                    mostRecentCommitForThisDay.ShaIdentifier))
+                into mostRecentCommitForThisGroupedPeriod
+                where mostRecentCommitForThisGroupedPeriod != null
+                select new HistoryIntervalStop(mostRecentCommitForThisGroupedPeriod.CommittedAt,
+                    mostRecentCommitForThisGroupedPeriod.ShaIdentifier))
             .ToList();
     }
 }
