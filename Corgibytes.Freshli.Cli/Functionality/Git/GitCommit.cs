@@ -4,8 +4,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitCommit
 {
-    public readonly DateTimeOffset CommittedAt;
-    public readonly string ShaIdentifier;
+    public DateTimeOffset CommittedAt { get; }
+    public string ShaIdentifier { get; } 
 
     public GitCommit(string shaIdentifier, DateTimeOffset committedAt)
     {
