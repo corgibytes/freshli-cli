@@ -127,9 +127,8 @@ public class GitRepository
         using var task = command.ExecuteAsync().Task;
         task.Wait();
 
-        if (task.Result.ExitCode != 0)
-        {
-            Delete();
+        if (task.Result.ExitCode != 0 && stdErrBuffer.Length > 0)
+        {                
             throw new GitException($"Git encountered an error:\n{stdErrBuffer}");
         }
     }
@@ -137,20 +136,22 @@ public class GitRepository
     private void Checkout(string gitPath)
     {
         var stdErrBuffer = new StringBuilder();
+        
         var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
                 args => args
                     .Add("checkout")
-                    .Add(Branch)
+                    .Add(Branch ?? "")
             )
+            .WithValidation(CommandResultValidation.None)
             .WithWorkingDirectory(Directory.FullName)
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
-
+        
         using var task = command.ExecuteAsync().Task;
         task.Wait();
 
-        if (task.Result.ExitCode != 0)
-        {
-            Delete();
+        Console.WriteLine("Dona checkout: " + task.Result.ExitCode );
+        if (task.Result.ExitCode != 0 && stdErrBuffer.Length > 0)
+        {                
             throw new GitException($"Git encountered an error:\n{stdErrBuffer}");
         }
     }
@@ -158,23 +159,26 @@ public class GitRepository
     private void Pull(string gitPath)
     {
         var stdErrBuffer = new StringBuilder();
-
         var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
                 args => args
                     .Add("pull")
-                    .Add("origin")
-                    .Add(Branch)
+                    .Add("--ff-only")
+                    
+                    
             )
+            .WithValidation(CommandResultValidation.None)
             .WithWorkingDirectory(Directory.FullName)
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
-        using var task = command.ExecuteAsync().Task;
+        using var task = command.ExecuteAsync().Task;        
         task.Wait();
-
-        if (task.Result.ExitCode != 0)
-        {
+        
+        // exit code 141 seems to be empty/not needed, skipping over it by checking the length
+        if (task.Result.ExitCode != 0 && stdErrBuffer.Length > 0)
+        {                
             throw new GitException($"Git encountered an error:\n{stdErrBuffer}");
         }
+            
     }
 
     public void CloneOrPull(string gitPath)
