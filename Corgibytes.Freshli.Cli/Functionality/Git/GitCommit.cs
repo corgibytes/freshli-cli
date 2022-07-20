@@ -9,7 +9,7 @@ public class GitCommit
 
     public GitCommit(string shaIdentifier, DateTimeOffset committedAt)
     {
-        ShaIdentifier = shaIdentifier;
         CommittedAt = committedAt;
+        ShaIdentifier = shaIdentifier;
     }
 }
