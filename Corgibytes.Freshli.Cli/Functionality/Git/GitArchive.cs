@@ -16,7 +16,7 @@ public class GitArchive
     public string CreateArchive(string repositoryId, DirectoryInfo cacheDirectory,
         GitCommitIdentifier gitCommitIdentifier, string gitPath)
     {
-        GitSource gitSource = new(repositoryId, cacheDirectory, _cachedGitSourceRepository);
+        GitSource gitSource = new GitSource(repositoryId, cacheDirectory, _cachedGitSourceRepository);
 
         // If it exists, make sure to empty it so we are certain we start with a clean slate.
         var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory.FullName, "histories", gitSource.Hash,

@@ -127,7 +127,7 @@ public class ScanCommandOptionsTest : FreshliTest
         IList<OutputStrategyType> expectedOutput)
     {
         var cmBuilder = Program.CreateCommandLineBuilder();
-        Parser parser = new(cmBuilder.Command);
+        Parser parser = new Parser(cmBuilder.Command);
 
         var result = parser.Parse(args);
 

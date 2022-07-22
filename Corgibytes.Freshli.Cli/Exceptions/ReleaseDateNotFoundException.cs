@@ -9,8 +9,8 @@ public class ReleaseDateNotFoundException : ApplicationException
     }
 
     public static ReleaseDateNotFoundException BecauseNoAgentReturnedAnyResults() =>
-        new("None of the agents returned results for this package url");
+        new ReleaseDateNotFoundException("None of the agents returned results for this package url");
 
     public static ReleaseDateNotFoundException BecauseReturnedListDidNotContainReleaseDate() =>
-        new("The returned list did not contain a release date for this package url");
+        new ReleaseDateNotFoundException("The returned list did not contain a release date for this package url");
 }
