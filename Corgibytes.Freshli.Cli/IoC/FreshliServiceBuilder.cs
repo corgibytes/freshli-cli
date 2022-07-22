@@ -85,6 +85,14 @@ public class FreshliServiceBuilder
         Services.AddScoped<ICommandRunner<GitCloneCommand, GitCloneCommandOptions>, GitCloneCommandRunner>();
         Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
 
+        Services
+            .AddScoped<ICommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>,
+                ComputeHistoryCommandRunner>();
+        Services.AddOptions<ComputeHistoryCommandOptions>().BindCommandLine();
+
+        Services.AddTransient<ComputeHistory>();
+        Services.AddScoped<IListCommits, ListCommits>();
+
         Services.AddScoped<GitArchive>();
         Services.AddScoped<ICachedGitSourceRepository, CachedGitSourceRepository>();
     }
