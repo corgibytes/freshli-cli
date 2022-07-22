@@ -9,5 +9,5 @@ public class LatestVersionNotFoundException : ApplicationException
     }
 
     public static LatestVersionNotFoundException BecauseLatestCouldNotBeFoundInList() =>
-        new("Latest version could not be found in list for this package url");
+        new LatestVersionNotFoundException("Latest version could not be found in list for this package url");
 }

@@ -21,7 +21,7 @@ public class GitCommitIdentifierTest : FreshliTest
     }
 
     private static TheoryData<string, string> LengthVerifications() =>
-        new()
+        new TheoryData<string, string>
         {
             {
                 "bb97606e413706874d93185f58fe452448ac6680toomany",

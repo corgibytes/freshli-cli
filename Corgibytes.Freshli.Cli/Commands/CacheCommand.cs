@@ -8,10 +8,10 @@ public class CacheCommand : Command
 {
     public CacheCommand() : base("cache", CliOutput.Help_CacheCommand_Description)
     {
-        CachePrepareCommand prepare = new();
+        CachePrepareCommand prepare = new CachePrepareCommand();
         AddCommand(prepare);
 
-        CacheDestroyCommand destroy = new();
+        CacheDestroyCommand destroy = new CacheDestroyCommand();
         AddCommand(destroy);
     }
 }
