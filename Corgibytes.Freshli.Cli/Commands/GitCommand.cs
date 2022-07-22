@@ -14,5 +14,8 @@ public class GitCommand : Command
 
         CheckoutHistoryCommand checkoutHistoryCommand = new();
         AddCommand(checkoutHistoryCommand);
+
+        ComputeHistoryCommand computeHistoryCommand = new();
+        AddCommand(computeHistoryCommand);
     }
 }
