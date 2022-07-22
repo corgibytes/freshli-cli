@@ -18,7 +18,7 @@ public class CheckoutHistoryCommandTest : FreshliTest
     [Fact]
     public void Verify_git_path_option_configuration()
     {
-        CheckoutHistoryCommand checkoutHistoryCommand = new();
+        CheckoutHistoryCommand checkoutHistoryCommand = new CheckoutHistoryCommand();
         var option = checkoutHistoryCommand.Options.ElementAt(0);
 
         option.Name.Should().Be("git-path");
@@ -29,7 +29,7 @@ public class CheckoutHistoryCommandTest : FreshliTest
     [MethodData(nameof(DataForVerifyArgumentConfiguration))]
     public void Verify_argument_configuration(string alias, ArgumentArity arity, int elementIndex)
     {
-        CheckoutHistoryCommand checkoutHistoryCommand = new();
+        CheckoutHistoryCommand checkoutHistoryCommand = new CheckoutHistoryCommand();
         var argument = checkoutHistoryCommand.Arguments.ElementAt(elementIndex);
 
         argument.Name.Should().Be(alias);
@@ -37,7 +37,7 @@ public class CheckoutHistoryCommandTest : FreshliTest
     }
 
     private static TheoryData<string, ArgumentArity, int> DataForVerifyArgumentConfiguration() =>
-        new()
+        new TheoryData<string, ArgumentArity, int>
         {
             { "repository-id", ArgumentArity.ExactlyOne, 0 },
             { "sha", ArgumentArity.ExactlyOne, 1 }

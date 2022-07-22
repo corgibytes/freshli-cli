@@ -9,16 +9,16 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandO
     public GitCloneCommand()
         : base("clone", CliOutput.Help_GitCloneCommand_Description)
     {
-        Argument<string> repoUrlArgument = new("repo-url", CliOutput.Help_GitCloneCommand_Argument_Repo_Url)
-        {
-            Arity = ArgumentArity.ExactlyOne
-        };
+        Argument<string> repoUrlArgument =
+            new Argument<string>("repo-url", CliOutput.Help_GitCloneCommand_Argument_Repo_Url)
+            {
+                Arity = ArgumentArity.ExactlyOne
+            };
 
         AddArgument(repoUrlArgument);
 
-        Option<string> gitPathOption = new("--git-path",
-            description: CliOutput.Help_GitCloneCommand_Option_Git_Path,
-            getDefaultValue: () => "git")
+        Option<string> gitPathOption = new Option<string>("--git-path",
+            description: CliOutput.Help_GitCloneCommand_Option_Git_Path, getDefaultValue: () => "git")
         {
             AllowMultipleArgumentsPerToken = false,
             Arity = ArgumentArity.ExactlyOne
@@ -26,8 +26,7 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandO
 
         AddOption(gitPathOption);
 
-        Option<string> branch = new("--branch",
-            CliOutput.Help_GitCloneCommand_Option_Branch)
+        Option<string> branch = new Option<string>("--branch", CliOutput.Help_GitCloneCommand_Option_Branch)
         {
             AllowMultipleArgumentsPerToken = false,
             Arity = ArgumentArity.ZeroOrOne

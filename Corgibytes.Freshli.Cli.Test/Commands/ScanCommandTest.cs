@@ -18,7 +18,7 @@ public class ScanCommandTest : FreshliTest
     [Fact]
     public void Verify_path_argument_configuration()
     {
-        ScanCommand scanCommand = new();
+        ScanCommand scanCommand = new ScanCommand();
 
         scanCommand.Arguments.Should().HaveCount(1);
 
@@ -34,7 +34,7 @@ public class ScanCommandTest : FreshliTest
         TestHelpers.VerifyAlias<ScanCommand>(alias, arity, allowsMultiples);
 
     private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations() =>
-        new()
+        new TheoryData<string, ArgumentArity, bool>
         {
             { "--format", ArgumentArity.ExactlyOne, false },
             { "-f", ArgumentArity.ExactlyOne, false },
@@ -45,7 +45,7 @@ public class ScanCommandTest : FreshliTest
     [Fact]
     public void Verify_handler_configuration()
     {
-        ScanCommand scanCommand = new();
+        ScanCommand scanCommand = new ScanCommand();
         scanCommand.Handler.Should().NotBeNull();
     }
 }

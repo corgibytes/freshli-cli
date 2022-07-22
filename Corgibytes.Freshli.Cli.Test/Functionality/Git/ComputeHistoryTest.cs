@@ -11,23 +11,23 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
 public class ComputeHistoryTest : FreshliTest
 {
-    private readonly ComputeHistory _computeHistory;
     private readonly DirectoryInfo _cacheDir;
+    private readonly ComputeHistory _computeHistory;
 
     public ComputeHistoryTest(ITestOutputHelper output) : base(output)
     {
-        MockListCommits listCommits = new();
+        var listCommits = new MockListCommits();
         _computeHistory = new(listCommits);
-        _cacheDir = new DirectoryInfo("/this/is/a/path");
+        _cacheDir = new("/this/is/a/path");
 
         listCommits.HasCommitsAvailable(new List<GitCommit>
         {
-            new("583d813db3e28b9b44a29db352e2f0e1b4c6e420", new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)),
-            new("75c7fcc7336ee718050c4a5c8dfb5598622787b2", new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)),
-            new("b2bd95f16a8587dd0bd618ea3415fc8928832c91", new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero)),
-            new("57e5112ae54b7bec8a5294b7cbba2fd9bbd0a75c", new(2021, 2, 2, 10, 13, 46, TimeSpan.Zero)),
-            new("a4792063da2ebb7628b66b9f238cba300b18ab00", new(2021, 2, 1, 19, 27, 42, TimeSpan.Zero)),
-            new("9cd8467fe93714da66bce9056d527d360c6389df", new(2021, 2, 1, 19, 26, 16, TimeSpan.Zero))
+            new GitCommit("583d813db3e28b9b44a29db352e2f0e1b4c6e420", new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)),
+            new GitCommit("75c7fcc7336ee718050c4a5c8dfb5598622787b2", new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)),
+            new GitCommit("b2bd95f16a8587dd0bd618ea3415fc8928832c91", new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero)),
+            new GitCommit("57e5112ae54b7bec8a5294b7cbba2fd9bbd0a75c", new(2021, 2, 2, 10, 13, 46, TimeSpan.Zero)),
+            new GitCommit("a4792063da2ebb7628b66b9f238cba300b18ab00", new(2021, 2, 1, 19, 27, 42, TimeSpan.Zero)),
+            new GitCommit("9cd8467fe93714da66bce9056d527d360c6389df", new(2021, 2, 1, 19, 26, 16, TimeSpan.Zero))
         });
     }
 
@@ -49,24 +49,24 @@ public class ComputeHistoryTest : FreshliTest
         );
 
     private static TheoryData<List<HistoryIntervalStop>, string> ExpectedStopsForDayInterval() =>
-        new()
+        new TheoryData<List<HistoryIntervalStop>, string>
         {
             {
-                new()
+                new List<HistoryIntervalStop>
                 {
-                    new(
+                    new HistoryIntervalStop(
                         "a4792063da2ebb7628b66b9f238cba300b18ab00",
                         new(2021, 2, 1, 19, 27, 42, TimeSpan.Zero)
                     ),
-                    new(
+                    new HistoryIntervalStop(
                         "b2bd95f16a8587dd0bd618ea3415fc8928832c91",
                         new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero)
                     ),
-                    new(
+                    new HistoryIntervalStop(
                         "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
                         new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
                     ),
-                    new(
+                    new HistoryIntervalStop(
                         "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
                         new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                     )
@@ -76,20 +76,20 @@ public class ComputeHistoryTest : FreshliTest
         };
 
     private static TheoryData<List<HistoryIntervalStop>, string> ExpectedStopsForWeekInterval() =>
-        new()
+        new TheoryData<List<HistoryIntervalStop>, string>
         {
             {
-                new()
+                new List<HistoryIntervalStop>
                 {
-                    new(
+                    new HistoryIntervalStop(
                         "b2bd95f16a8587dd0bd618ea3415fc8928832c91",
                         new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero)
                     ),
-                    new(
+                    new HistoryIntervalStop(
                         "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
                         new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
                     ),
-                    new(
+                    new HistoryIntervalStop(
                         "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
                         new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                     )
@@ -99,16 +99,16 @@ public class ComputeHistoryTest : FreshliTest
         };
 
     private static TheoryData<List<HistoryIntervalStop>, string> ExpectedStopsForMonthInterval() =>
-        new()
+        new TheoryData<List<HistoryIntervalStop>, string>
         {
             {
-                new()
+                new List<HistoryIntervalStop>
                 {
-                    new(
+                    new HistoryIntervalStop(
                         "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
                         new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
                     ),
-                    new(
+                    new HistoryIntervalStop(
                         "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
                         new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                     )
@@ -118,12 +118,12 @@ public class ComputeHistoryTest : FreshliTest
         };
 
     private static TheoryData<List<HistoryIntervalStop>, string> ExpectedStopsForYearInterval() =>
-        new()
+        new TheoryData<List<HistoryIntervalStop>, string>
         {
             {
-                new()
+                new List<HistoryIntervalStop>
                 {
-                    new(
+                    new HistoryIntervalStop(
                         "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
                         new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                     )
@@ -133,31 +133,31 @@ public class ComputeHistoryTest : FreshliTest
         };
 
     private static TheoryData<List<HistoryIntervalStop>> ExpectedStopsForCommitHistory() =>
-        new()
+        new TheoryData<List<HistoryIntervalStop>>
         {
-            new()
+            new List<HistoryIntervalStop>
             {
-                new(
+                new HistoryIntervalStop(
                     "9cd8467fe93714da66bce9056d527d360c6389df",
                     new(2021, 2, 1, 19, 26, 16, TimeSpan.Zero)
                 ),
-                new(
+                new HistoryIntervalStop(
                     "a4792063da2ebb7628b66b9f238cba300b18ab00",
                     new(2021, 2, 1, 19, 27, 42, TimeSpan.Zero)
                 ),
-                new(
+                new HistoryIntervalStop(
                     "57e5112ae54b7bec8a5294b7cbba2fd9bbd0a75c",
                     new(2021, 2, 2, 10, 13, 46, TimeSpan.Zero)
                 ),
-                new(
+                new HistoryIntervalStop(
                     "b2bd95f16a8587dd0bd618ea3415fc8928832c91",
                     new(2021, 2, 2, 13, 17, 05, TimeSpan.Zero)
                 ),
-                new(
+                new HistoryIntervalStop(
                     "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
                     new(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
                 ),
-                new(
+                new HistoryIntervalStop(
                     "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
                     new(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
                 )

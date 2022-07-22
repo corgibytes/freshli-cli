@@ -17,7 +17,7 @@ public class CacheContext : DbContext
 
     // ReSharper disable once UnusedMember.Global
     public static DirectoryInfo DefaultCacheDir =>
-        new(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
+        new DirectoryInfo(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
 
     private DirectoryInfo CacheDir { get; }
     private string DbPath { get; }

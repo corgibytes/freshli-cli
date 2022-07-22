@@ -12,11 +12,12 @@ public class ListCommits : IListCommits
 {
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
-    public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository) => _cachedGitSourceRepository = cachedGitSourceRepository;
+    public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository) =>
+        _cachedGitSourceRepository = cachedGitSourceRepository;
 
     public IEnumerable<GitCommit> ForRepository(string repositoryId, DirectoryInfo cacheDirectory, string gitPath)
     {
-        GitSource gitSource = new(repositoryId, cacheDirectory, _cachedGitSourceRepository);
+        GitSource gitSource = new GitSource(repositoryId, cacheDirectory, _cachedGitSourceRepository);
 
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();
