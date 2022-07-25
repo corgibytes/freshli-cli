@@ -106,7 +106,7 @@ public class GitSource
     {
         try
         {
-            Invoke.Command(gitPath, $"clone {Url} .");
+            Invoke.Command(gitPath, $"clone {Url} .", Directory.FullName);
         }
         catch (IOException e)
         {
@@ -119,7 +119,7 @@ public class GitSource
     {
         try
         {
-            Invoke.Command(gitPath, $"checkout {Branch ?? ""}");
+            Invoke.Command(gitPath, $"checkout {Branch ?? ""}", Directory.FullName);
         }
         catch (IOException e)
         {
@@ -140,7 +140,7 @@ public class GitSource
 
         try
         {
-            commandOutput = Invoke.Command(gitPath, $"pull origin {branch ?? ""}")
+            commandOutput = Invoke.Command(gitPath, $"pull origin {branch ?? ""}", Directory.FullName)
                 .Replace("\n", " ");
         }
         catch (IOException e)
@@ -152,8 +152,10 @@ public class GitSource
         }
     }
 
-    private static string FetchCurrentBranch(string gitPath) =>
-        Invoke.Command(gitPath, "branch --show-current").Replace("\n", "");
+    private string FetchCurrentBranch(string gitPath)
+    {
+        return Invoke.Command(gitPath, "branch --show-current", Directory.FullName).Replace("\n", "");
+    }
 
     public void CloneOrPull(string gitPath)
     {
