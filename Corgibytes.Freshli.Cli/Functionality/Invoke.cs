@@ -30,25 +30,4 @@ public static class Invoke
 
         return stdOutBuffer.ToString();
     }
-
-    // This will be needed in later work, but is being defined now, so we'll disable the warning about being unused.
-    // ReSharper disable once UnusedMember.Global
-    public static string Freshli(string arguments)
-    {
-        var executionLocation = new FileInfo(
-            Assembly.GetExecutingAssembly().Location
-        ).Directory!; // null is forgivable here, because if we get null, there are far weirder problems afoot
-        var executable = new FileInfo(executionLocation.FullName + "/freshli");
-
-        try
-        {
-            return Command(executable.FullName, arguments);
-        }
-        catch (IOException e)
-        {
-            throw new IOException(
-                $"Invoking 'freshli {arguments}' failed with the following output:\n{e.Message}"
-            );
-        }
-    }
 }
