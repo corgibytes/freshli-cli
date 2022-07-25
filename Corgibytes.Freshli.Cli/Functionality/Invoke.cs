@@ -7,7 +7,7 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public static class Invoke
 {
-    public static string Command(string executable, string arguments)
+    public static string Command(string executable, string arguments, string workingDirectory)
     {
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
@@ -16,6 +16,7 @@ public static class Invoke
                 args => args
                     .Add(arguments.Split())
             )
+            .WithWorkingDirectory(workingDirectory)
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
