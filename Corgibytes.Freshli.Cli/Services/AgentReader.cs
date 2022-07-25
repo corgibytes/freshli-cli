@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using Corgibytes.Freshli.Cli.Functionality;
 using PackageUrl;
 
@@ -9,31 +11,35 @@ namespace Corgibytes.Freshli.Cli.Services;
 // Once we have an actual agent we can use, then we can start processing the data from it.
 public class AgentReader : IAgentReader
 {
-    public List<Package> ListValidPackageUrls(string agentExecutable, PackageURL packageUrl) => agentExecutable switch
+    public List<Package> ListValidPackageUrls(string agentExecutable, PackageURL packageUrl)
     {
-        "/usr/local/bin/freshli-agent-csharp" => ReturnListOfPackages(packageUrl),
-        _ when agentExecutable.Contains("freshli-agent-test") => ReturnListOfPackages(packageUrl),
-        "/usr/local/bin/freshli-agent-javascript" => new(),
-        "/usr/local/agents/bin/freshli-agent-csharp" => new(),
-        "/home/freshli-user/bin/agents/freshli-agent-ruby" => new(),
-        _ => new()
-    };
+        var package = new List<Package>();
+        var executablePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "bin" +
+                             Path.DirectorySeparatorChar + "freshli-agent-mock.rb";
 
-    private static List<Package> ReturnListOfPackages(PackageURL packageUrl) =>
-        packageUrl.Name switch
+
+        var processInfo = new ProcessStartInfo
         {
-            "flyswatter" => new()
-            {
-                new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
-                    new(1990, 11, 29, 0, 0, 0, TimeSpan.Zero))
-            },
-            "calculatron" => new()
-            {
-                new(new("pkg:nuget/org.corgibytes.calculatron/calculatron@21.3"),
-                    new(2022, 10, 16, 0, 0, 0, TimeSpan.Zero)),
-                new(new("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"),
-                    new(2019, 12, 31, 0, 0, 0, TimeSpan.Zero))
-            },
-            _ => new()
+            UseShellExecute = false,
+            FileName = executablePath,
+            Arguments = "validating-package-urls",
+            RedirectStandardOutput = true
         };
+        var process = Process.Start(processInfo); // Start that process.
+
+
+        while (process != null && !process.StandardOutput.EndOfStream)
+        {
+            var fileData = process.StandardOutput.ReadLine()?.Split(" ");
+            if (fileData != null)
+            {
+                package.Add(new(new(fileData[0]), DateTimeOffset.Parse(fileData[1])));
+            }
+        }
+
+        process?.WaitForExit();
+
+
+        return package;
+    }
 }
