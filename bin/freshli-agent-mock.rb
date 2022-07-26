@@ -16,6 +16,8 @@ dir = 'freshli-fixture-ruby-nokotest'
 case ARGV[0]
 when 'validating-package-urls'
   puts 'pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0 1990-01-29T12:15:25-1:00'
+  puts 'pkg:nuget/org.corgibytes.calculatron/calculatron@21.3 2022-10-16T00:00:00+0:00'
+  puts 'pkg:nuget/org.corgibytes.calculatron/calculatron@14.6 2019-12-31T00:00:00+0:00'
 when 'retrieve-release-history'
   exit 1 unless ARGV.count == 2
   begin
