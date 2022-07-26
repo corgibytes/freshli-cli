@@ -10,6 +10,7 @@ using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Git;
+using Corgibytes.Freshli.Cli.Functionality.Message;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Repositories;
 using Corgibytes.Freshli.Cli.Services;
@@ -34,6 +35,7 @@ public class FreshliServiceBuilder
         RegisterAgentsCommand();
         RegisterGitCommand();
         RegisterComputeLibYearCommand();
+        RegisterMessageBus();
     }
 
     private void RegisterBaseCommand() => Services.AddScoped<Runner>();
@@ -111,4 +113,6 @@ public class FreshliServiceBuilder
         Services.AddTransient<IDependencyManagerRepository, AgentsRepository>();
         Services.AddTransient<IAgentReader, AgentReader>();
     }
+
+    private void RegisterMessageBus() => Services.AddSingleton<MessageBus>();
 }
