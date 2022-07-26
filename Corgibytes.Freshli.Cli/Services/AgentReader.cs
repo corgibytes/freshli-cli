@@ -14,14 +14,11 @@ public class AgentReader : IAgentReader
     public List<Package> ListValidPackageUrls(string agentExecutable, PackageURL packageUrl)
     {
         var package = new List<Package>();
-        var executablePath = Directory.GetCurrentDirectory() + Path.DirectorySeparatorChar + "bin" +
-                             Path.DirectorySeparatorChar + "freshli-agent-mock.rb";
-
 
         var processInfo = new ProcessStartInfo
         {
             UseShellExecute = false,
-            FileName = executablePath,
+            FileName = agentExecutable,
             Arguments = "validating-package-urls",
             RedirectStandardOutput = true
         };
