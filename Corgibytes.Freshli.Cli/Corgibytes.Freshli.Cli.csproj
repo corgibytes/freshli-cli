@@ -26,6 +26,7 @@
     </None>
     <PackageReference Include="CliWrap" Version="3.4.4" />
     <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.30" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-preview.6.22329.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
