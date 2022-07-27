@@ -75,7 +75,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
             foreach (var agentsAndPath in agents)
             {
              
-            //  AgentsVerifier.RunProcessOutput(agentsAndPath,"validating-repositories");
+              AgentsVerifier.RunAgentsVerify(agentsAndPath,"validating-repositories", options.CacheDir, "");
             //  AgentsVerifier.RunProcessOutput(agentsAndPath,"detect-manifests");
             //  AgentsVerifier.RunProcessOutput(agentsAndPath,"process-manifests");
             }
@@ -84,7 +84,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
             
             foreach (var agentsAndPath in agents)
             {
-                if(agentsAndPath.ToLower().Contains(options.LanguageName.ToLower())){
+                if(agentsAndPath.ToLower().Contains("freshli-agent-"+options.LanguageName.ToLower())){
                 
                 AgentsVerifier.RunAgentsVerify(agentsAndPath,"validating-repositories", options.CacheDir, options.LanguageName);
                 // AgentsVerifier.RunProcessOutput(agentsAndPath,"detect-manifests");
