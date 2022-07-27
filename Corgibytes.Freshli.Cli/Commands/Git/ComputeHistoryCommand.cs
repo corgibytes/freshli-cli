@@ -60,9 +60,7 @@ public class ComputeHistoryCommand : RunnableCommand<ComputeHistoryCommand, Comp
             description: "Path to the git binary. Default = 'git'",
             getDefaultValue: () => "git"
         )
-        {
-            Arity = ArgumentArity.ZeroOrOne
-        };
+        { Arity = ArgumentArity.ZeroOrOne };
         AddOption(gitPath);
     }
 }
