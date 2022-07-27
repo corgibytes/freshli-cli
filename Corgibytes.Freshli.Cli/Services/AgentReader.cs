@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using Corgibytes.Freshli.Cli.Functionality;
 using PackageUrl;
 
@@ -13,30 +11,20 @@ public class AgentReader : IAgentReader
 {
     public List<Package> ListValidPackageUrls(string agentExecutable, PackageURL packageUrl)
     {
-        var package = new List<Package>();
+        var packages = new List<Package>();
+        var packageUrlsWithDate = Invoke.Command(agentExecutable, "validating-package-urls", ".");
 
-        var processInfo = new ProcessStartInfo
+
+        foreach (var packageUrlAndDate in packageUrlsWithDate.Split("\n"))
         {
-            UseShellExecute = false,
-            FileName = agentExecutable,
-            Arguments = "validating-package-urls",
-            RedirectStandardOutput = true
-        };
-        var process = Process.Start(processInfo); // Start that process.
+            var separated = packageUrlAndDate.Split(" ");
 
-
-        while (process != null && !process.StandardOutput.EndOfStream)
-        {
-            var fileData = process.StandardOutput.ReadLine()?.Split(" ");
-            if (fileData != null)
-            {
-                package.Add(new(new(fileData[0]), DateTimeOffset.Parse(fileData[1])));
-            }
+            packages.Add(
+                new
+                (new(separated[0])
+                    , DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
+                ));
         }
-
-        process?.WaitForExit();
-
-
-        return package;
+        return packages;
     }
 }

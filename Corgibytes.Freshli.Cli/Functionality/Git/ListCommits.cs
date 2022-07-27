@@ -12,7 +12,8 @@ public class ListCommits : IListCommits
 {
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
-    public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository) => _cachedGitSourceRepository = cachedGitSourceRepository;
+    public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository) =>
+        _cachedGitSourceRepository = cachedGitSourceRepository;
 
     public IEnumerable<GitCommit> ForRepository(string repositoryId, DirectoryInfo cacheDirectory, string gitPath)
     {
