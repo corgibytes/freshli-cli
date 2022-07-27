@@ -15,10 +15,11 @@ public class AgentReader : IAgentReader
         var packageUrlsWithDate = Invoke.Command(agentExecutable, "validating-package-urls", ".");
 
 
-        foreach (var packageUrlAndDate in packageUrlsWithDate.Split("\n"))
+        foreach (var packageUrlAndDate in packageUrlsWithDate.TrimEnd('\n','\r').Split("\n"))
         {
             var separated = packageUrlAndDate.Split(" ");
-
+        
+            
             packages.Add(
                 new
                 (new(separated[0])
