@@ -85,10 +85,10 @@ public class AgentsVerifier
         }
         else
         {
-            RunProcessManfiest(AgentFileAndPath, Argument,DetectedManifestFiles,Url);
+            RunProcessManfiest(AgentFileAndPath, "process-manifests",DetectedManifestFiles,Url);
         }
 
-        Console.WriteLine("Dona are the files the same? : " + FileCompare(DetectedManifestFiles, directory+Path.DirectorySeparatorChar+languageName+Path.DirectorySeparatorChar+hash+Path.DirectorySeparatorChar+manifestFile.Substring(manifestFile.LastIndexOf(Path.DirectorySeparatorChar)+1)));
+        // Console.WriteLine("Dona are the files the same? : " + FileCompare(DetectedManifestFiles, directory+Path.DirectorySeparatorChar+languageName+Path.DirectorySeparatorChar+hash+Path.DirectorySeparatorChar+manifestFile.Substring(manifestFile.LastIndexOf(Path.DirectorySeparatorChar)+1)));
 
     }
 
