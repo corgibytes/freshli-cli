@@ -4,7 +4,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
-using CliWrap;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Repositories;
 using Corgibytes.Freshli.Cli.Resources;
@@ -105,102 +104,57 @@ public class GitSource
 
     private void Clone(string gitPath)
     {
-        var stdErrBuffer = new StringBuilder();
-        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
-                args => args
-                    .Add("clone")
-                    .Add(Url)
-                    .Add('.')
-            )
-            .WithValidation(CommandResultValidation.None)
-            .WithWorkingDirectory(Directory.FullName)
-            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
-
-        using var task = command.ExecuteAsync().Task;
-        task.Wait();
-
-        if (task.Result.ExitCode != 0)
+        try
+        {
+            Invoke.Command(gitPath, $"clone {Url} .", Directory.FullName);
+        }
+        catch (IOException e)
         {
             Delete();
-            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{stdErrBuffer}");
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
         }
     }
 
     private void Checkout(string gitPath)
     {
-        var stdErrBuffer = new StringBuilder();
-        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
-                args => args
-                    .Add("checkout")
-                    .Add(Branch ?? "")
-            )
-            .WithWorkingDirectory(Directory.FullName)
-            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
-
-        using var task = command.ExecuteAsync().Task;
-        task.Wait();
-
-        if (task.Result.ExitCode != 0)
+        try
+        {
+            Invoke.Command(gitPath, $"checkout {Branch ?? ""}", Directory.FullName);
+        }
+        catch (IOException e)
         {
             Delete();
-            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{stdErrBuffer}");
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
         }
     }
 
     private void Pull(string gitPath)
     {
-        var stdOutBuffer = new StringBuilder();
         var branch = Branch;
         if (Branch == null)
         {
             branch = FetchCurrentBranch(gitPath);
         }
 
-        var stdErrBuffer = new StringBuilder();
-        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
-                args => args
-                    .Add("pull")
-                    .Add("origin")
-                    .Add(branch ?? "")
-            )
-            .WithWorkingDirectory(Directory.FullName)
-            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
-            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
+        string? commandOutput = null;
 
-        using var task = command.ExecuteAsync().Task;
-        task.Wait();
-
-        var commandOutput = stdOutBuffer.ToString().Replace("\n", " ");
-
-        if (task.Result.ExitCode != 0 && commandOutput.Equals("Already up to date.") == false)
+        try
         {
-            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{stdErrBuffer}");
+            commandOutput = Invoke.Command(gitPath, $"pull origin {branch ?? ""}", Directory.FullName)
+                .Replace("\n", " ");
+        }
+        catch (IOException e)
+        {
+            if (commandOutput == "Already up to date.")
+            {
+                throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
+            }
         }
     }
 
     private string FetchCurrentBranch(string gitPath)
     {
-        var stdErrBuffer = new StringBuilder();
-        var stdOutBuffer = new StringBuilder();
-
-        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
-                args => args
-                    .Add("branch")
-                    .Add("--show-current")
-            )
-            .WithWorkingDirectory(Directory.FullName)
-            .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
-            .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
-
-        using var task = command.ExecuteAsync().Task;
-        task.Wait();
-
-        if (task.Result.ExitCode != 0)
-        {
-            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{stdErrBuffer}");
-        }
-
-        return stdOutBuffer.ToString().Replace("\n", "");
+        return Invoke.Command(gitPath, "branch --show-current", Directory.FullName).Replace("\n", "");
     }
 
     public void CloneOrPull(string gitPath)

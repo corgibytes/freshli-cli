@@ -35,11 +35,11 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="7.0.0-preview.6.22324.4" />
     <PackageReference Include="NamedServices.Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="packageurl-dotnet" Version="1.1.0" />
-    <PackageReference Include="ServiceStack.Text" Version="6.1.0" />
+    <PackageReference Include="ServiceStack.Text" Version="6.2.0" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
     <PackageReference Include="TextTableFormatter.NET" Version="2.0.1" />
-    <PackageReference Include="YamlDotNet" Version="11.2.1" />
+    <PackageReference Include="YamlDotNet" Version="12.0.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\CliOutput.resx">
