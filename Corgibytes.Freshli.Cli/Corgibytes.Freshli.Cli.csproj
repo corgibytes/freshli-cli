@@ -27,6 +27,8 @@
     <PackageReference Include="CliWrap" Version="3.4.4" />
     <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0" />
     <PackageReference Include="Hangfire.Core" Version="1.7.30" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
+    <PackageReference Include="MediatR" Version="10.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-preview.6.22329.4">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -42,6 +44,9 @@
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="TextTableFormatter.NET" Version="2.0.1" />
     <PackageReference Include="YamlDotNet" Version="12.0.0" />
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\CliOutput.resx">
