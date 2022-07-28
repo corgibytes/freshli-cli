@@ -6,8 +6,11 @@ require 'securerandom'
 
 release_history = {
   'pkg:nuget/org.corgibytes.flyswatter/flyswatter' => [
-    "1.1.0\t1990-01-29T12:15:25Z",
-    "1.2.0\t1990-04-17T13:14:45Z"
+    "1.1.0\t1990-01-29T12:15:25Z"
+  ],
+  'pkg:nuget/org.corgibytes.calculatron/calculatron' => [
+    "14.6\t2019-12-31T00:00:00+0:00",
+    "21.3\t2022-10-16T00:00:00+0:00"
   ]
 }
 
@@ -24,6 +27,7 @@ when 'retrieve-release-history'
     puts release_history[ARGV[1]].join("\n")
   rescue NoMethodError
     puts "Unable to retrieve release history for #{ARGV[1]}"
+    exit 1
   end
 when 'validating-repositories'
   puts 'https://github.com/corgibytes/freshli-fixture-ruby-nokotest'
