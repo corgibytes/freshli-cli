@@ -1,9 +1,6 @@
 Feature: Compute libyear
   Scenario: Compute
-    Given the directory named "~/bin"
-    And an empty file named "~/bin/freshli-agent-test"
-    And the directory named "~/bin" is prepended to the PATH environment variable
-    And a file named "cyclonedx.json" with:
+    Given a file named "cyclonedx.json" with:
     """
     {
       "bomFormat": "CycloneDX",
@@ -39,7 +36,7 @@ Feature: Compute libyear
     """
     Then the output should contain:
     """
-    flyswatter                    1.1.0  11/29/1990            1.1.0  11/29/1990       0
+    flyswatter                    1.1.0   1/29/1990            1.1.0   1/29/1990       0
     """
     Then the output should contain:
     """
