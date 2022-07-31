@@ -17,7 +17,7 @@ public class ScanCommandRunner : CommandRunner<ScanCommand, ScanCommandOptions>
 
     public override int Run(ScanCommandOptions options, InvocationContext context)
     {
-        if (string.IsNullOrWhiteSpace(options.Path?.FullName))
+        if (string.IsNullOrWhiteSpace(options.Path.FullName))
         {
             throw new ArgumentNullException(nameof(options),
                 CliOutput.ScanCommandRunner_Run_Path_should_not_be_null_or_empty);

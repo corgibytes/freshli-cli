@@ -1,41 +1,137 @@
 <root>
-    <resheader name="resmimetype">
-        <value>text/microsoft-resx</value>
-    </resheader>
-    <resheader name="version">
-        <value>1.3</value>
-    </resheader>
-    <resheader name="reader">
-        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
-    <resheader name="writer">
-        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-    </resheader>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>1.3</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Help_MainCommand_Description" xml:space="preserve">
+    <value>Comando principal</value>
+  </data>
+  <data name="Help_Option_CacheDir_Description" xml:space="preserve">
+    <value>Directorio de almacenamiento de archivos temporales.</value>
+  </data>
+  <data name="Help_CacheCommand_Description" xml:space="preserve">
+    <value>Gestión de base de datos y directorio local de cache.</value>
+  </data>
+  <data name="Help_CachePrepareCommand_Description" xml:space="preserve">
+    <value>Verifica que el directorio de cache exista y contenga una base de datos de cache válida.</value>
+  </data>
+  <data name="Help_CacheDestroyCommand_Description" xml:space="preserve">
+    <value>Eliminación del directorio de cache.</value>
+  </data>
+  <data name="Help_CacheDestoyCommand_Option_Force" xml:space="preserve">
+    <value>Eliminación del directorio de cache sin preguntar por confirmación.</value>
+  </data>
+  <data name="Help_ScanCommand_Description" xml:space="preserve">
+    <value>Devolución de resultados de las métricas de escaneo para el repositorio local indicado.</value>
+  </data>
+  <data name="Help_ScanCommand_Option_Format" xml:space="preserve">
+    <value>Indica el formato del resultado. (distingue entre mayúsculas y minúsculas.)</value>
+  </data>
+  <data name="Help_ScanCommand_Option_Output" xml:space="preserve">
+    <value>Especifica cómo mostrar el resultado. (distingue entre mayúsculas y minúsculas.) Admite múltiples valores.</value>
+  </data>
+  <data name="Help_ScanCommand_Argument_Path" xml:space="preserve">
+    <value>El directorio del repositorio de código fuente.</value>
+  </data>
   <data name="Output_Date" xml:space="preserve">
     <value>Fecha (aaaa-MM-dd)</value>
   </data>
-    <data name="Output_LibYear" xml:space="preserve">
-        <value>AñoLib</value>
-    </data>
+  <data name="Output_LibYear" xml:space="preserve">
+    <value>AñoLib</value>
+  </data>
   <data name="Output_Skipped" xml:space="preserve">
-    <value>Omitida</value>
+    <value>Omitido</value>
   </data>
   <data name="Output_UpgradesAvailable" xml:space="preserve">
-    <value>ActualizaciónesDisponibles</value>
+    <value>Existen actualizaciones disponibles.</value>
   </data>
   <data name="ScanCommand_ScanCommand_Executing_scan_command_handler" xml:space="preserve">
-    <value>This is just a placeholder</value>
+    <value>Ejecutando el comando de escaneo.</value>
   </data>
   <data name="MainCommand_MainCommand_Root_Command_Executed" xml:space="preserve">
-    <value>This is just a placeholder</value>
+    <value>El comando principal fue ejecutado</value>
   </data>
   <data name="AuthCommand_AuthCommand_Executing_auth_command_handler" xml:space="preserve">
-    <value>This is just a placeholder</value>
+    <value>Ejecutando el comando de autenticación.</value>
   </data>
   <data name="ScanCommandRunner_Run_Path_should_not_be_null_or_empty" xml:space="preserve">
-    <value>This is just a placeholder</value>
+    <value>El directorio no debe ser nulo o vacío</value>
+  </data>
+  <data name="CachePrepareCommandRunner_Run_Preparing_cache" xml:space="preserve">
+    <value>Preparando el directorio de cache en {0}.</value>
+  </data>
+  <data name="CacheDestroyCommandRunner_Run_Prompt" xml:space="preserve">
+    <value>¿Estas seguro de que quieres eliminar por completo el directorio de cache {0}?</value>
+  </data>
+  <data name="CacheDestroyCommandRunner_Run_Abort" xml:space="preserve">
+    <value>La operación fue cancelada. El cache no fue eliminado.</value>
+  </data>
+  <data name="CacheDestroyCommandRunner_Run_Destroying" xml:space="preserve">
+    <value>Eliminando el directorio de cache en {0}.</value>
+  </data>
+  <data name="Exception_Cache_Prepare_NonEmpty" xml:space="preserve">
+    <value>No se puede utilizar un directorio no vacío como un directorio de cache.</value>
+  </data>
+  <data name="Warning_Cache_Destroy_DoesNotExist" xml:space="preserve">
+    <value>El directorio de cache ya fue eliminado o no existe.</value>
+  </data>
+  <data name="Exception_Cache_Destroy_NonCache" xml:space="preserve">
+    <value>El directorio especificado no fue eliminado ya que no es un cache de Freshli.</value>
+  </data>
+  <data name="Help_GitCommand_Description" xml:space="preserve">
+    <value>Gestión de repositorios clonados por Freshli</value>
+  </data>
+  <data name="Help_GitCloneCommand_Description" xml:space="preserve">
+    <value>Clonación del repositorio a ser examinado por Freshli</value>
+  </data>
+  <data name="Help_GitCloneCommand_Argument_Repo_Url" xml:space="preserve">
+    <value>La dirección URL del repositorio a clonar</value>
+  </data>
+  <data name="Help_GitCloneCommand_Option_Branch" xml:space="preserve">
+    <value>La rama del repositorio a analizar</value>
+  </data>
+  <data name="Help_GitCloneCommand_Option_Git_Path" xml:space="preserve">
+    <value>La ubicación del ejecutable de git a utilizar.</value>
+  </data>
+  <data name="Exception_Git_NoRepoWithHash" xml:space="preserve">
+    <value>No se encontró un repositorio con el hash indicado en el cache.</value>
+  </data>
+  <data name="Exception_Git_EncounteredError" xml:space="preserve">
+    <value>Git encontró un error:</value>
   </data>
   <data name="AgentsDetectCommandRunner_Run_No_detected_agents_found" xml:space="preserve">
     <value>No se encontró agente detectado</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty" xml:space="preserve">
+    <value>Filepath no debe ser nula o vacía</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Currently_Installed" xml:space="preserve">
+    <value>Actualmente instalado</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Latest_Available" xml:space="preserve">
+    <value>Último disponible</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Package" xml:space="preserve">
+    <value>Paquete</value>
+  </data>
+  <data name="ComputeLibYearCommandRunner_Table_Header_Released_at" xml:space="preserve">
+    <value>Publicado en</value>
+  </data>
+  <data name="ReadCycloneDxFile_Exception_Can_Not_Read_File" xml:space="preserve">
+    <value>No se puede leer el archivo, ya que no se proporcionó la ruta del archivo</value>
+  </data>
+  <data name="CachedGitSourceRepository_No_Repository_Found_In_Cache" xml:space="preserve">
+    <value>No existe ningún repositorio con este hash en caché.</value>
+  </data>
+  <data name="GitArchive_Git_Exception" xml:space="preserve">
+    <value>Git encontró un error: {0}</value>
   </data>
 </root>

@@ -19,7 +19,7 @@ public class EnvironmentTest
                 "Fixtures", "EnvironmentTest"
             )
         );
-        var expectedResults = new List<string>
+        var expectedResults = new List<string?>
         {
             "OtherSampleFile.txt",
             "SampleFile.txt"
