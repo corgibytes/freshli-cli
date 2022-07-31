@@ -1,14 +1,15 @@
 using System.CommandLine;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Commands.Cache;
 
 public class CacheDestroyCommand : RunnableCommand<CacheCommand, CacheDestroyCommandOptions>
 {
     public CacheDestroyCommand()
-        : base("destroy", "Deletes the Freshli cache.")
+        : base("destroy", CliOutput.Help_CacheDestroyCommand_Description)
     {
-        Option<bool> forceOption = new("--force", "Don't prompt to confirm destruction of cache.")
+        Option<bool> forceOption = new("--force", CliOutput.Help_CacheDestoyCommand_Option_Force)
         {
             Arity = ArgumentArity.ZeroOrOne
         };

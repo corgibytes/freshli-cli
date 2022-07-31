@@ -33,7 +33,8 @@ public static class Program
             new ScanCommand(),
             new CacheCommand(),
             new AgentsCommand(),
-            new GitCommand()
+            new GitCommand(),
+            new ComputeLibYearCommand()
         };
 
         var builder = new CommandLineBuilder(command)

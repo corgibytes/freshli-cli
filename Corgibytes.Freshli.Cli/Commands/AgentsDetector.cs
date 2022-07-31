@@ -4,7 +4,7 @@ using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
-public class AgentsDetector
+public class AgentsDetector : IAgentsDetector
 {
     public AgentsDetector(IEnvironment environment) => Environment = environment;
 
@@ -17,7 +17,7 @@ public class AgentsDetector
         foreach (var path in paths)
         {
             var searchPath = path;
-            IList<string> filesResults;
+            IList<string?> filesResults;
             if (path.Contains("~/"))
             {
                 var homePath = Environment.HomeDirectory;
@@ -32,7 +32,7 @@ public class AgentsDetector
 
             foreach (var file in filesResults)
             {
-                if (Path.GetFileName(file).StartsWith("freshli-agent-"))
+                if (file != null && Path.GetFileName(file).StartsWith("freshli-agent-"))
                 {
                     agents.Add(Path.Combine(searchPath, file));
                 }
