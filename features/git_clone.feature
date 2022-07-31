@@ -37,3 +37,14 @@ Feature: `git clone` command
     Given I successfully run `freshli cache prepare`
     When I run `freshli git clone https://github.com/corgibytes/freshli-fixture-ruby-nokotest --branch test_branch`
     Then a Git repository exists at "~/.freshli/repositories/*" with a branch "test_branch" checked out
+
+  Scenario: Clone Branch twice: This is a regression test to make sure a bug fixed with cloning twice doesn't come back
+    Given I successfully run `freshli cache prepare`
+    When I run `freshli git clone https://github.com/corgibytes/freshli-fixture-ruby-nokotest`
+    Then a Git repository exists at "~/.freshli/repositories/*" with a branch "master" checked out
+    When I run `freshli git clone https://github.com/corgibytes/freshli-fixture-ruby-nokotest`
+    Then the output should contain:
+    # Otherwise the output would contain a non-zero exit code
+    """
+    34b6e9b8833a8df0b26748ab39fee0581baca2eff64e5b9b8ecf19af894f469d
+    """

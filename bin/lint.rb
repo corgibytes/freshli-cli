@@ -78,7 +78,7 @@ if perform_dotnet_format
 end
 
 if perform_resharper
-  execute('dotnet jb inspectcode freshli-cli.sln -o=resharper.temp -f=text')
+  execute('dotnet jb inspectcode freshli-cli.sln --build -o=resharper.temp -f=text')
   status = false
   File.open('resharper.temp', 'r') do |f|
     unless f.nil?

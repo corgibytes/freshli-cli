@@ -6,7 +6,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
 public class MockEnvironment : IEnvironment
 {
-    public IList<string> GetListOfFiles(string directory) => directory switch
+    public IList<string?> GetListOfFiles(string directory) => directory switch
     {
         "/usr/local/bin" => new()
         {
@@ -15,7 +15,7 @@ public class MockEnvironment : IEnvironment
             "bash"
         },
         "/usr/local/agents/bin" => new() { "freshli-agent-csharp" },
-        "/home/freshli-user/bin/agents" => new List<string> { "freshli-agent-ruby" },
+        "/home/freshli-user/bin/agents" => new List<string?> { "freshli-agent-ruby" },
         _ => throw new ArgumentException("Unrecognized Directory")
     };
 
