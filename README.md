@@ -380,7 +380,7 @@ dotnet tool restore
 From then on, you can run the test suite and collect coverage with:
 
 ```bash
-dotnet coverlet bin/Corgibytes.Freshli.Cli --target "bundle" --targetargs "exec cucumber" --output
+dotnet coverlet --target "./bin/test.rb" --targetargs "--skip-build" ./exe
 ```
 
 ## Working with the DevContainer
