@@ -41,7 +41,7 @@ end
 
 status = execute("ruby #{File.dirname(__FILE__)}/build.rb") if perform_build
 
-if status.success?
+if status.nil? || status.success?
   status = execute('bundle check > /dev/null')
   status = execute('bundle install') unless status.success?
 
