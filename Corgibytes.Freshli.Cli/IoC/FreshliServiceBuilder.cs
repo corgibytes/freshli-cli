@@ -46,7 +46,7 @@ public class FreshliServiceBuilder
         RegisterAgentsCommand();
         RegisterGitCommand();
         RegisterComputeLibYearCommand();
-        RegisterMessageBus();
+        RegisterApplicationEngine();
     }
 
     private void RegisterBaseCommand() => Services.AddScoped<Runner>();
@@ -127,12 +127,31 @@ public class FreshliServiceBuilder
 
     // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L43
     // and https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L168
-    private void RegisterMessageBus()
+    private void RegisterApplicationEngine()
     {
         Services.AddSingleton<ApplicationEngine>();
         Services.AddSingleton<IApplicationActivityEngine, ApplicationEngine>();
         Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>();
 
+        RegisterHangfire();
+        RegisterHangfireConfiguration();
+        RegisterHangfireServer();
+    }
+
+    private void RegisterHangfireServer()
+    {
+        Services.AddSingleton(new BackgroundJobServerOptions {WorkerCount = 10});
+
+        Services.AddTransient<IHostedService, BackgroundJobServerHostedService>(provider =>
+        {
+            var options = provider.GetService<BackgroundJobServerOptions>() ?? new BackgroundJobServerOptions();
+            var storage = provider.GetService<JobStorage>() ?? new MemoryStorage();
+            return new(storage, options, new List<IBackgroundProcess>());
+        });
+    }
+
+    private void RegisterHangfire()
+    {
         JobStorage.Current = new MemoryStorage();
 
         Services.AddSingleton<IContractResolver, JsonContractResolver>();
@@ -155,7 +174,9 @@ public class FreshliServiceBuilder
 
         Services.TryAddSingletonChecked(x => x
             .GetService<IRecurringJobManagerFactory>()!.GetManager(x.GetService<JobStorage>()!));
+    }
 
+    private void RegisterHangfireConfiguration() =>
         Services.AddSingleton<IGlobalConfiguration>(serviceProvider =>
         {
             var configurationInstance = GlobalConfiguration.Configuration;
@@ -184,14 +205,4 @@ public class FreshliServiceBuilder
 
             return configurationInstance;
         });
-
-        Services.AddSingleton(new BackgroundJobServerOptions { WorkerCount = 10 });
-
-        Services.AddTransient<IHostedService, BackgroundJobServerHostedService>(provider =>
-        {
-            var options = provider.GetService<BackgroundJobServerOptions>() ?? new BackgroundJobServerOptions();
-            var storage = provider.GetService<JobStorage>() ?? new MemoryStorage();
-            return new(storage, options, new List<IBackgroundProcess>());
-        });
-    }
 }
