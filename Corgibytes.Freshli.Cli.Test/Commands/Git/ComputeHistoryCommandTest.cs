@@ -37,7 +37,7 @@ public class ComputeHistoryCommandTest : FreshliTest
     }
 
     private static TheoryData<string, ArgumentArity, int> DataForVerifyOptionConfiguration() =>
-        new TheoryData<string, ArgumentArity, int>
+        new()
         {
             { "commit-history", ArgumentArity.ZeroOrOne, 0 },
             { "history-interval", ArgumentArity.ZeroOrOne, 1 },

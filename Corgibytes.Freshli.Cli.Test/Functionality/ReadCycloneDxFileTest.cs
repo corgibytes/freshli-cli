@@ -15,8 +15,8 @@ public class ReadCycloneDxFileTest : FreshliTest
 
     public ReadCycloneDxFileTest(ITestOutputHelper output) : base(output)
     {
-        _fileReaderService = new();
-        _readCycloneDxFile = new(_fileReaderService);
+        _fileReaderService = new MockFileReader();
+        _readCycloneDxFile = new ReadCycloneDxFile(_fileReaderService);
     }
 
     [Fact]
@@ -42,9 +42,9 @@ public class ReadCycloneDxFileTest : FreshliTest
 
         var expectedPackageUrls = new List<PackageURL>
         {
-            new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"),
-            new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
-            new PackageURL("pkg:composer/org.corgibytes.tea/auto-cup-of-tea@112.0")
+            new("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"),
+            new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
+            new("pkg:composer/org.corgibytes.tea/auto-cup-of-tea@112.0")
         };
 
         Assert.Equivalent(expectedPackageUrls, _readCycloneDxFile.AsPackageUrls("This/is/a/filepath"));
