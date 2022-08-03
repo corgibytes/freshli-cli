@@ -152,10 +152,10 @@ public class ScanCommandOptionsTest : FreshliTest
 
         outputStrategyTypes.Should().NotContainNulls();
 
-        //Veryfy all required ones are present
+        //Verify all required ones are present
         expectedOutput.Should().BeSubsetOf(outputStrategyTypes);
 
-        //Veryfy there aren't extra output stragetegies added
+        //Verify there aren't extra output stragetegies added
         outputStrategyTypes.Should().BeSubsetOf(expectedOutput);
     }
 }
