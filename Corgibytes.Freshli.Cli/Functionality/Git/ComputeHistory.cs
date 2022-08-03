@@ -12,7 +12,8 @@ public class ComputeHistory
 
     public ComputeHistory(IListCommits listCommits) => _listCommits = listCommits;
 
-    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(string repositoryId, string gitPath, DirectoryInfo cacheDir)
+    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(string repositoryId, string gitPath,
+        DirectoryInfo cacheDir)
     {
         var commitHistory = _listCommits.ForRepository(repositoryId, cacheDir, gitPath);
         return commitHistory
@@ -56,7 +57,8 @@ public class ComputeHistory
                 select groupedHistory.MaxBy(i => i.CommittedAt)
                 into mostRecentCommitForThisGroupedPeriod
                 where mostRecentCommitForThisGroupedPeriod != null
-                select new HistoryIntervalStop(mostRecentCommitForThisGroupedPeriod.ShaIdentifier, mostRecentCommitForThisGroupedPeriod.CommittedAt))
+                select new HistoryIntervalStop(mostRecentCommitForThisGroupedPeriod.ShaIdentifier,
+                    mostRecentCommitForThisGroupedPeriod.CommittedAt))
             .ToList();
     }
 }

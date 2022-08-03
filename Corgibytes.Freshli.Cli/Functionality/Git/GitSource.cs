@@ -152,10 +152,8 @@ public class GitSource
         }
     }
 
-    private string FetchCurrentBranch(string gitPath)
-    {
-        return Invoke.Command(gitPath, "branch --show-current", Directory.FullName).Replace("\n", "");
-    }
+    private string FetchCurrentBranch(string gitPath) =>
+        Invoke.Command(gitPath, "branch --show-current", Directory.FullName).Replace("\n", "");
 
     public void CloneOrPull(string gitPath)
     {
