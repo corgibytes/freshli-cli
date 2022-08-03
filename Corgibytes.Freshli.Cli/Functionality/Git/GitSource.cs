@@ -28,30 +28,32 @@ public class GitException : Exception
 
 public class GitSource
 {
+    private ICacheManager CacheManager { get; }
+
     // ReSharper disable once UnusedMember.Global
-    public GitSource(string hash, DirectoryInfo cacheDir, ICachedGitSourceRepository cachedGitSourceRepository)
+    public GitSource(string hash, string cacheDirPath, ICacheManager cacheManager, ICachedGitSourceRepository cachedGitSourceRepository)
     {
-        // Ensure the cache directory is ready for use.
-        CacheDir = cacheDir;
-        Cache.Prepare(CacheDir);
+        CacheManager = cacheManager;
+        CacheDir = new(cacheDirPath);
+        CacheManager.Prepare(cacheDirPath);
 
         Hash = hash;
 
         // Get existing entry via provided hash
-        var entry = cachedGitSourceRepository.FindOneByHash(hash, cacheDir);
+        var entry = cachedGitSourceRepository.FindOneByHash(hash, CacheDir);
 
         Url = entry.Url;
         Branch = entry.Branch;
 
         // Ensure the directory exists in the cache for cloning the repository.
-        Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
+        Directory = CacheManager.GetDirectoryInCache(cacheDirPath, new[] { "repositories", Hash });
     }
 
-    public GitSource(string url, string? branch, DirectoryInfo cacheDir)
+    public GitSource(string url, string? branch, string cacheDirPath, ICacheManager cacheManager)
     {
-        // Ensure the cache directory is ready for use.
-        CacheDir = cacheDir;
-        Cache.Prepare(CacheDir);
+        CacheManager = cacheManager;
+        CacheDir = new(cacheDirPath);
+        CacheManager.Prepare(cacheDirPath);
 
         Url = url;
         Branch = branch;
@@ -68,7 +70,7 @@ public class GitSource
         Hash = stringBuilder.ToString();
 
         // Ensure the directory exists in the cache for cloning the repository.
-        Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
+        Directory = CacheManager.GetDirectoryInCache(cacheDirPath, new[] { "repositories", Hash });
 
         // Store ID, URL, branch, and folder path in the cache DB, if it doesn't already exist
         using var db = new CacheContext(CacheDir);

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using CliWrap;
 using Corgibytes.Freshli.Cli.Repositories;
@@ -11,13 +10,17 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 public class ListCommits : IListCommits
 {
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
+    private ICacheManager CacheManager { get; }
 
-    public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository) =>
-        _cachedGitSourceRepository = cachedGitSourceRepository;
-
-    public IEnumerable<GitCommit> ForRepository(string repositoryId, DirectoryInfo cacheDirectory, string gitPath)
+    public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository, ICacheManager cacheManager)
     {
-        GitSource gitSource = new(repositoryId, cacheDirectory, _cachedGitSourceRepository);
+        CacheManager = cacheManager;
+        _cachedGitSourceRepository = cachedGitSourceRepository;
+    }
+
+    public IEnumerable<GitCommit> ForRepository(string repositoryId, string cacheDirectory, string gitPath)
+    {
+        GitSource gitSource = new(repositoryId, cacheDirectory, CacheManager, _cachedGitSourceRepository);
 
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();
