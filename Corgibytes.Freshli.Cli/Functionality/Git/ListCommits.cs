@@ -48,7 +48,7 @@ public class ListCommits : IListCommits
         foreach (var commitAndDate in commitsWithDates)
         {
             var separated = commitAndDate.Split(" ");
-            commits.Add(new(
+            commits.Add(new GitCommit(
                 separated[0],
                 DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
             ));

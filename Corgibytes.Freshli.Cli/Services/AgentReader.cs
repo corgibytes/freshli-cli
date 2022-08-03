@@ -13,27 +13,27 @@ public class AgentReader : IAgentReader
     {
         "/usr/local/bin/freshli-agent-csharp" => ReturnListOfPackages(packageUrl),
         _ when agentExecutable.Contains("freshli-agent-test") => ReturnListOfPackages(packageUrl),
-        "/usr/local/bin/freshli-agent-javascript" => new(),
-        "/usr/local/agents/bin/freshli-agent-csharp" => new(),
-        "/home/freshli-user/bin/agents/freshli-agent-ruby" => new(),
-        _ => new()
+        "/usr/local/bin/freshli-agent-javascript" => new List<Package>(),
+        "/usr/local/agents/bin/freshli-agent-csharp" => new List<Package>(),
+        "/home/freshli-user/bin/agents/freshli-agent-ruby" => new List<Package>(),
+        _ => new List<Package>()
     };
 
     private static List<Package> ReturnListOfPackages(PackageURL packageUrl) =>
         packageUrl.Name switch
         {
-            "flyswatter" => new()
+            "flyswatter" => new List<Package>
             {
-                new(new("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
-                    new(1990, 11, 29, 0, 0, 0, TimeSpan.Zero))
+                new(new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
+                    new DateTimeOffset(1990, 11, 29, 0, 0, 0, TimeSpan.Zero))
             },
-            "calculatron" => new()
+            "calculatron" => new List<Package>
             {
-                new(new("pkg:nuget/org.corgibytes.calculatron/calculatron@21.3"),
-                    new(2022, 10, 16, 0, 0, 0, TimeSpan.Zero)),
-                new(new("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"),
-                    new(2019, 12, 31, 0, 0, 0, TimeSpan.Zero))
+                new(new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@21.3"),
+                    new DateTimeOffset(2022, 10, 16, 0, 0, 0, TimeSpan.Zero)),
+                new(new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"),
+                    new DateTimeOffset(2019, 12, 31, 0, 0, 0, TimeSpan.Zero))
             },
-            _ => new()
+            _ => new List<Package>()
         };
 }

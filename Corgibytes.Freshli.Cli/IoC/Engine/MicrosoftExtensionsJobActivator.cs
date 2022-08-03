@@ -10,10 +10,8 @@ public class MicrosoftExtensionsJobActivator : JobActivator
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public MicrosoftExtensionsJobActivator(IServiceScopeFactory serviceScopeFactory)
-    {
-        _serviceScopeFactory = serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
-    }
+    public MicrosoftExtensionsJobActivator(IServiceScopeFactory serviceScopeFactory) => _serviceScopeFactory =
+        serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
 
     public override JobActivatorScope BeginScope(JobActivatorContext context) =>
         new MicrosoftExtensionsJobActivatorScope(_serviceScopeFactory.CreateScope());

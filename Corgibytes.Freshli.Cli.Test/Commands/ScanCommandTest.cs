@@ -34,7 +34,7 @@ public class ScanCommandTest : FreshliTest
         TestHelpers.VerifyAlias<ScanCommand>(alias, arity, allowsMultiples);
 
     private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations() =>
-        new TheoryData<string, ArgumentArity, bool>
+        new()
         {
             { "--format", ArgumentArity.ExactlyOne, false },
             { "-f", ArgumentArity.ExactlyOne, false },
