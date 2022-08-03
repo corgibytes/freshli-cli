@@ -9,17 +9,21 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 public class GitArchive
 {
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
+    private ICacheManager _cacheManager;
 
-    public GitArchive(ICachedGitSourceRepository cachedGitSourceRepository) =>
+    public GitArchive(ICacheManager cacheManager, ICachedGitSourceRepository cachedGitSourceRepository)
+    {
+        _cacheManager = cacheManager;
         _cachedGitSourceRepository = cachedGitSourceRepository;
+    }
 
-    public string CreateArchive(string repositoryId, DirectoryInfo cacheDirectory,
+    public string CreateArchive(string repositoryId, string cacheDirectory,
         GitCommitIdentifier gitCommitIdentifier, string gitPath)
     {
-        GitSource gitSource = new(repositoryId, cacheDirectory, _cachedGitSourceRepository);
+        GitSource gitSource = new(repositoryId, cacheDirectory, _cacheManager, _cachedGitSourceRepository);
 
         // If it exists, make sure to empty it so we are certain we start with a clean slate.
-        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory.FullName, "histories", gitSource.Hash,
+        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory, "histories", gitSource.Hash,
             gitCommitIdentifier.ToString()));
         if (Directory.Exists(gitSourceTarget.FullName))
         {
