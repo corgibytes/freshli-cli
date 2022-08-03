@@ -11,14 +11,14 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
 public class ComputeHistoryTest : FreshliTest
 {
-    private readonly DirectoryInfo _cacheDir;
+    private readonly string _cacheDir;
     private readonly ComputeHistory _computeHistory;
 
     public ComputeHistoryTest(ITestOutputHelper output) : base(output)
     {
         MockListCommits listCommits = new();
         _computeHistory = new(listCommits);
-        _cacheDir = new("/this/is/a/path");
+        _cacheDir = "/this/is/a/path";
 
         listCommits.HasCommitsAvailable(new List<GitCommit>
         {

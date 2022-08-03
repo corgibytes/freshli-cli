@@ -12,16 +12,19 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
 public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestroyCommandOptions>
 {
-    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner)
+    private ICacheManager CacheManager { get; }
+
+    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, ICacheManager cacheManager, Runner runner)
         : base(serviceProvider, runner)
     {
+        CacheManager = cacheManager;
     }
 
     public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
     {
         // Unless the --force flag is passed, prompt the user whether they want to destroy the cache
         if (!options.Force && !Confirm(
-                string.Format(CliOutput.CacheDestroyCommandRunner_Run_Prompt, options.CacheDir.FullName),
+                string.Format(CliOutput.CacheDestroyCommandRunner_Run_Prompt, options.CacheDir),
                 context
             ))
         {
@@ -34,7 +37,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
             options.CacheDir));
         try
         {
-            return Functionality.Cache.Destroy(options.CacheDir).ToExitCode();
+            return CacheManager.Destroy(options.CacheDir).ToExitCode();
         }
         // Catch errors
         catch (CacheException error)

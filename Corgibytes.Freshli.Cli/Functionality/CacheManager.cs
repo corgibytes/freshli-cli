@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.Data.Sqlite;
@@ -9,35 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
-[Serializable]
-public class CacheException : Exception
+public class CacheManager : ICacheManager
 {
-    public CacheException(string message, Exception innerException) : base(message, innerException)
-    {
-    }
-
-    public CacheException(string message) : base(message)
-    {
-    }
-
-    protected CacheException(SerializationInfo info, StreamingContext context) : base(info, context) =>
-        IsWarning = info.GetBoolean("IsWarning");
-
-    public bool IsWarning { get; init; }
-
-    public override void GetObjectData(SerializationInfo info, StreamingContext context)
-    {
-        ArgumentNullException.ThrowIfNull(info);
-
-        info.AddValue("IsWarning", IsWarning);
-
-        base.GetObjectData(info, context);
-    }
-}
-
-public static class Cache
-{
-    private static void MigrateIfPending(CacheContext context)
+    private void MigrateIfPending(CacheContext context)
     {
         var pending = context.Database.GetPendingMigrations();
         if (!pending.Any())
@@ -48,8 +21,9 @@ public static class Cache
         context.Database.Migrate();
     }
 
-    private static bool ValidateDirIsCache(DirectoryInfo cacheDir)
+    public bool ValidateDirIsCache(string cacheDirPath)
     {
+        var cacheDir = new DirectoryInfo(cacheDirPath);
         var dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
         // Folder is valid cache if empty or if contains "freshli.db"
         return
@@ -57,14 +31,15 @@ public static class Cache
             || dirContents.Contains(CacheContext.CacheDbName);
     }
 
-    public static bool Prepare(DirectoryInfo cacheDir)
+    public bool Prepare(string cacheDirPath)
     {
+        var cacheDir = new DirectoryInfo(cacheDirPath);
         // Create the directory if it doesn't already exist
         if (!cacheDir.Exists)
         {
             cacheDir.Create();
         }
-        else if (!ValidateDirIsCache(cacheDir))
+        else if (!ValidateDirIsCache(cacheDirPath))
         {
             throw new CacheException(CliOutput.Exception_Cache_Prepare_NonEmpty);
         }
@@ -82,9 +57,10 @@ public static class Cache
         return true;
     }
 
-    public static DirectoryInfo GetDirectoryInCache(DirectoryInfo cacheDir, string[] directoryStructure)
+    public DirectoryInfo GetDirectoryInCache(string cacheDirPath, string[] directoryStructure)
     {
-        Prepare(cacheDir);
+        var cacheDir = new DirectoryInfo(cacheDirPath);
+        Prepare(cacheDirPath);
         var focus = cacheDir;
 
         foreach (var directory in directoryStructure)
@@ -109,20 +85,26 @@ public static class Cache
         return focus;
     }
 
-    public static bool Destroy(DirectoryInfo cacheDir)
+    public bool Destroy(string cacheDirPath)
     {
+        var cacheDir = new DirectoryInfo(cacheDirPath);
         // If the directory doesn't exist, do nothing (be idempotent).
         if (!cacheDir.Exists)
         {
             throw new CacheException(CliOutput.Warning_Cache_Destroy_DoesNotExist) { IsWarning = true };
         }
 
-        if (!ValidateDirIsCache(cacheDir))
+        if (!ValidateDirIsCache(cacheDirPath))
         {
             throw new CacheException(CliOutput.Exception_Cache_Destroy_NonCache);
         }
 
         cacheDir.Delete(true);
         return true;
+    }
+
+    public Guid Save(CachedAnalysis analysis)
+    {
+        throw new NotImplementedException();
     }
 }
