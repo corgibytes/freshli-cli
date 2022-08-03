@@ -9,13 +9,13 @@ public class GitCommand : Command
     public GitCommand()
         : base("git", CliOutput.Help_GitCommand_Description)
     {
-        GitCloneCommand clone = new GitCloneCommand();
+        var clone = new GitCloneCommand();
         AddCommand(clone);
 
-        CheckoutHistoryCommand checkoutHistoryCommand = new CheckoutHistoryCommand();
+        var checkoutHistoryCommand = new CheckoutHistoryCommand();
         AddCommand(checkoutHistoryCommand);
 
-        ComputeHistoryCommand computeHistoryCommand = new ComputeHistoryCommand();
+        var computeHistoryCommand = new ComputeHistoryCommand();
         AddCommand(computeHistoryCommand);
     }
 }
