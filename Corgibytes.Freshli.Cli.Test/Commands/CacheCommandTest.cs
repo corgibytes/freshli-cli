@@ -17,21 +17,21 @@ public class CacheCommandTest : FreshliTest
     [Fact]
     public void Verify_no_cache_handler_configuration()
     {
-        CacheCommand cacheCommand = new CacheCommand();
+        var cacheCommand = new CacheCommand();
         cacheCommand.Handler.Should().BeNull();
     }
 
     [Fact]
     public void Verify_prepare_handler_configuration()
     {
-        CachePrepareCommand cachePrepareCommand = new CachePrepareCommand();
+        var cachePrepareCommand = new CachePrepareCommand();
         cachePrepareCommand.Handler.Should().NotBeNull();
     }
 
     [Fact]
     public void Verify_destroy_handler_configuration()
     {
-        CacheDestroyCommand cacheDestroyCommand = new CacheDestroyCommand();
+        var cacheDestroyCommand = new CacheDestroyCommand();
         cacheDestroyCommand.Handler.Should().NotBeNull();
     }
 

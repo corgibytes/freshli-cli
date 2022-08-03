@@ -11,7 +11,7 @@ public class ComputeLibYearCommand : RunnableCommand<ComputeLibYearCommand, Comp
 {
     public ComputeLibYearCommand() : base("compute-libyear", "Computes the libyear for a given CycloneDX file")
     {
-        Argument<FileInfo> filepathArgument = new Argument<FileInfo>("file-path", "Filepath of an CycloneDX file")
+        var filepathArgument = new Argument<FileInfo>("file-path", "Filepath of an CycloneDX file")
         {
             Arity = ArgumentArity.ExactlyOne
         };

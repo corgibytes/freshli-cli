@@ -17,7 +17,7 @@ public class ListCommits : IListCommits
 
     public IEnumerable<GitCommit> ForRepository(string repositoryId, DirectoryInfo cacheDirectory, string gitPath)
     {
-        GitSource gitSource = new GitSource(repositoryId, cacheDirectory, _cachedGitSourceRepository);
+        var gitSource = new GitSource(repositoryId, cacheDirectory, _cachedGitSourceRepository);
 
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();

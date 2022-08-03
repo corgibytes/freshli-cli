@@ -18,7 +18,7 @@ public class ScanCommandTest : FreshliTest
     [Fact]
     public void Verify_path_argument_configuration()
     {
-        ScanCommand scanCommand = new ScanCommand();
+        var scanCommand = new ScanCommand();
 
         scanCommand.Arguments.Should().HaveCount(1);
 
@@ -45,7 +45,7 @@ public class ScanCommandTest : FreshliTest
     [Fact]
     public void Verify_handler_configuration()
     {
-        ScanCommand scanCommand = new ScanCommand();
+        var scanCommand = new ScanCommand();
         scanCommand.Handler.Should().NotBeNull();
     }
 }

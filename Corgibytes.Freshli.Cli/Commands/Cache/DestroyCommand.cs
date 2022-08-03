@@ -9,7 +9,7 @@ public class CacheDestroyCommand : RunnableCommand<CacheCommand, CacheDestroyCom
     public CacheDestroyCommand()
         : base("destroy", CliOutput.Help_CacheDestroyCommand_Description)
     {
-        Option<bool> forceOption = new Option<bool>("--force", CliOutput.Help_CacheDestoyCommand_Option_Force)
+        var forceOption = new Option<bool>("--force", CliOutput.Help_CacheDestoyCommand_Option_Force)
         {
             Arity = ArgumentArity.ZeroOrOne
         };
