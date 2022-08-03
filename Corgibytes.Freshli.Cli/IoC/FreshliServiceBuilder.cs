@@ -141,13 +141,13 @@ public class FreshliServiceBuilder
     // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L180
     private void RegisterHangfireServer()
     {
-        Services.AddSingleton(new BackgroundJobServerOptions {WorkerCount = 10});
+        Services.AddSingleton(new BackgroundJobServerOptions { WorkerCount = 10 });
 
         Services.AddTransient<IHostedService, BackgroundJobServerHostedService>(provider =>
         {
             var options = provider.GetService<BackgroundJobServerOptions>() ?? new BackgroundJobServerOptions();
             var storage = provider.GetService<JobStorage>() ?? new MemoryStorage();
-            return new(storage, options, new List<IBackgroundProcess>());
+            return new BackgroundJobServerHostedService(storage, options, new List<IBackgroundProcess>());
         });
     }
 

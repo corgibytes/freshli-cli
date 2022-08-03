@@ -10,10 +10,8 @@ internal class MicrosoftExtensionsJobActivatorScope : JobActivatorScope
 {
     private readonly IServiceScope _serviceScope;
 
-    public MicrosoftExtensionsJobActivatorScope(IServiceScope serviceScope)
-    {
+    public MicrosoftExtensionsJobActivatorScope(IServiceScope serviceScope) =>
         _serviceScope = serviceScope ?? throw new ArgumentNullException(nameof(serviceScope));
-    }
 
     public override object Resolve(Type type) =>
         ActivatorUtilities.GetServiceOrCreateInstance(_serviceScope.ServiceProvider, type);

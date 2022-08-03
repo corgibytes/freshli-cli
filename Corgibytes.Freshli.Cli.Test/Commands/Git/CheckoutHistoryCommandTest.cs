@@ -37,7 +37,7 @@ public class CheckoutHistoryCommandTest : FreshliTest
     }
 
     private static TheoryData<string, ArgumentArity, int> DataForVerifyArgumentConfiguration() =>
-        new TheoryData<string, ArgumentArity, int>
+        new()
         {
             { "repository-id", ArgumentArity.ExactlyOne, 0 },
             { "sha", ArgumentArity.ExactlyOne, 1 }

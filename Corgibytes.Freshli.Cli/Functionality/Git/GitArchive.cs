@@ -32,7 +32,7 @@ public class GitArchive
 
         var archiveProcess = new Process
         {
-            StartInfo = new()
+            StartInfo = new ProcessStartInfo
             {
                 FileName = gitPath,
                 WorkingDirectory = gitSource.Directory.FullName,
