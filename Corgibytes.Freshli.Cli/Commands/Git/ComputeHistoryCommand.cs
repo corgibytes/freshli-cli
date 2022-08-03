@@ -51,11 +51,12 @@ public class ComputeHistoryCommand : RunnableCommand<ComputeHistoryCommand, Comp
 
         AddOption(historyInterval);
 
-        var gitPath = new Option<string>("--git-path",
-            description: "Path to the git binary. Default = 'git'", getDefaultValue: () => "git")
-        {
-            Arity = ArgumentArity.ZeroOrOne
-        };
+        var gitPath = new Option<string>(
+            "--git-path",
+            description: "Path to the git binary. Default = 'git'",
+            getDefaultValue: () => "git"
+        )
+        { Arity = ArgumentArity.ZeroOrOne };
         AddOption(gitPath);
     }
 }
