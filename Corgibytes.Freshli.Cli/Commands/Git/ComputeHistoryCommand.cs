@@ -9,7 +9,7 @@ public class ComputeHistoryCommand : RunnableCommand<ComputeHistoryCommand, Comp
     public ComputeHistoryCommand() : base("compute-history",
         "Used to examine the history of the specified repository and determine the sha hashes that will need to be checked out to complete a historical analysis at the intervals specified.")
     {
-        Argument<string> repositoryIdentifier =
+        var repositoryIdentifier =
             new Argument<string>("repository-id", "The ID of the repository to compute history for")
             {
                 Arity = ArgumentArity.ExactlyOne
@@ -17,7 +17,7 @@ public class ComputeHistoryCommand : RunnableCommand<ComputeHistoryCommand, Comp
 
         AddArgument(repositoryIdentifier);
 
-        Option<bool> commitHistory = new Option<bool>("--commit-history",
+        var commitHistory = new Option<bool>("--commit-history",
             "Analyzes only the points in time when files have changed in the commit history")
         {
             AllowMultipleArgumentsPerToken = false,
@@ -25,7 +25,7 @@ public class ComputeHistoryCommand : RunnableCommand<ComputeHistoryCommand, Comp
         };
         AddOption(commitHistory);
 
-        Option<string> historyInterval = new Option<string>("--history-interval",
+        var historyInterval = new Option<string>("--history-interval",
             description:
             "As the analyze command moves backwards in time through the history of the project, what time interval should it use to determine the points in time that are sampled. Possible values: y(ears), m(onths), w(eeks), d(ays)",
             getDefaultValue: () => "m")
@@ -51,7 +51,7 @@ public class ComputeHistoryCommand : RunnableCommand<ComputeHistoryCommand, Comp
 
         AddOption(historyInterval);
 
-        Option<string> gitPath = new Option<string>("--git-path",
+        var gitPath = new Option<string>("--git-path",
             description: "Path to the git binary. Default = 'git'", getDefaultValue: () => "git")
         {
             Arity = ArgumentArity.ZeroOrOne

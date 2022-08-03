@@ -9,7 +9,7 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandO
     public GitCloneCommand()
         : base("clone", CliOutput.Help_GitCloneCommand_Description)
     {
-        Argument<string> repoUrlArgument =
+        var repoUrlArgument =
             new Argument<string>("repo-url", CliOutput.Help_GitCloneCommand_Argument_Repo_Url)
             {
                 Arity = ArgumentArity.ExactlyOne
@@ -17,7 +17,7 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandO
 
         AddArgument(repoUrlArgument);
 
-        Option<string> gitPathOption = new Option<string>("--git-path",
+        var gitPathOption = new Option<string>("--git-path",
             description: CliOutput.Help_GitCloneCommand_Option_Git_Path, getDefaultValue: () => "git")
         {
             AllowMultipleArgumentsPerToken = false,
@@ -26,7 +26,7 @@ public class GitCloneCommand : RunnableCommand<GitCloneCommand, GitCloneCommandO
 
         AddOption(gitPathOption);
 
-        Option<string> branch = new Option<string>("--branch", CliOutput.Help_GitCloneCommand_Option_Branch)
+        var branch = new Option<string>("--branch", CliOutput.Help_GitCloneCommand_Option_Branch)
         {
             AllowMultipleArgumentsPerToken = false,
             Arity = ArgumentArity.ZeroOrOne

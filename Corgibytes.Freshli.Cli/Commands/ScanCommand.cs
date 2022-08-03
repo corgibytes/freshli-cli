@@ -16,14 +16,14 @@ public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
 {
     public ScanCommand() : base("scan", CliOutput.Help_ScanCommand_Description)
     {
-        Option<FormatType> formatOption = new Option<FormatType>(new[] { "--format", "-f" },
+        var formatOption = new Option<FormatType>(new[] { "--format", "-f" },
             description: CliOutput.Help_ScanCommand_Option_Format, getDefaultValue: () => FormatType.Json)
         {
             AllowMultipleArgumentsPerToken = false,
             Arity = ArgumentArity.ExactlyOne
         };
 
-        Option<IEnumerable<OutputStrategyType>> outputOption =
+        var outputOption =
             new Option<IEnumerable<OutputStrategyType>>(new[] { "--output", "-o" },
                 description: $"{CliOutput.Help_ScanCommand_Option_Output} [ console | file ]",
                 getDefaultValue: () => new List<OutputStrategyType> { OutputStrategyType.Console })
@@ -35,7 +35,7 @@ public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
         AddOption(formatOption);
         AddOption(outputOption);
 
-        Argument<DirectoryInfo> pathArgument =
+        var pathArgument =
             new Argument<DirectoryInfo>("path", CliOutput.Help_ScanCommand_Argument_Path)
             {
                 Arity = ArgumentArity.ExactlyOne
