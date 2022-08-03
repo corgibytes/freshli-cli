@@ -377,12 +377,31 @@ First you'll need to make sure that the correct version of the [Coverlet code co
 dotnet tool restore
 ```
 
-From then on, you can run the test suite and collect coverage with:
+> :orange_book: Make sure you run `bin/build.rb` before running any of the following commands.
+
+#### Collecting Coverage for the Entire Test Suite
+
+The following command can be used to compute the total test coverage across the .NET-based unit and integration tests combined with the Cucumber-based acceptance tests.
 
 ```bash
-dotnet coverlet bin/Corgibytes.Freshli.Cli --target "bundle" --targetargs "exec cucumber" --output
+dotnet coverlet --target "./bin/test.rb" --targetargs "--skip-build" ./exe
 ```
 
+### Collecting Coverage for .NET-Based Test Suite
+
+The following command will report the code coverage of the tests that are authored using the .NET-based testing tools.
+
+```bash
+dotnet coverlet --target "dotnet" --targetargs "vstest exe/Corgibytes.Freshli.Cli.Test.dll" ./exe
+```
+
+### Collecting Coverage for the Cucumber-based Acceptance Test Suite
+
+The following command will list the code coverage for the Cucumber-based tests.
+
+```bash
+dotnet coverlet --target "bundle" --targetargs "exec cucumber" ./exe
+```
 ## Working with the DevContainer
 
 This project has uses DevContainer to assist with creating a full configured development environment.
