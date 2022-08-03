@@ -138,6 +138,7 @@ public class FreshliServiceBuilder
         RegisterHangfireServer();
     }
 
+    // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L180
     private void RegisterHangfireServer()
     {
         Services.AddSingleton(new BackgroundJobServerOptions {WorkerCount = 10});
@@ -150,6 +151,7 @@ public class FreshliServiceBuilder
         });
     }
 
+    // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L43
     private void RegisterHangfire()
     {
         JobStorage.Current = new MemoryStorage();
@@ -176,6 +178,7 @@ public class FreshliServiceBuilder
             .GetService<IRecurringJobManagerFactory>()!.GetManager(x.GetService<JobStorage>()!));
     }
 
+    // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L76
     private void RegisterHangfireConfiguration() =>
         Services.AddSingleton<IGlobalConfiguration>(serviceProvider =>
         {
