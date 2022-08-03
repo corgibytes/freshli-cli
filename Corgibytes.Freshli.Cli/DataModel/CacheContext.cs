@@ -16,8 +16,8 @@ public class CacheContext : DbContext
     }
 
     // ReSharper disable once UnusedMember.Global
-    public static DirectoryInfo DefaultCacheDir =>
-        new(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
+    public static string DefaultCacheDir =>
+        Path.Combine(Environment.GetEnvironmentVariable("HOME")!, ".freshli");
 
     private DirectoryInfo CacheDir { get; }
     private string DbPath { get; }
@@ -36,7 +36,7 @@ public class CacheContextFactory : IDesignTimeDbContextFactory<CacheContext>
     public CacheContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<CacheContext>();
-        var cacheDir = CacheContext.DefaultCacheDir;
+        var cacheDir = new DirectoryInfo(CacheContext.DefaultCacheDir);
         var dbPath = Path.Join(cacheDir.ToString(), CacheContext.CacheDbName);
         optionsBuilder.UseSqlite($"Data Source={dbPath}");
 
