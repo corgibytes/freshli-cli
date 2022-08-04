@@ -1,18 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.CommandLine.Invocation;
-using System.IO;
-using System.Linq;
-using System.Text;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.Functionality.Agents;
+using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Lib;
 using TextTableFormatter;
-using Environment = System.Environment;
-using System.CommandLine;
-using System.Reflection;
-using CliWrap;
-using System.Diagnostics;
+
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOptions>
@@ -27,26 +23,52 @@ public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOpti
 
 public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, EmptyCommandOptions>
 {
-    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, Runner runner, IAgentsDetector agentsDetector)
-        : base(serviceProvider, runner) =>
+    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, Runner runner, IAgentsDetector agentsDetector,
+        IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine)
+        : base(serviceProvider, runner)
+    {
+        ActivityEngine = activityEngine;
+        EventEngine = eventEngine;
         AgentsDetector = agentsDetector;
+    }
 
     private IAgentsDetector AgentsDetector { get; }
+    private IApplicationActivityEngine ActivityEngine { get; }
+    private IApplicationEventEngine EventEngine { get; }
 
     public override int Run(EmptyCommandOptions options, InvocationContext context)
     {
-        var agents = AgentsDetector.Detect();
+        ActivityEngine.Dispatch(new DetectAgentsActivity(AgentsDetector));
 
-        // Path.GetFileName returns string?, but ToDictionary needs string. We resolve this with the following, and
-        // then tell the compiler to stop complaining that GetFileName(x) is never null; this is about the return type.
-        // ReSharper disable once ConstantNullCoalescingCondition
-        var agentsAndLocations = agents.ToDictionary(
-            x => Path.GetFileName(x) ?? throw new ArgumentException("No file name for given path.")
-        );
+        EventEngine.On<AgentsDetectedEvent>(detectionEvent =>
+        {
+            FormatAndWriteToConsole(detectionEvent.AgentsAndLocations ?? new Dictionary<string, string>());
+        });
+
+        ActivityEngine.Wait();
 
         return 0;
     }
+
+            private static void FormatAndWriteToConsole(Dictionary<string, string> agentsAndLocations)
+    {
+        var basicTable = new TextTable(2);
+        basicTable.AddCell("Agent file");
+        basicTable.AddCell("Agent path");
+
+        foreach (var agentAndLocation in agentsAndLocations)
+        {
+            basicTable.AddCell(agentAndLocation.Key);
+            basicTable.AddCell(agentAndLocation.Value);
+        }
+
+        Console.WriteLine(agentsAndLocations.Count == 0
+            ? CliOutput.AgentsDetectCommandRunner_Run_No_detected_agents_found
+            : basicTable.Render());
+    }
 }
+
+
 
 public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, AgentsVerifyCommandOptions>
 {
@@ -81,5 +103,6 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
         }
 
         return 0;
+        
     }
 }
