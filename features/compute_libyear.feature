@@ -1,9 +1,6 @@
 Feature: Compute libyear
   Scenario: Compute
-    Given the directory named "~/bin"
-    And an empty file named "~/bin/freshli-agent-test"
-    And the directory named "~/bin" is prepended to the PATH environment variable
-    And a file named "cyclonedx.json" with:
+    Given a file named "cyclonedx.json" with:
     """
     {
       "bomFormat": "CycloneDX",
@@ -35,15 +32,15 @@ Feature: Compute libyear
     When I run `freshli compute-libyear cyclonedx.json`
     Then the output should contain:
     """
-    calculatron                    14.6  12/31/2019             21.3  10/16/2022     2.8
+    calculatron                    14.6 2019-12-31T00:00:00             21.3 2022-10-16T00:00:00     2.8
     """
     Then the output should contain:
     """
-    flyswatter                    1.1.0  11/29/1990            1.1.0  11/29/1990       0
+    flyswatter                    1.1.0 1990-01-29T12:15:25            1.1.0 1990-01-29T12:15:25       0
     """
     Then the output should contain:
     """
-    auto-cup-of-tea       Latest version could not be found in list for this package url
+    auto-cup-of-tea                       Latest version could not be found in list for this package url
     """
     Then the output should contain:
     """

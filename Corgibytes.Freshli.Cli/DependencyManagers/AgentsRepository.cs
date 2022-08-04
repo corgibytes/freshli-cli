@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Exceptions;
-using Corgibytes.Freshli.Cli.ExtensionMethods;
+using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
 using PackageUrl;
@@ -25,13 +25,13 @@ public class AgentsRepository : IDependencyManagerRepository
     {
         foreach (var agentExecutable in _agentsDetector.Detect())
         {
-            var validPackageUrls = _agentReader.ListValidPackageUrls(agentExecutable, packageUrl);
-            if (validPackageUrls.Count == 0)
+            var releaseHistory = _agentReader.RetrieveReleaseHistory(agentExecutable, packageUrl);
+            if (releaseHistory.Count == 0)
             {
                 continue;
             }
 
-            return GetReleaseDateForList(validPackageUrls, packageUrl);
+            return GetReleaseDateForList(releaseHistory, packageUrl);
         }
 
         throw ReleaseDateNotFoundException.BecauseNoAgentReturnedAnyResults();
@@ -41,7 +41,7 @@ public class AgentsRepository : IDependencyManagerRepository
     {
         foreach (var agentExecutable in _agentsDetector.Detect())
         {
-            var packages = _agentReader.ListValidPackageUrls(agentExecutable, packageUrl);
+            var packages = _agentReader.RetrieveReleaseHistory(agentExecutable, packageUrl);
             if (packages.Count == 0)
             {
                 continue;
@@ -57,9 +57,9 @@ public class AgentsRepository : IDependencyManagerRepository
         throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList();
     }
 
-    private static DateTimeOffset GetReleaseDateForList(List<Package> validPackages, PackageURL packageUrl)
+    private static DateTimeOffset GetReleaseDateForList(List<Package> releaseHistory, PackageURL packageUrl)
     {
-        foreach (var package in validPackages.Where(package => package.PackageUrl.PackageUrlEquals(packageUrl)))
+        foreach (var package in releaseHistory.Where(package => package.PackageUrl.PackageUrlEquals(packageUrl)))
         {
             return package.ReleasedAt;
         }
