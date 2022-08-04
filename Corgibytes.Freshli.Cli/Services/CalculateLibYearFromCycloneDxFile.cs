@@ -35,7 +35,7 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
                 var releaseDatePackageLatestAvailable =
                     _repository.GetReleaseDate(latestVersion);
 
-                libYearList.Add(new(
+                libYearList.Add(new PackageLibYear(
                     releaseDatePackageCurrentlyInstalled,
                     currentlyInstalled,
                     releaseDatePackageLatestAvailable,
@@ -46,7 +46,7 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
             }
             catch (Exception exception)
             {
-                libYearList.Add(new(
+                libYearList.Add(new PackageLibYear(
                     currentlyInstalled,
                     exception.Message
                 ));

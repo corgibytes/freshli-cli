@@ -21,7 +21,7 @@ public class CheckoutHistoryCommandRunner : CommandRunner<CheckoutHistoryCommand
             _gitArchive.CreateArchive(
                 options.RepositoryId,
                 options.CacheDir,
-                new(options.Sha),
+                new GitCommitIdentifier(options.Sha),
                 options.GitPath
             )
         );
