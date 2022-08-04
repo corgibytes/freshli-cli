@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Text;
 using CliWrap;
@@ -19,14 +20,15 @@ public static class Invoke
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
-        using var task = command.ExecuteAsync().Task;
-        task.Wait();
-
-        if (task.Result.ExitCode != 0)
+        try
+        {
+            using var task = command.ExecuteAsync().Task;
+            task.Wait();
+        }
+        catch (AggregateException)
         {
             throw new IOException(stdErrBuffer.ToString());
         }
-
         return stdOutBuffer.ToString();
     }
 }

@@ -8,7 +8,7 @@ namespace Corgibytes.Freshli.Cli.Test.Commands;
 
 public class MockAgentsReader : IAgentReader
 {
-    public List<Package> ListValidPackageUrls(string agentExecutable, PackageURL packageUrl) => agentExecutable switch
+    public List<Package> RetrieveReleaseHistory(string agentExecutable, PackageURL packageUrl) => agentExecutable switch
     {
         "/usr/local/bin/freshli-agent-csharp" => packageUrl.Name switch
         {
