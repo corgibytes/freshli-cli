@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
+[UnitTest]
 public class ReadCycloneDxFileTest : FreshliTest
 {
     private readonly MockFileReader _fileReaderService;

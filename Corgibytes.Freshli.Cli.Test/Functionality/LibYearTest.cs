@@ -7,6 +7,7 @@ using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
+[UnitTest]
 public class LibYearTest : FreshliTest
 {
     public LibYearTest(ITestOutputHelper output) : base(output)

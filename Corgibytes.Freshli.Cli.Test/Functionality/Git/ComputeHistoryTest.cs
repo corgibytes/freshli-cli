@@ -8,6 +8,7 @@ using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
+[UnitTest]
 public class ComputeHistoryTest : FreshliTest
 {
     private readonly string _cacheDir;
