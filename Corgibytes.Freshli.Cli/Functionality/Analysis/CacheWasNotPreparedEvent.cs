@@ -1,5 +1,5 @@
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class CacheWasNotPreparedEvent: FailureEvent
+public class CacheWasNotPreparedEvent : FailureEvent
 {
 }

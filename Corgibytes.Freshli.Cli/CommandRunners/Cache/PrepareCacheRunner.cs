@@ -12,13 +12,11 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
 public class CachePrepareCommandRunner : CommandRunner<CacheCommand, CachePrepareCommandOptions>
 {
-    private ICacheManager CacheManager { get; }
-
     public CachePrepareCommandRunner(IServiceProvider serviceProvider, ICacheManager cacheManager, Runner runner)
-        : base(serviceProvider, runner)
-    {
+        : base(serviceProvider, runner) =>
         CacheManager = cacheManager;
-    }
+
+    private ICacheManager CacheManager { get; }
 
     public override int Run(CachePrepareCommandOptions options, InvocationContext context)
     {
