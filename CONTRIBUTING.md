@@ -4,6 +4,10 @@ Contributing
 Please read [.NET Core Guidelines](https://github.com/dotnet/runtime/blob/master/CONTRIBUTING.md) for more general information about coding styles, source structure, making pull requests, and more.
 While this project is in the early phases of development, some of the guidelines in this document do not yet apply as strongly.
 
+## Contributor License Agreement
+
+Like many open-source projects, we ask that you agree to our [Contributor License Agreement](https://github.com/corgibytes/freshli-cla/blob/main/CLA/CLA-v1.0.md) before we can accept your contribution. You can sign the CLA by posting a comment in your PR. The CLA bot will tell you what to comment with.
+
 ## Developer guide
 
 This project can be developed on any platform. To get started, follow instructions for your OS.

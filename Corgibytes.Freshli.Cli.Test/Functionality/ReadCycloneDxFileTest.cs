@@ -15,8 +15,8 @@ public class ReadCycloneDxFileTest : FreshliTest
 
     public ReadCycloneDxFileTest(ITestOutputHelper output) : base(output)
     {
-        _fileReaderService = new();
-        _readCycloneDxFile = new(_fileReaderService);
+        _fileReaderService = new MockFileReader();
+        _readCycloneDxFile = new ReadCycloneDxFile(_fileReaderService);
     }
 
     [Fact]
