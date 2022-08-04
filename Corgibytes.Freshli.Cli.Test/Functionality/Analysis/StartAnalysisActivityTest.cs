@@ -11,6 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class StartAnalysisActivityTest
 {
     private readonly Mock<ICacheManager> _cacheManager = new();
+    private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IHistoryIntervalParser> _intervalParser = new();
 
@@ -43,11 +44,12 @@ public class StartAnalysisActivityTest
         _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
 
         _cacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
-        _cacheManager.Setup(mock => mock.Save(It.IsAny<CachedAnalysis>())).Returns(sampleGuid);
+        _cacheManager.Setup(mock => mock.GetCacheDb("example")).Returns(_cacheDb.Object);
+        _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).Returns(sampleGuid);
 
         Activity.Handle(_eventEngine.Object);
 
-        _cacheManager.Verify(mock => mock.Save(It.Is<CachedAnalysis>(value =>
+        _cacheDb.Verify(mock => mock.SaveAnalysis(It.Is<CachedAnalysis>(value =>
             value.RepositoryUrl == "http://git.example.com" &&
             value.RepositoryBranch == "main" &&
             value.HistoryInterval == "1m"
