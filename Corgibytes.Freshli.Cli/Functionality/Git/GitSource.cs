@@ -28,10 +28,9 @@ public class GitException : Exception
 
 public class GitSource
 {
-    private ICacheManager CacheManager { get; }
-
     // ReSharper disable once UnusedMember.Global
-    public GitSource(string hash, string cacheDirPath, ICacheManager cacheManager, ICachedGitSourceRepository cachedGitSourceRepository)
+    public GitSource(string hash, string cacheDirPath, ICacheManager cacheManager,
+        ICachedGitSourceRepository cachedGitSourceRepository)
     {
         CacheManager = cacheManager;
         CacheDir = new(cacheDirPath);
@@ -83,6 +82,8 @@ public class GitSource
         db.CachedGitSources.Add(entry);
         db.SaveChanges();
     }
+
+    private ICacheManager CacheManager { get; }
 
     public string Hash { get; }
     private string Url { get; }

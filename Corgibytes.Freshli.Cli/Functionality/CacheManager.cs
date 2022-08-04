@@ -10,17 +10,6 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class CacheManager : ICacheManager
 {
-    private void MigrateIfPending(CacheContext context)
-    {
-        var pending = context.Database.GetPendingMigrations();
-        if (!pending.Any())
-        {
-            return;
-        }
-
-        context.Database.Migrate();
-    }
-
     public bool ValidateDirIsCache(string cacheDirPath)
     {
         var cacheDir = new DirectoryInfo(cacheDirPath);
@@ -103,8 +92,16 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public Guid Save(CachedAnalysis analysis)
+    public Guid Save(CachedAnalysis analysis) => throw new NotImplementedException();
+
+    private static void MigrateIfPending(CacheContext context)
     {
-        throw new NotImplementedException();
+        var pending = context.Database.GetPendingMigrations();
+        if (!pending.Any())
+        {
+            return;
+        }
+
+        context.Database.Migrate();
     }
 }
