@@ -6,6 +6,7 @@ using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
+[IntegrationTest]
 public class CacheManagerTest : IDisposable
 {
     private readonly string _tempCacheDir;

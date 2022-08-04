@@ -8,6 +8,7 @@ using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
+[UnitTest]
 public class StartAnalysisActivityTest
 {
     private readonly Mock<ICacheManager> _cacheManager = new();

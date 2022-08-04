@@ -11,6 +11,7 @@ using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.CommandOptions;
 
+[IntegrationTest]
 public class ScanCommandOptionsTest : FreshliTest
 {
     public ScanCommandOptionsTest(ITestOutputHelper output) : base(output)

@@ -12,6 +12,7 @@ using YamlDotNet.Serialization;
 
 namespace Corgibytes.Freshli.Cli.Test.Formatters;
 
+[IntegrationTest]
 public class OutputFormatterTest : FreshliTest
 {
     private static readonly MetricsResult s_metricsResultTestData;
