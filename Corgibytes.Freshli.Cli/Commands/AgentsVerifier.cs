@@ -1,8 +1,8 @@
 using Corgibytes.Freshli.Cli.Functionality;
-using System.Diagnostics;
 using System;
 using System.IO;
 using System.Collections.Generic;
+
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
@@ -16,99 +16,152 @@ public class AgentsVerifier
     public bool Verify() => true;
 
     public void RunAgentsVerify(string AgentFileAndPath, string Argument, DirectoryInfo CacheDir, String languageName ){
-
+        var startTime = DateTime.Now;
         languageName = String.IsNullOrEmpty(languageName) ? Path.DirectorySeparatorChar+"repositories" : Path.DirectorySeparatorChar+ languageName;
         var validatingRepositoriesUrl = Invoke.Command(AgentFileAndPath,Argument,".").TrimEnd('\n','\r');
-
         if(validatingRepositoriesUrl.Contains("\n")){
-            foreach(var url in validatingRepositoriesUrl){
+            foreach(var url in validatingRepositoriesUrl.Split("\n")){
+                
             try
                 {   
-                    Invoke.Command("git", $"-C {CacheDir.FullName}{languageName} clone {url}", CacheDir.FullName);    
+                    Invoke.Command("git", $"-C {CacheDir.FullName}{languageName} clone {url}", CacheDir.FullName); 
+                    RunDetectManfiest(AgentFileAndPath,"detect-manifests", url, CacheDir.FullName,startTime);   
                 }
                 catch (Exception e)
                 {
                     Console.Error.WriteLine(e.Message);
                 }
-                RunDetectManfiest(AgentFileAndPath,"detect-manifests", CacheDir.FullName);
 
-        }
+            }
         }else{
             try
                 {   
                     Invoke.Command("git", $"-C {CacheDir.FullName}{languageName} clone {validatingRepositoriesUrl}", CacheDir.FullName);    
+                    RunDetectManfiest(AgentFileAndPath,"detect-manifests",validatingRepositoriesUrl, CacheDir.FullName + languageName,startTime);
                 }
                 catch (Exception e)
                 {
                     Console.Error.WriteLine(e.Message);
                 }
-                // RunDetectManfiest(AgentFileAndPath,"detect-manifests",url, CacheDir.FullName);
-
-        }
-        
-    }
-    public void RunDetectManfiest(string AgentFileAndPath, string Argument, string directory){
-        
-        var detectManfiestOutput = Invoke.Command(AgentFileAndPath,Argument,".");
-        Console.WriteLine("Donas RunDetectManfiest:  " + info);
-        
-        while (!process.StandardOutput.EndOfStream)
-        {
-            string FileData = File.ReadAllText(process.StandardOutput.ReadLine());
-            if(FileData.ToLower().Contains("manifest"))
-            {
-                DetectedManifestFiles.Add(process.StandardOutput.ReadLine());
-            }
                 
+
         }
-        process.WaitForExit();
+        
+    }
+    public void RunDetectManfiest(string AgentFileAndPath, string Argument, string url, string directory, DateTime startDate){
+        
+        var detectManfiestOutput = Invoke.Command(AgentFileAndPath,Argument + $" {url}" ,".");
+        Console.WriteLine("Donas RunDetectManfiest:  " + detectManfiestOutput);
+        if(detectManfiestOutput.ToLower().Contains("gemfile")){
+            foreach( var manifestFile in detectManfiestOutput.Split("\t")){
+                if(manifestFile.ToLower().Contains("gemfile")){
+                    RunProcessManfiest(AgentFileAndPath,"process-manifests", url, directory, manifestFile.Trim(),startDate);
+                }
+            }
+            
+        }
+        
+        
+    }
 
-        // if(DetectedManifestFiles.Count < 1)
-        // {
-        //     Console.Error.WriteLine("There are no manifest files found");
-        // }
-        // else
-        // {
-        //     RunProcessManfiest(AgentFileAndPath, "process-manifests",DetectedManifestFiles,Url);
-        // }
+    public void RunProcessManfiest(string AgentFileAndPath, string Argument, string Url, string workingDirectory, string detectManfiestFiles, DateTime startDate)
+    {
+        var timeDifference = DateTime.Now - startDate;
+        var processManfiestOutput = Invoke.Command(AgentFileAndPath, Argument + " " + detectManfiestFiles + " " + DateTimeOffset.Now.ToString("s") + "Z",  ".");
+        
+        List<string> detectManifestFiles = DetectManifestFileCount(detectManfiestFiles);
+        List<string> processManifestFiles = VerifyFiles(processManfiestOutput);
+        
+        try
+        {
+            var gitStatus = Invoke.Command("git", "status", workingDirectory); 
+            if(gitStatus.Length != 0)
+            {
+                Console.Error.Write("The following are residual modifications from the cloned repository: " + Url);
+                Console.Error.Write(gitStatus);
+            }
 
-        // Console.WriteLine("Dona are the files the same? : " + FileCompare(DetectedManifestFiles, directory+Path.DirectorySeparatorChar+languageName+Path.DirectorySeparatorChar+hash+Path.DirectorySeparatorChar+manifestFile.Substring(manifestFile.LastIndexOf(Path.DirectorySeparatorChar)+1)));
+        }catch(Exception e)
+        {
+            Console.Error.WriteLine("Failed to validate for residual modifications due to the following: " + e);
+        }
+        
+        if(processManifestFiles.Count != processManifestFiles.Count)
+        {
+            Console.Error.Write("Number of detected manifest files and process files are not equal.");
+            
+        }else
+        {
+            Console.WriteLine("Repository tested: " + Url);
+            Console.WriteLine("Total time to execute agent verify: " + timeDifference);
+            RunValidatingPackageUrls(AgentFileAndPath, "validating-package-urls", Url);
+        }
+        
 
     }
 
-    public void RunProcessManfiest(string AgentFileAndPath, string Argument,List<string> DetectedManifestFiles, string Url){
+    public void RunValidatingPackageUrls(string AgentFileAndPath, string Argument, string Url){
 
-        List<string> processManfiest = null;
-        var processInfo = new ProcessStartInfo();
-        processInfo.UseShellExecute = false;
-        processInfo.FileName = AgentFileAndPath;   // 'sh' for bash 
-        processInfo.Arguments =  Argument;    // The Script name 
-        processInfo.RedirectStandardOutput = true;
-        Process process = Process.Start(processInfo);   // Start that process.
-            
-        
-        while (!process.StandardOutput.EndOfStream)
+        var processManfiestOutput = Invoke.Command(AgentFileAndPath, Argument, ".").TrimEnd('\n');
+        if (processManfiestOutput.Contains("\n"))
         {
-            try
+            foreach(string output in processManfiestOutput.Split("\n")) 
             {
-                string FileData = File.ReadAllText(process.StandardOutput.ReadLine());
-                if(FileData.ToLower().Contains("manifest"))
+            Console.WriteLine("Received the following package urls: " + output);
+            }
+        } else
+        {
+            Console.WriteLine("Received the following package urls: " + processManfiestOutput);
+        }
+    }
+
+    public List<string> VerifyFiles(string manifestOutput){
+        List<string> processManifestFiles = new List<string>();
+
+        foreach(var manifestFile in manifestOutput.Split("\t")){
+            
+            try{
+                processManifestFiles.Add(manifestFile);
+                if(!File.Exists(manifestFile.Trim()))
                 {
-                    processManfiest.Add(process.StandardOutput.ReadLine());
+                Console.WriteLine("File " + manifestFile + " does not exist");
+                }else if(new FileInfo(manifestFile.Trim()).Length != 0 && File.Exists(manifestFile.Trim()))
+                {
+                    try
+                    {
+                        
+                    }catch(Exception e)
+                    {
+                        Console.Error.Write(e);
+                    }
                 }
 
-            }catch (Exception e)
-            {
-                Console.Error.WriteLine("Could not process the following file: " + process.StandardOutput.ReadLine() + " due to the following exception " + e.ToString());
+                if(new FileInfo(manifestFile.Trim()).Length == 0)
+                {
+                    Console.WriteLine(manifestFile +  " is empty");
+                }
+
+            }catch(Exception e){
+                Console.WriteLine(e.ToString());
             }
-            
+             
         }
+        return processManifestFiles;
+        
+    }
 
-        if(processManfiest.Count != DetectedManifestFiles.Count){
-            Console.Error.WriteLine("The number of detected manifest files vs processed files is not the same");
+    public List<string> DetectManifestFileCount(string detectManifestInput){
+        List<string> detectManifestFiles = new List<string>();
+
+        foreach(var detectManifestFile in detectManifestInput.Split("\t"))
+        {
+            if(detectManifestInput.Contains(Path.DirectorySeparatorChar))
+            {
+                detectManifestFiles.Add(detectManifestFile);
+            }
         }
-        process.WaitForExit();
+        return detectManifestFiles;
 
-    }        
+    }          
         
 }
