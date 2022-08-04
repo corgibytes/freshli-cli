@@ -1,7 +1,7 @@
 using System;
 using Corgibytes.Freshli.Cli.DataModel;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Moq;
 using Xunit;
@@ -10,9 +10,9 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
 public class StartAnalysisActivityTest
 {
-    private Mock<ICacheManager> _cacheManager = new();
-    private Mock<IApplicationEventEngine> _eventEngine = new();
-    private Mock<IHistoryIntervalParser> _intervalParser = new();
+    private readonly Mock<ICacheManager> _cacheManager = new();
+    private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    private readonly Mock<IHistoryIntervalParser> _intervalParser = new();
 
     private StartAnalysisActivity Activity => new(_cacheManager.Object, _intervalParser.Object)
     {
@@ -48,9 +48,9 @@ public class StartAnalysisActivityTest
         Activity.Handle(_eventEngine.Object);
 
         _cacheManager.Verify(mock => mock.Save(It.Is<CachedAnalysis>(value =>
-                value.RepositoryUrl == "http://git.example.com" &&
-                   value.RepositoryBranch == "main" &&
-                   value.HistoryInterval == "1m"
+            value.RepositoryUrl == "http://git.example.com" &&
+            value.RepositoryBranch == "main" &&
+            value.HistoryInterval == "1m"
         )));
         _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value => value.AnalysisId == sampleGuid)));
     }

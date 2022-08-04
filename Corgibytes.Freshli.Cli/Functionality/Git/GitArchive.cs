@@ -9,7 +9,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 public class GitArchive
 {
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
-    private ICacheManager _cacheManager;
+    private readonly ICacheManager _cacheManager;
 
     public GitArchive(ICacheManager cacheManager, ICachedGitSourceRepository cachedGitSourceRepository)
     {

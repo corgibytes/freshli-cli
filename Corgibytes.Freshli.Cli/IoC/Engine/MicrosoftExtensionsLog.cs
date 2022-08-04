@@ -31,9 +31,8 @@ internal class MicrosoftExtensionsLog : ILog
         return true;
     }
 
-    private static Microsoft.Extensions.Logging.LogLevel ToTargetLogLevel(LogLevel logLevel)
-    {
-        return logLevel switch
+    private static Microsoft.Extensions.Logging.LogLevel ToTargetLogLevel(LogLevel logLevel) =>
+        logLevel switch
         {
             LogLevel.Trace => Microsoft.Extensions.Logging.LogLevel.Trace,
             LogLevel.Debug => Microsoft.Extensions.Logging.LogLevel.Debug,
@@ -41,9 +40,8 @@ internal class MicrosoftExtensionsLog : ILog
             LogLevel.Warn => Microsoft.Extensions.Logging.LogLevel.Warning,
             LogLevel.Error => Microsoft.Extensions.Logging.LogLevel.Error,
             LogLevel.Fatal => Microsoft.Extensions.Logging.LogLevel.Critical,
-            _ => Microsoft.Extensions.Logging.LogLevel.None,
+            _ => Microsoft.Extensions.Logging.LogLevel.None
         };
-    }
 
     private static string MessageFormatter(object? state, Exception? exception)
     {

@@ -15,14 +15,15 @@ public class AgentReader : IAgentReader
         string packageUrlsWithDate;
         try
         {
-            packageUrlsWithDate = Invoke.Command(agentExecutable, $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".");
+            packageUrlsWithDate = Invoke.Command(agentExecutable,
+                $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".");
         }
         catch (IOException)
         {
             return packages;
         }
 
-        foreach (var packageUrlAndDate in packageUrlsWithDate.TrimEnd('\n','\r').Split("\n"))
+        foreach (var packageUrlAndDate in packageUrlsWithDate.TrimEnd('\n', '\r').Split("\n"))
         {
             var separated = packageUrlAndDate.Split("\t");
 
@@ -32,6 +33,7 @@ public class AgentReader : IAgentReader
                     , DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
                 ));
         }
+
         return packages;
     }
 }

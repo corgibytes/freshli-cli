@@ -12,13 +12,11 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Git;
 
 public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneCommandOptions>
 {
-    private ICacheManager CacheManager { get; }
-
     public GitCloneCommandRunner(IServiceProvider serviceProvider, ICacheManager cacheManager, Runner runner)
-        : base(serviceProvider, runner)
-    {
+        : base(serviceProvider, runner) =>
         CacheManager = cacheManager;
-    }
+
+    private ICacheManager CacheManager { get; }
 
     public override int Run(GitCloneCommandOptions options, InvocationContext context)
     {
