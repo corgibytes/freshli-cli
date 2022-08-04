@@ -54,9 +54,9 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, 
 
                 table.AddCell(libYearPackage.CurrentVersion.Name);
                 table.AddCell(libYearPackage.CurrentVersion.Version, tableStyle);
-                table.AddCell(libYearPackage.ReleaseDateCurrentVersion.ToString("d"), tableStyle);
+                table.AddCell(libYearPackage.ReleaseDateCurrentVersion.ToString("s"), tableStyle);
                 table.AddCell(libYearPackage.LatestVersion.Version, tableStyle);
-                table.AddCell(libYearPackage.ReleaseDateLatestVersion.ToString("d"), tableStyle);
+                table.AddCell(libYearPackage.ReleaseDateLatestVersion.ToString("s"), tableStyle);
                 table.AddCell(libYearPackage.LibYear.ToString(CultureInfo.InvariantCulture.NumberFormat), tableStyle);
                 continue;
             }
