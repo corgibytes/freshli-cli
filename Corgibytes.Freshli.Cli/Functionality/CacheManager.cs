@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using Corgibytes.Freshli.Cli.DataModel;
@@ -92,7 +91,10 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public Guid Save(CachedAnalysis analysis) => throw new NotImplementedException();
+    public ICacheDb GetCacheDb(string cacheDir)
+    {
+        return new CacheDb(cacheDir);
+    }
 
     private static void MigrateIfPending(CacheContext context)
     {
