@@ -40,7 +40,8 @@ public class StartAnalysisActivity : IApplicationActivity
             return;
         }
 
-        var id = CacheManager.Save(new(RepositoryUrl, RepositoryBranch, HistoryInterval));
+        var cacheDb = CacheManager.GetCacheDb(CacheDirectory);
+        var id = cacheDb.SaveAnalysis(new(RepositoryUrl, RepositoryBranch, HistoryInterval));
         eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id });
     }
 }
