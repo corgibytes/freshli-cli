@@ -29,7 +29,7 @@ public class ReadCycloneDxFile
 
         foreach (var component in jsonCycloneDx.Components)
         {
-            packageUrls.Add(new(component.Purl));
+            packageUrls.Add(new PackageURL(component.Purl));
         }
 
         return packageUrls;

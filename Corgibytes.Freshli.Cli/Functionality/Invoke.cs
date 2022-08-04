@@ -29,6 +29,7 @@ public static class Invoke
         {
             throw new IOException(stdErrBuffer.ToString());
         }
+
         return stdOutBuffer.ToString();
     }
 }
