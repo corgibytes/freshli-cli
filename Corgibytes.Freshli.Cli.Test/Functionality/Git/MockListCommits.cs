@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.IO;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
