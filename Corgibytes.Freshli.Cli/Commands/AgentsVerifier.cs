@@ -1,8 +1,9 @@
 using Corgibytes.Freshli.Cli.Functionality;
+using CycloneDX.Json;
+using CycloneDX;
 using System;
 using System.IO;
 using System.Collections.Generic;
-
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
 
@@ -51,7 +52,7 @@ public class AgentsVerifier
     public void RunDetectManfiest(string AgentFileAndPath, string Argument, string url, string directory, DateTime startDate){
         
         var detectManfiestOutput = Invoke.Command(AgentFileAndPath,Argument + $" {url}" ,".");
-        Console.WriteLine("Donas RunDetectManfiest:  " + detectManfiestOutput);
+        
         if(detectManfiestOutput.ToLower().Contains("gemfile")){
             foreach( var manifestFile in detectManfiestOutput.Split("\t")){
                 if(manifestFile.ToLower().Contains("gemfile")){
@@ -129,10 +130,10 @@ public class AgentsVerifier
                 {
                     try
                     {
-                        
+                        var result = Validator.Validate(File.ReadAllText(manifestFile.Trim()), SpecificationVersion.v1_3);
                     }catch(Exception e)
                     {
-                        Console.Error.Write(e);
+                        Console.Error.Write("Unable to validate if a file is a CycloneDX file:" + e);
                     }
                 }
 
