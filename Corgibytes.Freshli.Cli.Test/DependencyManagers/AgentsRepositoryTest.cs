@@ -9,6 +9,7 @@ using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.DependencyManagers;
 
+[UnitTest]
 public class AgentsRepositoryTest : FreshliTest
 {
     private readonly AgentsRepository _repository;

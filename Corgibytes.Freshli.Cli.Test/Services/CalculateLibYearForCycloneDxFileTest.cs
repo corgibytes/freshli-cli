@@ -10,6 +10,7 @@ using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.Services;
 
+[UnitTest]
 public class CalculateLibYearForCycloneDxFileTest : FreshliTest
 {
     private readonly CalculateLibYearFromCycloneDxFile _calculateLibYearFromCycloneDxFile;
