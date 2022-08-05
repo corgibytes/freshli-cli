@@ -5,7 +5,6 @@ using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using Corgibytes.Freshli.Cli.DataModel;
-using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -82,46 +81,11 @@ public class GitSource
     }
 
     public string Hash { get; }
-    private string Url { get; }
+    public string Url { get; }
     public string? Branch { get; }
     public DirectoryInfo Directory { get; }
 
-    private DirectoryInfo CacheDir { get; }
+    public DirectoryInfo CacheDir { get; }
 
     public bool Cloned => Directory.GetFiles().Any() || Directory.GetDirectories().Any();
-
-    private void Delete()
-    {
-        using var db = new CacheContext(CacheDir);
-        var entry = db.CachedGitSources.Find(Hash);
-        db.CachedGitSources.Remove(entry!);
-
-        Directory.Delete(true);
-    }
-
-    public void Clone(string gitPath)
-    {
-        try
-        {
-            Invoke.Command(gitPath, $"clone {Url} .", Directory.FullName);
-        }
-        catch (IOException e)
-        {
-            Delete();
-            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
-        }
-    }
-
-    public void Checkout(string gitPath)
-    {
-        try
-        {
-            Invoke.Command(gitPath, $"checkout {Branch ?? ""}", Directory.FullName);
-        }
-        catch (IOException e)
-        {
-            Delete();
-            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
-        }
-    }
 }
