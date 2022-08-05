@@ -14,7 +14,6 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.IoC.Engine;
 using Corgibytes.Freshli.Cli.OutputStrategies;
-using Corgibytes.Freshli.Cli.Repositories;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
 using Hangfire;

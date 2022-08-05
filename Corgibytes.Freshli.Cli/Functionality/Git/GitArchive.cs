@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using Corgibytes.Freshli.Cli.Repositories;
 using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;

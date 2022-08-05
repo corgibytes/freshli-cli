@@ -1,9 +1,8 @@
 using System.IO;
 using Corgibytes.Freshli.Cli.DataModel;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Resources;
 
-namespace Corgibytes.Freshli.Cli.Repositories;
+namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CachedGitSourceRepository : ICachedGitSourceRepository
 {
