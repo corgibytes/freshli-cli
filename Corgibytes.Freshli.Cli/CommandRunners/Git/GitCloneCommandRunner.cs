@@ -11,18 +11,21 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Git;
 
 public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneCommandOptions>
 {
-    public GitCloneCommandRunner(IServiceProvider serviceProvider, Runner runner)
+    private readonly ICachedGitSourceRepository _gitSourceRepository;
+
+    public GitCloneCommandRunner(IServiceProvider serviceProvider, Runner runner, ICachedGitSourceRepository gitSourceRepository)
         : base(serviceProvider, runner)
     {
+        _gitSourceRepository = gitSourceRepository;
     }
 
     public override int Run(GitCloneCommandOptions options, InvocationContext context)
     {
         // Clone or pull the given repository and branch.
-        var gitRepository = new GitSource(options.RepoUrl, options.Branch, options.CacheDir);
+        GitSource gitRepository;
         try
         {
-            gitRepository.CloneOrPull(options.GitPath);
+            gitRepository = _gitSourceRepository.CloneOrPull(options.RepoUrl, options.Branch, options.CacheDir, options.GitPath);
         }
         catch (GitException e)
         {
