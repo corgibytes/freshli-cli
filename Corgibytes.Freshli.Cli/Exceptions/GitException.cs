@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Corgibytes.Freshli.Cli.Functionality.Git;
+namespace Corgibytes.Freshli.Cli.Exceptions;
 
 [Serializable]
 public class GitException : Exception
