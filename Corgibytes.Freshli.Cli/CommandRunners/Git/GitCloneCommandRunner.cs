@@ -15,11 +15,10 @@ public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneComm
 {
     private readonly ICachedGitSourceRepository _gitSourceRepository;
 
-    public GitCloneCommandRunner(IServiceProvider serviceProvider, Runner runner, ICachedGitSourceRepository gitSourceRepository)
-        : base(serviceProvider, runner)
-    {
+    public GitCloneCommandRunner(IServiceProvider serviceProvider, Runner runner,
+        ICachedGitSourceRepository gitSourceRepository)
+        : base(serviceProvider, runner) =>
         _gitSourceRepository = gitSourceRepository;
-    }
 
     public override int Run(GitCloneCommandOptions options, InvocationContext context)
     {
@@ -27,7 +26,8 @@ public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneComm
         CachedGitSource gitRepository;
         try
         {
-            gitRepository = _gitSourceRepository.CloneOrPull(options.RepoUrl, options.Branch, options.CacheDir, options.GitPath);
+            gitRepository =
+                _gitSourceRepository.CloneOrPull(options.RepoUrl, options.Branch, options.CacheDir, options.GitPath);
         }
         catch (GitException e)
         {
