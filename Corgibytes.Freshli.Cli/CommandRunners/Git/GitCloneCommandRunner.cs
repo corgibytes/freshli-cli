@@ -4,6 +4,7 @@ using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions.Git;
 using Corgibytes.Freshli.Cli.Commands.Git;
 using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Lib;
