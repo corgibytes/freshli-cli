@@ -1,10 +1,6 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Security.Cryptography;
-using System.Text;
-using Corgibytes.Freshli.Cli.DataModel;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -43,41 +39,6 @@ public class GitSource
 
         // Ensure the directory exists in the cache for cloning the repository.
         Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
-    }
-
-    public GitSource(string url, string? branch, DirectoryInfo cacheDir)
-    {
-        // Ensure the cache directory is ready for use.
-        CacheDir = cacheDir;
-        Cache.Prepare(CacheDir);
-
-        Url = url;
-        Branch = branch;
-
-        // Generate a unique hash for the repository based on its URL and branch.
-        using var sha256 = SHA256.Create();
-        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(Url + Branch));
-        var stringBuilder = new StringBuilder();
-        foreach (var hashByte in hashBytes)
-        {
-            stringBuilder.Append(hashByte.ToString("x2"));
-        }
-
-        Hash = stringBuilder.ToString();
-
-        // Ensure the directory exists in the cache for cloning the repository.
-        Directory = Cache.GetDirectoryInCache(CacheDir, new[] { "repositories", Hash });
-
-        // Store ID, URL, branch, and folder path in the cache DB, if it doesn't already exist
-        using var db = new CacheContext(CacheDir);
-        if (db.CachedGitSources.Find(Hash) != null)
-        {
-            return;
-        }
-
-        var entry = new CachedGitSource(Hash, Url, Branch, Directory.FullName);
-        db.CachedGitSources.Add(entry);
-        db.SaveChanges();
     }
 
     public string Hash { get; }
