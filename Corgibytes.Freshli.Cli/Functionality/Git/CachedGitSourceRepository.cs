@@ -17,4 +17,25 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
         return entry;
     }
+
+    public GitSource CloneOrPull(string url, string? branch, DirectoryInfo cacheDir, string gitPath)
+    {
+        var gitSource = new GitSource(url, branch, cacheDir);
+        if (gitSource.Cloned)
+        {
+            gitSource.Pull(gitPath);
+            return gitSource;
+        }
+
+        // If not yet cloned, clone from URL.
+        gitSource.Clone(gitPath);
+
+        // If a branch is defined, checkout branch
+        if (!string.IsNullOrEmpty(branch))
+        {
+            gitSource.Checkout(gitPath);
+        }
+
+        return gitSource;
+    }
 }

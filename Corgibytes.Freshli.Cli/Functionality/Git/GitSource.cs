@@ -88,9 +88,7 @@ public class GitSource
 
     private DirectoryInfo CacheDir { get; }
 
-    private bool Cloned => Directory.GetFiles().Any() || Directory.GetDirectories().Any();
-
-    private bool BranchDefined => !string.IsNullOrEmpty(Branch);
+    public bool Cloned => Directory.GetFiles().Any() || Directory.GetDirectories().Any();
 
     private void Delete()
     {
@@ -101,7 +99,7 @@ public class GitSource
         Directory.Delete(true);
     }
 
-    private void Clone(string gitPath)
+    public void Clone(string gitPath)
     {
         try
         {
@@ -114,7 +112,7 @@ public class GitSource
         }
     }
 
-    private void Checkout(string gitPath)
+    public void Checkout(string gitPath)
     {
         try
         {
@@ -127,7 +125,7 @@ public class GitSource
         }
     }
 
-    private void Pull(string gitPath)
+    public void Pull(string gitPath)
     {
         var branch = Branch;
         if (Branch == null)
@@ -153,23 +151,4 @@ public class GitSource
 
     private string FetchCurrentBranch(string gitPath) =>
         Invoke.Command(gitPath, "branch --show-current", Directory.FullName).Replace("\n", "");
-
-    public void CloneOrPull(string gitPath)
-    {
-        // If already cloned, pull instead.
-        if (Cloned)
-        {
-            Pull(gitPath);
-            return;
-        }
-
-        // If not yet cloned, clone from URL.
-        Clone(gitPath);
-
-        // If a branch is defined, checkout branch
-        if (BranchDefined)
-        {
-            Checkout(gitPath);
-        }
-    }
 }
