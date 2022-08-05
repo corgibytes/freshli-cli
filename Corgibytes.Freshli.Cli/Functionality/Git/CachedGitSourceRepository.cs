@@ -1,4 +1,5 @@
 using System.IO;
+using System.Linq;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Resources;
 
@@ -21,7 +22,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     public GitSource CloneOrPull(string url, string? branch, DirectoryInfo cacheDir, string gitPath)
     {
         var gitSource = new GitSource(url, branch, cacheDir);
-        if (gitSource.Cloned)
+        if (gitSource.Directory.GetFiles().Any() || gitSource.Directory.GetDirectories().Any())
         {
             Pull(gitSource, gitPath);
             return gitSource;
