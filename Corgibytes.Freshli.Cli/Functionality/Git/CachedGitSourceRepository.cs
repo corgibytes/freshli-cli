@@ -28,12 +28,12 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         }
 
         // If not yet cloned, clone from URL.
-        gitSource.Clone(gitPath);
+        Clone(gitSource, gitPath);
 
         // If a branch is defined, checkout branch
         if (!string.IsNullOrEmpty(branch))
         {
-            gitSource.Checkout(gitPath);
+            Checkout(gitSource, gitPath);
         }
 
         return gitSource;
@@ -60,6 +60,41 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
             {
                 throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
             }
+        }
+    }
+
+    private static void Checkout(GitSource gitSource, string gitPath)
+    {
+        try
+        {
+            Invoke.Command(gitPath, $"checkout {gitSource.Branch ?? ""}", gitSource.Directory.FullName);
+        }
+        catch (IOException e)
+        {
+            Delete(gitSource);
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
+        }
+    }
+
+    private static void Delete(GitSource gitSource)
+    {
+        using var db = new CacheContext(gitSource.CacheDir);
+        var entry = db.CachedGitSources.Find(gitSource.Hash);
+        db.CachedGitSources.Remove(entry!);
+
+        gitSource.Directory.Delete(true);
+    }
+
+    private static void Clone(GitSource gitSource, string gitPath)
+    {
+        try
+        {
+            Invoke.Command(gitPath, $"clone {gitSource.Url} .", gitSource.Directory.FullName);
+        }
+        catch (IOException e)
+        {
+            Delete(gitSource);
+            throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
         }
     }
 
