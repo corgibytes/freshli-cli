@@ -83,7 +83,7 @@ public class GitSource
 
     public string Hash { get; }
     private string Url { get; }
-    private string? Branch { get; }
+    public string? Branch { get; }
     public DirectoryInfo Directory { get; }
 
     private DirectoryInfo CacheDir { get; }
@@ -124,31 +124,4 @@ public class GitSource
             throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
         }
     }
-
-    public void Pull(string gitPath)
-    {
-        var branch = Branch;
-        if (Branch == null)
-        {
-            branch = FetchCurrentBranch(gitPath);
-        }
-
-        string? commandOutput = null;
-
-        try
-        {
-            commandOutput = Invoke.Command(gitPath, $"pull origin {branch ?? ""}", Directory.FullName)
-                .Replace("\n", " ");
-        }
-        catch (IOException e)
-        {
-            if (commandOutput == "Already up to date.")
-            {
-                throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
-            }
-        }
-    }
-
-    private string FetchCurrentBranch(string gitPath) =>
-        Invoke.Command(gitPath, "branch --show-current", Directory.FullName).Replace("\n", "");
 }

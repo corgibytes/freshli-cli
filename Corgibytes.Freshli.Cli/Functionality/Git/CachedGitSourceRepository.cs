@@ -23,7 +23,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         var gitSource = new GitSource(url, branch, cacheDir);
         if (gitSource.Cloned)
         {
-            gitSource.Pull(gitPath);
+            Pull(gitSource, gitPath);
             return gitSource;
         }
 
@@ -38,4 +38,31 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
         return gitSource;
     }
+
+    private static void Pull(GitSource gitSource, string gitPath)
+    {
+        var branch = gitSource.Branch;
+        if (gitSource.Branch == null)
+        {
+            branch = FetchCurrentBranch(gitSource, gitPath);
+        }
+
+        string? commandOutput = null;
+
+        try
+        {
+            commandOutput = Invoke.Command(gitPath, $"pull origin {branch ?? ""}", gitSource.Directory.FullName)
+                .Replace("\n", " ");
+        }
+        catch (IOException e)
+        {
+            if (commandOutput == "Already up to date.")
+            {
+                throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
+            }
+        }
+    }
+
+    private static string FetchCurrentBranch(GitSource gitSource, string gitPath) =>
+        Invoke.Command(gitPath, "branch --show-current", gitSource.Directory.FullName).Replace("\n", "");
 }
