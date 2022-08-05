@@ -86,6 +86,4 @@ public class GitSource
     public DirectoryInfo Directory { get; }
 
     public DirectoryInfo CacheDir { get; }
-
-    public bool Cloned => Directory.GetFiles().Any() || Directory.GetDirectories().Any();
 }
