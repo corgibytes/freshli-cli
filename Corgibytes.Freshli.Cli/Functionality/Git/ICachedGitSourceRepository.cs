@@ -7,5 +7,5 @@ public interface ICachedGitSourceRepository
 {
     public CachedGitSource FindOneByHash(string hash, DirectoryInfo cacheDir);
 
-    public GitSource CloneOrPull(string url, string? branch, DirectoryInfo cacheDir, string gitPath);
+    public CachedGitSource CloneOrPull(string url, string? branch, DirectoryInfo cacheDir, string gitPath);
 }
