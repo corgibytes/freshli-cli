@@ -1,3 +1,4 @@
+using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
@@ -12,4 +13,16 @@ public class StartAnalysisActivityTest : StartAnalysisActivityTestBase<StartAnal
         RepositoryBranch = "main",
         HistoryInterval = "1m"
     };
+
+    protected override Func<CacheWasNotPreparedEvent, bool> EventValidator
+    {
+        get
+        {
+            return (value) =>
+                value.CacheDirectory == "example" &&
+                value.RepositoryUrl == "http://git.example.com" &&
+                value.RepositoryBranch == "main" &&
+                value.HistoryInterval == "1m";
+        }
+    }
 }

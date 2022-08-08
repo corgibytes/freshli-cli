@@ -4,14 +4,21 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class StartAnalysisActivity : StartAnalysisActivityBase
+public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPreparedEvent>
 {
     public StartAnalysisActivity(ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser) : base(cacheManager, historyIntervalParser)
     {
     }
 
-    public override void Handle(IApplicationEventEngine eventClient)
+    protected override CacheWasNotPreparedEvent CreateErrorEvent()
     {
-        HandleWithCacheFailure<CacheWasNotPreparedEvent>(eventClient);
+        return new()
+        {
+            ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", CacheDirectory),
+            CacheDirectory = CacheDirectory,
+            RepositoryUrl = RepositoryUrl,
+            RepositoryBranch = RepositoryBranch,
+            HistoryInterval = HistoryInterval
+        };
     }
 }

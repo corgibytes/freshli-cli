@@ -2,7 +2,7 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public abstract class StartAnalysisActivityBase : IApplicationActivity
+public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActivity where TErrorEvent : ErrorEvent, new()
 {
     public StartAnalysisActivityBase(ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser)
     {
@@ -16,7 +16,11 @@ public abstract class StartAnalysisActivityBase : IApplicationActivity
     public string HistoryInterval { get; init; } = null!;
     protected ICacheManager CacheManager { get; }
     protected IHistoryIntervalParser HistoryIntervalParser { get; }
-    public abstract void Handle(IApplicationEventEngine eventClient);
+
+    public void Handle(IApplicationEventEngine eventClient)
+    {
+        HandleWithCacheFailure(eventClient);
+    }
 
     protected void FireAnalysisStartedEvent(IApplicationEventEngine eventClient)
     {
@@ -39,23 +43,26 @@ public abstract class StartAnalysisActivityBase : IApplicationActivity
         return false;
     }
 
-    protected bool FireCacheNotFoundEventIfNeeded<TFailureEvent>(IApplicationEventEngine eventClient) where TFailureEvent : FailureEvent, new()
+    protected bool FireCacheNotFoundEventIfNeeded(IApplicationEventEngine eventClient)
     {
         if (!CacheManager.ValidateDirIsCache(CacheDirectory))
         {
-            eventClient.Fire(new TFailureEvent
-            {
-                ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", CacheDirectory)
-            });
+            eventClient.Fire(CreateErrorEvent());
             return true;
         }
 
         return false;
     }
 
-    protected void HandleWithCacheFailure<TFailureEvent>(IApplicationEventEngine eventClient) where TFailureEvent : FailureEvent, new()
+    protected virtual TErrorEvent CreateErrorEvent() =>
+        new TErrorEvent
+        {
+            ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", CacheDirectory)
+        };
+
+    protected void HandleWithCacheFailure(IApplicationEventEngine eventClient)
     {
-        if (FireCacheNotFoundEventIfNeeded<TFailureEvent>(eventClient))
+        if (FireCacheNotFoundEventIfNeeded(eventClient))
         {
             return;
         }
