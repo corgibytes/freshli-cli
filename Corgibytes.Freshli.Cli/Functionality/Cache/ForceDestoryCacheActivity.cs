@@ -1,5 +1,4 @@
 using System.CommandLine.Invocation;
-using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -8,9 +7,9 @@ using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Commands.Cache;
 
-public class DestroyCacheActivity : IApplicationActivity
+public class ForceDestroyCacheActivity : IApplicationActivity
 {
-    public DestroyCacheActivity(CacheDestroyCommandOptions options, InvocationContext context)
+    public ForceDestroyCacheActivity(CacheDestroyCommandOptions options, InvocationContext context)
     {
         cmdOptions = options;
         cmdContext = context;
@@ -25,14 +24,6 @@ public class DestroyCacheActivity : IApplicationActivity
             CliOutput.CacheDestroyCommandRunner_Run_Prompt,
             cmdOptions.CacheDir.FullName);
 
-        // Unless the --force flag is passed, prompt the user whether they want
-        // to destroy the cache
-        if (!cmdOptions.Force)
-        {
-            eventClient.Fire(new ConfirmationRequiredEvent());
-            return;
-        }
-
         var strDestroyingCache = string.Format(
             CliOutput.CacheDestroyCommandRunner_Run_Destroying,
             cmdOptions.CacheDir);
@@ -45,7 +36,7 @@ public class DestroyCacheActivity : IApplicationActivity
         }
         catch (CacheException error)
         {
-            eventClient.Fire(new CacheDestroyFailedEvent() {ResultMessage = error.Message});
+            eventClient.Fire(new CacheDestroyedEvent(error.Message));
             return;
         }
 

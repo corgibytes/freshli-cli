@@ -2,7 +2,7 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Commands.Cache;
 
-public class CacheDestroyedEvent : IApplicationEvent
+public class CacheDestroyFailedEvent : IApplicationEvent
 {
     public string ResultMessage { get; init; }
 
