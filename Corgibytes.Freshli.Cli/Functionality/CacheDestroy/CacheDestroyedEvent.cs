@@ -1,10 +1,10 @@
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
-namespace Corgibytes.Freshli.Cli.Commands.Cache;
+namespace Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
 
 public class CacheDestroyedEvent : IApplicationEvent
 {
-    public string ResultMessage { get; init; }
+    public int ExitCode { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
