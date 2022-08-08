@@ -8,13 +8,18 @@ using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
-public abstract class StartAnalysisActivityTestBase<TActivity, TFailureEvent> where TActivity : IApplicationActivity where TFailureEvent : FailureEvent
+public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> where TActivity : IApplicationActivity where TErrorEvent : ErrorEvent
 {
     protected readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     protected readonly Mock<IHistoryIntervalParser> _intervalParser = new();
     protected abstract TActivity Activity { get; }
+
+    protected virtual Func<TErrorEvent, bool> EventValidator
+    {
+        get { return (_) => true; }
+    }
 
     [Fact]
     public void HandlerFiresCacheWasNotPreparedEventWhenCacheIsMissing()
@@ -25,8 +30,9 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TFailureEvent> wh
         Activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<TFailureEvent>(value =>
-                value.ErrorMessage == "Unable to locate a valid cache directory at: 'example'.")));
+            mock.Fire(It.Is<TErrorEvent>(value =>
+                value.ErrorMessage == "Unable to locate a valid cache directory at: 'example'." &&
+                EventValidator(value))));
     }
 
     [Fact]
