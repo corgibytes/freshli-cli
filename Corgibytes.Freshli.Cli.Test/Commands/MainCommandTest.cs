@@ -17,7 +17,7 @@ public class MainCommandTest : FreshliTest
     [Fact]
     public void Verify_no_handler_configuration()
     {
-        MainCommand mainCommand = new();
+        var mainCommand = new MainCommand();
         mainCommand.Handler.Should().BeNull();
     }
 

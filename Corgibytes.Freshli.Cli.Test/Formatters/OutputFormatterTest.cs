@@ -21,18 +21,19 @@ public class OutputFormatterTest : FreshliTest
 
     static OutputFormatterTest()
     {
-        JsonFormatter = new();
-        YamlFormatter = new();
-        CsvFormatter = new();
+        JsonFormatter = new JsonOutputFormatter();
+        YamlFormatter = new YamlOutputFormatter();
+        CsvFormatter = new CsvOutputFormatter();
 
-        DateTime date = new(2021, 11, 21);
+        var date = new DateTime(2021, 11, 21);
         var sha = "da39a3ee5e6b4b0d3255bfef95601890afd80709";
-        LibYearResult libYearResult = new()
+        var libYearResult = new LibYearResult
         {
-            new("polyglot", "0.3.3", new(2011, 11, 01), "0.3.3", new(2011, 11, 01), 0.0, false, false)
+            new("polyglot", "0.3.3", new DateTime(2011, 11, 01), "0.3.3", new DateTime(2011, 11, 01), 0.0, false,
+                false)
         };
 
-        s_metricsResultTestData = new(date, sha, libYearResult);
+        s_metricsResultTestData = new MetricsResult(date, sha, libYearResult);
         s_metricsResultListTestData = new List<MetricsResult>
         {
             s_metricsResultTestData,

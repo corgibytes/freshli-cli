@@ -28,8 +28,8 @@ public class AgentReader : IAgentReader
             var separated = packageUrlAndDate.Split("\t");
 
             packages.Add(
-                new
-                (new(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null, null)
+                new Package(new PackageURL(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null,
+                        null)
                     , DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
                 ));
         }

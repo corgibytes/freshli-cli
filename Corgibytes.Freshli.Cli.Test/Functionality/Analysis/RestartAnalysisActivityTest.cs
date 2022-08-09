@@ -3,9 +3,11 @@ using Corgibytes.Freshli.Cli.Functionality.Analysis;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
 [UnitTest]
-public class RestartAnalysisActivityTest : StartAnalysisActivityTestBase<RestartAnalysisActivity, UnableToRestartAnalysisEvent>
+// ReSharper disable once UnusedType.Global
+public class RestartAnalysisActivityTest :
+    StartAnalysisActivityTestBase<RestartAnalysisActivity, UnableToRestartAnalysisEvent>
 {
-    protected override RestartAnalysisActivity Activity => new(_cacheManager.Object, _intervalParser.Object)
+    protected override RestartAnalysisActivity Activity => new(CacheManager.Object, IntervalParser.Object)
     {
         CacheDirectory = "example",
         RepositoryUrl = "http://git.example.com",

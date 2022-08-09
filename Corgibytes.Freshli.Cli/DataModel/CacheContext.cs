@@ -9,9 +9,9 @@ public class CacheContext : DbContext
 {
     public const string CacheDbName = "freshli.db";
 
-    public CacheContext(DirectoryInfo cacheDir)
+    public CacheContext(string cacheDir)
     {
-        CacheDir = cacheDir;
+        CacheDir = new DirectoryInfo(cacheDir);
         DbPath = Path.Join(CacheDir.ToString(), CacheDbName);
     }
 
@@ -37,10 +37,10 @@ public class CacheContextFactory : IDesignTimeDbContextFactory<CacheContext>
     public CacheContext CreateDbContext(string[] args)
     {
         var optionsBuilder = new DbContextOptionsBuilder<CacheContext>();
-        var cacheDir = new DirectoryInfo(CacheContext.DefaultCacheDir);
-        var dbPath = Path.Join(cacheDir.ToString(), CacheContext.CacheDbName);
+        var cacheDir = CacheContext.DefaultCacheDir;
+        var dbPath = Path.Join(cacheDir, CacheContext.CacheDbName);
         optionsBuilder.UseSqlite($"Data Source={dbPath}");
 
-        return new(cacheDir);
+        return new CacheContext(cacheDir);
     }
 }

@@ -8,24 +8,22 @@ using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
-public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> where TActivity : IApplicationActivity where TErrorEvent : ErrorEvent
+public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> where TActivity : IApplicationActivity
+    where TErrorEvent : ErrorEvent
 {
-    protected readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<ICacheDb> _cacheDb = new();
+    protected readonly Mock<ICacheManager> CacheManager = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
-    protected readonly Mock<IHistoryIntervalParser> _intervalParser = new();
+    protected readonly Mock<IHistoryIntervalParser> IntervalParser = new();
     protected abstract TActivity Activity { get; }
 
-    protected virtual Func<TErrorEvent, bool> EventValidator
-    {
-        get { return (_) => true; }
-    }
+    protected virtual Func<TErrorEvent, bool> EventValidator => _ => true;
 
     [Fact]
     public void HandlerFiresCacheWasNotPreparedEventWhenCacheIsMissing()
     {
-        _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
-        _cacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(false);
+        IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
+        CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(false);
 
         Activity.Handle(_eventEngine.Object);
 
@@ -40,10 +38,10 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     {
         var sampleGuid = new Guid();
 
-        _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
+        IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
 
-        _cacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
-        _cacheManager.Setup(mock => mock.GetCacheDb("example")).Returns(_cacheDb.Object);
+        CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
+        CacheManager.Setup(mock => mock.GetCacheDb("example")).Returns(_cacheDb.Object);
         _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).Returns(sampleGuid);
 
         Activity.Handle(_eventEngine.Object);
@@ -59,8 +57,8 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     [Fact]
     public void HandlerFiresInvalidHistoryIntervalEventWhenHistoryIntervalValueIsInvalid()
     {
-        _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(false);
-        _cacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
+        IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(false);
+        CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
 
         Activity.Handle(_eventEngine.Object);
 

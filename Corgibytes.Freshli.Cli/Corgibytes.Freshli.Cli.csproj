@@ -19,6 +19,7 @@
     <Company>Corgibytes</Company>
     <AssemblyName>freshli</AssemblyName>
     <Nullable>enable</Nullable>
+    <InvariantGlobalization>true</InvariantGlobalization>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="">

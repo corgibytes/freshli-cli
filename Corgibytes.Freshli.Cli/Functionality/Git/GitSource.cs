@@ -33,13 +33,13 @@ public class GitSource
         ICachedGitSourceRepository cachedGitSourceRepository)
     {
         CacheManager = cacheManager;
-        CacheDir = new(cacheDirPath);
+        CacheDir = new DirectoryInfo(cacheDirPath);
         CacheManager.Prepare(cacheDirPath);
 
         Hash = hash;
 
         // Get existing entry via provided hash
-        var entry = cachedGitSourceRepository.FindOneByHash(hash, CacheDir);
+        var entry = cachedGitSourceRepository.FindOneByHash(hash, cacheDirPath);
 
         Url = entry.Url;
         Branch = entry.Branch;
@@ -51,7 +51,7 @@ public class GitSource
     public GitSource(string url, string? branch, string cacheDirPath, ICacheManager cacheManager)
     {
         CacheManager = cacheManager;
-        CacheDir = new(cacheDirPath);
+        CacheDir = new DirectoryInfo(cacheDirPath);
         CacheManager.Prepare(cacheDirPath);
 
         Url = url;
@@ -72,7 +72,7 @@ public class GitSource
         Directory = CacheManager.GetDirectoryInCache(cacheDirPath, new[] { "repositories", Hash });
 
         // Store ID, URL, branch, and folder path in the cache DB, if it doesn't already exist
-        using var db = new CacheContext(CacheDir);
+        using var db = new CacheContext(cacheDirPath);
         if (db.CachedGitSources.Find(Hash) != null)
         {
             return;
@@ -98,7 +98,7 @@ public class GitSource
 
     private void Delete()
     {
-        using var db = new CacheContext(CacheDir);
+        using var db = new CacheContext(CacheDir.FullName);
         var entry = db.CachedGitSources.Find(Hash);
         db.CachedGitSources.Remove(entry!);
 
