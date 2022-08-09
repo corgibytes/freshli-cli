@@ -1,7 +1,3 @@
-using Corgibytes.Freshli.Cli.Functionality.Engine;
-
-// ReSharper disable UseStringInterpolation
-
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPreparedEvent>
@@ -14,6 +10,8 @@ public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPrepar
     {
         return new()
         {
+            // TODO: Translate this string
+            // ReSharper disable UseStringInterpolation
             ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", CacheDirectory),
             CacheDirectory = CacheDirectory,
             RepositoryUrl = RepositoryUrl,
