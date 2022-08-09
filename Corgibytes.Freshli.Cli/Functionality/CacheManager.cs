@@ -32,7 +32,7 @@ public class CacheManager : ICacheManager
             throw new CacheException(CliOutput.Exception_Cache_Prepare_NonEmpty);
         }
 
-        using var db = new CacheContext(cacheDir);
+        using var db = new CacheContext(cacheDirPath);
         try
         {
             MigrateIfPending(db);
@@ -91,10 +91,7 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public ICacheDb GetCacheDb(string cacheDir)
-    {
-        return new CacheDb(cacheDir);
-    }
+    public ICacheDb GetCacheDb(string cacheDir) => new CacheDb(cacheDir);
 
     private static void MigrateIfPending(CacheContext context)
     {

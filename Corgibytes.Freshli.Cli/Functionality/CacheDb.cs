@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Corgibytes.Freshli.Cli.DataModel;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
@@ -8,11 +7,7 @@ public class CacheDb : ICacheDb, IDisposable
 {
     private bool _disposed;
 
-    public CacheDb(string cacheDir)
-    {
-        var cacheDirectory = new DirectoryInfo(cacheDir);
-        Db = new(cacheDirectory);
-    }
+    public CacheDb(string cacheDir) => Db = new CacheContext(cacheDir);
 
     private CacheContext Db { get; }
 
@@ -23,10 +18,7 @@ public class CacheDb : ICacheDb, IDisposable
         return savedEntity.Entity.Id;
     }
 
-    public CachedAnalysis? RetrieveAnalysis(Guid id)
-    {
-        return Db.CachedAnalyses.Find(id);
-    }
+    public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
 
     public void Dispose()
     {

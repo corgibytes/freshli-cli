@@ -148,7 +148,7 @@ public class FreshliServiceBuilder
         {
             var options = provider.GetService<BackgroundJobServerOptions>() ?? new BackgroundJobServerOptions();
             var storage = provider.GetService<JobStorage>() ?? new MemoryStorage();
-            return new(storage, options, new List<IBackgroundProcess>());
+            return new BackgroundJobServerHostedService(storage, options, new List<IBackgroundProcess>());
         });
     }
 

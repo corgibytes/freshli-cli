@@ -15,14 +15,15 @@ public class AgentsRepositoryTest : FreshliTest
     private readonly AgentsRepository _repository;
 
     public AgentsRepositoryTest(ITestOutputHelper output) : base(output) =>
-        _repository = new(new MockAgentsDetector(), new MockAgentsReader());
+        _repository = new AgentsRepository(new MockAgentsDetector(), new MockAgentsReader());
 
     [Fact]
     public void It_is_able_to_fetch_a_release_date_from_a_list()
     {
         var givenPackageUrl = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0");
 
-        Assert.Equal(new(1990, 1, 29, 0, 0, 0, TimeSpan.Zero), _repository.GetReleaseDate(givenPackageUrl));
+        Assert.Equal(new DateTimeOffset(1990, 1, 29, 0, 0, 0, TimeSpan.Zero),
+            _repository.GetReleaseDate(givenPackageUrl));
     }
 
     [Fact]

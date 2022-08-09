@@ -1,10 +1,12 @@
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActivity where TErrorEvent : ErrorEvent, new()
+public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActivity
+    where TErrorEvent : ErrorEvent, new()
 {
-    public StartAnalysisActivityBase(ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser)
+    protected StartAnalysisActivityBase(ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser)
     {
         CacheManager = cacheManager;
         HistoryIntervalParser = historyIntervalParser;
@@ -18,24 +20,22 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     public ICacheManager CacheManager { get; }
     public IHistoryIntervalParser HistoryIntervalParser { get; }
 
-    public void Handle(IApplicationEventEngine eventClient)
-    {
-        HandleWithCacheFailure(eventClient);
-    }
+    public void Handle(IApplicationEventEngine eventClient) => HandleWithCacheFailure(eventClient);
 
-    protected void FireAnalysisStartedEvent(IApplicationEventEngine eventClient)
+    private void FireAnalysisStartedEvent(IApplicationEventEngine eventClient)
     {
         var cacheDb = CacheManager.GetCacheDb(CacheDirectory);
-        var id = cacheDb.SaveAnalysis(new(RepositoryUrl, RepositoryBranch, HistoryInterval));
-        eventClient.Fire(new AnalysisStartedEvent {AnalysisId = id});
+        var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval));
+        eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id });
     }
 
-    protected bool FireInvalidHistoryEventIfNeeded(IApplicationEventEngine eventClient)
+    private bool FireInvalidHistoryEventIfNeeded(IApplicationEventEngine eventClient)
     {
         if (!HistoryIntervalParser.IsValid(HistoryInterval))
         {
             eventClient.Fire(new InvalidHistoryIntervalEvent
             {
+                // ReSharper disable once UseStringInterpolation
                 ErrorMessage = string.Format("The value '{0}' is not a valid history interval.", HistoryInterval)
             });
             return true;
@@ -44,7 +44,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
         return false;
     }
 
-    protected bool FireCacheNotFoundEventIfNeeded(IApplicationEventEngine eventClient)
+    private bool FireCacheNotFoundEventIfNeeded(IApplicationEventEngine eventClient)
     {
         if (!CacheManager.ValidateDirIsCache(CacheDirectory))
         {
@@ -56,12 +56,10 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     }
 
     protected virtual TErrorEvent CreateErrorEvent() =>
-        new TErrorEvent
-        {
-            ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", CacheDirectory)
-        };
+        // ReSharper disable once UseStringInterpolation
+        new() { ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", CacheDirectory) };
 
-    protected void HandleWithCacheFailure(IApplicationEventEngine eventClient)
+    private void HandleWithCacheFailure(IApplicationEventEngine eventClient)
     {
         if (FireCacheNotFoundEventIfNeeded(eventClient))
         {

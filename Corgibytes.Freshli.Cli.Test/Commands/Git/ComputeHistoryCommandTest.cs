@@ -19,7 +19,7 @@ public class ComputeHistoryCommandTest : FreshliTest
     [MethodData(nameof(DataForVerifyOptionConfiguration))]
     public void Verify_option_configuration(string alias, ArgumentArity arity, int elementIndex)
     {
-        ComputeHistoryCommand computeHistoryCommand = new();
+        var computeHistoryCommand = new ComputeHistoryCommand();
         var option = computeHistoryCommand.Options.ElementAt(elementIndex);
 
         option.Name.Should().Be(alias);
@@ -29,7 +29,7 @@ public class ComputeHistoryCommandTest : FreshliTest
     [Fact]
     public void Verify_argument_configuration()
     {
-        ComputeHistoryCommand computeHistoryCommand = new();
+        var computeHistoryCommand = new ComputeHistoryCommand();
         var argument = computeHistoryCommand.Arguments.ElementAt(0);
 
         argument.Name.Should().Be("repository-id");
