@@ -2,13 +2,13 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPreparedEvent>
 {
-    public StartAnalysisActivity(ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser) : base(cacheManager, historyIntervalParser)
+    public StartAnalysisActivity(ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser) : base(
+        cacheManager, historyIntervalParser)
     {
     }
 
-    protected override CacheWasNotPreparedEvent CreateErrorEvent()
-    {
-        return new()
+    protected override CacheWasNotPreparedEvent CreateErrorEvent() =>
+        new()
         {
             // TODO: Translate this string
             // ReSharper disable UseStringInterpolation
@@ -18,5 +18,4 @@ public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPrepar
             RepositoryBranch = RepositoryBranch,
             HistoryInterval = HistoryInterval
         };
-    }
 }

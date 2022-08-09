@@ -11,9 +11,17 @@ public class CacheManagerTest : IDisposable
 {
     private readonly string _tempCacheDir;
 
-    public CacheManagerTest()
+    public CacheManagerTest() => _tempCacheDir = Path.Combine(Path.GetTempPath(), "Freshli", "CacheManagerTest");
+
+    public void Dispose()
     {
-        _tempCacheDir = Path.Combine(Path.GetTempPath(), "Freshli", "CacheManagerTest");
+        var tempCacheDirectory = new DirectoryInfo(_tempCacheDir);
+        if (tempCacheDirectory.Exists)
+        {
+            tempCacheDirectory.Delete(true);
+        }
+
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -35,16 +43,5 @@ public class CacheManagerTest : IDisposable
         Assert.Equal(expectedAnalysis.RepositoryUrl, actualAnalysis.RepositoryUrl);
         Assert.Equal(expectedAnalysis.RepositoryBranch, actualAnalysis.RepositoryBranch);
         Assert.Equal(expectedAnalysis.HistoryInterval, actualAnalysis.HistoryInterval);
-    }
-
-    public void Dispose()
-    {
-        var tempCacheDirectory = new DirectoryInfo(_tempCacheDir);
-        if (tempCacheDirectory.Exists)
-        {
-            tempCacheDirectory.Delete(recursive: true);
-        }
-
-        GC.SuppressFinalize(this);
     }
 }

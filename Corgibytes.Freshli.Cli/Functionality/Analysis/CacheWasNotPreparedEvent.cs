@@ -13,10 +13,8 @@ public class CacheWasNotPreparedEvent : ErrorEvent
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
 
-    public override void Handle(IApplicationActivityEngine eventClient)
-    {
+    public override void Handle(IApplicationActivityEngine eventClient) =>
         // TODO: Actually prepare the cache before restarting the analysis
-
         eventClient.Dispatch(new RestartAnalysisActivity(
             ServiceProvider.GetRequiredService<ICacheManager>(),
             ServiceProvider.GetRequiredService<IHistoryIntervalParser>()
@@ -27,5 +25,4 @@ public class CacheWasNotPreparedEvent : ErrorEvent
             RepositoryBranch = RepositoryBranch,
             HistoryInterval = HistoryInterval
         });
-    }
 }

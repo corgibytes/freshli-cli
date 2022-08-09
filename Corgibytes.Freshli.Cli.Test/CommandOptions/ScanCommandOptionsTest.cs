@@ -128,7 +128,7 @@ public class ScanCommandOptionsTest : FreshliTest
         IList<OutputStrategyType> expectedOutput)
     {
         var cmBuilder = Program.CreateCommandLineBuilder();
-        Parser parser = new(cmBuilder.Command);
+        var parser = new Parser(cmBuilder.Command);
 
         var result = parser.Parse(args);
 
@@ -153,10 +153,10 @@ public class ScanCommandOptionsTest : FreshliTest
 
         outputStrategyTypes.Should().NotContainNulls();
 
-        //Veryfy all required ones are present
+        //Verify all required ones are present
         expectedOutput.Should().BeSubsetOf(outputStrategyTypes);
 
-        //Veryfy there aren't extra output stragetegies added
+        //Verify there aren't extra output stragetegies added
         outputStrategyTypes.Should().BeSubsetOf(expectedOutput);
     }
 }
