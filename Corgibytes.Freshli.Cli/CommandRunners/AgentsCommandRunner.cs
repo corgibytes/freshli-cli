@@ -50,7 +50,7 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
         return 0;
     }
 
-            private static void FormatAndWriteToConsole(Dictionary<string, string> agentsAndLocations)
+    private static void FormatAndWriteToConsole(Dictionary<string, string> agentsAndLocations)
     {
         var basicTable = new TextTable(2);
         basicTable.AddCell("Agent file");
@@ -68,41 +68,42 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
     }
 }
 
-
-
 public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, AgentsVerifyCommandOptions>
 {
     private readonly IAgentsDetector _agentsDetector;
-    public AgentsVerifier AgentsVerifier { get; }
-    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsVerifier agentsVerifier, IAgentsDetector agentsDetector)
+
+    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsVerifier agentsVerifier,
+        IAgentsDetector agentsDetector)
         : base(serviceProvider, runner)
     {
         _agentsDetector = agentsDetector;
         AgentsVerifier = agentsVerifier;
     }
 
+    private AgentsVerifier AgentsVerifier { get; }
+
     public override int Run(AgentsVerifyCommandOptions options, InvocationContext context)
-    {   
+    {
         var agents = _agentsDetector.Detect();
 
         if (options.LanguageName == null)
-        {   
+        {
             foreach (var agentsAndPath in agents)
             {
-              AgentsVerifier.RunAgentsVerify(agentsAndPath,"validating-repositories", options.CacheDir, "");
-            }
-        } else
-        {            
-            foreach (var agentsAndPath in agents)
-            {
-                if(agentsAndPath.ToLower().Contains("freshli-agent-"+options.LanguageName.ToLower())){
-                AgentsVerifier.RunAgentsVerify(agentsAndPath,"validating-repositories", options.CacheDir, options.LanguageName);
-                }
-                
+                AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir, "");
             }
         }
-
+        else
+        {
+            foreach (var agentsAndPath in agents)
+            {
+                if (agentsAndPath.ToLower().Contains("freshli-agent-" + options.LanguageName.ToLower()))
+                {
+                    AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir,
+                        options.LanguageName);
+                }
+            }
+        }
         return 0;
-        
     }
 }
