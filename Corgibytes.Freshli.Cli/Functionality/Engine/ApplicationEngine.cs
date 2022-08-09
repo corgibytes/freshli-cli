@@ -20,6 +20,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public void Wait()
     {
+        Thread.Sleep(100);
         var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
         var length = statistics.Processing + statistics.Enqueued;
         while (length > 0)
