@@ -29,7 +29,8 @@ public class AgentsVerifier
             {
                 try
                 {
-                    Invoke.Command("git", $"-C {cacheDir.FullName}{languageName} clone {url}", cacheDir.FullName);
+                    var pos = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
+                    Invoke.Command("git", $"clone {url} {cacheDir.FullName}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{url.Trim().Substring(pos, url.Length - pos)}", cacheDir.FullName);   
                     RunDetectManfiest(agentFileAndPath, "detect-manifests", url, cacheDir.FullName, startTime);
                 }
                 catch (Exception e)
@@ -42,7 +43,8 @@ public class AgentsVerifier
         {
             try
             {
-                Invoke.Command("git", $"-C {cacheDir.FullName}{languageName} clone {validatingRepositoriesUrl}",
+                var pos = validatingRepositoriesUrl.LastIndexOf(Path.DirectorySeparatorChar) + 1;
+                Invoke.Command("git", $"clone {validatingRepositoriesUrl} {cacheDir.FullName}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{validatingRepositoriesUrl.Trim().Substring(pos, validatingRepositoriesUrl.Length - pos)}",
                     cacheDir.FullName);
                 RunDetectManfiest(agentFileAndPath, "detect-manifests", validatingRepositoriesUrl,
                     cacheDir.FullName + languageName, startTime);
