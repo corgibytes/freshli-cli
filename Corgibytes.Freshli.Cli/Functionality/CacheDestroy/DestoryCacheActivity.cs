@@ -6,7 +6,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
 
 public class DestroyCacheActivity : IApplicationActivity
 {
-    public string CacheDir { get; init; } = null!;
+    // ReSharper disable once MemberCanBePrivate.Global
+    public string CacheDir { get; }
 
     public DestroyCacheActivity(string cacheDir)
     {
