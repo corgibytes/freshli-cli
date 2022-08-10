@@ -26,31 +26,27 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
 
     public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
     {
-        ActivityEngine.Dispatch(new DestroyCacheActivity(options, context));
+        var strConfirmDestroy = string.Format(
+            CliOutput.CacheDestroyCommandRunner_Run_Prompt,
+            options.CacheDir.FullName);
 
-        var isConfirmationRequired = false;
-        EventEngine.On<ConfirmationRequiredEvent>(_ => { isConfirmationRequired = true; });
-
-        var exitCode = WaitForCacheDestroyEvents(context);
-        ActivityEngine.Wait();
-
-        if (isConfirmationRequired)
+        // Unless the --force flag is passed, prompt the user whether they want
+        // to destroy the cache
+        if (!options.Force && !Confirm(strConfirmDestroy, context))
         {
-            var strConfirmDestroy = string.Format(
-                CliOutput.CacheDestroyCommandRunner_Run_Prompt,
-                options.CacheDir.FullName);
-            if (!Confirm(strConfirmDestroy, context))
-            {
-                context.Console.Out.WriteLine(
-                    CliOutput.CacheDestroyCommandRunner_Run_Abort);
-                return true.ToExitCode();
-            }
-
-            ActivityEngine.Dispatch(new ForceDestroyCacheActivity(options, context));
-
-            exitCode = WaitForCacheDestroyEvents(context);
+            context.Console.Out.WriteLine(
+                CliOutput.CacheDestroyCommandRunner_Run_Abort);
+            return true.ToExitCode();
         }
 
+        var strDestroyingCache = string.Format(
+            CliOutput.CacheDestroyCommandRunner_Run_Destroying,
+            options.CacheDir);
+        context.Console.Out.WriteLine(strDestroyingCache);
+
+        ActivityEngine.Dispatch(new DestroyCacheActivity(options.CacheDir.FullName));
+
+        var exitCode = WaitForCacheDestroyEvents(context);
         return exitCode;
     }
 
