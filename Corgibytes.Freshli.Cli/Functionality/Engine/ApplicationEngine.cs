@@ -16,7 +16,13 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private IBackgroundJobClient JobClient { get; }
 
     public void Dispatch(IApplicationActivity applicationActivity) =>
-        JobClient.Enqueue(() => applicationActivity.Handle(this));
+        JobClient.Enqueue(() => HandleActivity(applicationActivity));
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public void HandleActivity(IApplicationActivity activity)
+    {
+        activity.Handle(this);
+    }
 
     public void Wait()
     {
@@ -34,12 +40,18 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public void Fire(IApplicationEvent applicationEvent)
     {
-        var jobId = JobClient.Enqueue(() => applicationEvent.Handle(this));
+        var jobId = JobClient.Enqueue(() => HandleEvent(applicationEvent));
 
         foreach (var _ in s_eventHandlers.Keys.Where(type => type.IsAssignableTo(applicationEvent.GetType())))
         {
             JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
         }
+    }
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public void HandleEvent(IApplicationEvent appEvent)
+    {
+        appEvent.Handle(this);
     }
 
     public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
