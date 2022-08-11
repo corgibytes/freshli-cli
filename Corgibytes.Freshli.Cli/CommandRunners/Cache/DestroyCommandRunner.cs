@@ -60,10 +60,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
             exitCode = false.ToExitCode();
         });
 
-        EventEngine.On<CacheDestroyedEvent>(destroyEvent =>
-        {
-            exitCode = destroyEvent.ExitCode;
-        });
+        EventEngine.On<CacheDestroyedEvent>(destroyEvent => { exitCode = destroyEvent.ExitCode; });
 
         ActivityEngine.Wait();
 
