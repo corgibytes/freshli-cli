@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Hangfire;
@@ -33,18 +34,26 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public void Wait()
     {
-        Thread.Sleep(100);
+        var watch = new Stopwatch();
+        watch.Start();
+        Console.WriteLine("Starting to wait for an empty job queue...");
 
         var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
         var length = statistics.Processing + statistics.Enqueued;
+        // TODO: Turn this into a Debug log call
+        Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ")");
         while (length > 0)
         {
-            // TODO: Turn this into a Debug log call
-            // Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ")");
+            Thread.Sleep(10);
+
             statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
             length = statistics.Processing + statistics.Enqueued;
-            Thread.Sleep(10);
+            // TODO: Turn this into a Debug log call
+            Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ")");
         }
+
+        watch.Stop();
+        Console.WriteLine("Waited for {0} millseconds", watch.ElapsedMilliseconds);
     }
 
     public void Fire(IApplicationEvent applicationEvent)
