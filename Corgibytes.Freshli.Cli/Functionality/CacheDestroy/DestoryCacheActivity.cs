@@ -6,13 +6,10 @@ namespace Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
 
 public class DestroyCacheActivity : IApplicationActivity
 {
+    public DestroyCacheActivity(string cacheDir) => CacheDir = cacheDir;
+
     // ReSharper disable once MemberCanBePrivate.Global
     public string CacheDir { get; }
-
-    public DestroyCacheActivity(string cacheDir)
-    {
-        CacheDir = cacheDir;
-    }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -20,11 +17,11 @@ public class DestroyCacheActivity : IApplicationActivity
         try
         {
             var exitCode = Cache.Destroy(new DirectoryInfo(CacheDir)).ToExitCode();
-            eventClient.Fire(new CacheDestroyedEvent() {ExitCode = exitCode});
+            eventClient.Fire(new CacheDestroyedEvent { ExitCode = exitCode });
         }
         catch (CacheException error)
         {
-            eventClient.Fire(new CacheDestroyFailedEvent() {ResultMessage = error.Message});
+            eventClient.Fire(new CacheDestroyFailedEvent { ResultMessage = error.Message });
         }
     }
 }
