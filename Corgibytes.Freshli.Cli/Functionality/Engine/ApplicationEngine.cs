@@ -36,6 +36,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     {
         var watch = new Stopwatch();
         watch.Start();
+        // ReSharper disable once LocalizableElement
         Console.WriteLine("Starting to wait for an empty job queue...");
 
         var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
@@ -53,6 +54,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
 
         watch.Stop();
+        // ReSharper disable once LocalizableElement
         Console.WriteLine("Waited for {0} millseconds", watch.ElapsedMilliseconds);
     }
 
