@@ -42,7 +42,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
         var length = statistics.Processing + statistics.Enqueued;
         // TODO: Turn this into a Debug log call
-        Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ")");
+        Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + ")");
         while (length > 0)
         {
             Thread.Sleep(10);
@@ -50,7 +50,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
             length = statistics.Processing + statistics.Enqueued;
             // TODO: Turn this into a Debug log call
-            Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ")");
+            Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + ")");
         }
 
         watch.Stop();
