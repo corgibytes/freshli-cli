@@ -4,6 +4,7 @@ using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using System.CommandLine.Parsing;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.IoC;
@@ -51,6 +52,9 @@ public static class Program
 
     private static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
     {
+        // Give the Application Engine some time to spin up
+        Thread.Sleep(100);
+
         var commandLine = context.ParseResult.ToString();
 
         try
