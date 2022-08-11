@@ -52,9 +52,6 @@ public static class Program
 
     private static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
     {
-        // Give the Application Engine some time to spin up
-        Thread.Sleep(100);
-
         var commandLine = context.ParseResult.ToString();
 
         try

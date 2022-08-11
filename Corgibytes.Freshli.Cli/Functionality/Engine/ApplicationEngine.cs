@@ -15,8 +15,20 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private IBackgroundJobClient JobClient { get; }
 
-    public void Dispatch(IApplicationActivity applicationActivity) =>
+    public void Dispatch(IApplicationActivity applicationActivity)
+    {
+        var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
+        var length = statistics.Servers;
+        while (length > 0)
+        {
+            // TODO: Turn this into a Debug log call
+            // Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ")");
+            statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
+            length = statistics.Servers;
+            Thread.Sleep(10);
+        }
         JobClient.Enqueue(() => HandleActivity(applicationActivity));
+    }
 
     // ReSharper disable once MemberCanBePrivate.Global
     public void HandleActivity(IApplicationActivity activity)
