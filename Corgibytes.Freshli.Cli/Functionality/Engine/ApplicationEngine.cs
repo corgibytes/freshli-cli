@@ -16,20 +16,20 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private IBackgroundJobClient JobClient { get; }
 
+    private bool _isActivityDispatchingInProgress;
+    private bool _isEventFiringInProgress;
+
     public void Dispatch(IApplicationActivity applicationActivity)
     {
-        var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
-        var length = statistics.Servers;
-        while (length == 0)
+        _isActivityDispatchingInProgress = true;
+        try
         {
-            // TODO: Turn this into a Debug log call
-            // Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ")");
-            statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
-            length = statistics.Servers;
-            Thread.Sleep(10);
+            JobClient.Enqueue(() => HandleActivity(applicationActivity));
         }
-
-        JobClient.Enqueue(() => HandleActivity(applicationActivity));
+        finally
+        {
+            _isActivityDispatchingInProgress = false;
+        }
     }
 
     public void Wait()
@@ -42,15 +42,15 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
         var length = statistics.Processing + statistics.Enqueued;
         // TODO: Turn this into a Debug log call
-        Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + ")");
-        while (length > 0)
+        Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + "), Activity Dispatch in Progress: " + _isActivityDispatchingInProgress + ", Event Fire in Progress: " + _isEventFiringInProgress);
+        while (length > 0 && !_isActivityDispatchingInProgress && !_isEventFiringInProgress)
         {
             Thread.Sleep(10);
 
             statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
             length = statistics.Processing + statistics.Enqueued;
             // TODO: Turn this into a Debug log call
-            Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + ")");
+            Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + "), Activity Dispatch in Progress: " + _isActivityDispatchingInProgress + ", Event Fire in Progress: " + _isEventFiringInProgress);
         }
 
         watch.Stop();
@@ -60,13 +60,23 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public void Fire(IApplicationEvent applicationEvent)
     {
-        var jobId = JobClient.Enqueue(() => HandleEvent(applicationEvent));
-
-        foreach (var _ in s_eventHandlers.Keys.Where(type => type.IsAssignableTo(applicationEvent.GetType())))
+        _isEventFiringInProgress = true;
+        try
         {
-            JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
+            var jobId = JobClient.Enqueue(() => HandleEvent(applicationEvent));
+
+            foreach (var _ in s_eventHandlers.Keys.Where(type => type.IsAssignableTo(applicationEvent.GetType())))
+            {
+                JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
+            }
+        }
+        finally
+        {
+            _isEventFiringInProgress = false;
         }
     }
+
+
 
     public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
         s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
