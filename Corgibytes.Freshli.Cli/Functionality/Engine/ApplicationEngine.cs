@@ -27,13 +27,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             length = statistics.Servers;
             Thread.Sleep(10);
         }
-        JobClient.Enqueue(() => HandleActivity(applicationActivity));
-    }
 
-    // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleActivity(IApplicationActivity activity)
-    {
-        activity.Handle(this);
+        JobClient.Enqueue(() => HandleActivity(applicationActivity));
     }
 
     public void Wait()
@@ -62,14 +57,14 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleEvent(IApplicationEvent appEvent)
-    {
-        appEvent.Handle(this);
-    }
-
     public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
         s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public void HandleActivity(IApplicationActivity activity) => activity.Handle(this);
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public void HandleEvent(IApplicationEvent appEvent) => appEvent.Handle(this);
 
     // ReSharper disable once MemberCanBePrivate.Global
     public void TriggerHandler(IApplicationEvent applicationEvent)
