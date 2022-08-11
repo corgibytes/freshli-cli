@@ -19,7 +19,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     {
         var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
         var length = statistics.Servers;
-        while (length > 0)
+        while (length == 0)
         {
             // TODO: Turn this into a Debug log call
             // Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ")");
