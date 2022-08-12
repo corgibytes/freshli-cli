@@ -74,17 +74,23 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             s_isEventFiringInProgress = true;
             try
             {
-                var jobId = JobClient.Enqueue(() => HandleEvent(applicationEvent));
-
-                foreach (var _ in s_eventHandlers.Keys.Where(type => type.IsAssignableTo(applicationEvent.GetType())))
-                {
-                    JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
-                }
+                JobClient.Enqueue(() => FireEventAndHandler(applicationEvent));
             }
             finally
             {
                 s_isEventFiringInProgress = false;
             }
+        }
+    }
+
+    // ReSharper disable once MemberCanBePrivate.Global
+    public void FireEventAndHandler(IApplicationEvent applicationEvent)
+    {
+        var jobId = JobClient.Enqueue(() => HandleEvent(applicationEvent));
+
+        foreach (var _ in s_eventHandlers.Keys.Where(type => type.IsAssignableTo(applicationEvent.GetType())))
+        {
+            JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
         }
     }
 
