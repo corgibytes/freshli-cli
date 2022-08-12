@@ -1,4 +1,3 @@
-using System.IO;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
