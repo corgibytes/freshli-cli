@@ -16,19 +16,24 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private IBackgroundJobClient JobClient { get; }
 
-    private bool _isActivityDispatchingInProgress;
-    private bool _isEventFiringInProgress;
+    private static readonly object s_dispatchLock = new();
+    private static readonly object s_fireLock = new();
+    private static bool s_isActivityDispatchingInProgress;
+    private static bool s_isEventFiringInProgress;
 
     public void Dispatch(IApplicationActivity applicationActivity)
     {
-        _isActivityDispatchingInProgress = true;
-        try
+        lock (s_dispatchLock)
         {
-            JobClient.Enqueue(() => HandleActivity(applicationActivity));
-        }
-        finally
-        {
-            _isActivityDispatchingInProgress = false;
+            s_isActivityDispatchingInProgress = true;
+            try
+            {
+                JobClient.Enqueue(() => HandleActivity(applicationActivity));
+            }
+            finally
+            {
+                s_isActivityDispatchingInProgress = false;
+            }
         }
     }
 
@@ -39,18 +44,22 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         // ReSharper disable once LocalizableElement
         Console.WriteLine("Starting to wait for an empty job queue...");
 
-        var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
-        var length = statistics.Processing + statistics.Enqueued;
-        // TODO: Turn this into a Debug log call
-        Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + "), Activity Dispatch in Progress: " + _isActivityDispatchingInProgress + ", Event Fire in Progress: " + _isEventFiringInProgress);
-        while (length > 0 && !_isActivityDispatchingInProgress && !_isEventFiringInProgress)
+        var shouldWait = true;
+        while (shouldWait)
         {
             Thread.Sleep(10);
 
-            statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
-            length = statistics.Processing + statistics.Enqueued;
+            var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
+            var length = statistics.Processing + statistics.Enqueued;
+
+            // store the value of static boolean fields to avoid a race condition between the output of those values
+            // and the assignment of the `shouldWait` variable
+            var localIsEventFiring = s_isEventFiringInProgress;
+            var localIsActivityDispatching = s_isActivityDispatchingInProgress;
+
             // TODO: Turn this into a Debug log call
-            Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + "), Activity Dispatch in Progress: " + _isActivityDispatchingInProgress + ", Event Fire in Progress: " + _isEventFiringInProgress);
+            Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + "), Activity Dispatch in Progress: " + localIsActivityDispatching + ", Event Fire in Progress: " + localIsEventFiring);
+            shouldWait = length > 0 || localIsActivityDispatching || localIsEventFiring;
         }
 
         watch.Stop();
@@ -60,19 +69,22 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public void Fire(IApplicationEvent applicationEvent)
     {
-        _isEventFiringInProgress = true;
-        try
+        lock (s_fireLock)
         {
-            var jobId = JobClient.Enqueue(() => HandleEvent(applicationEvent));
-
-            foreach (var _ in s_eventHandlers.Keys.Where(type => type.IsAssignableTo(applicationEvent.GetType())))
+            s_isEventFiringInProgress = true;
+            try
             {
-                JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
+                var jobId = JobClient.Enqueue(() => HandleEvent(applicationEvent));
+
+                foreach (var _ in s_eventHandlers.Keys.Where(type => type.IsAssignableTo(applicationEvent.GetType())))
+                {
+                    JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
+                }
             }
-        }
-        finally
-        {
-            _isEventFiringInProgress = false;
+            finally
+            {
+                s_isEventFiringInProgress = false;
+            }
         }
     }
 
