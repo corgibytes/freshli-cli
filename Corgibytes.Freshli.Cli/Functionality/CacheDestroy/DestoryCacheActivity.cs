@@ -1,4 +1,3 @@
-using System.IO;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -6,8 +5,14 @@ namespace Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
 
 public class DestroyCacheActivity : IApplicationActivity
 {
-    public DestroyCacheActivity(string cacheDir) => CacheDir = cacheDir;
+    public DestroyCacheActivity(ICacheManager cacheManager, string cacheDir)
+    {
+        CacheManager = cacheManager;
+        CacheDir = cacheDir;
+    }
 
+    // ReSharper disable once MemberCanBePrivate.Global
+    public ICacheManager CacheManager { get; }
     // ReSharper disable once MemberCanBePrivate.Global
     public string CacheDir { get; }
 
@@ -16,7 +21,7 @@ public class DestroyCacheActivity : IApplicationActivity
         // Destroy the cache
         try
         {
-            var exitCode = Cache.Destroy(new DirectoryInfo(CacheDir)).ToExitCode();
+            var exitCode = CacheManager.Destroy(CacheDir).ToExitCode();
             eventClient.Fire(new CacheDestroyedEvent { ExitCode = exitCode });
         }
         catch (CacheException error)

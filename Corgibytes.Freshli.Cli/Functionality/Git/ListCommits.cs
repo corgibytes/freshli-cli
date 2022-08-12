@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using CliWrap;
 using Corgibytes.Freshli.Cli.Exceptions;
@@ -15,7 +14,7 @@ public class ListCommits : IListCommits
     public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository) =>
         _cachedGitSourceRepository = cachedGitSourceRepository;
 
-    public IEnumerable<GitCommit> ForRepository(string repositoryId, DirectoryInfo cacheDirectory, string gitPath)
+    public IEnumerable<GitCommit> ForRepository(string repositoryId, string cacheDirectory, string gitPath)
     {
         var gitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId, cacheDirectory);
 

@@ -9,14 +9,15 @@ public class CacheContext : DbContext
 {
     public const string CacheDbName = "freshli.db";
 
-    public CacheContext(DirectoryInfo cacheDir)
+    public CacheContext(string cacheDir)
     {
-        CacheDir = cacheDir;
+        CacheDir = new DirectoryInfo(cacheDir);
         DbPath = Path.Join(CacheDir.ToString(), CacheDbName);
     }
 
     // ReSharper disable once UnusedMember.Global
-    public static DirectoryInfo DefaultCacheDir => new(Environment.GetEnvironmentVariable("HOME") + "/.freshli");
+    public static string DefaultCacheDir =>
+        Path.Combine(Environment.GetEnvironmentVariable("HOME")!, ".freshli");
 
     private DirectoryInfo CacheDir { get; }
     private string DbPath { get; }
@@ -24,6 +25,7 @@ public class CacheContext : DbContext
     // ReSharper disable once UnusedMember.Global
     public DbSet<CachedProperty> CachedProperties => Set<CachedProperty>();
     public DbSet<CachedGitSource> CachedGitSources => Set<CachedGitSource>();
+    public DbSet<CachedAnalysis> CachedAnalyses => Set<CachedAnalysis>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlite($"Data Source={DbPath}");
@@ -36,7 +38,7 @@ public class CacheContextFactory : IDesignTimeDbContextFactory<CacheContext>
     {
         var optionsBuilder = new DbContextOptionsBuilder<CacheContext>();
         var cacheDir = CacheContext.DefaultCacheDir;
-        var dbPath = Path.Join(cacheDir.ToString(), CacheContext.CacheDbName);
+        var dbPath = Path.Join(cacheDir, CacheContext.CacheDbName);
         optionsBuilder.UseSqlite($"Data Source={dbPath}");
 
         return new CacheContext(cacheDir);

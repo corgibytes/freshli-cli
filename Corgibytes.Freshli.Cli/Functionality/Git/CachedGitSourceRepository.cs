@@ -11,7 +11,11 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CachedGitSourceRepository : ICachedGitSourceRepository
 {
-    public CachedGitSource FindOneByHash(string hash, DirectoryInfo cacheDir)
+    private ICacheManager CacheManager { get; }
+    public CachedGitSourceRepository(ICacheManager cacheManager) =>
+        CacheManager = cacheManager;
+
+    public CachedGitSource FindOneByHash(string hash, string cacheDir)
     {
         using var db = new CacheContext(cacheDir);
         var entry = db.CachedGitSources.Find(hash);
@@ -23,10 +27,10 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         return entry;
     }
 
-    public CachedGitSource CloneOrPull(string url, string? branch, DirectoryInfo cacheDir, string gitPath)
+    public CachedGitSource CloneOrPull(string url, string? branch, string cacheDir, string gitPath)
     {
         // Ensure the cache directory is ready for use.
-        Cache.Prepare(cacheDir);
+        CacheManager.Prepare(cacheDir);
 
         // Generate a unique hash for the repository based on its URL and branch.
         using var sha256 = SHA256.Create();
@@ -46,7 +50,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
             return db.CachedGitSources.Find(hash) ?? throw new InvalidOperationException();
         }
 
-        var directory = Cache.GetDirectoryInCache(cacheDir, new[] { "repositories", hash });
+        var directory = CacheManager.GetDirectoryInCache(cacheDir, new[] { "repositories", hash });
 
         var cachedGitSource = new CachedGitSource(hash, url, branch, directory.FullName);
         db.CachedGitSources.Add(cachedGitSource);
@@ -110,7 +114,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     private static void Delete(CachedGitSource cachedGitSource)
     {
         var directory = new DirectoryInfo(cachedGitSource.LocalPath);
-        using var db = new CacheContext(directory);
+        using var db = new CacheContext(directory.FullName);
         var entry = db.CachedGitSources.Find(cachedGitSource.Id);
         db.CachedGitSources.Remove(entry!);
 
