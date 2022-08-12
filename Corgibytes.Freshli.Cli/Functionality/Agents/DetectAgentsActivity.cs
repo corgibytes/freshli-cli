@@ -10,7 +10,8 @@ public class DetectAgentsActivity : IApplicationActivity
 {
     public DetectAgentsActivity(IAgentsDetector agentsDetector) => AgentsDetector = agentsDetector;
 
-    private IAgentsDetector AgentsDetector { get; }
+    // ReSharper disable once MemberCanBePrivate.Global
+    public IAgentsDetector AgentsDetector { get; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {

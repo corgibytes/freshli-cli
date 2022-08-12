@@ -4,7 +4,8 @@ using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
-using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
+using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Lib;
 
@@ -12,35 +13,57 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
 public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestroyCommandOptions>
 {
-    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner)
+    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner,
+        IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine)
         : base(serviceProvider, runner)
     {
+        ActivityEngine = activityEngine;
+        EventEngine = eventEngine;
     }
+
+    private IApplicationActivityEngine ActivityEngine { get; }
+    private IApplicationEventEngine EventEngine { get; }
 
     public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
     {
-        // Unless the --force flag is passed, prompt the user whether they want to destroy the cache
-        if (!options.Force && !Confirm(
-                string.Format(CliOutput.CacheDestroyCommandRunner_Run_Prompt, options.CacheDir.FullName),
-                context
-            ))
+        var strConfirmDestroy = string.Format(
+            CliOutput.CacheDestroyCommandRunner_Run_Prompt,
+            options.CacheDir.FullName);
+
+        // Unless the --force flag is passed, prompt the user whether they want
+        // to destroy the cache
+        if (!options.Force && !Confirm(strConfirmDestroy, context))
         {
-            context.Console.Out.WriteLine(CliOutput.CacheDestroyCommandRunner_Run_Abort);
+            context.Console.Out.WriteLine(
+                CliOutput.CacheDestroyCommandRunner_Run_Abort);
             return true.ToExitCode();
         }
 
-        // Destroy the cache
-        context.Console.Out.WriteLine(string.Format(CliOutput.CacheDestroyCommandRunner_Run_Destroying,
-            options.CacheDir));
-        try
+        var strDestroyingCache = string.Format(
+            CliOutput.CacheDestroyCommandRunner_Run_Destroying,
+            options.CacheDir);
+        context.Console.Out.WriteLine(strDestroyingCache);
+
+        ActivityEngine.Dispatch(new DestroyCacheActivity(options.CacheDir.FullName));
+
+        var exitCode = WaitForCacheDestroyEvents(context);
+        return exitCode;
+    }
+
+    private int WaitForCacheDestroyEvents(InvocationContext context)
+    {
+        var exitCode = true.ToExitCode();
+
+        EventEngine.On<CacheDestroyFailedEvent>(destroyEvent =>
         {
-            return Functionality.Cache.Destroy(options.CacheDir).ToExitCode();
-        }
-        // Catch errors
-        catch (CacheException error)
-        {
-            context.Console.Error.WriteLine(error.Message);
-            return error.IsWarning.ToExitCode();
-        }
+            context.Console.Error.WriteLine(destroyEvent.ResultMessage);
+            exitCode = false.ToExitCode();
+        });
+
+        EventEngine.On<CacheDestroyedEvent>(destroyEvent => { exitCode = destroyEvent.ExitCode; });
+
+        ActivityEngine.Wait();
+
+        return exitCode;
     }
 }
