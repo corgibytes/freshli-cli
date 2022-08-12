@@ -3,6 +3,8 @@ using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions.Git;
 using Corgibytes.Freshli.Cli.Commands.Git;
+using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -12,19 +14,21 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Git;
 
 public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneCommandOptions>
 {
-    public GitCloneCommandRunner(IServiceProvider serviceProvider, ICacheManager cacheManager, Runner runner)
-        : base(serviceProvider, runner) =>
-        CacheManager = cacheManager;
+    private readonly ICachedGitSourceRepository _gitSourceRepository;
 
-    private ICacheManager CacheManager { get; }
+    public GitCloneCommandRunner(IServiceProvider serviceProvider, Runner runner,
+        ICachedGitSourceRepository gitSourceRepository)
+        : base(serviceProvider, runner) =>
+        _gitSourceRepository = gitSourceRepository;
 
     public override int Run(GitCloneCommandOptions options, InvocationContext context)
     {
         // Clone or pull the given repository and branch.
-        var gitRepository = new GitSource(options.RepoUrl, options.Branch, options.CacheDir, CacheManager);
+        CachedGitSource gitRepository;
         try
         {
-            gitRepository.CloneOrPull(options.GitPath);
+            gitRepository =
+                _gitSourceRepository.CloneOrPull(options.RepoUrl, options.Branch, options.CacheDir, options.GitPath);
         }
         catch (GitException e)
         {
@@ -32,8 +36,8 @@ public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneComm
             return false.ToExitCode();
         }
 
-        // Output the hash to the command line for use by the caller.
-        context.Console.Out.WriteLine(gitRepository.Hash);
+        // Output the id to the command line for use by the caller.
+        context.Console.Out.WriteLine(gitRepository.Id);
         return true.ToExitCode();
     }
 }
