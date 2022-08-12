@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using Corgibytes.Freshli.Cli.Repositories;
+using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
@@ -9,11 +9,9 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 public class GitArchive
 {
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
-    private readonly ICacheManager _cacheManager;
 
-    public GitArchive(ICacheManager cacheManager, ICachedGitSourceRepository cachedGitSourceRepository)
+    public GitArchive(ICachedGitSourceRepository cachedGitSourceRepository)
     {
-        _cacheManager = cacheManager;
         _cachedGitSourceRepository = cachedGitSourceRepository;
     }
 
@@ -21,10 +19,10 @@ public class GitArchive
     public string CreateArchive(string repositoryId, string cacheDirectory,
         GitCommitIdentifier gitCommitIdentifier, string gitPath)
     {
-        var gitSource = new GitSource(repositoryId, cacheDirectory, _cacheManager, _cachedGitSourceRepository);
+        var gitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId, cacheDirectory);
 
         // If it exists, make sure to empty it so we are certain we start with a clean slate.
-        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory, "histories", gitSource.Hash,
+        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory, "histories", gitSource.Id,
             gitCommitIdentifier.ToString()));
         if (Directory.Exists(gitSourceTarget.FullName))
         {
@@ -40,7 +38,7 @@ public class GitArchive
             StartInfo = new ProcessStartInfo
             {
                 FileName = gitPath,
-                WorkingDirectory = gitSource.Directory.FullName,
+                WorkingDirectory = gitSource.LocalPath,
                 Arguments = $"archive --output={archivePath} --format=zip {gitCommitIdentifier}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
