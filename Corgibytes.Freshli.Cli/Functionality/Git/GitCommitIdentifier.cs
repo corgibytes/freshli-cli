@@ -1,3 +1,5 @@
+using Corgibytes.Freshli.Cli.Exceptions;
+
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitCommitIdentifier
