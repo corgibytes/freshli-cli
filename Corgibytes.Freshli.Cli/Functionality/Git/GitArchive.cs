@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using Corgibytes.Freshli.Cli.Repositories;
+using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
@@ -16,10 +16,10 @@ public class GitArchive
     public string CreateArchive(string repositoryId, DirectoryInfo cacheDirectory,
         GitCommitIdentifier gitCommitIdentifier, string gitPath)
     {
-        var gitSource = new GitSource(repositoryId, cacheDirectory, _cachedGitSourceRepository);
+        var gitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId, cacheDirectory);
 
         // If it exists, make sure to empty it so we are certain we start with a clean slate.
-        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory.FullName, "histories", gitSource.Hash,
+        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory.FullName, "histories", gitSource.Id,
             gitCommitIdentifier.ToString()));
         if (Directory.Exists(gitSourceTarget.FullName))
         {
@@ -35,7 +35,7 @@ public class GitArchive
             StartInfo = new ProcessStartInfo
             {
                 FileName = gitPath,
-                WorkingDirectory = gitSource.Directory.FullName,
+                WorkingDirectory = gitSource.LocalPath,
                 Arguments = $"archive --output={archivePath} --format=zip {gitCommitIdentifier}",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true
