@@ -39,6 +39,7 @@ public class FreshliServiceBuilder
     public void Register()
     {
         Services.AddSingleton<IEnvironment, Environment>();
+        Services.AddSingleton<ICacheManager, CacheManager>();
         RegisterBaseCommand();
         RegisterScanCommand();
         RegisterCacheCommand();

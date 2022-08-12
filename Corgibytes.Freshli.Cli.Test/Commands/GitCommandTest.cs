@@ -4,6 +4,7 @@ using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands;
 
+[UnitTest]
 public class GitCommandTest
 {
     [Fact]

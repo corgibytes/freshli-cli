@@ -4,6 +4,7 @@ using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Resources;
@@ -13,14 +14,16 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
 public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestroyCommandOptions>
 {
-    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner,
+    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner, ICacheManager cacheManager,
         IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine)
         : base(serviceProvider, runner)
     {
+        CacheManager = cacheManager;
         ActivityEngine = activityEngine;
         EventEngine = eventEngine;
     }
 
+    private ICacheManager CacheManager { get; }
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
@@ -28,7 +31,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
     {
         var strConfirmDestroy = string.Format(
             CliOutput.CacheDestroyCommandRunner_Run_Prompt,
-            options.CacheDir.FullName);
+            options.CacheDir);
 
         // Unless the --force flag is passed, prompt the user whether they want
         // to destroy the cache
@@ -44,7 +47,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
             options.CacheDir);
         context.Console.Out.WriteLine(strDestroyingCache);
 
-        ActivityEngine.Dispatch(new DestroyCacheActivity(options.CacheDir.FullName));
+        ActivityEngine.Dispatch(new DestroyCacheActivity(CacheManager, options.CacheDir));
 
         var exitCode = WaitForCacheDestroyEvents(context);
         return exitCode;

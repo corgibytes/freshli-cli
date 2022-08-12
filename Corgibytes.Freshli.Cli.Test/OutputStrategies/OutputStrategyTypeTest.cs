@@ -9,6 +9,7 @@ using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.OutputStrategies;
 
+[UnitTest]
 public class OutputStrategyTypeTest : FreshliTest
 {
     private readonly IServiceProvider _services;
