@@ -145,7 +145,7 @@ public class FreshliServiceBuilder
         Services.AddTransient<IHostedService, BackgroundJobServerHostedService>(provider =>
         {
             var options = provider.GetService<BackgroundJobServerOptions>() ?? new BackgroundJobServerOptions();
-            var storage = provider.GetService<JobStorage>() ?? new MemoryStorage();
+            var storage = provider.GetService<JobStorage>() ?? JobStorage.Current;
             return new BackgroundJobServerHostedService(storage, options, new List<IBackgroundProcess>());
         });
     }
