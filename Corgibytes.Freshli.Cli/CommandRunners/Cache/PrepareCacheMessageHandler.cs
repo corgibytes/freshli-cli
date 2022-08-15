@@ -19,7 +19,7 @@ public class PrepareCacheMessageHandler : CommandRunner<CacheCommand, CachePrepa
     {
     }
 
-    public override int Run(PrepareCacheMessageHandler options, InvocationContext context)
+    public override int Run(CachePrepareCommandOptions options, InvocationContext context)
     {
         context.Console.Out.WriteLine(
             string.Format(CliOutput.PrepareCacheMessageHandler_Run_Preparing_cache, options.CacheDir)
