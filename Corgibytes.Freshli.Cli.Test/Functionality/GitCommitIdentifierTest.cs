@@ -1,3 +1,4 @@
+using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Xunit;
@@ -6,6 +7,7 @@ using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
+[UnitTest]
 public class GitCommitIdentifierTest : FreshliTest
 {
     public GitCommitIdentifierTest(ITestOutputHelper output) : base(output)
