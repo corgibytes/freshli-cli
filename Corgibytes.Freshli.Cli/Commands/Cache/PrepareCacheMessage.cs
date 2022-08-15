@@ -8,10 +8,10 @@ public class PrepareCacheMessage
 {
     public PrepareCacheMessage(string repositoryUrl, string? repositoryBranch, string historyInterval, string CacheDir)
     {
+        CacheDirectory = CacheDir;
         RepositoryUrl = repositoryUrl;
         RepositoryBranch = repositoryBranch;
         HistoryInterval = historyInterval;
-        CacheDirectory = CacheDir;
     }
 
     [Required] public Guid Id { get; set; }
