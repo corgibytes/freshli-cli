@@ -7,6 +7,7 @@ using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
+[UnitTest]
 public class EnvironmentTest
 {
     [Fact]

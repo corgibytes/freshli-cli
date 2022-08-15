@@ -9,6 +9,7 @@ using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands;
 
+[UnitTest]
 public class ScanCommandTest : FreshliTest
 {
     public ScanCommandTest(ITestOutputHelper output) : base(output)

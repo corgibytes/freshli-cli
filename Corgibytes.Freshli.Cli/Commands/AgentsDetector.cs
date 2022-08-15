@@ -9,7 +9,8 @@ public class AgentsDetector : IAgentsDetector
 {
     public AgentsDetector(IEnvironment environment) => Environment = environment;
 
-    private IEnvironment Environment { get; }
+    // ReSharper disable once MemberCanBePrivate.Global
+    public IEnvironment Environment { get; }
 
     public IList<string> Detect()
     {
