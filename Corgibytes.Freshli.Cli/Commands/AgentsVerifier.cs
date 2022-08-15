@@ -16,7 +16,7 @@ public class AgentsVerifier
         _environment = environment;
     }
 
-    public void RunAgentsVerify(string agentFileAndPath, string argument, DirectoryInfo cacheDir, string languageName)
+    public void RunAgentsVerify(string agentFileAndPath, string argument, string cacheDir, string languageName)
     {
         var startTime = DateTime.Now;
         languageName = string.IsNullOrEmpty(languageName)
@@ -30,8 +30,8 @@ public class AgentsVerifier
                 try
                 {
                     var pos = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-                    Invoke.Command("git", $"clone {url} {cacheDir.FullName}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{url.Trim().Substring(pos, url.Length - pos)}", cacheDir.FullName);   
-                    RunDetectManfiest(agentFileAndPath, "detect-manifests", url, cacheDir.FullName, startTime);
+                    Invoke.Command("git", $"clone {url} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{url.Trim().Substring(pos, url.Length - pos)}", cacheDir);
+                    RunDetectManfiest(agentFileAndPath, "detect-manifests", url, cacheDir, startTime);
                 }
                 catch (Exception e)
                 {
@@ -44,10 +44,10 @@ public class AgentsVerifier
             try
             {
                 var pos = validatingRepositoriesUrl.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-                Invoke.Command("git", $"clone {validatingRepositoriesUrl} {cacheDir.FullName}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{validatingRepositoriesUrl.Trim().Substring(pos, validatingRepositoriesUrl.Length - pos)}",
-                    cacheDir.FullName);
+                Invoke.Command("git", $"clone {validatingRepositoriesUrl} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{validatingRepositoriesUrl.Trim().Substring(pos, validatingRepositoriesUrl.Length - pos)}",
+                    cacheDir);
                 RunDetectManfiest(agentFileAndPath, "detect-manifests", validatingRepositoriesUrl,
-                    cacheDir.FullName + languageName, startTime);
+                    cacheDir + languageName, startTime);
             }
             catch (Exception e)
             {
@@ -134,7 +134,7 @@ public class AgentsVerifier
         foreach (var manifestFile in manifestOutput.Split("\t"))
         {
             try
-            {                
+            {
                 if(!File.Exists(manifestFile.Trim('\n','\r').TrimEnd()))
                 {
                     Console.WriteLine("File " + manifestFile.TrimEnd('\n','\r') + " does not exist");
