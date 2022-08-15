@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
@@ -13,7 +12,7 @@ public class ComputeHistory
     public ComputeHistory(IListCommits listCommits) => _listCommits = listCommits;
 
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(string repositoryId, string gitPath,
-        DirectoryInfo cacheDir)
+        string cacheDir)
     {
         var commitHistory = _listCommits.ForRepository(repositoryId, cacheDir, gitPath);
         return commitHistory
@@ -24,7 +23,7 @@ public class ComputeHistory
         string repositoryId,
         string gitPath,
         string historyInterval,
-        DirectoryInfo cacheDir
+        string cacheDir
     )
     {
         var commitHistory = _listCommits.ForRepository(repositoryId, cacheDir, gitPath);

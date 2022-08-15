@@ -8,6 +8,7 @@ using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands;
 
+[UnitTest]
 public class CacheCommandTest : FreshliTest
 {
     public CacheCommandTest(ITestOutputHelper output) : base(output)
