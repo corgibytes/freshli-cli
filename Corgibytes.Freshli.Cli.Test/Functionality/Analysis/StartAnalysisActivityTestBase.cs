@@ -12,8 +12,8 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     where TErrorEvent : ErrorEvent
 {
     private readonly Mock<ICacheDb> _cacheDb = new();
-    protected readonly Mock<ICacheManager> CacheManager = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    protected readonly Mock<ICacheManager> CacheManager = new();
     protected readonly Mock<IHistoryIntervalParser> IntervalParser = new();
     protected abstract TActivity Activity { get; }
 
