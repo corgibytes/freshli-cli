@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Resources;
 using CycloneDX;
 using CycloneDX.Json;
 
@@ -9,13 +10,6 @@ namespace Corgibytes.Freshli.Cli.Commands;
 
 public class AgentsVerifier
 {
-    private readonly IEnvironment _environment;
-
-    public AgentsVerifier(IEnvironment environment)
-    {
-        _environment = environment;
-    }
-
     public void RunAgentsVerify(string agentFileAndPath, string argument, string cacheDir, string languageName)
     {
         var startTime = DateTime.Now;
@@ -30,7 +24,9 @@ public class AgentsVerifier
                 try
                 {
                     var pos = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-                    Invoke.Command("git", $"clone {url} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{url.Trim().Substring(pos, url.Length - pos)}", cacheDir);
+                    Invoke.Command("git",
+                        $"clone {url} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{url.Trim().Substring(pos, url.Length - pos)}",
+                        cacheDir);
                     RunDetectManfiest(agentFileAndPath, "detect-manifests", url, cacheDir, startTime);
                 }
                 catch (Exception e)
@@ -44,7 +40,8 @@ public class AgentsVerifier
             try
             {
                 var pos = validatingRepositoriesUrl.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-                Invoke.Command("git", $"clone {validatingRepositoriesUrl} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{validatingRepositoriesUrl.Trim().Substring(pos, validatingRepositoriesUrl.Length - pos)}",
+                Invoke.Command("git",
+                    $"clone {validatingRepositoriesUrl} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{validatingRepositoriesUrl.Trim().Substring(pos, validatingRepositoriesUrl.Length - pos)}",
                     cacheDir);
                 RunDetectManfiest(agentFileAndPath, "detect-manifests", validatingRepositoriesUrl,
                     cacheDir + languageName, startTime);
@@ -77,17 +74,20 @@ public class AgentsVerifier
     private void RunProcessManifest(string agentFileAndPath, string argument, string url, string workingDirectory,
         string detectManifestFiles, DateTime startDate)
     {
-        var processManifestOutput = Invoke.Command(agentFileAndPath, argument + " " + detectManifestFiles + " " + DateTimeOffset.Now.ToString("s") + "Z", workingDirectory);
+        var processManifestOutput = Invoke.Command(agentFileAndPath,
+            argument + " " + detectManifestFiles + " " + DateTimeOffset.Now.ToString("s") + "Z", workingDirectory);
         var processDetectManifestFiles = DetectManifestFileCount(detectManifestFiles);
         var processManifestFiles = VerifyFiles(processManifestOutput);
 
         try
         {
             var pos = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-            var gitStatus = Invoke.Command("git", "status", workingDirectory + Path.DirectorySeparatorChar + url.Trim().Substring(pos, url.Length - pos));
+            var gitStatus = Invoke.Command("git", "status",
+                workingDirectory + Path.DirectorySeparatorChar + url.Trim().Substring(pos, url.Length - pos));
             if (!gitStatus.Contains("working tree clean"))
             {
-                Console.Error.Write("The following are residual modifications from the cloned repository: " + url + " ");
+                Console.Error.Write("The following are residual modifications from the cloned repository: " + url +
+                                    " ");
                 Console.Error.Write(gitStatus);
             }
         }
@@ -109,7 +109,7 @@ public class AgentsVerifier
         }
     }
 
-    private void RunValidatingPackageUrls(string agentFileAndPath, string argument)
+    private static void RunValidatingPackageUrls(string agentFileAndPath, string argument)
     {
         var processManifestOutput = Invoke.Command(agentFileAndPath, argument, ".").TrimEnd('\n');
         if (processManifestOutput.Contains('\n'))
@@ -125,7 +125,7 @@ public class AgentsVerifier
         }
     }
 
-    private List<string> VerifyFiles(string manifestOutput)
+    private static List<string> VerifyFiles(string manifestOutput)
     {
         var processManifestFiles = new List<string>();
 
@@ -133,9 +133,10 @@ public class AgentsVerifier
         {
             try
             {
-                if(!File.Exists(manifestFile.Trim('\n','\r').TrimEnd()))
+                if (!File.Exists(manifestFile.Trim('\n', '\r').TrimEnd()))
                 {
-                    Console.WriteLine("File " + manifestFile.TrimEnd('\n','\r') + " does not exist");
+                    Console.WriteLine(CliOutput.AgentsVerifier_VerifyFiles_File__0__does_not_exist,
+                        manifestFile.TrimEnd('\n', '\r'));
                 }
                 else if (new FileInfo(manifestFile.Trim()).Length != 0 && File.Exists(manifestFile.Trim()))
                 {
@@ -149,7 +150,8 @@ public class AgentsVerifier
                     {
                         Console.Error.Write("Unable to validate if a file is a CycloneDX file:" + e);
                     }
-                } else if (new FileInfo(manifestFile.Trim()).Length == 0)
+                }
+                else if (new FileInfo(manifestFile.Trim()).Length == 0)
                 {
                     Console.WriteLine(manifestFile + @" is empty");
                 }
@@ -163,7 +165,7 @@ public class AgentsVerifier
         return processManifestFiles;
     }
 
-    private List<string> DetectManifestFileCount(string detectManifestInput)
+    private static List<string> DetectManifestFileCount(string detectManifestInput)
     {
         var detectManifestFiles = new List<string>();
 

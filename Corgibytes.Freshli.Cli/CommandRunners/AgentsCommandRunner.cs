@@ -85,8 +85,8 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
     public override int Run(AgentsVerifyCommandOptions options, InvocationContext context)
     {
         var agents = _agentsDetector.Detect();
-        
-        if (options.LanguageName == null)
+
+        if (options.LanguageName == "")
         {
             foreach (var agentsAndPath in agents)
             {
@@ -104,6 +104,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
                 }
             }
         }
+
         return 0;
     }
 }
