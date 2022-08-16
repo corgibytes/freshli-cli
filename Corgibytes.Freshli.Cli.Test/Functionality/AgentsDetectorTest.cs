@@ -38,17 +38,15 @@ public class AgentsDetectorTest
         );
 
         // Intentionally include the same file name in different directories
-        environment.Setup(mock => mock.GetListOfFiles("/bin")).Returns(new List<string?> {"freshli-agent-java"});
-        environment.Setup(mock => mock.GetListOfFiles("/usr/local/bin")).Returns(new List<string?> {"freshli-agent-java"});
+        environment.Setup(mock => mock.GetListOfFiles("/bin")).Returns(new List<string?> { "freshli-agent-java" });
+        environment.Setup(mock => mock.GetListOfFiles("/usr/local/bin"))
+            .Returns(new List<string?> { "freshli-agent-java" });
 
         var agentsDetector = new AgentsDetector(environment.Object);
 
         // The only `freshli-agent-java` command that should be included in the output is the directory that comes
         // first in the list of directories in the search path.
-        var expectedResults = new List<string>
-        {
-            "/usr/local/bin/freshli-agent-java"
-        };
+        var expectedResults = new List<string> { "/usr/local/bin/freshli-agent-java" };
         var results = agentsDetector.Detect();
         Assert.Equal(expectedResults, results);
     }
