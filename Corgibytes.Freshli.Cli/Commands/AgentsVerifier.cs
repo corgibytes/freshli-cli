@@ -84,10 +84,8 @@ public class AgentsVerifier
         try
         {
             var pos = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-            Console.WriteLine("Dona before status");
             var gitStatus = Invoke.Command("git", "status", workingDirectory + Path.DirectorySeparatorChar + url.Trim().Substring(pos, url.Length - pos));
-            Console.WriteLine("Dona after status");
-            if (gitStatus.Length != 0)
+            if (!gitStatus.Contains("working tree clean"))
             {
                 Console.Error.Write("The following are residual modifications from the cloned repository: " + url + " ");
                 Console.Error.Write(gitStatus);
