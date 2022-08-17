@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Xunit;
@@ -9,16 +8,17 @@ using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
+[UnitTest]
 public class ComputeHistoryTest : FreshliTest
 {
-    private readonly DirectoryInfo _cacheDir;
+    private readonly string _cacheDir;
     private readonly ComputeHistory _computeHistory;
 
     public ComputeHistoryTest(ITestOutputHelper output) : base(output)
     {
         var listCommits = new MockListCommits();
         _computeHistory = new ComputeHistory(listCommits);
-        _cacheDir = new DirectoryInfo("/this/is/a/path");
+        _cacheDir = "/this/is/a/path";
 
         listCommits.HasCommitsAvailable(new List<GitCommit>
         {
