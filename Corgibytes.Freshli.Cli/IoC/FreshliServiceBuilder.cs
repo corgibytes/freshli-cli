@@ -14,7 +14,6 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.IoC.Engine;
 using Corgibytes.Freshli.Cli.OutputStrategies;
-using Corgibytes.Freshli.Cli.Repositories;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
 using Hangfire;
@@ -40,6 +39,7 @@ public class FreshliServiceBuilder
     public void Register()
     {
         Services.AddSingleton<IEnvironment, Environment>();
+        Services.AddSingleton<ICacheManager, CacheManager>();
         RegisterBaseCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
@@ -146,7 +146,7 @@ public class FreshliServiceBuilder
         Services.AddTransient<IHostedService, BackgroundJobServerHostedService>(provider =>
         {
             var options = provider.GetService<BackgroundJobServerOptions>() ?? new BackgroundJobServerOptions();
-            var storage = provider.GetService<JobStorage>() ?? new MemoryStorage();
+            var storage = provider.GetService<JobStorage>() ?? JobStorage.Current;
             return new BackgroundJobServerHostedService(storage, options, new List<IBackgroundProcess>());
         });
     }
@@ -180,7 +180,7 @@ public class FreshliServiceBuilder
 
     // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L76
     private void RegisterHangfireConfiguration() =>
-        Services.AddSingleton<IGlobalConfiguration>(serviceProvider =>
+        Services.AddSingleton(serviceProvider =>
         {
             var configurationInstance = GlobalConfiguration.Configuration;
 

@@ -5,6 +5,7 @@ using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
+[UnitTest]
 public class LeapYearsTest : FreshliTest
 {
     public LeapYearsTest(ITestOutputHelper output) : base(output)

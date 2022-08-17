@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
 using CliWrap;
-using Corgibytes.Freshli.Cli.Repositories;
+using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
@@ -15,9 +14,9 @@ public class ListCommits : IListCommits
     public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository) =>
         _cachedGitSourceRepository = cachedGitSourceRepository;
 
-    public IEnumerable<GitCommit> ForRepository(string repositoryId, DirectoryInfo cacheDirectory, string gitPath)
+    public IEnumerable<GitCommit> ForRepository(string repositoryId, string cacheDirectory, string gitPath)
     {
-        var gitSource = new GitSource(repositoryId, cacheDirectory, _cachedGitSourceRepository);
+        var gitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId, cacheDirectory);
 
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();
@@ -30,7 +29,7 @@ public class ListCommits : IListCommits
                     .Add("--pretty=format:%H %aI")
             )
             .WithValidation(CommandResultValidation.None)
-            .WithWorkingDirectory(gitSource.Directory.FullName)
+            .WithWorkingDirectory(gitSource.LocalPath)
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 
