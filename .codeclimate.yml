@@ -8,5 +8,9 @@ checks:
   method-lines:
     config:
       threshold: 45
+  argument-count:
+    enabled: true
+    config:
+      threshold: 6
   similar-code:
     enabled: false
