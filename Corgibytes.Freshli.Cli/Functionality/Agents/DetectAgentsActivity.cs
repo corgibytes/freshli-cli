@@ -3,19 +3,19 @@ using System.IO;
 using System.Linq;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Agents;
 
 public class DetectAgentsActivity : IApplicationActivity
 {
-    public DetectAgentsActivity(IAgentsDetector agentsDetector) => AgentsDetector = agentsDetector;
+    [JsonProperty] private readonly IAgentsDetector _agentsDetector;
 
-    // ReSharper disable once MemberCanBePrivate.Global
-    public IAgentsDetector AgentsDetector { get; }
+    public DetectAgentsActivity(IAgentsDetector agentsDetector) => _agentsDetector = agentsDetector;
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var agents = AgentsDetector.Detect();
+        var agents = _agentsDetector.Detect();
 
         // Path.GetFileName returns string?, but ToDictionary needs string. We resolve this with the following, and
         // then tell the compiler to stop complaining that GetFileName(x) is never null; this is about the return type.
