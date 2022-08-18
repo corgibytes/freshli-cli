@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Functionality;
+using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Services;
 
 public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
 {
-    private readonly ReadCycloneDxFile _readFile;
-    private readonly IDependencyManagerRepository _repository;
+    [JsonProperty] private readonly ReadCycloneDxFile _readFile;
+
+    [JsonProperty] private readonly IDependencyManagerRepository _repository;
 
     public CalculateLibYearFromCycloneDxFile(
         ReadCycloneDxFile readFileService,
