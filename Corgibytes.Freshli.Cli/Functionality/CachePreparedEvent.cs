@@ -1,17 +1,17 @@
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using NuGet.Packaging.Rules;
+using System;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class CachePreparedEvent : IApplicationEvent
 {
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
-    }
-
-    public CachePreparedEvent(string analysisId)
+    public CachePreparedEvent(Guid analysisId)
     {
         AnalysisId = analysisId;
     }
-    public string? AnalysisId { get; set; }
+
+    public void Handle(IApplicationActivityEngine eventClient)
+    {
+    }
+    public Guid AnalysisId { get; set; }
 }
