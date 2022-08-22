@@ -11,9 +11,10 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CachedGitSourceRepository : ICachedGitSourceRepository
 {
-    private ICacheManager CacheManager { get; }
     public CachedGitSourceRepository(ICacheManager cacheManager) =>
         CacheManager = cacheManager;
+
+    private ICacheManager CacheManager { get; }
 
     public CachedGitSource FindOneByHash(string hash, string cacheDir)
     {

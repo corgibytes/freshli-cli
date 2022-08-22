@@ -13,6 +13,7 @@ public class DestroyCacheActivity : IApplicationActivity
 
     // ReSharper disable once MemberCanBePrivate.Global
     public ICacheManager CacheManager { get; }
+
     // ReSharper disable once MemberCanBePrivate.Global
     public string CacheDir { get; }
 
