@@ -11,15 +11,15 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 {
     private static readonly Dictionary<Type, Action<IApplicationEvent>> s_eventHandlers = new();
 
-    public ApplicationEngine(IBackgroundJobClient jobClient) =>
-        JobClient = jobClient ?? throw new ArgumentNullException(nameof(jobClient));
-
-    private IBackgroundJobClient JobClient { get; }
-
     private static readonly object s_dispatchLock = new();
     private static readonly object s_fireLock = new();
     private static bool s_isActivityDispatchingInProgress;
     private static bool s_isEventFiringInProgress;
+
+    public ApplicationEngine(IBackgroundJobClient jobClient) =>
+        JobClient = jobClient ?? throw new ArgumentNullException(nameof(jobClient));
+
+    private IBackgroundJobClient JobClient { get; }
 
     public void Dispatch(IApplicationActivity applicationActivity)
     {
@@ -58,7 +58,10 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             var localIsActivityDispatching = s_isActivityDispatchingInProgress;
 
             // TODO: Turn this into a Debug log call
-            Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing + ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded + ", Failed: " + statistics.Failed + "), Activity Dispatch in Progress: " + localIsActivityDispatching + ", Event Fire in Progress: " + localIsEventFiring);
+            Console.Out.WriteLine("Queue length: " + length + " (Processing: " + statistics.Processing +
+                                  ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded +
+                                  ", Failed: " + statistics.Failed + "), Activity Dispatch in Progress: " +
+                                  localIsActivityDispatching + ", Event Fire in Progress: " + localIsEventFiring);
             shouldWait = length > 0 || localIsActivityDispatching || localIsEventFiring;
         }
 
@@ -83,6 +86,10 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
+
+    public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
+        s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
+
     // ReSharper disable once MemberCanBePrivate.Global
     public void FireEventAndHandler(IApplicationEvent applicationEvent)
     {
@@ -93,11 +100,6 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
         }
     }
-
-
-
-    public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
-        s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
 
     // ReSharper disable once MemberCanBePrivate.Global
     public void HandleActivity(IApplicationActivity activity) => activity.Handle(this);
