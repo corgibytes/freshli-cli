@@ -27,7 +27,7 @@
     </None>
     <PackageReference Include="CliWrap" Version="3.4.4" />
     <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0" />
-    <PackageReference Include="CycloneDX.Core" Version="5.2.0" />
+    <PackageReference Include="CycloneDX.Core" Version="5.2.2" />
     <PackageReference Include="Hangfire.Core" Version="1.7.30" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
     <PackageReference Include="MediatR" Version="10.0.1" />
