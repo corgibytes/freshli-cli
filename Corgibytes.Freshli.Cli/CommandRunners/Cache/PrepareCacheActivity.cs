@@ -7,7 +7,7 @@ using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
-public class PrepareCacheActivity : IApplicationActivityEngine, IApplicationActivity
+public class PrepareCacheActivity : IApplicationActivity
 {
     public PrepareCacheActivity(string cacheDirectory, string repositoryUrl = "", string? repositoryBranch = null,
         string historyInterval = "")
@@ -43,25 +43,4 @@ public class PrepareCacheActivity : IApplicationActivityEngine, IApplicationActi
             Console.Error.WriteLine(e.Message);
         }
     }
-
-    public void Dispatch(IApplicationActivity applicationActivity)
-    {
-        var cacheManager = new CacheManager();
-        Console.Out.WriteLine(CliOutput.CachePrepareCommandRunner_Run_Preparing_cache, CacheDirectory);
-        try
-        {
-            cacheManager.Prepare(CacheDirectory).ToExitCode();
-            var cacheDb = cacheManager.GetCacheDb(CacheDirectory);
-            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval));
-            // TO DO, do we still need to fire a CachePreparedEvent here and use the ID? if so, we need to inherit another class.
-            // new CachePreparedEvent(id);
-
-        }
-        catch (CacheException e)
-        {
-            Console.Error.WriteLine(e.Message);
-        }
-    }
-
-    public void Wait() => throw new NotImplementedException();
 }

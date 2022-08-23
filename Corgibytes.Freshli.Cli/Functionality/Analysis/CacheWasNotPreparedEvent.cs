@@ -16,7 +16,6 @@ public class CacheWasNotPreparedEvent : ErrorEvent
 
     public override void Handle(IApplicationActivityEngine eventClient)
     {
-        // TODO: Actually prepare the cache before restarting the analysis
         eventClient.Dispatch(new PrepareCacheActivity(CacheDirectory, RepositoryUrl, RepositoryBranch, HistoryInterval)
         {
             CacheDirectory = CacheDirectory,
