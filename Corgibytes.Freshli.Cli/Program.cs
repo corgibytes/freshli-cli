@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.IoC;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NLog;
 
 namespace Corgibytes.Freshli.Cli;
@@ -47,6 +48,7 @@ public static class Program
 
     private static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders())
             .ConfigureServices((_, services) => { new FreshliServiceBuilder(services).Register(); });
 
     private static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
