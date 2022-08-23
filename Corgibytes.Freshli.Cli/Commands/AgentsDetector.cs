@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Commands;
@@ -14,7 +15,7 @@ public class AgentsDetector : IAgentsDetector
     public IList<string> Detect()
     {
         var paths = Environment.DirectoriesInSearchPath;
-        IList<string> agents = new List<string>();
+        var agents = new Dictionary<string, string>();
         foreach (var path in paths)
         {
             var searchPath = path;
@@ -35,11 +36,14 @@ public class AgentsDetector : IAgentsDetector
             {
                 if (file != null && Path.GetFileName(file).StartsWith("freshli-agent-"))
                 {
-                    agents.Add(Path.Combine(searchPath, file));
+                    if (!agents.ContainsKey(file))
+                    {
+                        agents.Add(file, Path.Combine(searchPath, file));
+                    }
                 }
             }
         }
 
-        return agents;
+        return agents.Values.ToList();
     }
 }
