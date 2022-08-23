@@ -2,19 +2,19 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Corgibytes.Freshli.Cli.Functionality;
+using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
 public class AgentsDetector : IAgentsDetector
 {
-    public AgentsDetector(IEnvironment environment) => Environment = environment;
+    [JsonProperty] private readonly IEnvironment _environment;
 
-    // ReSharper disable once MemberCanBePrivate.Global
-    public IEnvironment Environment { get; }
+    public AgentsDetector(IEnvironment environment) => _environment = environment;
 
     public IList<string> Detect()
     {
-        var paths = Environment.DirectoriesInSearchPath;
+        var paths = _environment.DirectoriesInSearchPath;
         var agents = new Dictionary<string, string>();
         foreach (var path in paths)
         {
@@ -22,14 +22,14 @@ public class AgentsDetector : IAgentsDetector
             IList<string?> filesResults;
             if (path.Contains("~/"))
             {
-                var homePath = Environment.HomeDirectory;
+                var homePath = _environment.HomeDirectory;
                 homePath += Path.DirectorySeparatorChar;
                 searchPath = path.Replace("~/", homePath);
-                filesResults = Environment.GetListOfFiles(searchPath);
+                filesResults = _environment.GetListOfFiles(searchPath);
             }
             else
             {
-                filesResults = Environment.GetListOfFiles(searchPath);
+                filesResults = _environment.GetListOfFiles(searchPath);
             }
 
             foreach (var file in filesResults)

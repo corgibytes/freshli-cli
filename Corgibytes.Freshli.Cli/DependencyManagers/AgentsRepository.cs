@@ -6,14 +6,16 @@ using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
+using Newtonsoft.Json;
 using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.DependencyManagers;
 
 public class AgentsRepository : IDependencyManagerRepository
 {
-    private readonly IAgentReader _agentReader;
-    private readonly IAgentsDetector _agentsDetector;
+    [JsonProperty] private readonly IAgentReader _agentReader;
+
+    [JsonProperty] private readonly IAgentsDetector _agentsDetector;
 
     public AgentsRepository(IAgentsDetector agentsDetector, IAgentReader agentReader)
     {
