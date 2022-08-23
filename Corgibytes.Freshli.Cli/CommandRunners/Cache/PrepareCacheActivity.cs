@@ -60,6 +60,9 @@ public class PrepareCacheActivity : IApplicationActivityEngine, IApplicationActi
             cacheManager.Prepare(CacheDirectory).ToExitCode();
             var cacheDb = cacheManager.GetCacheDb(CacheDirectory);
             cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval));
+            // TO DO, do we still need to fire a CachePreparedEvent here and use the ID? if so, we need to inherit another class.
+            // new CachePreparedEvent(id);
+
         }
         catch (CacheException e)
         {
