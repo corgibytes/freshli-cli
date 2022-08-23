@@ -6,6 +6,7 @@ using System.Text;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Resources;
+using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -14,7 +15,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     public CachedGitSourceRepository(ICacheManager cacheManager) =>
         CacheManager = cacheManager;
 
-    private ICacheManager CacheManager { get; }
+    [JsonProperty] private ICacheManager CacheManager { get; }
 
     public CachedGitSource FindOneByHash(string hash, string cacheDir)
     {
