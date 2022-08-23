@@ -290,5 +290,11 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("GitArchive_Git_Exception", resourceCulture);
             }
         }
+        
+        internal static string AgentsVerifier_VerifyFiles_File__0__does_not_exist {
+            get {
+                return ResourceManager.GetString("AgentsVerifier_VerifyFiles_File__0__does_not_exist", resourceCulture);
+            }
+        }
     }
 }
