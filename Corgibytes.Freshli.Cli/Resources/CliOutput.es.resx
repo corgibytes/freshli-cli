@@ -134,4 +134,7 @@
   <data name="GitArchive_Git_Exception" xml:space="preserve">
     <value>Git encontró un error: {0}</value>
   </data>
+  <data name="PrepareCacheMessageHandler_Run_Preparing_cache" xml:space="preserve">
+    <value>El archivo {0} no existe.</value>
+  </data>
 </root>
