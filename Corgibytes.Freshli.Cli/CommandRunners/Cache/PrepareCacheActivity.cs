@@ -9,20 +9,13 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
 public class PrepareCacheActivity : IApplicationActivityEngine, IApplicationActivity
 {
-    public PrepareCacheActivity(string cacheDirectory, string repositoryUrl, string? repositoryBranch,
-        string historyInterval)
+    public PrepareCacheActivity(string cacheDirectory, string repositoryUrl = "", string? repositoryBranch = null,
+        string historyInterval = "")
     {
         CacheDirectory = cacheDirectory;
         RepositoryUrl = repositoryUrl;
         RepositoryBranch = repositoryBranch;
         HistoryInterval = historyInterval;
-    }
-
-    public PrepareCacheActivity(string cacheDirectory)
-    {
-        CacheDirectory = cacheDirectory;
-        RepositoryUrl = "";
-        HistoryInterval = "";
     }
 
     public string RepositoryUrl { get; init; }
