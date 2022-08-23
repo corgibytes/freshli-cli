@@ -75,9 +75,6 @@
   <data name="CachePrepareCommandRunner_Run_Preparing_cache" xml:space="preserve">
     <value>Preparing cache at {0}.</value>
   </data>
-  <data name="PrepareCacheMessageHandler_Run_Preparing_cache" xml:space="preserve">
-    <value>Preparing cache at {0}.</value>
-  </data>
   <data name="CacheDestroyCommandRunner_Run_Prompt" xml:space="preserve">
     <value>Do you want to completely DELETE the directory {0}?</value>
   </data>

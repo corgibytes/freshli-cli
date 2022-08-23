@@ -6,5 +6,6 @@ public class CachePreparedEvent : IApplicationEvent
 {
     public void Handle(IApplicationActivityEngine eventClient)
     {
+        // TO DO add logic here
     }
 }
