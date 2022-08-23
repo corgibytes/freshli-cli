@@ -10,10 +10,8 @@ public class GitArchive
 {
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
-    public GitArchive(ICachedGitSourceRepository cachedGitSourceRepository)
-    {
+    public GitArchive(ICachedGitSourceRepository cachedGitSourceRepository) =>
         _cachedGitSourceRepository = cachedGitSourceRepository;
-    }
 
     // ReSharper disable once UnusedMember.Global
     public string CreateArchive(string repositoryId, string cacheDirectory,
