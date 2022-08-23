@@ -136,5 +136,7 @@
   </data>
   <data name="PrepareCacheMessageHandler_Run_Preparing_cache" xml:space="preserve">
     <value>El archivo {0} no existe.</value>
+  <data name="AgentsVerifier_VerifyFiles_File__0__does_not_exist" xml:space="preserve">
+    <value>El archivo {0} no existe</value>
   </data>
 </root>

@@ -27,6 +27,7 @@
     </None>
     <PackageReference Include="CliWrap" Version="3.4.4" />
     <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0" />
+    <PackageReference Include="CycloneDX.Core" Version="5.2.0" />
     <PackageReference Include="Hangfire.Core" Version="1.7.30" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
     <PackageReference Include="MediatR" Version="10.0.1" />
@@ -44,6 +45,8 @@
     <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
     <PackageReference Include="System.Reactive" Version="5.0.0" />
     <PackageReference Include="TextTableFormatter.NET" Version="2.0.1" />
+    <PackageReference Include="YamlDotNet" Version="11.2.1" />
+    <PackageReference Include="System.Management" Version="6.0.0" />
     <PackageReference Include="YamlDotNet" Version="12.0.0" />
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

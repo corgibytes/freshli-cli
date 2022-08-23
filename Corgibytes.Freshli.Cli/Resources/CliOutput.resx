@@ -144,4 +144,7 @@
   <data name="GitArchive_Git_Exception" xml:space="preserve">
     <value>Git encountered an error: {0}</value>
   </data>
+  <data name="AgentsVerifier_VerifyFiles_File__0__does_not_exist" xml:space="preserve">
+    <value>File {0} does not exist</value>
+  </data>
 </root>
