@@ -296,5 +296,11 @@ namespace Corgibytes.Freshli.Cli.Resources {
                 return ResourceManager.GetString("AgentsVerifier_VerifyFiles_File__0__does_not_exist", resourceCulture);
             }
         }
+        
+        internal static string PrepareCacheMessageHandler_Run_Preparing_cache {
+            get {
+                return ResourceManager.GetString("PrepareCacheMessageHandler_Run_Preparing_cache", resourceCulture);
+            }
+        }
     }
 }
