@@ -43,4 +43,9 @@ public class AgentReader : IAgentReader
 
         return packages;
     }
+
+    public List<string> DetectManifests(string projectPath)
+    {
+        throw new NotImplementedException();
+    }
 }

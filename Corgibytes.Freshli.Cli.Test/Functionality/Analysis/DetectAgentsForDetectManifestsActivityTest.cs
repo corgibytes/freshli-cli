@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Services;
 using Moq;
 using Xunit;
 
@@ -23,28 +24,31 @@ public class DetectAgentsForDetectManifestsActivityTest
         var agentsDetector = new Mock<IAgentsDetector>();
         agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
+        var agentManager = new Mock<IAgentManager>();
+
+        var javaAgentReader = new Mock<IAgentReader>();
+        var dotnetAgentReader = new Mock<IAgentReader>();
+
+        agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-java")).Returns(javaAgentReader.Object);
+        agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-dotnet")).Returns(dotnetAgentReader.Object);
+
         var eventEngine = new Mock<IApplicationEventEngine>();
 
-        var repositoryId = Guid.NewGuid().ToString();
-        var commitId = Guid.NewGuid().ToString();
+        var analysisLocation = new Mock<IAnalysisLocation>();
 
-        var activity = new DetectAgentsForDetectManifestsActivity(agentsDetector.Object, repositoryId, commitId);
+        var activity = new DetectAgentsForDetectManifestsActivity(agentsDetector.Object, agentManager.Object, analysisLocation.Object);
 
         activity.Handle(eventEngine.Object);
 
-        eventEngine.Verify(
-            mock => mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(
-                appEvent =>
-                    appEvent.RepositoryId == repositoryId &&
-                    appEvent.CommitId == commitId &&
-                    appEvent.AgentPath == "/usr/local/bin/freshli-agent-java")));
+        eventEngine.Verify(mock =>
+            mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
+                appEvent.AnalysisLocation == analysisLocation.Object &&
+                appEvent.AgentReader == javaAgentReader.Object)));
 
-        eventEngine.Verify(
-            mock => mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(
-                appEvent =>
-                    appEvent.RepositoryId == repositoryId &&
-                    appEvent.CommitId == commitId &&
-                    appEvent.AgentPath == "/usr/local/bin/freshli-agent-dotnet")));
+        eventEngine.Verify(mock =>
+            mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
+                appEvent.AnalysisLocation == analysisLocation.Object &&
+                appEvent.AgentReader == dotnetAgentReader.Object)));
 
     }
 }
