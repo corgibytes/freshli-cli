@@ -9,13 +9,20 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentReader : IAgentReader
 {
-    public List<Package> RetrieveReleaseHistory(string agentExecutable, PackageURL packageUrl)
+    private readonly string _agentExecutable;
+
+    public AgentReader(string agentExecutable)
+    {
+        _agentExecutable = agentExecutable;
+    }
+
+    public List<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
         var packages = new List<Package>();
         string packageUrlsWithDate;
         try
         {
-            packageUrlsWithDate = Invoke.Command(agentExecutable,
+            packageUrlsWithDate = Invoke.Command(_agentExecutable,
                 $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".");
         }
         catch (IOException)
