@@ -1,37 +1,30 @@
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Services;
 using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
 {
-    [JsonProperty]
-    private IAgentsDetector _agentsDetector;
+    [JsonProperty] private IAgentsDetector _agentsDetector;
+    [JsonProperty] private IAgentManager _agentManager;
+    [JsonProperty] private IAnalysisLocation _analysisLocation;
 
-    [JsonProperty]
-    private string _repositoryId;
 
-    [JsonProperty]
-    private string _commitId;
-
-    public DetectAgentsForDetectManifestsActivity(IAgentsDetector agentsDetector, string repositoryId, string commitId)
+    public DetectAgentsForDetectManifestsActivity(IAgentsDetector agentsDetector, IAgentManager agentManager, IAnalysisLocation analysisLocation)
     {
         _agentsDetector = agentsDetector;
-        _repositoryId = repositoryId;
-        _commitId = commitId;
+        _agentManager = agentManager;
+        _analysisLocation = analysisLocation;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
         foreach (var agentPath in _agentsDetector.Detect())
         {
-            eventClient.Fire(new AgentDetectedForDetectManifestEvent()
-            {
-                RepositoryId = _repositoryId,
-                CommitId = _commitId,
-                AgentPath = agentPath
-            });
+            eventClient.Fire(new AgentDetectedForDetectManifestEvent(
+                _analysisLocation, _agentManager.GetReader(agentPath)));
         }
     }
 }
