@@ -46,6 +46,7 @@ public class MockAgentManager : IAgentManager
             _ => new List<Package>()
         };
 
+        public List<string> DetectManifests(string projectPath) => throw new NotImplementedException();
     }
 
     public IAgentReader GetReader(string agentExecutablePath)

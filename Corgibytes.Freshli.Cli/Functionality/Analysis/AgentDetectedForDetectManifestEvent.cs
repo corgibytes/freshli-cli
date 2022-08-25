@@ -1,12 +1,21 @@
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Services;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AgentDetectedForDetectManifestEvent : IApplicationEvent
 {
-    public string RepositoryId { get; init; } = null!;
-    public string CommitId { get; init; } = null!;
-    public string AgentPath { get; init; } = null!;
+    public IAnalysisLocation AnalysisLocation { get; }
+    public IAgentReader AgentReader { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient) => throw new System.NotImplementedException();
+    public AgentDetectedForDetectManifestEvent(IAnalysisLocation analysisLocation, IAgentReader agentReader)
+    {
+        AnalysisLocation = analysisLocation;
+        AgentReader = agentReader;
+    }
+
+    public void Handle(IApplicationActivityEngine eventClient)
+    {
+        eventClient.Dispatch(new DetectManifestsUsingAgentActivity(AnalysisLocation, AgentReader));
+    }
 }
