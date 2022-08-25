@@ -15,7 +15,7 @@ public class AgentsRepositoryTest : FreshliTest
     private readonly AgentsRepository _repository;
 
     public AgentsRepositoryTest(ITestOutputHelper output) : base(output) =>
-        _repository = new AgentsRepository(new MockAgentsDetector(), new MockAgentsReader());
+        _repository = new AgentsRepository(new MockAgentsDetector(), new MockAgentManager());
 
     [Fact]
     public void It_is_able_to_fetch_a_release_date_from_a_list()
