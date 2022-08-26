@@ -7,12 +7,13 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
 {
-    [JsonProperty] private IAgentsDetector _agentsDetector;
-    [JsonProperty] private IAgentManager _agentManager;
-    [JsonProperty] private IAnalysisLocation _analysisLocation;
+    [JsonProperty] private readonly IAgentManager _agentManager;
+    [JsonProperty] private readonly IAgentsDetector _agentsDetector;
+    [JsonProperty] private readonly IAnalysisLocation _analysisLocation;
 
 
-    public DetectAgentsForDetectManifestsActivity(IAgentsDetector agentsDetector, IAgentManager agentManager, IAnalysisLocation analysisLocation)
+    public DetectAgentsForDetectManifestsActivity(IAgentsDetector agentsDetector, IAgentManager agentManager,
+        IAnalysisLocation analysisLocation)
     {
         _agentsDetector = agentsDetector;
         _agentManager = agentManager;
