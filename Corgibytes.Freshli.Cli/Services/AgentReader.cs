@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using PackageUrl;
@@ -42,5 +43,10 @@ public class AgentReader : IAgentReader
         return packages;
     }
 
-    public List<string> DetectManifests(string projectPath) => throw new NotImplementedException();
+    public List<string> DetectManifests(string projectPath)
+    {
+        var manifests = Invoke.Command(_agentExecutable, $"detect-manifests {projectPath}", ".");
+
+        return manifests.TrimEnd('\n', '\r').Split("\n").ToList();
+    }
 }
