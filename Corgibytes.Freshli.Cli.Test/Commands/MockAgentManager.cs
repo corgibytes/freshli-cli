@@ -12,11 +12,11 @@ public class MockAgentManager : IAgentManager
 
     private class MockAgentReader : IAgentReader
     {
-        private readonly string _agentExecutable;
+        internal MockAgentReader(string agentExecutable) => AgentExecutablePath = agentExecutable;
 
-        internal MockAgentReader(string agentExecutable) => _agentExecutable = agentExecutable;
+        public string AgentExecutablePath { get; }
 
-        public List<Package> RetrieveReleaseHistory(PackageURL packageUrl) => _agentExecutable switch
+        public List<Package> RetrieveReleaseHistory(PackageURL packageUrl) => AgentExecutablePath switch
         {
             "/usr/local/bin/freshli-agent-csharp" => packageUrl.Name switch
             {
