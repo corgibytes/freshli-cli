@@ -130,7 +130,7 @@ jobs:
           cd freshli-agent-java && \
           ./gradlew installDist && \
           cp -r build/install/freshli-agent-java /usr/local/bin/freshli-agent-java && \
-          echo "/usr/local/bin/freshli-agent-java/bin" >> $GITHUB_PATH
+          ln -s /usr/local/bin/freshli-agent-java/bin/freshli-agent-java /usr/local/bin/freshli-agent-java && \
           rm -rf /tmp/freshli-agent-java
 
       - name: "[Test] - Test, Generate Code Coverage"
