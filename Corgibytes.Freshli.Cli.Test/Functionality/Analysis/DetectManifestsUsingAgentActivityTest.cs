@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
@@ -20,7 +18,11 @@ public class DetectManifestsUsingAgentActivityTest
 
         var agentReader = new Mock<IAgentReader>();
         agentReader.Setup(mock => mock.DetectManifests("/path/to/repository")).Returns(
-            new List<string> { "/path/to/first/manifest", "/path/to/second/manifest" });
+            new List<string>
+            {
+                "/path/to/first/manifest",
+                "/path/to/second/manifest"
+            });
 
         var activity = new DetectManifestsUsingAgentActivity(analysisLocation.Object, agentReader.Object);
 

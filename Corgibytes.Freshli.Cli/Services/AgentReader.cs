@@ -11,10 +11,7 @@ public class AgentReader : IAgentReader
 {
     private readonly string _agentExecutable;
 
-    public AgentReader(string agentExecutable)
-    {
-        _agentExecutable = agentExecutable;
-    }
+    public AgentReader(string agentExecutable) => _agentExecutable = agentExecutable;
 
     public List<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
@@ -35,17 +32,15 @@ public class AgentReader : IAgentReader
             var separated = packageUrlAndDate.Split("\t");
 
             packages.Add(
-                new Package(new PackageURL(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null,
-                        null)
-                    , DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
-                ));
+                new Package(
+                    new PackageURL(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null, null),
+                    DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
+                )
+            );
         }
 
         return packages;
     }
 
-    public List<string> DetectManifests(string projectPath)
-    {
-        throw new NotImplementedException();
-    }
+    public List<string> DetectManifests(string projectPath) => throw new NotImplementedException();
 }

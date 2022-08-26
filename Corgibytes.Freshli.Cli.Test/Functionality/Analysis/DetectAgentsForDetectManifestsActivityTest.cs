@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -30,13 +29,16 @@ public class DetectAgentsForDetectManifestsActivityTest
         var dotnetAgentReader = new Mock<IAgentReader>();
 
         agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-java")).Returns(javaAgentReader.Object);
-        agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-dotnet")).Returns(dotnetAgentReader.Object);
+        agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-dotnet"))
+            .Returns(dotnetAgentReader.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
 
         var analysisLocation = new Mock<IAnalysisLocation>();
 
-        var activity = new DetectAgentsForDetectManifestsActivity(agentsDetector.Object, agentManager.Object, analysisLocation.Object);
+        var activity =
+            new DetectAgentsForDetectManifestsActivity(agentsDetector.Object, agentManager.Object,
+                analysisLocation.Object);
 
         activity.Handle(eventEngine.Object);
 
@@ -49,6 +51,5 @@ public class DetectAgentsForDetectManifestsActivityTest
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
                 appEvent.AnalysisLocation == analysisLocation.Object &&
                 appEvent.AgentReader == dotnetAgentReader.Object)));
-
     }
 }
