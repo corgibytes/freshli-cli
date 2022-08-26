@@ -20,17 +20,25 @@ end
 
 def write_buffered_output_to_correct_stream(buffer, stream, stdout, stderr)
   if stream == stdout
-    buffer.split("\n").each { |line| puts line }
+    $stdout.print(buffer)
   elsif stream == stderr
-    buffer.split("\n").each { |line| warn line }
+    $stderr.print(buffer)
   end
 end
+
+BUFFER_LEN = 128
 
 def fill_buffer_from_stream(stream, buffer)
   # loop through reading data until there is an EOF (value is nil)
   # or there is no more data to read (value is empty)
-  result = stream.read_nonblock(4096, buffer, exception: false)
-  result = stream.read_nonblock(4096, buffer, exception: false) while safe_to_read?(result)
+  result = nil
+  loop do
+    local_buffer = ''.dup
+    result = stream.read_nonblock(BUFFER_LEN, local_buffer, exception: false)
+    buffer << local_buffer
+
+    break unless safe_to_read?(result) && buffer.length < BUFFER_LEN
+  end
   result
 end
 
