@@ -10,9 +10,10 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentReader : IAgentReader
 {
-    private readonly string _agentExecutable;
 
-    public AgentReader(string agentExecutable) => _agentExecutable = agentExecutable;
+    public AgentReader(string agentExecutable) => AgentExecutablePath = agentExecutable;
+
+    public string AgentExecutablePath { get; }
 
     public List<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
@@ -20,7 +21,7 @@ public class AgentReader : IAgentReader
         string packageUrlsWithDate;
         try
         {
-            packageUrlsWithDate = Invoke.Command(_agentExecutable,
+            packageUrlsWithDate = Invoke.Command(AgentExecutablePath,
                 $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".");
         }
         catch (IOException)
@@ -45,7 +46,7 @@ public class AgentReader : IAgentReader
 
     public List<string> DetectManifests(string projectPath)
     {
-        var manifests = Invoke.Command(_agentExecutable, $"detect-manifests {projectPath}", ".");
+        var manifests = Invoke.Command(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
 
         return manifests.TrimEnd('\n', '\r').Split("\n").ToList();
     }
