@@ -16,7 +16,10 @@
     "customizations": {
         "vscode": {
             // Set *default* container specific settings.json values on container create.
-            "settings": {},
+            "settings": {
+                // remove this setting once the bug that it works around is fixed: https://github.com/formulahendry/vscode-dotnet-test-explorer/issues/370
+                "dotnet-test-explorer.treeMode": "flat"
+            },
             // Add the IDs of extensions you want installed when the container is created.
             "extensions": [
                 "ms-dotnettools.csharp",
