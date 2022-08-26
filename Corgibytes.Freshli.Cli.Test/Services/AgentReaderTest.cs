@@ -26,7 +26,7 @@ public class AgentReaderTest
 
         var repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
 
-        var reader = new AgentReader($"freshli-agent-java");
+        var reader = new AgentReader("freshli-agent-java");
 
         var actualManifests = reader.DetectManifests(repositoryLocation);
 
