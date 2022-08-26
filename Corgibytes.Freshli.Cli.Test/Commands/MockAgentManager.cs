@@ -8,14 +8,13 @@ namespace Corgibytes.Freshli.Cli.Test.Commands;
 
 public class MockAgentManager : IAgentManager
 {
-    class MockAgentReader : IAgentReader
+    public IAgentReader GetReader(string agentExecutablePath) => new MockAgentReader(agentExecutablePath);
+
+    private class MockAgentReader : IAgentReader
     {
         private readonly string _agentExecutable;
 
-        internal MockAgentReader(string agentExecutable)
-        {
-            _agentExecutable = agentExecutable;
-        }
+        internal MockAgentReader(string agentExecutable) => _agentExecutable = agentExecutable;
 
         public List<Package> RetrieveReleaseHistory(PackageURL packageUrl) => _agentExecutable switch
         {
@@ -47,10 +46,5 @@ public class MockAgentManager : IAgentManager
         };
 
         public List<string> DetectManifests(string projectPath) => throw new NotImplementedException();
-    }
-
-    public IAgentReader GetReader(string agentExecutablePath)
-    {
-        return new MockAgentReader(agentExecutablePath);
     }
 }

@@ -11,10 +11,8 @@ public class CachePrepareCommandRunner : CommandRunner<CacheCommand, CachePrepar
 {
     public CachePrepareCommandRunner(IServiceProvider serviceProvider, Runner runner,
         IApplicationActivityEngine activityEngine)
-        : base(serviceProvider, runner)
-    {
+        : base(serviceProvider, runner) =>
         ActivityEngine = activityEngine;
-    }
 
     private IApplicationActivityEngine ActivityEngine { get; }
 
