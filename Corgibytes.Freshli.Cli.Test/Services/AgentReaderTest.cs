@@ -1,10 +1,7 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
-
-using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Cli.Functionality;
-
+using Corgibytes.Freshli.Cli.Services;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Services;
