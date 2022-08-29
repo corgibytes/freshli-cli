@@ -129,8 +129,8 @@ jobs:
           git clone https://github.com/corgibytes/freshli-agent-java && \
           cd freshli-agent-java && \
           ./gradlew installDist && \
-          cp -r build/install/freshli-agent-java /usr/local/bin/freshli-agent-java && \
-          ln -s /usr/local/bin/freshli-agent-java/bin/freshli-agent-java /usr/local/bin/freshli-agent-java && \
+          cp -r build/install/freshli-agent-java /usr/local/freshli-agent-java && \
+          ln -s /usr/local/freshli-agent-java/bin/freshli-agent-java /usr/local/bin/freshli-agent-java && \
           rm -rf /tmp/freshli-agent-java
 
       - name: Setup upterm session
