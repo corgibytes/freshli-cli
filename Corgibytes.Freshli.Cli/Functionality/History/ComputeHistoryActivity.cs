@@ -30,7 +30,7 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         var historyIntervalStops =
             _computeHistoryService.
-                ComputeWithHistoryInterval(_repositoryId, analysis.GitPath, analysis.HistoryInterval, analysis.CacheDirectory);
+                ComputeWithHistoryInterval(_repositoryId, analysis.GitPath, analysis.HistoryInterval, _cacheDb.CacheDir);
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
