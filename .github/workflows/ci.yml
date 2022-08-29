@@ -134,12 +134,6 @@ jobs:
           ln -s /usr/local/share/freshli-agent-java/bin/freshli-agent-java /usr/local/bin/freshli-agent-java && \
           rm -rf /tmp/freshli-agent-java
 
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-        with:
-          ## limits ssh access and adds the ssh public key for the user which triggered the workflow
-          limit-access-to-actor: true
-
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
           dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
