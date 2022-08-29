@@ -16,7 +16,6 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
-    public string GitPath { get; init; } = null!;
 
     public ICacheManager CacheManager { get; }
     public IHistoryIntervalParser HistoryIntervalParser { get; }
@@ -26,7 +25,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     private void FireAnalysisStartedEvent(IApplicationEventEngine eventClient)
     {
         var cacheDb = CacheManager.GetCacheDb(CacheDirectory);
-        var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, CacheDirectory, GitPath));
+        var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, CacheDirectory));
         eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id });
     }
 

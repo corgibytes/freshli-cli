@@ -16,7 +16,6 @@ public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPrepar
             CacheDirectory = CacheDirectory,
             RepositoryUrl = RepositoryUrl,
             RepositoryBranch = RepositoryBranch,
-            HistoryInterval = HistoryInterval,
-            GitPath = GitPath
+            HistoryInterval = HistoryInterval
         };
 }
