@@ -19,8 +19,7 @@ public partial class AddCachedAnalyses : Migration
                 RepositoryUrl = table.Column<string>(type: "TEXT", nullable: false),
                 RepositoryBranch = table.Column<string>(type: "TEXT", nullable: true),
                 HistoryInterval = table.Column<string>(type: "TEXT", nullable: false),
-                CacheDirectory = table.Column<string>(type: "TEXT", nullable: false),
-                GitPath = table.Column<string>(type: "TEXT", nullable: false),
+                CacheDirectory = table.Column<string>(type: "TEXT", nullable: false)
             },
             constraints: table =>
             {
