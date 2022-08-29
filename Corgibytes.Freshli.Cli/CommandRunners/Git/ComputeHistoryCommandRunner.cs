@@ -12,9 +12,9 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Git;
 
 public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>
 {
-    private readonly ComputeHistory _computeHistory;
+    private readonly IComputeHistory _computeHistory;
 
-    public ComputeHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner, ComputeHistory computeHistory) :
+    public ComputeHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner, IComputeHistory computeHistory) :
         base(serviceProvider, runner) => _computeHistory = computeHistory;
 
     public override int Run(ComputeHistoryCommandOptions options, InvocationContext context)
