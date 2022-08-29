@@ -25,7 +25,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     private void FireAnalysisStartedEvent(IApplicationEventEngine eventClient)
     {
         var cacheDb = CacheManager.GetCacheDb(CacheDirectory);
-        var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval));
+        var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, CacheDirectory));
         eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id });
     }
 
