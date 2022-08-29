@@ -19,10 +19,11 @@ public class ComputeHistoryActivityTest
     [Fact]
     public void FiresHistoryIntervalStopFoundEvents()
     {
+        // Arrange
         const string repositoryId = "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d";
 
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "month");
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "month", "cacheDirectory", "git");
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
 
 
@@ -43,6 +44,15 @@ public class ComputeHistoryActivityTest
             )
             .Returns(historyIntervalStops);
 
+        // Act
+        new ComputeHistoryActivity(
+            _cacheDb.Object,
+            _computeHistory.Object,
+            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
+            repositoryId
+        ).Handle(_eventEngine.Object);
+
+        // Assert
         _eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
