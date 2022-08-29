@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
-public class ComputeHistory
+public class ComputeHistory : IComputeHistory
 {
     private readonly IListCommits _listCommits;
 
