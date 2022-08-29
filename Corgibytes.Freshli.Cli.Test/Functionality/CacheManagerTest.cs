@@ -32,7 +32,7 @@ public class CacheManagerTest : IDisposable
 
         var cache = cacheManager.GetCacheDb(_tempCacheDir);
 
-        var expectedAnalysis = new CachedAnalysis("https://git.example.com", "main", "1m", _tempCacheDir);
+        var expectedAnalysis = new CachedAnalysis("https://git.example.com", "main", "1m");
 
         var id = cache.SaveAnalysis(expectedAnalysis);
 
