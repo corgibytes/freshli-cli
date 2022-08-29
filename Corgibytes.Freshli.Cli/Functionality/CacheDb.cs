@@ -7,9 +7,14 @@ public class CacheDb : ICacheDb, IDisposable
 {
     private bool _disposed;
 
-    public CacheDb(string cacheDir) => Db = new CacheContext(cacheDir);
+    public CacheDb(string cacheDir)
+    {
+        CacheDir = cacheDir;
+        Db = new CacheContext(cacheDir);
+    }
 
     private CacheContext Db { get; }
+    public string CacheDir { get; }
 
     public Guid SaveAnalysis(CachedAnalysis analysis)
     {
