@@ -130,7 +130,7 @@ jobs:
           cd freshli-agent-java && \
           ./gradlew installDist && \
           sudo mkdir -p /usr/local/share/freshli-agent-java && \
-          cp -r build/install/freshli-agent-java/* /usr/local/share/freshli-agent-java && \
+          sudo cp -r build/install/freshli-agent-java/* /usr/local/share/freshli-agent-java && \
           ln -s /usr/local/share/freshli-agent-java/bin/freshli-agent-java /usr/local/bin/freshli-agent-java && \
           rm -rf /tmp/freshli-agent-java
 
