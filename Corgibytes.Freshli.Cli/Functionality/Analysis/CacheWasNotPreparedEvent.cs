@@ -13,6 +13,7 @@ public class CacheWasNotPreparedEvent : ErrorEvent
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
+    public string GitPath { get; init; } = null!;
 
     public override void Handle(IApplicationActivityEngine eventClient)
     {
@@ -21,7 +22,8 @@ public class CacheWasNotPreparedEvent : ErrorEvent
             CacheDirectory = CacheDirectory,
             RepositoryUrl = RepositoryUrl,
             RepositoryBranch = RepositoryBranch,
-            HistoryInterval = HistoryInterval
+            HistoryInterval = HistoryInterval,
+            GitPath = GitPath
         });
 
         eventClient.Dispatch(new RestartAnalysisActivity(
@@ -32,7 +34,8 @@ public class CacheWasNotPreparedEvent : ErrorEvent
             CacheDirectory = CacheDirectory,
             RepositoryUrl = RepositoryUrl,
             RepositoryBranch = RepositoryBranch,
-            HistoryInterval = HistoryInterval
+            HistoryInterval = HistoryInterval,
+            GitPath = GitPath
         });
     }
 }
