@@ -35,7 +35,7 @@ public class PrepareCacheActivity : IApplicationActivity
         {
             cacheManager.Prepare(CacheDirectory).ToExitCode();
             var cacheDb = cacheManager.GetCacheDb(CacheDirectory);
-            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval));
+            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, CacheDirectory));
             eventClient.Fire(new CachePreparedEvent());
         }
         catch (CacheException e)
