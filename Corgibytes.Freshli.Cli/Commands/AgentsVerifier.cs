@@ -53,7 +53,7 @@ public class AgentsVerifier
         }
     }
 
-    private void RunDetectManfiest(string agentFileAndPath, string argument, string url, string directory,
+    private static void RunDetectManfiest(string agentFileAndPath, string argument, string url, string directory,
         DateTime startDate)
     {
         var detectManifestOutput = Invoke.Command(agentFileAndPath, argument + $" {url}", ".");

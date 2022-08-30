@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using PackageUrl;
@@ -9,13 +10,18 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentReader : IAgentReader
 {
-    public List<Package> RetrieveReleaseHistory(string agentExecutable, PackageURL packageUrl)
+
+    public AgentReader(string agentExecutable) => AgentExecutablePath = agentExecutable;
+
+    public string AgentExecutablePath { get; }
+
+    public List<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
         var packages = new List<Package>();
         string packageUrlsWithDate;
         try
         {
-            packageUrlsWithDate = Invoke.Command(agentExecutable,
+            packageUrlsWithDate = Invoke.Command(AgentExecutablePath,
                 $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".");
         }
         catch (IOException)
@@ -28,12 +34,20 @@ public class AgentReader : IAgentReader
             var separated = packageUrlAndDate.Split("\t");
 
             packages.Add(
-                new Package(new PackageURL(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null,
-                        null)
-                    , DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
-                ));
+                new Package(
+                    new PackageURL(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null, null),
+                    DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
+                )
+            );
         }
 
         return packages;
+    }
+
+    public List<string> DetectManifests(string projectPath)
+    {
+        var manifests = Invoke.Command(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
+
+        return manifests.TrimEnd('\n', '\r').Split("\n").ToList();
     }
 }
