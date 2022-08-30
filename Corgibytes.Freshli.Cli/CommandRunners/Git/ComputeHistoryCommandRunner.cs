@@ -5,6 +5,7 @@ using System.CommandLine.Invocation;
 using System.Globalization;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands.Git;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Lib;
 
@@ -31,7 +32,7 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
 
         WriteStopsToLines(
             _computeHistory
-                .ComputeWithHistoryInterval(options.AnalysisLocation, options.GitPath, historyIntervalDuration),
+                .ComputeWithHistoryInterval(new AnalysisLocation(options.RepositoryId, options.CacheDir), options.GitPath, historyIntervalDuration),
             context
         );
 

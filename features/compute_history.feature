@@ -3,6 +3,7 @@ Feature: Compute history
     Used to examine the history of the specified repository and determine the sha hashes that will need to be checked out to complete a historical analysis at the intervals specified.
     Scenario: Day interval
         When I run `freshli git clone https://github.com/corgibytes/freshli-fixture-csharp-test.git`
+        Then a directory named "~/.freshli/repositories/6a2c5b97bc5113bda4845c09637043aef3d499f5b62eb252314a6bbcc7afd589" is not empty
         When I run `freshli git compute-history --history-interval=d 6a2c5b97bc5113bda4845c09637043aef3d499f5b62eb252314a6bbcc7afd589`
         Then the output should contain:
         """
