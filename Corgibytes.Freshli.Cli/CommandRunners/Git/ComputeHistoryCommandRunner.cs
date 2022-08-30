@@ -21,6 +21,14 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
 
     public override int Run(ComputeHistoryCommandOptions options, InvocationContext context)
     {
+        if (options.CommitHistory)
+        {
+            WriteStopsToLines(
+                _computeHistory.ComputeCommitHistory(new AnalysisLocation(options.RepositoryId, options.CacheDir), options.GitPath),
+                context);
+            return 0;
+        }
+
         var historyIntervalDuration = options.HistoryInterval switch
         {
             "d" => "day",
