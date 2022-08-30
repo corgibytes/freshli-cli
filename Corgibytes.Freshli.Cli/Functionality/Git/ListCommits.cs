@@ -10,11 +10,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class ListCommits : IListCommits
 {
-    private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
-
-    public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository) =>
-        _cachedGitSourceRepository = cachedGitSourceRepository;
-
     public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation, string gitPath)
     {
         var stdErrBuffer = new StringBuilder();
