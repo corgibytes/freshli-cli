@@ -10,4 +10,6 @@ public interface IComputeHistory
         string gitPath,
         string historyInterval
     );
+
+    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath);
 }
