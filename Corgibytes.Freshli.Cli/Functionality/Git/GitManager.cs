@@ -1,14 +1,13 @@
-using System;
+using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitManager : IGitManager
 {
-    private readonly GitArchive _gitArchive;
+    [JsonProperty] private readonly GitArchive _gitArchive;
 
     public GitManager(GitArchive gitArchive)
     {
-        _ = gitArchive ?? throw new ArgumentNullException(nameof(gitArchive));
         _gitArchive = gitArchive;
     }
 
