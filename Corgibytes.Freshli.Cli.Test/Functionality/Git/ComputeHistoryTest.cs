@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Test.Common;
+using Moq;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.DependencyInjection;
@@ -11,14 +13,12 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class ComputeHistoryTest : FreshliTest
 {
-    private readonly string _cacheDir;
     private readonly ComputeHistory _computeHistory;
 
     public ComputeHistoryTest(ITestOutputHelper output) : base(output)
     {
         var listCommits = new MockListCommits();
         _computeHistory = new ComputeHistory(listCommits);
-        _cacheDir = "/this/is/a/path";
 
         listCommits.HasCommitsAvailable(new List<GitCommit>
         {
@@ -38,21 +38,27 @@ public class ComputeHistoryTest : FreshliTest
     }
 
     [Theory]
+    [MethodData(nameof(ExpectedStopsForCommitHistory))]
+    public void Verify_it_can_find_sha_identifiers_and_dates_for_the_all_commits(List<HistoryIntervalStop> expectedStops)
+    {
+        var analysisLocation = new Mock<IAnalysisLocation>();
+
+        Assert.Equivalent(expectedStops,
+            _computeHistory.ComputeCommitHistory(analysisLocation.Object, "git")
+        );
+    }
+
+    [Theory]
     [MethodData(nameof(ExpectedStopsForDayInterval))]
     [MethodData(nameof(ExpectedStopsForWeekInterval))]
     [MethodData(nameof(ExpectedStopsForMonthInterval))]
     [MethodData(nameof(ExpectedStopsForYearInterval))]
-    public void Verify_it_can_find_sha_identifiers_and_dates_for_interval(List<HistoryIntervalStop> expectedStops,
-        string interval) => Assert.Equivalent(expectedStops,
-        _computeHistory.ComputeWithHistoryInterval("repository.identifier", "git", interval, _cacheDir));
-
-    [Theory]
-    [MethodData(nameof(ExpectedStopsForCommitHistory))]
-    public void Verify_it_can_find_sha_identifiers_and_dates_for_the_all_commits(
-        List<HistoryIntervalStop> expectedStops) =>
+    public void Verify_it_can_find_sha_identifiers_and_dates_for_interval(List<HistoryIntervalStop> expectedStops, string interval)
+    {
+        var analysisLocation = new Mock<IAnalysisLocation>();
         Assert.Equivalent(expectedStops,
-            _computeHistory.ComputeCommitHistory("repository.identifier", "git", _cacheDir)
-        );
+            _computeHistory.ComputeWithHistoryInterval(analysisLocation.Object, "git", interval));
+    }
 
     private static TheoryData<List<HistoryIntervalStop>, string> ExpectedStopsForDayInterval() =>
         new()
