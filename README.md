@@ -344,6 +344,26 @@ You can run the unit, integration, and acceptance tests by running the `bin/test
 
 ### Unit and Integration Tests
 
+#### Installing `freshli-agent-java` into the path
+
+> :warning: Some of the integration tests require `freshli-agent-java` to be correctly installed in the path.
+
+You'll need to have the Eclipse Temurin version of Java 17 installed before running the following commands.
+
+```
+cd /tmp
+git clone https://github.com/corgibytes/freshli-agent-java
+cd freshli-agent-java
+./gradlew installDist
+mkdir -p /usr/local/share/freshli-agent-java
+cp -r build/install/freshli-agent-java/* /usr/local/share/freshli-agent-java
+ln -s /usr/local/share/freshli-agent-java/bin/freshli-agent-java /usr/local/bin/freshli-agent-java
+cd ~
+rm -rf /tmp/freshli-agent-java
+```
+
+#### Running the Unit and Integration Tests
+
 The project's unit and integration tests can be run with:
 
 ```bash
