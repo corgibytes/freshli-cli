@@ -2,7 +2,14 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AnalysisLocation : IAnalysisLocation
 {
-    public AnalysisLocation(string path) => Path = path;
+    private readonly string _repositoryId;
+    private readonly string _cacheDirectory;
 
-    public string Path { get; }
+    public AnalysisLocation(string repositoryId, string cacheDirectory)
+    {
+        _repositoryId = repositoryId;
+        _cacheDirectory = cacheDirectory;
+    }
+
+    public string Path => _cacheDirectory + "/repositories/" + _repositoryId;
 }
