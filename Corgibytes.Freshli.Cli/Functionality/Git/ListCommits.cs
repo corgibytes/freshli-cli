@@ -3,21 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using CliWrap;
 using Corgibytes.Freshli.Cli.Exceptions;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class ListCommits : IListCommits
 {
-    private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
-
-    public ListCommits(ICachedGitSourceRepository cachedGitSourceRepository) =>
-        _cachedGitSourceRepository = cachedGitSourceRepository;
-
-    public IEnumerable<GitCommit> ForRepository(string repositoryId, string cacheDirectory, string gitPath)
+    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation, string gitPath)
     {
-        var gitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId, cacheDirectory);
-
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();
         var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
@@ -29,7 +23,7 @@ public class ListCommits : IListCommits
                     .Add("--pretty=format:%H %aI")
             )
             .WithValidation(CommandResultValidation.None)
-            .WithWorkingDirectory(gitSource.LocalPath)
+            .WithWorkingDirectory(analysisLocation.Path)
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 

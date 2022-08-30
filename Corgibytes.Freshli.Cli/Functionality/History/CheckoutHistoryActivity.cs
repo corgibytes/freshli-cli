@@ -31,6 +31,6 @@ public class CheckoutHistoryActivity : IApplicationActivity
             GitExecutablePath
         );
 
-        eventClient.Fire(new HistoryStopCheckedOutEvent(new AnalysisLocation(archiveLocation)));
+        eventClient.Fire(new HistoryStopCheckedOutEvent(new AnalysisLocation(RepositoryId, CacheDirectory)));
     }
 }

@@ -110,7 +110,7 @@ public class FreshliServiceBuilder
                 ComputeHistoryCommandRunner>();
         Services.AddOptions<ComputeHistoryCommandOptions>().BindCommandLine();
 
-        Services.AddTransient<ComputeHistory>();
+        Services.AddScoped<IComputeHistory, ComputeHistory>();
         Services.AddScoped<IListCommits, ListCommits>();
 
         Services.AddSingleton<IGitManager, GitManager>();
