@@ -1,15 +1,13 @@
 using System.Collections.Generic;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public interface IComputeHistory
 {
-    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(string repositoryId, string gitPath, string cacheDir);
-
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
-        string repositoryId,
+        IAnalysisLocation analysisLocation,
         string gitPath,
-        string historyInterval,
-        string cacheDir
+        string historyInterval
     );
 }

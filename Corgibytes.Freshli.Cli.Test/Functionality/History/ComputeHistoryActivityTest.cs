@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -40,9 +41,11 @@ public class ComputeHistoryActivityTest
             )
         };
         _computeHistory.Setup(mock => mock.ComputeWithHistoryInterval(
-                It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())
+                It.IsAny<IAnalysisLocation>(), It.IsAny<string>(), It.IsAny<string>())
             )
             .Returns(historyIntervalStops);
+
+        var analysisLocation = new Mock<IAnalysisLocation>();
 
         // Act
         new ComputeHistoryActivity(
@@ -50,7 +53,7 @@ public class ComputeHistoryActivityTest
             _cacheDb.Object,
             _computeHistory.Object,
             new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
-            repositoryId
+            analysisLocation.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -58,7 +61,7 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.GitCommitIdentifier == "75c7fcc7336ee718050c4a5c8dfb5598622787b2" && value.RepositoryId == repositoryId
+                        value.GitCommitIdentifier == "75c7fcc7336ee718050c4a5c8dfb5598622787b2" && value.AnalysisLocation == analysisLocation.Object
                 )
             )
         );
@@ -66,7 +69,7 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.GitCommitIdentifier == "583d813db3e28b9b44a29db352e2f0e1b4c6e420" && value.RepositoryId == repositoryId
+                        value.GitCommitIdentifier == "583d813db3e28b9b44a29db352e2f0e1b4c6e420" && value.AnalysisLocation == analysisLocation.Object
                 )
             )
         );
