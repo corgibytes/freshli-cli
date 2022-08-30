@@ -5,20 +5,19 @@ using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Lib;
 using NLog;
 
-namespace Corgibytes.Freshli.Cli.OutputStrategies
+namespace Corgibytes.Freshli.Cli.OutputStrategies;
+
+//    [Intercept(typeof(LoggerInterceptor))]
+public class ConsoleOutputStrategy : IOutputStrategy
 {
-    //    [Intercept(typeof(LoggerInterceptor))]
-    public class ConsoleOutputStrategy : IOutputStrategy
+    private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+
+    public OutputStrategyType Type => OutputStrategyType.Console;
+
+    public void Send(IList<ScanResult> results, IOutputFormatter formatter, ScanCommandOptions options)
     {
-        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
-
-        public OutputStrategyType Type => OutputStrategyType.Console;
-        public ConsoleOutputStrategy() { }
-
-        public virtual void Send(IList<ScanResult> results, IOutputFormatter formatter, ScanCommandOptions options)
-        {
-            s_logger.Info("Sending metrics to Console");
-            Console.Out.WriteLine(formatter.Format(results));
-        }
+        // ReSharper disable once LocalizableElement
+        s_logger.Info("Sending metrics to Console");
+        Console.Out.WriteLine(formatter.Format(results));
     }
 }

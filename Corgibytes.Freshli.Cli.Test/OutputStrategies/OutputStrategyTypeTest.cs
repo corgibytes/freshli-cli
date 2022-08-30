@@ -7,30 +7,27 @@ using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
 
+namespace Corgibytes.Freshli.Cli.Test.OutputStrategies;
 
-namespace Corgibytes.Freshli.Cli.Test.OutputStrategies
+[UnitTest]
+public class OutputStrategyTypeTest : FreshliTest
 {
-    public class OutputStrategyTypeTest : FreshliTest
+    private readonly IServiceProvider _services;
+
+    public OutputStrategyTypeTest(ITestOutputHelper output, IServiceProvider services) : base(output) =>
+        _services = services;
+
+
+    [Fact]
+    public void Validate_FormatterType_ToFormatter_conversion_exist()
     {
-        private readonly IServiceProvider _services;
+        IEnumerable<OutputStrategyType> types = Enum.GetValues(typeof(OutputStrategyType))
+            .Cast<OutputStrategyType>()
+            .ToList();
 
-        public OutputStrategyTypeTest(ITestOutputHelper output, IServiceProvider services) : base(output)
-        {
-            _services = services;
-        }
-
-
-        [Fact]
-        public void Validate_FormatterType_ToFormatter_conversion_exist()
-        {
-            IEnumerable<OutputStrategyType> types = Enum.GetValues(typeof(OutputStrategyType))
-                .Cast<OutputStrategyType>()
-                .ToList();
-
-            types.ToOutputStrategies(_services).Should()
-                .NotBeNull()
-                .And
-                .HaveCount(types.Count());
-        }
+        types.ToOutputStrategies(_services).Should()
+            .NotBeNull()
+            .And
+            .HaveCount(types.Count());
     }
 }

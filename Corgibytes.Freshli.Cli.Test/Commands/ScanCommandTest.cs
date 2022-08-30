@@ -1,79 +1,52 @@
 ﻿using System.CommandLine;
-using System.CommandLine.Builder;
-using System.CommandLine.IO;
-using System.CommandLine.Parsing;
 using System.Linq;
-using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
+using Xunit.DependencyInjection;
 
-namespace Corgibytes.Freshli.Cli.Test.Commands
+namespace Corgibytes.Freshli.Cli.Test.Commands;
+
+[UnitTest]
+public class ScanCommandTest : FreshliTest
 {
-    public class ScanCommandTest : FreshliTest
+    public ScanCommandTest(ITestOutputHelper output) : base(output)
     {
-        private readonly TestConsole _console = new();
+    }
 
-        public ScanCommandTest(ITestOutputHelper output) : base(output) { }
+    [Fact]
+    public void Verify_path_argument_configuration()
+    {
+        var scanCommand = new ScanCommand();
 
-        [Fact]
-        public void Verify_path_argument_configuration()
+        scanCommand.Arguments.Should().HaveCount(1);
+
+        var arg = scanCommand.Arguments.ElementAt(0);
+
+        arg.Name.Should().Be("path");
+        arg.Arity.Should().BeEquivalentTo(ArgumentArity.ExactlyOne);
+    }
+
+    [Theory]
+    [MethodData(nameof(DataForVerifyOptionConfigurations))]
+    public void VerifyOptionConfigurations(string alias, ArgumentArity arity, bool allowsMultiples) =>
+        TestHelpers.VerifyAlias<ScanCommand>(alias, arity, allowsMultiples);
+
+    private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations() =>
+        new()
         {
-            ScanCommand scanCommand = new();
+            { "--format", ArgumentArity.ExactlyOne, false },
+            { "-f", ArgumentArity.ExactlyOne, false },
+            { "--output", ArgumentArity.OneOrMore, true },
+            { "-o", ArgumentArity.OneOrMore, true }
+        };
 
-            scanCommand.Arguments.Should().HaveCount(1);
-
-            Argument arg = scanCommand.Arguments.ElementAt(0);
-
-            arg.Name.Should().Be("path");
-            arg.Arity.Should().BeEquivalentTo(ArgumentArity.ExactlyOne);
-        }
-
-        [Theory]
-        [InlineData("--format")]
-        [InlineData("-f")]
-        public void Verify_format_option_configuration(string alias)
-        {
-            VerifyAlias(alias, ArgumentArity.ExactlyOne, false);
-        }
-
-        [Theory]
-        [InlineData("--output")]
-        [InlineData("-o")]
-        public void Verify_output_options_configuration(string alias)
-        {
-            VerifyAlias(alias, ArgumentArity.OneOrMore, true);
-        }
-
-        [Fact]
-        public void Verify_handler_configuration()
-        {
-            ScanCommand scanCommand = new();
-            scanCommand.Handler.Should().NotBeNull();
-        }
-
-        [Fact(Skip = "Will until we have a way to mock the freshli lib call")]        
-        public async Task  Verify_handler_is_executed()
-        {
-            CommandLineBuilder cmdBuilder = Program.CreateCommandLineBuilder();
-            await cmdBuilder.UseDefaults()
-                .Build().InvokeAsync("scan http://github.com/corgibytes/freshli-ruby.git  -f yaml", _console);
-
-            _console.Out.ToString().Should().Contain("[ scan <.> [ -f <Csv> ]");
-            _console.Out.ToString().Should().Contain("Command Execution Invocation Started");
-            _console.Out.ToString().Should().Contain("Command Execution Invocation Ended");
-            _console.Out.ToString().Should().NotContain("Exception has been thrown by the target of an invocation");
-        }
-
-        private static void VerifyAlias(string alias, IArgumentArity arity, bool allowMultipleArgumentsPerToken)
-        {
-            ScanCommand scanCommand = new();
-            Option option = scanCommand.Options.FirstOrDefault(x => x.Aliases.Contains(alias));
-            option.Should().NotBeNull();
-            option.AllowMultipleArgumentsPerToken.Should().Be(allowMultipleArgumentsPerToken);
-            option.Arity.Should().BeEquivalentTo(arity);
-        }
+    [Fact]
+    public void Verify_handler_configuration()
+    {
+        var scanCommand = new ScanCommand();
+        scanCommand.Handler.Should().NotBeNull();
     }
 }

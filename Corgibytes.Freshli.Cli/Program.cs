@@ -3,6 +3,7 @@ using System.CommandLine;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
+using System.CommandLine.IO;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
@@ -16,104 +17,135 @@ using NLog.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using static System.String;
 
-namespace Corgibytes.Freshli.Cli
+public static class Program
 {
-    public class Program
+    private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+    private const string DefaultLogLayout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
+
+    public static async Task<int> Main(string[] args)
     {
-        private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
-        private const string DefaultLogLayout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
+        var cmdBuilder = CreateCommandLineBuilder();
+        return await cmdBuilder.UseDefaults()
+            .Build()
+            .InvokeAsync(args);
+    }
 
-        public static async Task<int> Main(string[] args)
+    private static void ConfigureLogging(string consoleLogLevel, string logfile)
+    {
+        NLog.LogLevel desiredLevel = NLog.LogLevel.FromString(consoleLogLevel);
+
+        LoggingConfiguration config = new LoggingConfiguration();
+        if (IsNullOrEmpty(logfile))
         {
-            CommandLineBuilder cmdBuilder = CreateCommandLineBuilder();
-            return await cmdBuilder.UseDefaults()
-                .Build()
-                .InvokeAsync(args);
+            ColoredConsoleTarget consoleTarget = new ColoredConsoleTarget();
+            config.AddTarget("console", consoleTarget);
+            consoleTarget.Layout = DefaultLogLayout;
+            config.LoggingRules.Add(new LoggingRule("*", desiredLevel, consoleTarget));
+        }
+        else
+        {
+            FileTarget fileTarget = new FileTarget();
+            config.AddTarget("file", fileTarget);
+            fileTarget.FileName = logfile;
+            fileTarget.Layout = DefaultLogLayout;
+            config.LoggingRules.Add(new LoggingRule("*", desiredLevel, fileTarget));
         }
 
-        private static void ConfigureLogging(string consoleLogLevel, string logfile)
+        LogManager.Configuration = config;
+    }
+
+    static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(logging =>
+            {
+                logging.ClearProviders();
+                logging.AddNLog();
+            })
+            .UseNLog()
+            .ConfigureServices((_, services) =>
         {
-            NLog.LogLevel desiredLevel = NLog.LogLevel.FromString(consoleLogLevel);
+            new FreshliServiceBuilder(services).Register();
+        });
 
-            LoggingConfiguration config = new LoggingConfiguration();
-            if (IsNullOrEmpty(logfile))
-            {
-                ColoredConsoleTarget consoleTarget = new ColoredConsoleTarget();
-                config.AddTarget("console", consoleTarget);
-                consoleTarget.Layout = DefaultLogLayout;
-                config.LoggingRules.Add(new LoggingRule("*", desiredLevel, consoleTarget));
-            }
-            else
-            {
-                FileTarget fileTarget = new FileTarget();
-                config.AddTarget("file", fileTarget);
-                fileTarget.FileName = logfile;
-                fileTarget.Layout = DefaultLogLayout;
-                config.LoggingRules.Add(new LoggingRule("*", desiredLevel, fileTarget));
-            }
+    public static CommandLineBuilder CreateCommandLineBuilder()
+    {
+        Option logLevelOption = new Option<string>(alias: "--loglevel", description: "the minimum log level to log to console",
+            getDefaultValue: () => "Warn");
+        Option logFileOption = new Option<string?>("--logfile", "file for logs instead of logging to console");
 
-            LogManager.Configuration = config;
+        var builder = new CommandLineBuilder(command)
+            .UseHost(CreateHostBuilder)
+            .AddMiddleware(async (context, next) => { await LogExecution(context, next); })
+            .UseExceptionHandler()
+            .UseHelp()
+            .AddOption(logLevelOption)
+            .AddOption(logFileOption);
+        builder.UseMiddleware(context =>
+        {
+            ConfigureLogging(context.ParseResult.ValueForOption<string>(logLevelOption),
+                context.ParseResult.ValueForOption<string>(logFileOption));
+
+        });
+
+        builder.UseMiddleware(async (context, next) =>
+        {
+            await LogExecution(context, next);
+        });
+        return builder;
+    }
+
+    private static IHostBuilder CreateHostBuilder(string[] args) =>
+        Host.CreateDefaultBuilder(args)
+            .ConfigureLogging(loggingBuilder => loggingBuilder.ClearProviders())
+            .ConfigureServices((_, services) => { new FreshliServiceBuilder(services).Register(); });
+
+    private static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
+    {
+        var commandLine = context.ParseResult.ToString();
+
+        try
+        {
+            var callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
+            var doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
+
+            context.Console.Out.Write(callingMessage);
+            s_logger.Trace(callingMessage);
+
+            await next(context);
+
+            context.Console.Out.Write(doneMessage);
+            s_logger.Trace(doneMessage);
+        }
+        catch (Exception e)
+        {
+            var message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
+            context.Console.Out.WriteLine(
+                $"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
+
+            LogException(context.Console.Out, s_logger, e);
+            s_logger.Error($"{message} - {e.StackTrace}");
+        }
+    }
+
+    private static void LogException(IStandardStreamWriter output, Logger logger, Exception error)
+    {
+        logger.Error(error.Message);
+        output.WriteLine(error.Message);
+        if (error.StackTrace != null)
+        {
+            logger.Error(error.StackTrace);
+            output.WriteLine(error.StackTrace);
         }
 
-        static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureLogging(logging =>
-                {
-                    logging.ClearProviders();
-                    logging.AddNLog();
-                })
-                .UseNLog()
-                .ConfigureServices((_, services) =>
-            {
-                new FreshliServiceBuilder(services).Register();
-            });
-
-        public static CommandLineBuilder CreateCommandLineBuilder()
+        if (error.InnerException == null)
         {
-            Option logLevelOption = new Option<string>(alias: "--loglevel", description:"the minimum log level to log to console",
-                getDefaultValue: () => "Warn");
-            Option logFileOption = new Option<string?>("--logfile", "file for logs instead of logging to console");
-
-            CommandLineBuilder builder = new CommandLineBuilder(new MainCommand())
-                .UseHost(CreateHostBuilder)
-                .UseExceptionHandler()
-                .UseHelp()
-                .AddCommand(new ScanCommand())
-                .AddOption(logLevelOption)
-                .AddOption(logFileOption);
-            builder.UseMiddleware(context=>
-            {
-                ConfigureLogging(context.ParseResult.ValueForOption<string>(logLevelOption),
-                    context.ParseResult.ValueForOption<string>(logFileOption));
-
-            });
-            builder.UseMiddleware(async (context, next) =>
-            {
-                await LogExecution(context, next);
-            });
-            return builder;
+            return;
         }
 
-        public static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
-        {
-            string commandLine = context.ParseResult.ToString();
-
-            try
-            {
-                string callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
-                string doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
-
-                s_logger.Trace(callingMessage);
-
-                await next(context);
-
-                s_logger.Trace(doneMessage);
-            }
-            catch (Exception e)
-            {
-                string message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
-                s_logger.Error($"{message} - {e.StackTrace}");
-            }
-        }
+        logger.Error("==Inner Exception==");
+        output.WriteLine("==Inner Exception==");
+        LogException(output, logger, error.InnerException);
+        logger.Error("==End Inner Exception==");
+        output.WriteLine("==End Inner Exception==");
     }
 }
