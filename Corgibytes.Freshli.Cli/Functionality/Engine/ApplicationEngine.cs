@@ -62,7 +62,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
                 "Queue length: " + length + " (Processing: " + statistics.Processing +
                 ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded +
                 ", Failed: " + statistics.Failed + "), Activity Dispatch in Progress: " +
-                localIsActivityDispatching + ", Event Fire in Progress: " + localIsEventFiring);
+                localIsActivityDispatching + ", Event Fire in Progress: " + localIsEventFiring
+            );
             shouldWait = length > 0 || localIsActivityDispatching || localIsEventFiring;
         }
 
