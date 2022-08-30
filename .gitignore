@@ -27,7 +27,6 @@ x86/
 [Aa][Rr][Mm]/
 [Aa][Rr][Mm]64/
 bld/
-[Bb]in/
 [Oo]bj/
 [Ll]og/
 
@@ -125,6 +124,7 @@ $tf/
 _ReSharper*/
 *.[Rr]e[Ss]harper
 *.DotSettings.user
+resharper.temp
 
 # JustCode is a .NET coding add-in
 .JustCode
@@ -440,11 +440,24 @@ Freshli.sln.DotSettings.user
 *.log
 results/
 
-
 # Ignore test coverage.
 coverage.info
+coverage-acceptance.info
+coverage.json
 Freshli.Cli.Test/coverage.info
 Freshli.Cli/nuget.config
 
 # Ignore nuget config as it contains passwords or personal access tokens.
 nuget.config
+
+# ignore generic build locations
+binpublish/
+exe/
+exepublish/
+
+# ignore cucumber/aruba temporary files
+tmp/
+
+# ignore Ruby bundle/vendor files
+.bundle/
+vendor/

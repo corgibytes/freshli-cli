@@ -1,20 +1,43 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.CommandLine;
+using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Lib;
 
-namespace Corgibytes.Freshli.Cli.CommandRunners
-{    
-    public abstract class CommandRunner<T> : ICommandRunner<T> where T : CommandOptions.CommandOptions 
+namespace Corgibytes.Freshli.Cli.CommandRunners;
+
+public abstract class CommandRunner<TCommand, TCommandOptions> : ICommandRunner<TCommand, TCommandOptions>
+    where TCommand : Command where TCommandOptions : CommandOptions.CommandOptions
+{
+    protected CommandRunner(IServiceProvider serviceProvider, Runner runner)
     {
-        protected Runner Runner { get; }
-        protected IServiceProvider Services { get; }
+        Runner = runner;
+        Services = serviceProvider;
+    }
 
-        public CommandRunner(IServiceProvider serviceProvider, Runner runner)
+    protected Runner Runner { get; }
+    protected IServiceProvider Services { get; }
+
+    public abstract int Run(TCommandOptions options, InvocationContext context);
+
+    protected static bool Confirm(string message, InvocationContext context, bool defaultYes = false)
+    {
+        // Prompt the user whether they want to proceed
+        var prompt = defaultYes ? "[Y/n]" : "[y/N]";
+        context.Console.Out.Write($"{message} {prompt} ");
+        var choice = Console.In.ReadLine();
+
+        var yesChoices = new List<string>
         {
-            Runner = runner;
-            Services = serviceProvider;
-        }
+            "y",
+            "Y"
+        };
+        var noChoices = new List<string>
+        {
+            "n",
+            "N"
+        };
 
-        public abstract int Run(T options);
-        
+        return defaultYes ? !noChoices.Contains(choice!) : yesChoices.Contains(choice!);
     }
 }
