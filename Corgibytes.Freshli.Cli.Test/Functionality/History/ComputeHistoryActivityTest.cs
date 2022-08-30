@@ -21,8 +21,6 @@ public class ComputeHistoryActivityTest
     public void FiresHistoryIntervalStopFoundEvents()
     {
         // Arrange
-        const string repositoryId = "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d";
-
         // Have an analysis available
         var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "month");
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
