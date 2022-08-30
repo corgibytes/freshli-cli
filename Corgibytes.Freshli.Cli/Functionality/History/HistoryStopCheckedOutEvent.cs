@@ -9,5 +9,7 @@ public class HistoryStopCheckedOutEvent : IApplicationEvent
 
     public HistoryStopCheckedOutEvent(IAnalysisLocation analysisLocation) => AnalysisLocation = analysisLocation;
 
-    public void Handle(IApplicationActivityEngine eventClient) => throw new System.NotImplementedException();
+    public void Handle(IApplicationActivityEngine eventClient)
+    {
+    }
 }
