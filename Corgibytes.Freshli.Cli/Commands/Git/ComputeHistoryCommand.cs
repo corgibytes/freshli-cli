@@ -17,6 +17,14 @@ public class ComputeHistoryCommand : RunnableCommand<ComputeHistoryCommand, Comp
 
         AddArgument(repositoryIdentifier);
 
+        var commitHistory = new Option<bool>("--commit-history",
+            "Analyzes only the points in time when files have changed in the commit history")
+        {
+            AllowMultipleArgumentsPerToken = false,
+            Arity = ArgumentArity.ZeroOrOne
+        };
+        AddOption(commitHistory);
+
         var historyInterval = new Option<string>("--history-interval",
             description:
             "As the analyze command moves backwards in time through the history of the project, what time interval should it use to determine the points in time that are sampled. Possible values: y(ears), m(onths), w(eeks), d(ays)",

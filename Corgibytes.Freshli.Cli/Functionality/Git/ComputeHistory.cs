@@ -52,4 +52,11 @@ public class ComputeHistory : IComputeHistory
                     mostRecentCommitForThisGroupedPeriod.CommittedAt))
             .ToList();
     }
+
+    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath)
+    {
+        var commitHistory = _listCommits.ForRepository(analysisLocation, gitPath);
+        return commitHistory
+            .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt)).ToList();
+    }
 }
