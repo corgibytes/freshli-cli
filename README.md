@@ -1,18 +1,19 @@
 # Freshli Command Line
 
 [![](https://img.shields.io/github/v/release/corgibytes/freshli-cli?label=Latest%20Release)](https://github.com/corgibytes/freshli-cli/releases/latest)
-[![](https://github.com/corgibytes/freshli-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/corgibytes/freshli-cli/actions)
+[![](https://github.com/corgibytes/freshli-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/corgibytes/freshli-cli/actions) [![Maintainability](https://api.codeclimate.com/v1/badges/53f738a69259b3940778/maintainability)](https://codeclimate.com/github/corgibytes/freshli-cli/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/53f738a69259b3940778/test_coverage)](https://codeclimate.com/github/corgibytes/freshli-cli/test_coverage)
 
 A tool for displaying historical metrics about a project's dependencies. Run the Freshli CLI on you project to see how your project's dependency freshness changes over time.
 
 ## Installing and Running
 
-First you need .NET 5.0 runtime installed which you can find [here](https://dotnet.microsoft.com/download/dotnet/5.0/runtime). After .NET 5.0 is installed you download the latest Freshli executables [here](https://github.com/corgibytes/freshli-cli/releases/latest). Pick the Zip file that matches you OS (Windows, Linux, or MacOs) then:
+The preferred way of running a development environment is described in [Working with the DevContainer](#working-with-the-devcontainer).
+First you need .NET 6.0 runtime installed which you can find [here](https://dotnet.microsoft.com/download/dotnet/6.0/runtime).  After .NET 6.0 is installed you download the latest Freshli executables [here](https://github.com/corgibytes/freshli-cli/releases/latest).  Pick the Zip file that matches you OS (Windows, Linux, or MacOs) then:
 
-1. Download it.
-2. Extract the Zip file.
-3. Copy the folder to an apporiate location.
-4. Open a terminal and run `Corgibytes.Freshli.Cli.exe`.
+1) Download it.
+2) Extract the Zip file.
+3) Copy the folder to an appropriate location.
+4) Open a terminal and run `Corgibytes.Freshli.Cli.exe`.
 
 To run Freshli:
 
@@ -38,9 +39,23 @@ Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
 ...
 ```
 
+Are you getting this error or something similar? You can solve it (for now) by installing version 5.0.0 as described, but that's not the preferred way. If developing, check out [Working with the DevContainer](#working-with-the-devcontainer).
+
+```
+It was not possible to find any compatible framework version
+The framework 'Microsoft.NETCore.App', version '5.0.0' (x64) was not found.
+  - The following frameworks were found:
+      6.0.5 at [/usr/share/dotnet/shared/Microsoft.NETCore.App]
+
+You can resolve the problem by installing the specified framework and/or SDK.
+
+The specified framework can be found at:
+  - https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=5.0.0&arch=x64&rid=pop.22.04-x64
+```
+
 ### .NET Tool
 
-If you have .NET 5.0 SDK [installed](https://dotnet.microsoft.com/download/dotnet/5.0) you can install Freshli as .NET Tool:
+If you have .NET 6.0 SDK [installed](https://dotnet.microsoft.com/download/dotnet/6.0) you can install Freshli as .NET Tool:
 
 ```
 > dotnet tool install Corgibytes.Freshli.Cli -g
@@ -103,16 +118,16 @@ You can find old releases to download [here](https://github.com/corgibytes/fresh
 The dependency managers that Freshli supports are listed below along with the manifest files it can parse. The manifest file is the file that lists what dependencies are required by the project and has changed over time for some dependency managers, like NuGet.
 
 | Dependency Manager                        | Language(s)/Framework(s)                                                     | Manifest Files Format        |
-| ----------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------- |
+|-------------------------------------------|------------------------------------------------------------------------------|------------------------------|
 | [Bundler](https://bundler.io/)            | [Ruby](https://www.ruby-lang.org), [Ruby on Rails](https://rubyonrails.org/) | Gemfile.lock                 |
 | [Carton](https://metacpan.org/pod/Carton) | [Perl](https://www.perl.org/)                                                | cpanfile                     |
 | [Composer](https://getcomposer.org/)      | [PHP](https://www.php.net/)                                                  | composer.json, composer.lock |
 | [Pip](https://pypi.org/project/pip/)      | [Python](https://www.python.org/)                                            | requirements.txt             |
-| [NuGet](https://www.nuget.org/)           | [C#](https://docs.microsoft.com/en-us/dotnet/csharp/)                        | \*.csproj                    |
+| [NuGet](https://www.nuget.org/)           | [C#](https://docs.microsoft.com/en-us/dotnet/csharp/)                        | *.csproj                     |
 
 Please let us know what other dependency managers and/or manifest files you would like use to support via the contact information in the [Contributing](#contributing) section.
 
-## What Data Does Freahli Return?
+## What Data Does Freshli Return?
 
 Freshli check your projects dependencies at on month intervals and returns a table with the following that looks like:
 
@@ -165,7 +180,7 @@ When checking the libyear on May 1, 2019 Freshli will use v1.1.0 (Apr 3rd, 2019)
 93 / 365 = 0.2548
 ```
 
-If you have v1.0.1 instealled then your libyear when checking on May 1, 2019 is 68 days for a libyear of:
+If you have v1.0.1 installed then your libyear when checking on May 1, 2019 is 68 days for a libyear of:
 
 ```
 68 / 365 = 0.1863
@@ -183,7 +198,7 @@ Simply the number of dependencies Freshli could not calculate the libyear for on
 
 The headings for column output are localized such that the culture settings of the user's computer are used. (This is found in the CurrentUICulture). Currently there are English and Spanish translations with English being the default.
 
-Data (such as dates and numeric formatting) are NOT localized. Dates and numeric formats use the CurrentCulture which is explicitly set to the [invariant culture](https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo.invariantculture?view=net-5.0).
+Data (such as dates and numeric formatting) are NOT localized. Dates and numeric formats use the CurrentCulture which is explicitly set to the [invariant culture](https://docs.microsoft.com/en-us/dotnet/api/system.globalization.cultureinfo.invariantculture?view=net-6.0).
 
 We are not sure how to handle documentation, such as this ReadMe, in different languages. If you have any suggestions or would like to help with translations please let us know using the contact information in the [Contributing](#contributing) section.
 
@@ -201,6 +216,236 @@ Log levels can be adjusted by using the `--logLevel <level>` option when running
 -   Fatal
 
 Logs can be redirected to a file instead by using the `--logFile <file_path_and_name>` option when running the application.
+
+## Building
+
+The project can be built using the `bin/build.rb` script.
+
+To build manually, you first need to install the DotNet tools that are used by the project with:
+
+```bash
+dotnet tool restore
+```
+
+Then you can build the `freshli` executable and place it in the `exe` directory (where the acceptance tests expect it to be located) with:
+
+```bash
+dotnet build -o exe
+```
+
+## Linting
+
+We use a few different automatted tools tools to help us keep the code in this repository in compliance with the Freshli project style guide.
+
+All of the following linters (with the exception of `codeclimate`) can be run together by running the `bin/lint.rb` script. You can also run the `bin/format.rb` script if you want to instruct the linters to correct any issues that are found. (Note: not all of the linters provide an auto-correct mechanism.)
+
+### [eclint](https://gitlab.com/greut/eclint)
+
+The `eclint` project helps us validate that the files in the project are formatted consistently with respect to the rules that have been defined in the `.editorconfig` file.
+
+After making sure the `eclint` executable's in your path, it can be run with:
+
+```bash
+eclint
+```
+
+### [RuboCop](https://rubocop.org/)
+
+The `rubocop` project help us validate that the Ruby code we're writing conforms with the [Ruby Style Guide](https://rubystyle.guide/) that it is based on.
+
+After running `bundle install`, the following will run `rubocop`:
+
+```bash
+bundle exec rubocop
+```
+
+### [`dotnet format`](https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-format)
+
+The `dotnet format` command helps us make sure that our code is formatted consistent with the .NET/C# specific settings that are present in the `.editorconfig` file along with sets of [validation rules](https://docs.microsoft.com/en-us/visualstudio/code-quality/roslyn-analyzers-overview?view=vs-2022) that the project has been configured to use.
+
+To determine if any style changes are needed, you can run:
+
+```bash
+dotnet format --verify-no-changes --severity info
+```
+
+To instruct `dotnet format` to attempt to correct the issues that it has found, you can run:
+
+```bash
+dotnet format --severity info
+```
+
+### `dotnet jb`
+
+> :exclamation: Known Issue https://youtrack.jetbrains.com/issue/RSRP-485906
+> If you encounter linter errors that persist despite being explicitly suppressed, try clearing the cache for JetBrains
+> inspect code.
+> On Windows the cache is located here `%LocalAppData%\JetBrains\Transient\InspectCode\v212\SolutionCaches`
+> On Linux and macOS the cache is located here `~/.local/share/JetBrains/Transient/InspectCode/v221/SolutionCaches`
+
+### `codeclimate`
+
+There are two ways to run the `codeclimate` linter, by using the `codeclimate` CLI or by using `docker`. For both options, you'll need `docker` installed, because the `codeclimate` CLI is just a wrapper that makes it easy to run the `codeclimate` Docker image.
+
+1. Using the [`codeclimate` CLI](https://github.com/codeclimate/codeclimate)
+
+    Note: This option will not work if you're working with the DevContainer.
+
+    With the `codeclimate` CLI [in your path](https://github.com/codeclimate/codeclimate#installation), simply run the following to execute the CodeClimate analysis:
+
+    ```bash
+    codeclimate analyze
+    ```
+1. Using `docker`
+
+    Since `codeclimate` CLI is a wrapper around the `codeclimate` docker image the following command can be used to run the analysis:
+
+    ```bash
+    docker run \
+        --interactive --tty --rm \
+        --env CODECLIMATE_CODE="$PWD" \
+        --volume "$PWD":/code \
+        --volume /var/run/docker.sock:/var/run/docker.sock \
+        --volume /tmp/cc:/tmp/cc \
+        codeclimate/codeclimate analyze
+    ```
+
+    The above command will need to be changed if you're attempting to run `codeclimate` from within the DevContainer. This is because `$PWD` in the command above will expand to be the path to the project source code as it is mounted in the container. The `docker` command needs the path to the source code on your host system.
+
+    To address this you'll need to start the DevContainer with an environment variable that contains the path to the source code on the host system. Here, we'll use `$CODE_FOLDER`.
+
+    Another thing that needs to be done is to mount the socket that's used for communicating with Docker on the host system.
+
+    ```bash
+    docker build -t freshli-cli-dev .devcontainer
+    docker run \
+        --interactive --tty --rm \
+        --env CODE_FOLDER=$PWD \
+        --volume $PWD:/code \
+        --volume /var/run/docker.sock:/var/run/docker.sock \
+        --user vscode \
+        --workdir /code \
+        freshli-cli-dev bash
+    ```
+
+    And then from within that shell environment you can run `codeclimate` with:
+    ```bash
+    sudo docker run \
+        --interactive --tty --rm \
+        --env CODECLIMATE_CODE="$CODE_FOLDER" \
+        --volume "$CODE_FOLDER":/code \
+        --volume /var/run/docker.sock:/var/run/docker.sock \
+        --volume /tmp/cc:/tmp/cc \
+        codeclimate/codeclimate analyze
+    ```
+
+    Also, note in the above command that we're using `sudo` to run the `docker` command. This is because of the permissions that are required to access the Docker socket from the host system.
+
+
+```bash
+docker run \
+    --interactive --tty --rm \
+    --env CODECLIMATE_CODE="$CODE_FOLDER" \
+    --volume "$CODE_FOLDER":/code \
+    --volume /var/run/docker.sock:/var/run/docker.sock \
+    --volume /tmp/cc:/tmp/cc \
+    codeclimate/codeclimate analyze
+```
+
+## Testing
+
+You can run the unit, integration, and acceptance tests by running the `bin/test.rb` script.
+
+### Unit and Integration Tests
+
+#### Installing `freshli-agent-java` into the path
+
+> :warning: Some of the integration tests require `freshli-agent-java` to be correctly installed in the path.
+
+You'll need to have the Eclipse Temurin version of Java 17 installed before running the following commands.
+
+```
+cd /tmp
+git clone https://github.com/corgibytes/freshli-agent-java
+cd freshli-agent-java
+./gradlew installDist
+mkdir -p /usr/local/share/freshli-agent-java
+cp -r build/install/freshli-agent-java/* /usr/local/share/freshli-agent-java
+ln -s /usr/local/share/freshli-agent-java/bin/freshli-agent-java /usr/local/bin/freshli-agent-java
+cd ~
+rm -rf /tmp/freshli-agent-java
+```
+
+#### Running the Unit and Integration Tests
+
+The project's unit and integration tests can be run with:
+
+```bash
+dotnet test
+```
+
+### Acceptance Tests
+
+Freshli's acceptance test suite, built using Aruba and Cucumber, is pre-configured in the repository.
+
+You will need Ruby installed on your system, and then run:
+
+```bash
+gem install bundler
+bundle
+```
+
+From then on, you can run the Aruba tests with:
+
+```bash
+dotnet build -o exe && bundle exec cucumber
+```
+
+### Collecting Code Coverage for the Acceptance Tests
+
+Code coverage data can be collected for the acceptance tests. This activity is performed by the project's continuous integration environment where the collected data is sent to CodeClimate for further tracking. You can also run the code coverage collection locally.
+
+First you'll need to make sure that the correct version of the [Coverlet code coverage tool](https://github.com/coverlet-coverage/coverlet) is installed:
+
+```bash
+dotnet tool restore
+```
+
+> :orange_book: Make sure you run `bin/build.rb` before running any of the following commands.
+
+#### Collecting Coverage for the Entire Test Suite
+
+The following command can be used to compute the total test coverage across the .NET-based unit and integration tests combined with the Cucumber-based acceptance tests.
+
+```bash
+dotnet coverlet --target "./bin/test.rb" --targetargs "--skip-build" ./exe
+```
+
+### Collecting Coverage for .NET-Based Test Suite
+
+The following command will report the code coverage of the tests that are authored using the .NET-based testing tools.
+
+```bash
+dotnet coverlet --target "dotnet" --targetargs "vstest exe/Corgibytes.Freshli.Cli.Test.dll" ./exe
+```
+
+### Collecting Coverage for the Cucumber-based Acceptance Test Suite
+
+The following command will list the code coverage for the Cucumber-based tests.
+
+```bash
+dotnet coverlet --target "bundle" --targetargs "exec cucumber" ./exe
+```
+## Working with the DevContainer
+
+This project has uses DevContainer to assist with creating a full configured development environment.
+
+There are two paths to working with this DevContainer setup.
+
+1. [Install the `devcontainer` CLI](https://code.visualstudio.com/docs/remote/devcontainer-cli) and then run `devcontainer build` followed by `devcontainer open`. That will open Visual Studio Code running from inside of a container with everything needed to build the project.
+
+2. Run `docker` directly. Run `docker build -t freshli-cli-dev .devcontainer/` to build the container. Then you'll be able to run `docker run --rm -it -v $PWD:/code -w /code freshli-cli-dev bash` to create a shell session inside of a running container with everything set up for you. (Note, you may need to run `bundle install` when you first start the container to install the ruby-based dependencies. This step is performed for you if you use the `devcontainer` CLI to open a Visual Studio Code instance.)
+
 
 ## Contributing
 

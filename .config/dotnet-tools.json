@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "coverlet.console": {
+      "version": "3.1.2",
+      "commands": [
+        "coverlet"
+      ]
+    },
+    "dllprops.tool": {
+      "version": "3.0.0",
+      "commands": [
+        "dll-props"
+      ]
+    },
+    "jetbrains.resharper.globaltools": {
+      "version": "2022.2.2",
+      "commands": [
+        "jb"
+      ]
+    },
+    "dotnet-ef": {
+      "version": "7.0.0-preview.6.22329.4",
+      "commands": [
+        "dotnet-ef"
+      ]
+    }
+  }
+}

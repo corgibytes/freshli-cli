@@ -1,9 +1,8 @@
-﻿namespace Corgibytes.Freshli.Cli.Formatters
+﻿namespace Corgibytes.Freshli.Cli.Formatters;
+
+public enum FormatType
 {
-    public enum FormatType
-    {
-        Csv,
-        Json,
-        Yaml
-    }
+    Csv,
+    Json,
+    Yaml
 }

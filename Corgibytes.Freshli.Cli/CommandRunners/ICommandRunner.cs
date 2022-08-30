@@ -1,9 +1,11 @@
-﻿using Corgibytes.Freshli.Cli.CommandOptions;
+﻿using System.CommandLine;
+using System.CommandLine.Invocation;
 
-namespace Corgibytes.Freshli.Cli.CommandRunners
+namespace Corgibytes.Freshli.Cli.CommandRunners;
+
+// ReSharper disable once UnusedTypeParameter
+public interface ICommandRunner<in TCommand, in TCommandOptions> where TCommand : Command
+    where TCommandOptions : CommandOptions.CommandOptions
 {
-    public interface ICommandRunner<T> where T : CommandOptions.CommandOptions
-    {
-        public int Run(T options);
-    }
+    public int Run(TCommandOptions options, InvocationContext context);
 }
