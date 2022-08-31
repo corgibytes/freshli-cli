@@ -12,11 +12,12 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Git;
 
 public class CheckoutHistoryCommandRunner : CommandRunner<CheckoutHistoryCommand, CheckoutHistoryCommandOptions>
 {
-    private readonly IGitManager _gitManager;
     private readonly IApplicationActivityEngine _activityEngine;
     private readonly IApplicationEventEngine _eventEngine;
+    private readonly IGitManager _gitManager;
 
-    public CheckoutHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner, IGitManager gitManager, IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine) :
+    public CheckoutHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner, IGitManager gitManager,
+        IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine) :
         base(serviceProvider, runner)
     {
         _gitManager = gitManager;
