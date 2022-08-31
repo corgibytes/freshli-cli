@@ -1,8 +1,39 @@
 # See here for image contents: https://github.com/microsoft/vscode-dev-containers/tree/v0.234.0/containers/dotnet/.devcontainer/base.Dockerfile
 
+### Install .NET 6.0 SDK
+# copied from https://github.com/microsoft/vscode-dev-containers/blob/9ead9dfe607ac62c408180d25a71d499c0876e39/containers/dotnet/.devcontainer/base.Dockerfile
 # [Choice] .NET version: 6.0, 5.0, 3.1, 6.0-bullseye, 5.0-bullseye, 3.1-bullseye, 6.0-focal, 5.0-focal, 3.1-focal
-ARG VARIANT="6.0-bullseye"
-FROM mcr.microsoft.com/vscode/devcontainers/dotnet:0-${VARIANT}
+# Full list of available tags can be viewed at https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
+ARG VARIANT=6.0.400-1-bullseye-slim
+FROM mcr.microsoft.com/dotnet/sdk:${VARIANT}
+
+# Copy library scripts to execute
+ARG LIBRARY_SCRIPTS_SHA="9ead9dfe607ac62c408180d25a71d499c0876e39"
+ADD "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/${LIBRARY_SCRIPTS_SHA}/containers/dotnet/.devcontainer/library-scripts/common-debian.sh" /tmp/library-scripts/
+ADD "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/${LIBRARY_SCRIPTS_SHA}/containers/dotnet/.devcontainer/library-scripts/meta.env" /tmp/library-scripts/
+ADD "https://raw.githubusercontent.com/microsoft/vscode-dev-containers/${LIBRARY_SCRIPTS_SHA}/containers/dotnet/.devcontainer/library-scripts/node-debian.sh" /tmp/library-scripts/
+
+# [Option] Install zsh
+ARG INSTALL_ZSH="true"
+# [Option] Upgrade OS packages to their latest versions
+ARG UPGRADE_PACKAGES="true"
+# Install needed packages and setup non-root user. Use a separate RUN statement to add your own dependencies.
+ARG USERNAME=vscode
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+RUN bash /tmp/library-scripts/common-debian.sh "${INSTALL_ZSH}" "${USERNAME}" "${USER_UID}" "${USER_GID}" "${UPGRADE_PACKAGES}" "true" "true" \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# [Choice] Node.js version: none, lts/*, 18, 16, 14
+ARG NODE_VERSION="none"
+ENV NVM_DIR=/usr/local/share/nvm
+ENV NVM_SYMLINK_CURRENT=true \
+    PATH=${NVM_DIR}/current/bin:${PATH}
+RUN bash /tmp/library-scripts/node-debian.sh "${NVM_DIR}" "${NODE_VERSION}" "${USERNAME}" \
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+# Remove library scripts for final image
+RUN rm -rf /tmp/library-scripts
 
 # [Choice] Node.js version: none, lts/*, 16, 14, 12, 10
 ARG NODE_VERSION="none"
