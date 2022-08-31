@@ -42,6 +42,7 @@ public class FreshliServiceBuilder
         Services.AddSingleton<ICacheManager, CacheManager>();
         Services.AddSingleton<IAgentManager, AgentManager>();
         RegisterBaseCommand();
+        RegisterAnalyzeCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
         RegisterAgentsCommand();
@@ -51,6 +52,11 @@ public class FreshliServiceBuilder
     }
 
     private void RegisterBaseCommand() => Services.AddScoped<Runner>();
+
+    private void RegisterAnalyzeCommand()
+    {
+        Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
+    }
 
     private void RegisterScanCommand()
     {
