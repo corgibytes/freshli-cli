@@ -71,8 +71,8 @@ public class AgentsVerifier
         }
     }
 
-    private static void RunProcessManifest(string agentFileAndPath, string argument, string url, string workingDirectory,
-        string detectManifestFiles, DateTime startDate)
+    private static void RunProcessManifest(string agentFileAndPath, string argument, string url,
+        string workingDirectory, string detectManifestFiles, DateTime startDate)
     {
         var processManifestOutput = Invoke.Command(agentFileAndPath,
             argument + " " + detectManifestFiles + " " + DateTimeOffset.Now.ToString("s") + "Z", workingDirectory);

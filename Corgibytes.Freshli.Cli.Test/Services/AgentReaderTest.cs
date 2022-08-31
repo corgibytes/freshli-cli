@@ -19,6 +19,7 @@ public class AgentReaderTest
         {
             checkoutDirectory.Delete(true);
         }
+
         checkoutDirectory.Create();
 
         // clone https://github.com/protocolbuffers/protobuf to a temp location
@@ -30,7 +31,7 @@ public class AgentReaderTest
 
         var actualManifests = reader.DetectManifests(repositoryLocation);
 
-        var expectedManifests = new List<string>()
+        var expectedManifests = new List<string>
         {
             "java/pom.xml",
             "java/protoc/pom.xml",

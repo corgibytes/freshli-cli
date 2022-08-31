@@ -1,13 +1,11 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
-using Corgibytes.Freshli.Cli.Test;
 using Moq;
 using Xunit;
 
-namespace Corgibytes.Freshil.Cli.Test.Functionality.History;
+namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 
 [UnitTest]
 public class CheckoutHistoryActivityTest
