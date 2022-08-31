@@ -1,36 +1,37 @@
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
+using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class CheckoutHistoryActivity : IApplicationActivity
 {
+    [JsonProperty] private IGitManager _gitManager;
+    [JsonProperty] private string _gitExecutablePath;
+    [JsonProperty] private string _cacheDirectory;
+    [JsonProperty] private string _repositoryId;
+    [JsonProperty] private string _commitSha;
+
     public CheckoutHistoryActivity(IGitManager gitManager, string gitExecutablePath,
         string cacheDirectory, string repositoryId, string commitSha)
     {
-        GitManager = gitManager;
-        GitExecutablePath = gitExecutablePath;
-        CacheDirectory = cacheDirectory;
-        RepositoryId = repositoryId;
-        CommitSha = commitSha;
+        _gitManager = gitManager;
+        _gitExecutablePath = gitExecutablePath;
+        _cacheDirectory = cacheDirectory;
+        _repositoryId = repositoryId;
+        _commitSha = commitSha;
     }
-
-    public IGitManager GitManager { get; }
-    public string GitExecutablePath { get; }
-    public string CacheDirectory { get; }
-    public string RepositoryId { get; }
-    public string CommitSha { get; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var archiveLocation = GitManager.CreateArchive(
-            RepositoryId,
-            CacheDirectory,
-            GitManager.ParseCommitSha(CommitSha),
-            GitExecutablePath
+        _gitManager.CreateArchive(
+            _repositoryId,
+            _cacheDirectory,
+            _gitManager.ParseCommitSha(_commitSha),
+            _gitExecutablePath
         );
 
-        eventClient.Fire(new HistoryStopCheckedOutEvent(new AnalysisLocation(RepositoryId, CacheDirectory)));
+        eventClient.Fire(new HistoryStopCheckedOutEvent(new AnalysisLocation(_repositoryId, _cacheDirectory)));
     }
 }
