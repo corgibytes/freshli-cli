@@ -33,9 +33,9 @@ public class AnalyzeCommandOptionsTest : FreshliTest
 
         var result = parser.Parse(args);
 
-        var gitPath = result.GetOptionValueByName<FileInfo>("git-path");
+        var gitPath = result.GetOptionValueByName<string>("git-path");
 
-        gitPath?.FullName.Should().NotBeEmpty().And.Be(expectedGitPath);
+        gitPath?.Should().NotBeEmpty().And.Be(expectedGitPath);
     }
 }
 
