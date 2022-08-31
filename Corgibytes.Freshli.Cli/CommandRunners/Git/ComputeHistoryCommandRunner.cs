@@ -5,6 +5,7 @@ using System.CommandLine.Invocation;
 using System.Globalization;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands.Git;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Lib;
 
@@ -12,9 +13,10 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Git;
 
 public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>
 {
-    private readonly ComputeHistory _computeHistory;
+    private readonly IComputeHistory _computeHistory;
 
-    public ComputeHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner, ComputeHistory computeHistory) :
+    public ComputeHistoryCommandRunner(IServiceProvider serviceProvider, Runner runner,
+        IComputeHistory computeHistory) :
         base(serviceProvider, runner) => _computeHistory = computeHistory;
 
     public override int Run(ComputeHistoryCommandOptions options, InvocationContext context)
@@ -22,11 +24,10 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
         if (options.CommitHistory)
         {
             WriteStopsToLines(
-                _computeHistory.ComputeCommitHistory(options.RepositoryId, options.GitPath, options.CacheDir),
+                _computeHistory.ComputeCommitHistory(new AnalysisLocation(options.RepositoryId, options.CacheDir), options.GitPath),
                 context);
             return 0;
         }
-
 
         var historyIntervalDuration = options.HistoryInterval switch
         {
@@ -39,8 +40,7 @@ public class ComputeHistoryCommandRunner : CommandRunner<ComputeHistoryCommand, 
 
         WriteStopsToLines(
             _computeHistory
-                .ComputeWithHistoryInterval(options.RepositoryId, options.GitPath, historyIntervalDuration,
-                    options.CacheDir),
+                .ComputeWithHistoryInterval(new AnalysisLocation(options.RepositoryId, options.CacheDir), options.GitPath, historyIntervalDuration),
             context
         );
 
