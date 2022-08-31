@@ -34,7 +34,8 @@ public static class Program
             new CacheCommand(),
             new AgentsCommand(),
             new GitCommand(),
-            new ComputeLibYearCommand()
+            new ComputeLibYearCommand(),
+            new AnalyzeCommand()
         };
 
         var builder = new CommandLineBuilder(command)
