@@ -55,7 +55,8 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             eventClient.Fire(new GitRepositoryClonedEvent
             {
                 GitRepositoryId = gitRepository.Id,
-                AnalysisId = _analysisId
+                AnalysisId = _analysisId,
+                GitPath = _gitPath
             });
         }
         catch (GitException e)
