@@ -10,7 +10,6 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentReader : IAgentReader
 {
-
     public AgentReader(string agentExecutable) => AgentExecutablePath = agentExecutable;
 
     public string AgentExecutablePath { get; }
