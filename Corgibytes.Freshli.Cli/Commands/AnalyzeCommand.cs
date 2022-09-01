@@ -66,5 +66,12 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
             Arity = ArgumentArity.ZeroOrOne
         };
         AddOption(workers);
+
+        var repositoryIdentifier =
+            new Argument<string>("repository-location", "The location of the repository. This could be either a direct URL or a local directory")
+            {
+                Arity = ArgumentArity.ExactlyOne
+            };
+        AddArgument(repositoryIdentifier);
     }
 }
