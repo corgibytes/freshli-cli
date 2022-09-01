@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
@@ -16,7 +17,10 @@ namespace Corgibytes.Freshli.Cli.Test
         {
             StringWriter stringWriter = new StringWriter();
             Console.SetOut(stringWriter);
-            Program.Main(new string [] {"--loglevel", "Debug" });
+
+            var task = Task.Run(() => Program.Main("--loglevel", "Debug"));
+            task.Wait();
+
             stringWriter.ToString().Should().Contain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
         }
 
@@ -25,7 +29,10 @@ namespace Corgibytes.Freshli.Cli.Test
         {
             StringWriter stringWriter = new StringWriter();
             Console.SetOut(stringWriter);
-            Program.Main(new string [] {"--loglevel", "Info" });
+
+            var task = Task.Run(() => Program.Main("--loglevel", "Info"));
+            task.Wait();
+
             stringWriter.ToString().Should().NotContain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
             stringWriter.ToString().Should().Contain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
         }
@@ -35,7 +42,10 @@ namespace Corgibytes.Freshli.Cli.Test
         {
             StringWriter stringWriter = new StringWriter();
             Console.SetOut(stringWriter);
-            Program.Main(null);
+
+            var task = Task.Run(() => Program.Main());
+            task.Wait();
+
             stringWriter.ToString().Should().NotContain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
             stringWriter.ToString().Should().NotContain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
         }
@@ -47,7 +57,10 @@ namespace Corgibytes.Freshli.Cli.Test
             string testfile = "testlog.log";
             StringWriter stringWriter = new StringWriter();
             Console.SetOut(stringWriter);
-            Program.Main(new string [] {"--loglevel", "Info", "--logfile", testfile });
+
+            var task = Task.Run(() => Program.Main(new string [] {"--loglevel", "Info", "--logfile", testfile }));
+            task.Wait();
+
             string logFileContent = File.ReadAllText(testfile);
             stringWriter.ToString().Should().NotContain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
             logFileContent.ToString().Should().Contain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
