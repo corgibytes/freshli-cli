@@ -7,4 +7,5 @@ public class AnalyzeCommandOptions : CommandOptions
     public bool CommitHistory { get; set; }
     public string HistoryInterval { get; set; } = null!;
     public int? Workers { get; set; } = null!;
+    public string RepositoryLocation { get; set; } = null!;
 }
