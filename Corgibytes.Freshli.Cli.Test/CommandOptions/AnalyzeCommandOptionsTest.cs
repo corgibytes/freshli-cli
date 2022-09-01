@@ -52,7 +52,7 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             new object[]
             {
                 new[] { "analyze" , "--workers", "24" }, ExpectedGitPath, ExpectedBranch, ExpectedCommitHistory, ExpectedHistoryInterval, 24
-            },
+            }
         };
 
     [Theory]
@@ -80,6 +80,18 @@ public class AnalyzeCommandOptionsTest : FreshliTest
 
         var workers = result.GetOptionValueByName<int>("workers");
         workers.Should().Be(expectedWorkers);
+    }
+
+    [Fact]
+    public void Send_Args_ReturnsAnalyzeArguments()
+    {
+        var cmBuilder = Program.CreateCommandLineBuilder();
+        var parser = new Parser(cmBuilder.Command);
+
+        var result = parser.Parse(new[] { "analyze", "https://github.com/corgibytes/freshli-fixture-ruby-nokotest" });
+
+        var repositoryLocation = result.GetArgumentValueByName<string>("repository-location");
+        repositoryLocation?.Should().NotBeEmpty().And.Be("https://github.com/corgibytes/freshli-fixture-ruby-nokotest");
     }
 }
 
