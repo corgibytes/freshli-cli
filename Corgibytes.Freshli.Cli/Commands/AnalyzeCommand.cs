@@ -2,6 +2,7 @@ using System;
 using System.CommandLine;
 using System.Text.RegularExpressions;
 using Corgibytes.Freshli.Cli.CommandOptions;
+using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
@@ -51,8 +52,7 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
         historyInterval.AddValidator(optionResult =>
         {
             var givenValue = optionResult.GetValueOrDefault<string>();
-            var regex = new Regex("/\\d+[ymwd]?/");
-            if (givenValue != null && !regex.IsMatch(givenValue))
+            if (givenValue != null && !new HistoryIntervalParser().IsValid(givenValue))
             {
                 optionResult.ErrorMessage = $"Option {givenValue} not valid. Valid values are a number followed by a suffix. For example: 2m";
             }
@@ -67,11 +67,11 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
         };
         AddOption(workers);
 
-        var repositoryIdentifier =
+        var repositoryLocation =
             new Argument<string>("repository-location", "The location of the repository. This could be either a direct URL or a local directory")
             {
-                Arity = ArgumentArity.ExactlyOne
+                Arity = ArgumentArity.ZeroOrOne
             };
-        AddArgument(repositoryIdentifier);
+        AddArgument(repositoryLocation);
     }
 }
