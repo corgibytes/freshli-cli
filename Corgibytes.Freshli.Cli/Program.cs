@@ -9,18 +9,23 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.IoC;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Config;
-using NLog.Targets;
-using NLog.Extensions.Logging;
 using NLog.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using NLog.Targets;
 using static System.String;
+using LogLevel = NLog.LogLevel;
+
+namespace Corgibytes.Freshli.Cli;
 
 public static class Program
 {
+    private const string DefaultLogLayout =
+        "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
+
     private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
-    private const string DefaultLogLayout = "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
 
     public static async Task<int> Main(params string[] args)
     {
@@ -32,19 +37,19 @@ public static class Program
 
     private static void ConfigureLogging(string? consoleLogLevel, string? logfile)
     {
-        NLog.LogLevel desiredLevel = NLog.LogLevel.FromString(consoleLogLevel);
+        var desiredLevel = LogLevel.FromString(consoleLogLevel);
 
-        LoggingConfiguration config = new LoggingConfiguration();
+        var config = new LoggingConfiguration();
         if (IsNullOrEmpty(logfile))
         {
-            ColoredConsoleTarget consoleTarget = new ColoredConsoleTarget();
+            var consoleTarget = new ColoredConsoleTarget();
             config.AddTarget("console", consoleTarget);
             consoleTarget.Layout = DefaultLogLayout;
             config.LoggingRules.Add(new LoggingRule("*", desiredLevel, consoleTarget));
         }
         else
         {
-            FileTarget fileTarget = new FileTarget();
+            var fileTarget = new FileTarget();
             config.AddTarget("file", fileTarget);
             fileTarget.FileName = logfile;
             fileTarget.Layout = DefaultLogLayout;
@@ -54,7 +59,7 @@ public static class Program
         LogManager.Configuration = config;
     }
 
-    static IHostBuilder CreateHostBuilder(string[] args) =>
+    private static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
             .ConfigureLogging(logging =>
             {
@@ -62,17 +67,14 @@ public static class Program
                 logging.AddNLog();
             })
             .UseNLog()
-            .ConfigureServices((_, services) =>
-            {
-                new FreshliServiceBuilder(services).Register();
-            });
+            .ConfigureServices((_, services) => { new FreshliServiceBuilder(services).Register(); });
 
 
     public static CommandLineBuilder CreateCommandLineBuilder()
     {
-        Option<string> logLevelOption = new Option<string>("--loglevel", description: "the minimum log level to log to console",
+        var logLevelOption = new Option<string>("--loglevel", description: "the minimum log level to log to console",
             getDefaultValue: () => "Warn");
-        Option<string> logFileOption = new Option<string>("--logfile", "file for logs instead of logging to console");
+        var logFileOption = new Option<string>("--logfile", "file for logs instead of logging to console");
 
         var command = new MainCommand
         {
@@ -92,8 +94,8 @@ public static class Program
             .AddMiddleware(async (context, next) =>
             {
                 await Task.Run(() => ConfigureLogging(
-                    context.ParseResult.GetValueForOption<string>(logLevelOption),
-                    context.ParseResult.GetValueForOption<string>(logFileOption))
+                    context.ParseResult.GetValueForOption(logLevelOption),
+                    context.ParseResult.GetValueForOption(logFileOption))
                 );
 
                 await next(context);
