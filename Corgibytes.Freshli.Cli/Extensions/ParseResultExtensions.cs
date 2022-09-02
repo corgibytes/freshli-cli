@@ -31,8 +31,17 @@ public static class ParseResultExtensions
     public static T GetArgumentValueByName<T>(this ParseResult result, string name) =>
         result.FindArgumentAndGetValue<T>(value => value.Name.Equals(name));
 
-    public static T? GetOptionValueByName<T>(this ParseResult result, string name) =>
-        result.FindOptionAndGetValue<T>(x => x.Name.Equals(name));
+    public static T? GetOptionValueByName<T>(this ParseResult result, string name)
+    {
+        try
+        {
+            return result.FindOptionAndGetValue<T>(x => x.Name.Equals(name));
+        }
+        catch (InvalidOperationException error)
+        {
+            throw new ArgumentException($"No option was found with the name `{name}`.", error);
+        }
+    }
 
     public static T? GetOptionValueByAlias<T>(this ParseResult result, string alias) =>
         result.FindOptionAndGetValue<T>(x => x.Aliases.Contains(alias));
