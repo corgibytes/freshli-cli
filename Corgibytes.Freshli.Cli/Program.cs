@@ -8,6 +8,7 @@ using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.IoC;
+using Corgibytes.Freshli.Cli.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
@@ -77,8 +78,8 @@ public static class Program
             .AddMiddleware(async (context, next) =>
             {
                 await Task.Run(() => ConfigureLogging(
-                    context.ParseResult.GetValueForOption(logLevelOption),
-                    context.ParseResult.GetValueForOption(logFileOption))
+                    context.ParseResult.GetOptionValueByName<string>("loglevel"),
+                    context.ParseResult.GetOptionValueByName<string>("logfile"))
                 );
 
                 await next(context);
