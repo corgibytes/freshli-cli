@@ -72,24 +72,7 @@ public static class Program
 
     public static CommandLineBuilder CreateCommandLineBuilder()
     {
-        var logLevelOption = new Option<string>("--loglevel", description: "the minimum log level to log to console",
-            getDefaultValue: () => "Warn");
-        var logFileOption = new Option<string>("--logfile", "file for logs instead of logging to console");
-
-        var command = new MainCommand
-        {
-            // Add commands here!
-            new ScanCommand(),
-            new CacheCommand(),
-            new AgentsCommand(),
-            new GitCommand(),
-            new ComputeLibYearCommand()
-        };
-
-        command.AddOption(logLevelOption);
-        command.AddOption(logFileOption);
-
-        var builder = new CommandLineBuilder(command)
+        var builder = new CommandLineBuilder(new MainCommand())
             .UseHost(CreateHostBuilder)
             .AddMiddleware(async (context, next) =>
             {
