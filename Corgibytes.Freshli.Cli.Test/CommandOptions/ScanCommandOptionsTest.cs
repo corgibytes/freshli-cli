@@ -6,6 +6,7 @@ using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
+using Corgibytes.Freshli.Cli.Extensions;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
