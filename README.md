@@ -362,7 +362,8 @@ You can run the unit, integration, and acceptance tests by running the `bin/test
 
 > :warning: Some of the integration tests require `freshli-agent-java` to be correctly installed in the path.
 
-You'll need to have the Eclipse Temurin version of Java 17 installed before running the following commands.
+You'll need to have the [Eclipse Temurin](https://adoptium.net/temurin/) version of Java 17 installed before running the following commands.
+And you'll need [Maven](https://maven.apache.org/install.html) for some of the agent commands.
 
 ```
 cd /tmp
