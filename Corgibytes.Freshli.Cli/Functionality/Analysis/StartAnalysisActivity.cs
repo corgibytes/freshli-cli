@@ -13,6 +13,7 @@ public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPrepar
             // TODO: Translate this string
             // ReSharper disable UseStringInterpolation
             ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", CacheDirectory),
+            GitPath = GitPath,
             CacheDirectory = CacheDirectory,
             RepositoryUrl = RepositoryUrl,
             RepositoryBranch = RepositoryBranch,
