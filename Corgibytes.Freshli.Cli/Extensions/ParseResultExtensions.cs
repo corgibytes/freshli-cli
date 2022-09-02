@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Linq;
 
-namespace Corgibytes.Freshli.Cli.Test;
+namespace Corgibytes.Freshli.Cli.Extensions;
 
 public static class ParseResultExtensions
 {
