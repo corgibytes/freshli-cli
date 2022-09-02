@@ -38,4 +38,24 @@ public class ParseResultExtensionsTest
         Assert.IsType<InvalidOperationException>(exception.InnerException);
     }
 
+    [Fact]
+    public void GetArgumentValueByName()
+    {
+        var command = new MainCommand();
+        var parseResult = command.Parse("git checkout-history repo abcd1234");
+
+        Assert.Equal("repo", parseResult.GetArgumentValueByName<string>("repository-id"));
+        Assert.Equal("abcd1234", parseResult.GetArgumentValueByName<string>("sha"));
+    }
+
+    [Fact]
+    public void GetArgumentValueByNameWhenValueIsMissing()
+    {
+        var command = new MainCommand();
+        var parseResult = command.Parse("git checkout-history repo abcd1234");
+
+        var exception = Assert.Throws<ArgumentException>(() => parseResult.GetArgumentValueByName<string>("missing"));
+        Assert.Equal("No argument was found with the name `missing`. Valid option names are `repository-id`, `sha`.", exception.Message);
+        Assert.IsType<InvalidOperationException>(exception.InnerException);
+    }
 }
