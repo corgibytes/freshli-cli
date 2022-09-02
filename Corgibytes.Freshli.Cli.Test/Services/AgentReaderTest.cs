@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -12,21 +13,7 @@ public class AgentReaderTest
     [Fact]
     public void DetectManifestsUsingProtobuf()
     {
-        var checkoutLocation = Path.Combine(Path.GetTempPath(), "repositories");
-
-        var checkoutDirectory = new DirectoryInfo(checkoutLocation);
-        if (checkoutDirectory.Exists)
-        {
-            checkoutDirectory.Delete(true);
-        }
-        checkoutDirectory.Create();
-
-        // clone https://github.com/protocolbuffers/protobuf to a temp location
-        Invoke.Command("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
-
-        var repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
-
-        var reader = new AgentReader("freshli-agent-java");
+        SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
 
         var actualManifests = reader.DetectManifests(repositoryLocation);
 
@@ -41,5 +28,39 @@ public class AgentReaderTest
 
         // delete cloned files
         checkoutDirectory.Delete(true);
+    }
+
+    [Fact]
+    public void GenerateBillOfMaterialsUsingProtobuf()
+    {
+        SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
+
+        // java/pom.xml is detected by detect manifest, see also DetectManifestsUsingProtobuf()
+        var billOfMaterialsPath = reader.ProcessManifest(repositoryLocation + "/java/pom.xml", DateTime.Now);
+
+        Assert.Equal("/tmp/repositories/protobuf/java/target/bom.json", billOfMaterialsPath);
+
+        // delete cloned files
+        checkoutDirectory.Delete(true);
+    }
+
+    private static void SetupDirectory(out string repositoryLocation, out AgentReader reader, out DirectoryInfo checkoutDirectory)
+    {
+        var checkoutLocation = Path.Combine(Path.GetTempPath(), "repositories");
+
+        checkoutDirectory = new DirectoryInfo(checkoutLocation);
+        if (checkoutDirectory.Exists)
+        {
+            checkoutDirectory.Delete(true);
+        }
+
+        checkoutDirectory.Create();
+
+        // clone https://github.com/protocolbuffers/protobuf to a temp location
+        Invoke.Command("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
+
+        repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
+
+        reader = new AgentReader("freshli-agent-java");
     }
 }
