@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Parsing;
 using System.Linq;
@@ -39,8 +40,15 @@ public static class ParseResultExtensions
         }
         catch (InvalidOperationException error)
         {
-            throw new ArgumentException($"No option was found with the name `{name}`.", error);
+            throw new ArgumentException($"No option was found with the name `{name}`. Valid option names are {string.Join(", ", result.GetOptionNames().Select(value => $"`{value}`"))}.", error);
         }
+    }
+
+    public static List<string> GetOptionNames(this ParseResult result)
+    {
+        var rootCommandOptionNames = result.RootCommandResult.Command.Options.Select(option => option.Name);
+        var subCommandOptionNames = result.CommandResult.Command.Options.Select(option => option.Name);
+        return rootCommandOptionNames.Concat(subCommandOptionNames).OrderBy((value) => value).ToList();
     }
 
     public static T? GetOptionValueByAlias<T>(this ParseResult result, string alias) =>
