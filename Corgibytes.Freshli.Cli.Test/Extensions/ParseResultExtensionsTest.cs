@@ -35,6 +35,7 @@ public class ParseResultExtensionsTest
 
         var exception = Assert.Throws<ArgumentException>(() => parseResult.GetOptionValueByName<string>("missing"));
         Assert.Equal("No option was found with the name `missing`.", exception.Message);
+        Assert.IsType<InvalidOperationException>(exception.InnerException);
     }
 
 }
