@@ -27,8 +27,17 @@ public static class ParseResultExtensions
     private static T FindArgumentAndGetValue<T>(this ParseResult result, Func<Argument, bool> finder) =>
         result.GetValueForArgument(result.FindArgument<T>(finder)!);
 
-    public static T GetArgumentValueByName<T>(this ParseResult result, string name) =>
-        result.FindArgumentAndGetValue<T>(value => value.Name.Equals(name));
+    public static T GetArgumentValueByName<T>(this ParseResult result, string name)
+    {
+        try
+        {
+            return result.FindArgumentAndGetValue<T>(value => value.Name.Equals(name));
+        }
+        catch (InvalidOperationException error)
+        {
+            throw new ArgumentException($"No argument was found with the name `{name}`. Valid option names are {string.Join(", ", result.GetArgumentNames().Select(value => $"`{value}`"))}.", error);
+        }
+    }
 
     public static T? GetOptionValueByName<T>(this ParseResult result, string name)
     {
@@ -47,6 +56,11 @@ public static class ParseResultExtensions
         var rootCommandOptionNames = result.RootCommandResult.Command.Options.Select(option => option.Name);
         var subCommandOptionNames = result.CommandResult.Command.Options.Select(option => option.Name);
         return rootCommandOptionNames.Concat(subCommandOptionNames).OrderBy((value) => value).ToList();
+    }
+
+    public static List<string> GetArgumentNames(this ParseResult result)
+    {
+        return result.CommandResult.Command.Arguments.Select(argument => argument.Name).OrderBy((value) => value).ToList();
     }
 
     public static T? GetOptionValueByAlias<T>(this ParseResult result, string alias) =>
