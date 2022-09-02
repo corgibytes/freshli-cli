@@ -34,7 +34,7 @@ public class ParseResultExtensionsTest
         var parseResult = command.Parse("--loglevel debug git clone --git-path git");
 
         var exception = Assert.Throws<ArgumentException>(() => parseResult.GetOptionValueByName<string>("missing"));
-        Assert.Equal("No option was found with the name `missing`.", exception.Message);
+        Assert.Equal("No option was found with the name `missing`. Valid option names are `branch`, `cache-dir`, `git-path`, `logfile`, `loglevel`.", exception.Message);
         Assert.IsType<InvalidOperationException>(exception.InnerException);
     }
 
