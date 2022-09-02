@@ -9,6 +9,7 @@ public class CacheWasNotPreparedEvent : ErrorEvent
 {
     public IServiceProvider ServiceProvider { get; init; } = null!;
 
+    public string GitPath { get; init; } = null!;
     public string CacheDirectory { get; init; } = null!;
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
@@ -29,6 +30,7 @@ public class CacheWasNotPreparedEvent : ErrorEvent
             ServiceProvider.GetRequiredService<IHistoryIntervalParser>()
         )
         {
+            GitPath = GitPath,
             CacheDirectory = CacheDirectory,
             RepositoryUrl = RepositoryUrl,
             RepositoryBranch = RepositoryBranch,
