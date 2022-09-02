@@ -8,16 +8,14 @@ namespace Corgibytes.Freshli.Cli.Extensions;
 
 public static class ParseResultExtensions
 {
-    private static Option<T>? FindOption<T>(this ParseResult result, Func<Option, bool> finder)
-    {
-        try
+    private static Option<T>? FindOption<T>(this ParseResult result, Func<Option, bool> finder) {
+        var option = result.RootCommandResult.Command.Options.SingleOrDefault(finder) as Option<T>;
+        if (option == null)
         {
-            return result.RootCommandResult.Command.Options.Single(finder) as Option<T>;
+            option = result.CommandResult.Command.Options.Single(finder) as Option<T>;
         }
-        catch (InvalidOperationException error)
-        {
-            return result.CommandResult.Command.Options.Single(finder) as Option<T>;
-        }
+
+        return option;
     }
 
     private static T? FindOptionAndGetValue<T>(this ParseResult result, Func<Option, bool> finder) =>
