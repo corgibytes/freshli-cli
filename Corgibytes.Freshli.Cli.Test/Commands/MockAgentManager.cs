@@ -46,5 +46,7 @@ public class MockAgentManager : IAgentManager
         };
 
         public List<string> DetectManifests(string projectPath) => throw new NotImplementedException();
+
+        public string ProcessManifest(string manifestPath, DateTime asOfDate) => "/path/to/bill-of-materials";
     }
 }
