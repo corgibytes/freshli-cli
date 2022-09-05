@@ -99,20 +99,17 @@ public class Program
 
         try
         {
-            var callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
-            var doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
-
-            Logger?.LogTrace(callingMessage);
+            Logger?.LogTrace("[Command Execution Invocation Started - {ParseResult}]", commandLine);
 
             await next(context);
 
-            Logger?.LogTrace(doneMessage);
+            Logger?.LogTrace("[Command Execution Invocation Ended - {ParseResult}]", commandLine);
         }
         catch (Exception error)
         {
-            var message = $"[Unhandled Exception - {commandLine}] - {error.Message}";
             LogException(error);
-            Logger?.LogError($"{message} - {error.StackTrace}");
+            Logger?.LogError("[Unhandled Exception - {ParseResult}] - {ExceptionMessage} - {ExceptionStackTrace}",
+                commandLine, error.Message, error.StackTrace);
         }
     }
 
