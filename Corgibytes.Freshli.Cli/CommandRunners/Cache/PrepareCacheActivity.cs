@@ -10,20 +10,24 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 public class PrepareCacheActivity : IApplicationActivity
 {
     public PrepareCacheActivity(string cacheDirectory, string repositoryUrl = "", string? repositoryBranch = null,
-        string historyInterval = "")
+        string historyInterval = "", bool useCommitHistory = false)
     {
         CacheDirectory = cacheDirectory;
         RepositoryUrl = repositoryUrl;
         RepositoryBranch = repositoryBranch;
         HistoryInterval = historyInterval;
+        UseCommitHistory = useCommitHistory;
     }
 
     public string RepositoryUrl { get; init; }
 
     public string? RepositoryBranch { get; init; }
 
+    public bool UseCommitHistory { get; init; }
+
     // TODO: Research how to use a value class here instead of a string
     public string HistoryInterval { get; init; }
+
 
     public string CacheDirectory { get; init; }
 
@@ -35,7 +39,7 @@ public class PrepareCacheActivity : IApplicationActivity
         {
             cacheManager.Prepare(CacheDirectory).ToExitCode();
             var cacheDb = cacheManager.GetCacheDb(CacheDirectory);
-            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval));
+            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory));
             eventClient.Fire(new CachePreparedEvent());
         }
         catch (CacheException e)

@@ -32,7 +32,7 @@ public class CacheManagerTest : IDisposable
 
         var cache = cacheManager.GetCacheDb(_tempCacheDir);
 
-        var expectedAnalysis = new CachedAnalysis("https://git.example.com", "main", "1m");
+        var expectedAnalysis = new CachedAnalysis("https://git.example.com", "main", "1m", true);
 
         var id = cache.SaveAnalysis(expectedAnalysis);
 
@@ -43,5 +43,6 @@ public class CacheManagerTest : IDisposable
         Assert.Equal(expectedAnalysis.RepositoryUrl, actualAnalysis.RepositoryUrl);
         Assert.Equal(expectedAnalysis.RepositoryBranch, actualAnalysis.RepositoryBranch);
         Assert.Equal(expectedAnalysis.HistoryInterval, actualAnalysis.HistoryInterval);
+        Assert.Equal(expectedAnalysis.UseCommitHistory, actualAnalysis.UseCommitHistory);
     }
 }
