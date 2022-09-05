@@ -2,12 +2,12 @@ using System;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
-using System.CommandLine.IO;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.IoC;
 using Corgibytes.Freshli.Cli.Extensions;
+using Corgibytes.Freshli.Cli.IoC;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
@@ -20,12 +20,12 @@ using LogLevel = NLog.LogLevel;
 
 namespace Corgibytes.Freshli.Cli;
 
-public static class Program
+public class Program
 {
     private const string DefaultLogLayout =
         "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
 
-    private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+    public static ILogger<Program>? Logger { get; set; }
 
     public static async Task<int> Main(params string[] args)
     {
@@ -67,7 +67,10 @@ public static class Program
                 logging.AddNLog();
             })
             .UseNLog()
-            .ConfigureServices((_, services) => { new FreshliServiceBuilder(services).Register(); });
+            .ConfigureServices((_, services) => {
+                new FreshliServiceBuilder(services).Register();
+                Logger = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+            });
 
 
     public static CommandLineBuilder CreateCommandLineBuilder()
@@ -99,33 +102,26 @@ public static class Program
             var callingMessage = $"[Command Execution Invocation Started  - {commandLine} ]\n";
             var doneMessage = $"[Command Execution Invocation Ended - {commandLine} ]\n";
 
-            context.Console.Out.Write(callingMessage);
-            s_logger.Trace(callingMessage);
+            Logger?.LogTrace(callingMessage);
 
             await next(context);
 
-            context.Console.Out.Write(doneMessage);
-            s_logger.Trace(doneMessage);
+            Logger?.LogTrace(doneMessage);
         }
-        catch (Exception e)
+        catch (Exception error)
         {
-            var message = $"[Unhandled Exception - {commandLine}] - {e.Message}";
-            context.Console.Out.WriteLine(
-                $"{message} - Take a look at the log for detailed information.\n. {e.StackTrace}");
-
-            LogException(context.Console.Out, s_logger, e);
-            s_logger.Error($"{message} - {e.StackTrace}");
+            var message = $"[Unhandled Exception - {commandLine}] - {error.Message}";
+            LogException(error);
+            Logger?.LogError($"{message} - {error.StackTrace}");
         }
     }
 
-    private static void LogException(IStandardStreamWriter output, Logger logger, Exception error)
+    private static void LogException(Exception error)
     {
-        logger.Error(error.Message);
-        output.WriteLine(error.Message);
+        Logger?.LogError(error.Message);
         if (error.StackTrace != null)
         {
-            logger.Error(error.StackTrace);
-            output.WriteLine(error.StackTrace);
+            Logger?.LogError(error.StackTrace);
         }
 
         if (error.InnerException == null)
@@ -133,10 +129,8 @@ public static class Program
             return;
         }
 
-        logger.Error("==Inner Exception==");
-        output.WriteLine("==Inner Exception==");
-        LogException(output, logger, error.InnerException);
-        logger.Error("==End Inner Exception==");
-        output.WriteLine("==End Inner Exception==");
+        Logger?.LogError("==Inner Exception==");
+        LogException(error.InnerException);
+        Logger?.LogError("==End Inner Exception==");
     }
 }
