@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
+using System.Globalization;
+using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -14,11 +17,13 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
 {
     private readonly IApplicationActivityEngine _activityEngine;
     private readonly ICacheManager _cacheManager;
+    private readonly IApplicationEventEngine _eventEngine;
 
-    public AnalyzeRunner(IServiceProvider serviceProvider, Runner runner, IApplicationActivityEngine activityEngine, ICacheManager cacheManager) : base(serviceProvider, runner)
+    public AnalyzeRunner(IServiceProvider serviceProvider, Runner runner, IApplicationActivityEngine activityEngine, ICacheManager cacheManager, IApplicationEventEngine eventEngine) : base(serviceProvider, runner)
     {
         _activityEngine = activityEngine;
         _cacheManager = cacheManager;
+        _eventEngine = eventEngine;
     }
 
     public override int Run(AnalyzeCommandOptions options, InvocationContext context)
@@ -30,6 +35,16 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             RepositoryBranch = options.Branch,
             RepositoryUrl = options.RepositoryLocation,
             UseCommitHistory = options.CommitHistory
+        });
+
+        _eventEngine.On<LibYearComputedEvent>(computedEvent =>
+        {
+            var libYearSummed = 0.0;
+            if (computedEvent.LibYearPackages != null)
+            {
+                libYearSummed = computedEvent.LibYearPackages.Sum(libYear => libYear.LibYear);
+            }
+            context.Console.Out.WriteLine($"Libyear at {computedEvent.AnalysisLocation?.GitCommitIdentifier} is {libYearSummed}");
         });
 
         // @TODO
