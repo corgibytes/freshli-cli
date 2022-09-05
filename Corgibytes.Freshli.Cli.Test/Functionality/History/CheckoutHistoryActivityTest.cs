@@ -13,7 +13,7 @@ public class CheckoutHistoryActivityTest
     [Fact]
     public void Handle()
     {
-        var commitSha = "abcdef1";
+        var commitId = "abcdef1";
         var gitExecutablePath = "/path/to/git";
         var repositoryId = Guid.NewGuid().ToString();
         var cacheDirectory = "/path/to/cache/dir";
@@ -22,14 +22,14 @@ public class CheckoutHistoryActivityTest
         var gitManager = new Mock<IGitManager>();
 
         var activity = new CheckoutHistoryActivity(
-            gitManager.Object, gitExecutablePath, cacheDirectory, repositoryId, commitSha);
+            gitManager.Object, gitExecutablePath, cacheDirectory, repositoryId, commitId);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
 
-        var parsedCommitSha = new GitCommitIdentifier(commitSha);
-        gitManager.Setup(mock => mock.ParseCommitSha(commitSha)).Returns(parsedCommitSha);
+        var parsedCommitId = new GitCommitIdentifier(commitId);
+        gitManager.Setup(mock => mock.ParseCommitSha(commitId)).Returns(parsedCommitId);
         gitManager.Setup(
-            mock => mock.CreateArchive(repositoryId, cacheDirectory, parsedCommitSha, gitExecutablePath)
+            mock => mock.CreateArchive(repositoryId, cacheDirectory, parsedCommitId, gitExecutablePath)
         ).Returns(archiveLocation);
 
         activity.Handle(eventEngine.Object);
