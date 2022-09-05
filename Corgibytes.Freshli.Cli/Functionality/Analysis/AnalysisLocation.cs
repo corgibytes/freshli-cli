@@ -1,5 +1,3 @@
-using System.IO;
-
 using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -25,10 +23,8 @@ public class AnalysisLocation : IAnalysisLocation
             {
                 return System.IO.Path.Combine(_cacheDirectory, "repositories", _repositoryId);
             }
-            else
-            {
-                return System.IO.Path.Combine(_cacheDirectory, "histories", _repositoryId, _commitId);
-            }
+
+            return System.IO.Path.Combine(_cacheDirectory, "histories", _repositoryId, _commitId);
         }
     }
 }
