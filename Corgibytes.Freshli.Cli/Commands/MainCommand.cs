@@ -6,6 +6,8 @@ namespace Corgibytes.Freshli.Cli.Commands;
 
 public class MainCommand : RootCommand
 {
+    public static bool ShouldIncludeFailCommand { get; set; }
+
     public MainCommand() : base(CliOutput.Help_MainCommand_Description)
     {
         var cacheDirOption = new Option<string>(
@@ -28,5 +30,9 @@ public class MainCommand : RootCommand
         Add(new AgentsCommand());
         Add(new GitCommand());
         Add(new ComputeLibYearCommand());
+        if (ShouldIncludeFailCommand)
+        {
+            Add(new FailCommand());
+        }
     }
 }
