@@ -34,5 +34,4 @@ public class AgentsRepositoryIntegrationTest
         Assert.True(string.Compare(latestVersion.Version, "3.8.5", StringComparison.InvariantCulture) > 0,
             $"Expected {latestVersion.Version} to be greater than 3.8.5.");
     }
-
 }
