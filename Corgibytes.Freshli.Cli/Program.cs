@@ -25,7 +25,7 @@ public class Program
     private const string DefaultLogLayout =
         "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
 
-    public static ILogger<Program>? Logger { get; set; }
+    private static ILogger<Program>? Logger { get; set; }
 
     public static async Task<int> Main(params string[] args)
     {
