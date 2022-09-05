@@ -39,7 +39,8 @@ public class ComputeHistoryTest : FreshliTest
 
     [Theory]
     [MethodData(nameof(ExpectedStopsForCommitHistory))]
-    public void Verify_it_can_find_sha_identifiers_and_dates_for_the_all_commits(List<HistoryIntervalStop> expectedStops)
+    public void Verify_it_can_find_sha_identifiers_and_dates_for_the_all_commits(
+        List<HistoryIntervalStop> expectedStops)
     {
         var analysisLocation = new Mock<IAnalysisLocation>();
 
@@ -53,7 +54,8 @@ public class ComputeHistoryTest : FreshliTest
     [MethodData(nameof(ExpectedStopsForWeekInterval))]
     [MethodData(nameof(ExpectedStopsForMonthInterval))]
     [MethodData(nameof(ExpectedStopsForYearInterval))]
-    public void Verify_it_can_find_sha_identifiers_and_dates_for_interval(List<HistoryIntervalStop> expectedStops, string interval)
+    public void Verify_it_can_find_sha_identifiers_and_dates_for_interval(List<HistoryIntervalStop> expectedStops,
+        string interval)
     {
         var analysisLocation = new Mock<IAnalysisLocation>();
         Assert.Equivalent(expectedStops,

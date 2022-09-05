@@ -42,6 +42,7 @@ public class FreshliServiceBuilder
         Services.AddSingleton<ICacheManager, CacheManager>();
         Services.AddSingleton<IAgentManager, AgentManager>();
         RegisterBaseCommand();
+        RegisterFailCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
         RegisterAgentsCommand();
@@ -51,6 +52,9 @@ public class FreshliServiceBuilder
     }
 
     private void RegisterBaseCommand() => Services.AddScoped<Runner>();
+
+    private void RegisterFailCommand() =>
+        Services.AddScoped<ICommandRunner<FailCommand, EmptyCommandOptions>, FailCommandRunner>();
 
     private void RegisterScanCommand()
     {
@@ -212,6 +216,8 @@ public class FreshliServiceBuilder
                 TypeNameHandling = TypeNameHandling.All
             };
             configurationInstance.UseSerializerSettings(jsonSettings);
+
+            configurationInstance.UseFilter(new AutomaticRetryAttribute { Attempts = 0 });
 
             return configurationInstance;
         });
