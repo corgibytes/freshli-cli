@@ -53,10 +53,8 @@ public class FreshliServiceBuilder
 
     private void RegisterBaseCommand() => Services.AddScoped<Runner>();
 
-    private void RegisterFailCommand()
-    {
+    private void RegisterFailCommand() =>
         Services.AddScoped<ICommandRunner<FailCommand, EmptyCommandOptions>, FailCommandRunner>();
-    }
 
     private void RegisterScanCommand()
     {

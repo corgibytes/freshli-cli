@@ -14,10 +14,7 @@ public class ProgramTest : FreshliTest
 {
     private readonly StringWriter _consoleOutput = new();
 
-    public ProgramTest(ITestOutputHelper output) : base(output)
-    {
-        Console.SetOut(_consoleOutput);
-    }
+    public ProgramTest(ITestOutputHelper output) : base(output) => Console.SetOut(_consoleOutput);
 
     [Fact]
     public void Validate_Main_loglevel_debug()
@@ -25,7 +22,8 @@ public class ProgramTest : FreshliTest
         var task = Task.Run(() => Program.Main("--loglevel", "Debug"));
         task.Wait();
 
-        _consoleOutput.ToString().Should().Contain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
+        _consoleOutput.ToString().Should()
+            .Contain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
     }
 
     [Fact]
