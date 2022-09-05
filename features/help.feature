@@ -8,22 +8,26 @@ Feature: Freshli.Cli
         """
         And the output should contain:
         """
-          scan <path>                  Returns metrics results for given local repository path
+          scan <path>                    Returns metrics results for given local repository path
         """
         And the output should contain:
         """
-          agents                       Detects all of the language agents that are available for use
+          agents                         Detects all of the language agents that are available for use
         """
         And the output should contain:
         """
-          git                          Uses git to traverse through a repository's history
+          git                            Uses git to traverse through a repository's history
         """
         And the output should contain:
         """
-          cache                        Manages the local cache database and directory
+          cache                          Manages the local cache database and directory
         """
         And the output should contain:
         """
-          compute-libyear <file-path>  Computes the libyear for a given CycloneDX file
+          compute-libyear <file-path>    Computes the libyear for a given CycloneDX file
+        """
+        And the output should contain:
+        """
+          analyze <repository-location>  The primary user-facing command. This command will delegate to other freshli activities to accomplish its work. It will manage work queues to enable parallelization.
         """
 
