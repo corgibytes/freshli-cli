@@ -1,6 +1,8 @@
 using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
@@ -10,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test;
 
 public class ProgramTest : FreshliTest
 {
-    private StringWriter _consoleOutput = new StringWriter();
+    private readonly StringWriter _consoleOutput = new();
 
     public ProgramTest(ITestOutputHelper output) : base(output)
     {
@@ -61,5 +63,18 @@ public class ProgramTest : FreshliTest
         _consoleOutput.ToString().Should()
             .NotContain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
         logFileContent.Should().Contain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
+    }
+
+    [Fact]
+    public void ValidateExceptionsInActivityHandlersWriteToLog()
+    {
+        MainCommand.ShouldIncludeFailCommand = true;
+
+        var task = Task.Run(() => Program.Main("fail"));
+        task.Wait();
+
+        _consoleOutput.ToString().Should().MatchRegex(new Regex(
+            "^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
+        ));
     }
 }
