@@ -44,7 +44,8 @@ public class AgentReaderTest
         checkoutDirectory.Delete(true);
     }
 
-    private static void SetupDirectory(out string repositoryLocation, out AgentReader reader, out DirectoryInfo checkoutDirectory)
+    private static void SetupDirectory(out string repositoryLocation, out AgentReader reader,
+        out DirectoryInfo checkoutDirectory)
     {
         var checkoutLocation = Path.Combine(Path.GetTempPath(), "repositories");
 
