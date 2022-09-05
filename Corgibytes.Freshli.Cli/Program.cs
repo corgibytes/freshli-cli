@@ -67,7 +67,8 @@ public class Program
                 logging.AddNLog();
             })
             .UseNLog()
-            .ConfigureServices((_, services) => {
+            .ConfigureServices((_, services) =>
+            {
                 new FreshliServiceBuilder(services).Register();
                 Logger = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
             });

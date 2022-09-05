@@ -6,8 +6,6 @@ namespace Corgibytes.Freshli.Cli.Commands;
 
 public class MainCommand : RootCommand
 {
-    public static bool ShouldIncludeFailCommand { get; set; }
-
     public MainCommand() : base(CliOutput.Help_MainCommand_Description)
     {
         var cacheDirOption = new Option<string>(
@@ -35,4 +33,6 @@ public class MainCommand : RootCommand
             Add(new FailCommand());
         }
     }
+
+    public static bool ShouldIncludeFailCommand { get; set; }
 }

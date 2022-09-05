@@ -1,7 +1,7 @@
-using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.Extensions;
 using System;
 using System.CommandLine;
+using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.Extensions;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Extensions;
@@ -34,7 +34,9 @@ public class ParseResultExtensionsTest
         var parseResult = command.Parse("--loglevel debug git clone --git-path git");
 
         var exception = Assert.Throws<ArgumentException>(() => parseResult.GetOptionValueByName<string>("missing"));
-        Assert.Equal("No option was found with the name `missing`. Valid option names are `branch`, `cache-dir`, `git-path`, `logfile`, `loglevel`.", exception.Message);
+        Assert.Equal(
+            "No option was found with the name `missing`. Valid option names are `branch`, `cache-dir`, `git-path`, `logfile`, `loglevel`.",
+            exception.Message);
         Assert.IsType<InvalidOperationException>(exception.InnerException);
     }
 
@@ -55,7 +57,8 @@ public class ParseResultExtensionsTest
         var parseResult = command.Parse("git checkout-history repo abcd1234");
 
         var exception = Assert.Throws<ArgumentException>(() => parseResult.GetArgumentValueByName<string>("missing"));
-        Assert.Equal("No argument was found with the name `missing`. Valid option names are `repository-id`, `sha`.", exception.Message);
+        Assert.Equal("No argument was found with the name `missing`. Valid option names are `repository-id`, `sha`.",
+            exception.Message);
         Assert.IsType<InvalidOperationException>(exception.InnerException);
     }
 }
