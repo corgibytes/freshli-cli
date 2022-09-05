@@ -15,9 +15,9 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private static readonly object s_dispatchLock = new();
     private static readonly object s_fireLock = new();
-    private readonly ILogger<ApplicationEngine> _logger;
     private static bool s_isActivityDispatchingInProgress;
     private static bool s_isEventFiringInProgress;
+    private readonly ILogger<ApplicationEngine> _logger;
 
     public ApplicationEngine(IBackgroundJobClient jobClient, ILogger<ApplicationEngine> logger)
     {
@@ -70,38 +70,6 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         LogWaitStop(watch.ElapsedMilliseconds);
     }
 
-    private void LogWaitStart()
-    {
-        _logger.LogDebug("Starting to wait for an empty job queue...");
-    }
-
-    private void LogWaitStop(long durationInMilliseconds)
-    {
-        _logger.LogDebug("Waited for {Duration} milliseconds", durationInMilliseconds);
-    }
-
-    private void LogWaitingStatus(StatisticsDto statistics, long length, bool localIsEventFiring, bool localIsActivityDispatching)
-    {
-        _logger.LogDebug(
-            "Queue length: {QueueLength} (" +
-                "Processing: {JobsProcessing}, " +
-                "Enqueued: {JobsEnqueued}, " +
-                "Succeeded: {JobsSucceeded}, " +
-                "Scheduled: {JobsScheduled}, " +
-                "Failed: {JobsFailed}), " +
-                "Activity Dispatch in Progress: {IsActivityDispatchInProgress}, " +
-                "Event Fire in Progress: {IsEventFireInProgress}",
-            length,
-            statistics.Processing,
-            statistics.Enqueued,
-            statistics.Succeeded,
-            statistics.Scheduled,
-            statistics.Failed,
-            localIsActivityDispatching,
-            localIsEventFiring
-        );
-    }
-
     public void Fire(IApplicationEvent applicationEvent)
     {
         lock (s_fireLock)
@@ -121,6 +89,32 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
         s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
+
+    private void LogWaitStart() => _logger.LogDebug("Starting to wait for an empty job queue...");
+
+    private void LogWaitStop(long durationInMilliseconds) =>
+        _logger.LogDebug("Waited for {Duration} milliseconds", durationInMilliseconds);
+
+    private void LogWaitingStatus(StatisticsDto statistics, long length, bool localIsEventFiring,
+        bool localIsActivityDispatching) =>
+        _logger.LogDebug(
+            "Queue length: {QueueLength} (" +
+            "Processing: {JobsProcessing}, " +
+            "Enqueued: {JobsEnqueued}, " +
+            "Succeeded: {JobsSucceeded}, " +
+            "Scheduled: {JobsScheduled}, " +
+            "Failed: {JobsFailed}), " +
+            "Activity Dispatch in Progress: {IsActivityDispatchInProgress}, " +
+            "Event Fire in Progress: {IsEventFireInProgress}",
+            length,
+            statistics.Processing,
+            statistics.Enqueued,
+            statistics.Succeeded,
+            statistics.Scheduled,
+            statistics.Failed,
+            localIsActivityDispatching,
+            localIsEventFiring
+        );
 
     // ReSharper disable once MemberCanBePrivate.Global
     public void FireEventAndHandler(IApplicationEvent applicationEvent)
