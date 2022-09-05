@@ -6,6 +6,7 @@ using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Cli.Services;
@@ -40,8 +41,11 @@ public class ComputeLibYearCommandRunner : CommandRunner<ComputeLibYearCommand, 
                 CliOutput.ComputeLibYearCommandRunner_Run_FilePath_should_not_be_null_or_empty);
         }
 
-        _activityEngine.Dispatch(new ComputeLibYearActivity(_calculateLibYearFromCycloneDxFile,
-            options.FilePath.ToString()));
+        _activityEngine.Dispatch(new ComputeLibYearActivity(
+            _calculateLibYearFromCycloneDxFile,
+            options.FilePath.ToString(),
+            new AnalysisLocation("this-runner-will-be-removed", "this-runner-will-be-removed")
+        ));
 
         _eventEngine.On<LibYearComputedEvent>(libYearEvent =>
         {
