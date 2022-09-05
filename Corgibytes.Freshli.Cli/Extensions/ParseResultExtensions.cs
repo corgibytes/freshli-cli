@@ -10,12 +10,7 @@ public static class ParseResultExtensions
 {
     private static Option<T>? FindOption<T>(this ParseResult result, Func<Option, bool> finder) {
         var option = result.RootCommandResult.Command.Options.SingleOrDefault(finder) as Option<T>;
-        if (option == null)
-        {
-            option = result.CommandResult.Command.Options.Single(finder) as Option<T>;
-        }
-
-        return option;
+        return option ?? result.CommandResult.Command.Options.Single(finder) as Option<T>;
     }
 
     private static T? FindOptionAndGetValue<T>(this ParseResult result, Func<Option, bool> finder) =>
@@ -51,14 +46,14 @@ public static class ParseResultExtensions
         }
     }
 
-    public static List<string> GetOptionNames(this ParseResult result)
+    private static List<string> GetOptionNames(this ParseResult result)
     {
         var rootCommandOptionNames = result.RootCommandResult.Command.Options.Select(option => option.Name);
         var subCommandOptionNames = result.CommandResult.Command.Options.Select(option => option.Name);
         return rootCommandOptionNames.Concat(subCommandOptionNames).OrderBy((value) => value).ToList();
     }
 
-    public static List<string> GetArgumentNames(this ParseResult result)
+    private static List<string> GetArgumentNames(this ParseResult result)
     {
         return result.CommandResult.Command.Arguments.Select(argument => argument.Name).OrderBy((value) => value).ToList();
     }
