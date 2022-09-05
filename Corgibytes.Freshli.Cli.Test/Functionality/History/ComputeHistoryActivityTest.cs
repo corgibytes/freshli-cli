@@ -22,9 +22,8 @@ public class ComputeHistoryActivityTest
     {
         // Arrange
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "month");
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "month", true);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
-
 
         // Have interval stops available
         var historyIntervalStops = new List<HistoryIntervalStop>

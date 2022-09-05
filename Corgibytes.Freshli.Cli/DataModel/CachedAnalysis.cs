@@ -9,18 +9,21 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 [Index(nameof(Id), IsUnique = true)]
 public class CachedAnalysis
 {
-    public CachedAnalysis(string repositoryUrl, string? repositoryBranch, string historyInterval)
+    public CachedAnalysis(string repositoryUrl, string? repositoryBranch, string historyInterval, bool useCommitHistory)
     {
         RepositoryUrl = repositoryUrl;
         RepositoryBranch = repositoryBranch;
         HistoryInterval = historyInterval;
+        UseCommitHistory = useCommitHistory;
     }
 
     [Required] public Guid Id { get; set; }
     [Required] public string RepositoryUrl { get; set; }
 
     public string? RepositoryBranch { get; set; }
+    public bool UseCommitHistory { get; set; }
 
     // TODO: Research how to use a value class here instead of a string
     [Required] public string HistoryInterval { get; set; }
+
 }

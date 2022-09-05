@@ -28,7 +28,8 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             CacheDirectory = options.CacheDir,
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,
-            RepositoryUrl = options.RepositoryLocation
+            RepositoryUrl = options.RepositoryLocation,
+            UseCommitHistory = options.CommitHistory
         });
 
         // @TODO
