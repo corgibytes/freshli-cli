@@ -7,9 +7,8 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Freshli.Cli/Freshli.Cli.csproj",
-                "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "-o",
+                "exe",
             ],
             "problemMatcher": "$msCompile"
         },
