@@ -17,7 +17,7 @@ public class CheckoutHistoryActivityTest
         var gitExecutablePath = "/path/to/git";
         var repositoryId = Guid.NewGuid().ToString();
         var cacheDirectory = "/path/to/cache/dir";
-        var archiveLocation = "/path/to/archive/location";
+        var archiveLocation = $"{cacheDirectory}/repositories/{repositoryId}";
 
         var gitManager = new Mock<IGitManager>();
 
@@ -27,7 +27,7 @@ public class CheckoutHistoryActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
 
         var parsedCommitId = new GitCommitIdentifier(commitId);
-        gitManager.Setup(mock => mock.ParseCommitSha(commitId)).Returns(parsedCommitId);
+        gitManager.Setup(mock => mock.ParseCommitId(commitId)).Returns(parsedCommitId);
         gitManager.Setup(
             mock => mock.CreateArchive(repositoryId, cacheDirectory, parsedCommitId, gitExecutablePath)
         ).Returns(archiveLocation);
