@@ -20,7 +20,8 @@ public class GenerateBillOfMaterialsActivityTest
         var analysisLocation = new Mock<IAnalysisLocation>();
 
         agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-java")).Returns(javaAgentReader.Object);
-        javaAgentReader.Setup(mock => mock.ProcessManifest("/path/to/manifest", It.IsAny<DateTime>())).Returns("/path/to/bill-of-materials");
+        javaAgentReader.Setup(mock => mock.ProcessManifest("/path/to/manifest", It.IsAny<DateTime>()))
+            .Returns("/path/to/bill-of-materials");
 
         // Act
         var activity = new GenerateBillOfMaterialsActivity(
