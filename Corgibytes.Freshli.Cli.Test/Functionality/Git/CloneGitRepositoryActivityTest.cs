@@ -42,11 +42,14 @@ public class CloneGitRepositoryActivityTest
         _cacheManager.Setup(mock => mock.GetCacheDb(_cacheDir)).Returns(_cacheDb.Object);
     }
 
+    private void SetupCloneOrPullUsingDefaults() =>
+        _gitSourceRepository.Setup(mock => mock.CloneOrPull(_url, _branch, _cacheDir, _gitPath))
+            .Returns(new CachedGitSource(_repositoryId, _url, _branch, _localPath));
+
     [Fact]
     public void HandlerFiresGitRepositoryClonedEventWhenInvokedFromCli()
     {
-        _gitSourceRepository.Setup(mock => mock.CloneOrPull(_url, _branch, _cacheDir, _gitPath))
-            .Returns(new CachedGitSource(_repositoryId, _url, _branch, _localPath));
+        SetupCloneOrPullUsingDefaults();
 
         var activity = new CloneGitRepositoryActivity(_gitSourceRepository.Object, _url, _branch, _cacheDir, _gitPath);
 
@@ -78,8 +81,7 @@ public class CloneGitRepositoryActivityTest
         const string historyInterval = "1m";
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(sampleGuid))
             .Returns(new CachedAnalysis(_url, _branch, historyInterval));
-        _gitSourceRepository.Setup(mock => mock.CloneOrPull(_url, _branch, _cacheDir, _gitPath))
-            .Returns(new CachedGitSource(_repositoryId, _url, _branch, _localPath));
+        SetupCloneOrPullUsingDefaults();
 
         var activity = new CloneGitRepositoryActivity(_serviceProvider.Object, sampleGuid, _cacheDir, _gitPath);
 
