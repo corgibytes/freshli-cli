@@ -17,7 +17,7 @@ public class CheckoutHistoryActivityTest
         var gitExecutablePath = "/path/to/git";
         var repositoryId = Guid.NewGuid().ToString();
         var cacheDirectory = "/path/to/cache/dir";
-        var archiveLocation = $"{cacheDirectory}/repositories/{repositoryId}";
+        var archiveLocation = $"{cacheDirectory}/histories/{repositoryId}/{commitId}";
 
         var gitManager = new Mock<IGitManager>();
 
