@@ -7,86 +7,87 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Corgibytes.Freshli.Cli.Migrations;
-
-[DbContext(typeof(CacheContext))]
-partial class CacheContextModelSnapshot : ModelSnapshot
+namespace Corgibytes.Freshli.Cli.Migrations
 {
-    protected override void BuildModel(ModelBuilder modelBuilder)
+    [DbContext(typeof(CacheContext))]
+    partial class CacheContextModelSnapshot : ModelSnapshot
     {
+        protected override void BuildModel(ModelBuilder modelBuilder)
+        {
 #pragma warning disable 612, 618
-        modelBuilder.HasAnnotation("ProductVersion", "7.0.0-preview.6.22329.4");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.0-preview.7.22376.2");
 
-        modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", b =>
-        {
-            b.Property<Guid>("Id")
-                .ValueGeneratedOnAdd()
-                .HasColumnType("TEXT");
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
 
-            b.Property<string>("HistoryInterval")
-                .IsRequired()
-                .HasColumnType("TEXT");
+                    b.Property<string>("HistoryInterval")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-            b.Property<string>("RepositoryBranch")
-                .HasColumnType("TEXT");
+                    b.Property<string>("RepositoryBranch")
+                        .HasColumnType("TEXT");
 
-            b.Property<string>("RepositoryUrl")
-                .IsRequired()
-                .HasColumnType("TEXT");
+                    b.Property<string>("RepositoryUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-            b.HasKey("Id");
+                    b.HasKey("Id");
 
-            b.HasIndex("Id")
-                .IsUnique();
+                    b.HasIndex("Id")
+                        .IsUnique();
 
-            b.ToTable("CachedAnalyses");
-        });
+                    b.ToTable("CachedAnalyses");
+                });
 
-        modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedGitSource", b =>
-        {
-            b.Property<string>("Id")
-                .HasColumnType("TEXT");
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedGitSource", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
 
-            b.Property<string>("Branch")
-                .HasColumnType("TEXT");
+                    b.Property<string>("Branch")
+                        .HasColumnType("TEXT");
 
-            b.Property<string>("LocalPath")
-                .IsRequired()
-                .HasColumnType("TEXT");
+                    b.Property<string>("LocalPath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-            b.Property<string>("Url")
-                .IsRequired()
-                .HasColumnType("TEXT");
+                    b.Property<string>("Url")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-            b.HasKey("Id");
+                    b.HasKey("Id");
 
-            b.HasIndex("Id")
-                .IsUnique();
+                    b.HasIndex("Id")
+                        .IsUnique();
 
-            b.ToTable("CachedGitSources");
-        });
+                    b.ToTable("CachedGitSources");
+                });
 
-        modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedProperty", b =>
-        {
-            b.Property<int>("Id")
-                .ValueGeneratedOnAdd()
-                .HasColumnType("INTEGER");
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedProperty", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
-            b.Property<string>("Key")
-                .IsRequired()
-                .HasColumnType("TEXT");
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-            b.Property<string>("Value")
-                .IsRequired()
-                .HasColumnType("TEXT");
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
-            b.HasKey("Id");
+                    b.HasKey("Id");
 
-            b.HasIndex("Key")
-                .IsUnique();
+                    b.HasIndex("Key")
+                        .IsUnique();
 
-            b.ToTable("CachedProperties");
-        });
+                    b.ToTable("CachedProperties");
+                });
 #pragma warning restore 612, 618
+        }
     }
 }
