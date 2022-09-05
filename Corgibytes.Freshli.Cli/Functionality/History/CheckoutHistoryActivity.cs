@@ -11,7 +11,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
     [JsonProperty] private string _gitExecutablePath;
     [JsonProperty] private string _cacheDirectory;
     [JsonProperty] private string _repositoryId;
-    [JsonProperty] private string _commitSha;
+    [JsonProperty] private string _commitId;
 
     public CheckoutHistoryActivity(IGitManager gitManager, string gitExecutablePath,
         string cacheDirectory, string repositoryId, string commitSha)
@@ -20,7 +20,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
         _gitExecutablePath = gitExecutablePath;
         _cacheDirectory = cacheDirectory;
         _repositoryId = repositoryId;
-        _commitSha = commitSha;
+        _commitId = commitSha;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
@@ -28,7 +28,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
         _gitManager.CreateArchive(
             _repositoryId,
             _cacheDirectory,
-            _gitManager.ParseCommitSha(_commitSha),
+            _gitManager.ParseCommitId(_commitId),
             _gitExecutablePath
         );
 

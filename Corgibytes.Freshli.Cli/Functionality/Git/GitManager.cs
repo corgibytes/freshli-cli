@@ -12,5 +12,5 @@ public class GitManager : IGitManager
         string repositoryId, string cacheDirectory, GitCommitIdentifier gitCommitIdentifier, string gitPath) =>
         _gitArchive.CreateArchive(repositoryId, cacheDirectory, gitCommitIdentifier, gitPath);
 
-    public GitCommitIdentifier ParseCommitSha(string commitSha) => new(commitSha);
+    public GitCommitIdentifier ParseCommitId(string commitId) => new(commitId);
 }
