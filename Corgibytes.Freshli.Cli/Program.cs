@@ -115,10 +115,10 @@ public class Program
 
     private static void LogException(Exception error)
     {
-        Logger?.LogError(error.Message);
+        Logger?.LogError("{ExceptionMessage}", error.Message);
         if (error.StackTrace != null)
         {
-            Logger?.LogError(error.StackTrace);
+            Logger?.LogError("{ExceptionStackTrace}", error.StackTrace);
         }
 
         if (error.InnerException == null)
