@@ -58,7 +58,8 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.GitCommitIdentifier == "75c7fcc7336ee718050c4a5c8dfb5598622787b2" && value.AnalysisLocation == analysisLocation.Object
+                        value.GitCommitIdentifier == "75c7fcc7336ee718050c4a5c8dfb5598622787b2" &&
+                        value.AnalysisLocation == analysisLocation.Object
                 )
             )
         );
@@ -66,7 +67,8 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.GitCommitIdentifier == "583d813db3e28b9b44a29db352e2f0e1b4c6e420" && value.AnalysisLocation == analysisLocation.Object
+                        value.GitCommitIdentifier == "583d813db3e28b9b44a29db352e2f0e1b4c6e420" &&
+                        value.AnalysisLocation == analysisLocation.Object
                 )
             )
         );

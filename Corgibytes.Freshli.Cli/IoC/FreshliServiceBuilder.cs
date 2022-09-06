@@ -43,6 +43,7 @@ public class FreshliServiceBuilder
         Services.AddSingleton<IAgentManager, AgentManager>();
         RegisterBaseCommand();
         RegisterAnalyzeCommand();
+        RegisterFailCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
         RegisterAgentsCommand();
@@ -52,6 +53,9 @@ public class FreshliServiceBuilder
     }
 
     private void RegisterBaseCommand() => Services.AddScoped<Runner>();
+
+    private void RegisterFailCommand() =>
+        Services.AddScoped<ICommandRunner<FailCommand, EmptyCommandOptions>, FailCommandRunner>();
 
     private void RegisterAnalyzeCommand()
     {
@@ -119,8 +123,9 @@ public class FreshliServiceBuilder
         Services.AddScoped<IComputeHistory, ComputeHistory>();
         Services.AddScoped<IListCommits, ListCommits>();
 
-        Services.AddScoped<GitArchive>();
-        Services.AddScoped<ICachedGitSourceRepository, CachedGitSourceRepository>();
+        Services.AddSingleton<IGitManager, GitManager>();
+        Services.AddSingleton<GitArchive>();
+        Services.AddSingleton<ICachedGitSourceRepository, CachedGitSourceRepository>();
     }
 
     private void RegisterComputeLibYearCommand()
@@ -218,6 +223,8 @@ public class FreshliServiceBuilder
                 TypeNameHandling = TypeNameHandling.All
             };
             configurationInstance.UseSerializerSettings(jsonSettings);
+
+            configurationInstance.UseFilter(new AutomaticRetryAttribute { Attempts = 0 });
 
             return configurationInstance;
         });

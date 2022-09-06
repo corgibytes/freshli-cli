@@ -78,10 +78,11 @@ if perform_dotnet_format
 end
 
 if perform_resharper
-  execute('dotnet jb inspectcode freshli-cli.sln --build -o=resharper.temp -f=text')
-  status = false
-  File.open('resharper.temp', 'r') do |f|
-    unless f.nil?
+  status = execute('dotnet tool restore')
+
+  if status.success?
+    execute('dotnet jb inspectcode freshli-cli.sln --build -o=resharper.temp -f=text')
+    File.open('resharper.temp', 'r') do |f|
       result = f.readlines
       status = result.length == 1
       puts result unless status

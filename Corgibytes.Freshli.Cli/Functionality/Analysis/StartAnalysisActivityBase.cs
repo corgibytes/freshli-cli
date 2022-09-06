@@ -28,7 +28,12 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     {
         var cacheDb = CacheManager.GetCacheDb(CacheDirectory);
         var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory));
-        eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id, CacheDir = CacheDirectory, GitPath = GitPath});
+        eventClient.Fire(new AnalysisStartedEvent
+        {
+            AnalysisId = id,
+            CacheDir = CacheDirectory,
+            GitPath = GitPath
+        });
     }
 
     private bool FireInvalidHistoryEventIfNeeded(IApplicationEventEngine eventClient)
