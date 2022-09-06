@@ -9,10 +9,10 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 public class ComputeHistoryActivity : IApplicationActivity
 {
     [JsonProperty] private readonly Guid _analysisId;
+    [JsonProperty] private readonly IAnalysisLocation _analysisLocation;
     [JsonProperty] private readonly ICacheDb _cacheDb;
     [JsonProperty] private readonly IComputeHistory _computeHistoryService;
     private readonly string _gitExecutablePath;
-    [JsonProperty] private readonly IAnalysisLocation _analysisLocation;
 
     public ComputeHistoryActivity(string gitExecutablePath, ICacheDb cacheDb, IComputeHistory computeHistoryService,
         Guid analysisId, IAnalysisLocation analysisLocation)
@@ -33,7 +33,8 @@ public class ComputeHistoryActivity : IApplicationActivity
         }
 
         var historyIntervalStops =
-            _computeHistoryService.ComputeWithHistoryInterval(_analysisLocation, _gitExecutablePath, analysis.HistoryInterval);
+            _computeHistoryService.ComputeWithHistoryInterval(_analysisLocation, _gitExecutablePath,
+                analysis.HistoryInterval);
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {

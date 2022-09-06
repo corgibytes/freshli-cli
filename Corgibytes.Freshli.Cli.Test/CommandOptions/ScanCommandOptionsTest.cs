@@ -2,6 +2,7 @@
 using System.CommandLine.Parsing;
 using System.IO;
 using System.Linq;
+using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;

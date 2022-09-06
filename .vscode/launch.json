@@ -9,9 +9,9 @@
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
-            "program": "${workspaceFolder}/Freshli.Cli/bin/Debug/net5.0/Freshli.Cli.dll",
-            "args": ["${input:repo}"],
-            "cwd": "${workspaceFolder}/Freshli.Cli",
+            "program": "${workspaceFolder}/exe/freshli.dll",
+            "args": "${input:arguments}",
+            "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopAtEntry": false
         },
@@ -24,10 +24,10 @@
     ],
     "inputs": [
         {
-            "id": "repo",
+            "id": "arguments",
             "type": "promptString",
-            "description": "Github repo to test against.",
-            "default": "https://github.com/corgibytes/freshli-fixture-ruby-nokotest"
+            "description": "Command line arguments",
+            "default": "--loglevel trace agents detect"
         }
     ]
 }
