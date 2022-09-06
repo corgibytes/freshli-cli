@@ -42,7 +42,7 @@
     <PackageReference Include="NamedServices.Microsoft.Extensions.DependencyInjection" Version="2.2.0" />
     <PackageReference Include="NLog" Version="5.0.4" />
     <PackageReference Include="NLog.Config" Version="4.7.15" />
-    <PackageReference Include="NLog.Extensions.Hosting" Version="5.0.0-preview.3" />
+    <PackageReference Include="NLog.Extensions.Hosting" Version="5.0.4" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.0.4" />
     <PackageReference Include="packageurl-dotnet" Version="1.1.0" />
     <PackageReference Include="ServiceStack.Text" Version="6.3.0" />
