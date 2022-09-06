@@ -117,8 +117,9 @@ public class FreshliServiceBuilder
         Services.AddScoped<IComputeHistory, ComputeHistory>();
         Services.AddScoped<IListCommits, ListCommits>();
 
-        Services.AddScoped<GitArchive>();
-        Services.AddScoped<ICachedGitSourceRepository, CachedGitSourceRepository>();
+        Services.AddSingleton<IGitManager, GitManager>();
+        Services.AddSingleton<GitArchive>();
+        Services.AddSingleton<ICachedGitSourceRepository, CachedGitSourceRepository>();
     }
 
     private void RegisterComputeLibYearCommand()
