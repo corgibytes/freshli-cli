@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.CommandLine.Parsing;
+using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
@@ -94,4 +95,3 @@ public class AnalyzeCommandOptionsTest : FreshliTest
         repositoryLocation?.Should().NotBeEmpty().And.Be("https://github.com/corgibytes/freshli-fixture-ruby-nokotest");
     }
 }
-
