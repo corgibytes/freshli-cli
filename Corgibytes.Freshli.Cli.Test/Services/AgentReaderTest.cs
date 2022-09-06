@@ -17,7 +17,7 @@ public class AgentReaderTest
 
         var actualManifests = reader.DetectManifests(repositoryLocation);
 
-        var expectedManifests = new List<string>()
+        var expectedManifests = new List<string>
         {
             "java/pom.xml",
             "java/protoc/pom.xml",
@@ -44,7 +44,8 @@ public class AgentReaderTest
         checkoutDirectory.Delete(true);
     }
 
-    private static void SetupDirectory(out string repositoryLocation, out AgentReader reader, out DirectoryInfo checkoutDirectory)
+    private static void SetupDirectory(out string repositoryLocation, out AgentReader reader,
+        out DirectoryInfo checkoutDirectory)
     {
         var checkoutLocation = Path.Combine(Path.GetTempPath(), "repositories");
 

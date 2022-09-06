@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using Hangfire;
+using Hangfire.Storage.Monitoring;
+using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -15,9 +17,13 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private static readonly object s_fireLock = new();
     private static bool s_isActivityDispatchingInProgress;
     private static bool s_isEventFiringInProgress;
+    private readonly ILogger<ApplicationEngine> _logger;
 
-    public ApplicationEngine(IBackgroundJobClient jobClient) =>
+    public ApplicationEngine(IBackgroundJobClient jobClient, ILogger<ApplicationEngine> logger)
+    {
         JobClient = jobClient ?? throw new ArgumentNullException(nameof(jobClient));
+        _logger = logger;
+    }
 
     private IBackgroundJobClient JobClient { get; }
 
@@ -41,8 +47,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     {
         var watch = new Stopwatch();
         watch.Start();
-        // ReSharper disable once LocalizableElement
-        Console.WriteLine("Starting to wait for an empty job queue...");
+        LogWaitStart();
 
         var shouldWait = true;
         while (shouldWait)
@@ -57,19 +62,12 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             var localIsEventFiring = s_isEventFiringInProgress;
             var localIsActivityDispatching = s_isActivityDispatchingInProgress;
 
-            // TODO: Turn this into a Debug log call
-            Console.Out.WriteLine(
-                "Queue length: " + length + " (Processing: " + statistics.Processing +
-                ", Enqueued: " + statistics.Enqueued + ", Succeeded: " + statistics.Succeeded +
-                ", Failed: " + statistics.Failed + "), Activity Dispatch in Progress: " +
-                localIsActivityDispatching + ", Event Fire in Progress: " + localIsEventFiring
-            );
+            LogWaitingStatus(statistics, length, localIsEventFiring, localIsActivityDispatching);
             shouldWait = length > 0 || localIsActivityDispatching || localIsEventFiring;
         }
 
         watch.Stop();
-        // ReSharper disable once LocalizableElement
-        Console.WriteLine("Waited for {0} millseconds", watch.ElapsedMilliseconds);
+        LogWaitStop(watch.ElapsedMilliseconds);
     }
 
     public void Fire(IApplicationEvent applicationEvent)
@@ -91,6 +89,32 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
         s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
+
+    private void LogWaitStart() => _logger.LogDebug("Starting to wait for an empty job queue...");
+
+    private void LogWaitStop(long durationInMilliseconds) =>
+        _logger.LogDebug("Waited for {Duration} milliseconds", durationInMilliseconds);
+
+    private void LogWaitingStatus(StatisticsDto statistics, long length, bool localIsEventFiring,
+        bool localIsActivityDispatching) =>
+        _logger.LogDebug(
+            "Queue length: {QueueLength} (" +
+            "Processing: {JobsProcessing}, " +
+            "Enqueued: {JobsEnqueued}, " +
+            "Succeeded: {JobsSucceeded}, " +
+            "Scheduled: {JobsScheduled}, " +
+            "Failed: {JobsFailed}), " +
+            "Activity Dispatch in Progress: {IsActivityDispatchInProgress}, " +
+            "Event Fire in Progress: {IsEventFireInProgress}",
+            length,
+            statistics.Processing,
+            statistics.Enqueued,
+            statistics.Succeeded,
+            statistics.Scheduled,
+            statistics.Failed,
+            localIsActivityDispatching,
+            localIsEventFiring
+        );
 
     // ReSharper disable once MemberCanBePrivate.Global
     public void FireEventAndHandler(IApplicationEvent applicationEvent)
