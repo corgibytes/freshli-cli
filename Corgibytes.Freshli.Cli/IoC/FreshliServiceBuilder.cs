@@ -11,6 +11,7 @@ using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.IoC.Engine;
 using Corgibytes.Freshli.Cli.OutputStrategies;
@@ -60,6 +61,7 @@ public class FreshliServiceBuilder
     private void RegisterAnalyzeCommand()
     {
         Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
+        Services.AddScoped<IResultsApi, ResultsApi>();
     }
 
     private void RegisterScanCommand()
