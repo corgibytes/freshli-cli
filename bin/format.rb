@@ -10,7 +10,8 @@ eclint_status = execute('eclint -fix')
 status = execute('bundle check > /dev/null')
 status = execute('bundle install') unless status.success?
 
-resharper_status = execute('dotnet jb cleanupcode freshli-cli.sln') if status.success?
+resharper_status = execute('dotnet tool restore') if status.success?
+resharper_status = execute('dotnet jb cleanupcode freshli-cli.sln') if resharper_status.success?
 
 dotnet_format_status = execute('dotnet format --severity info') if status.success?
 
