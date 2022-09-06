@@ -28,6 +28,8 @@ public class MainCommand : RootCommand
         Add(new AgentsCommand());
         Add(new GitCommand());
         Add(new ComputeLibYearCommand());
+        Add(new AnalyzeCommand());
+
         if (ShouldIncludeFailCommand)
         {
             Add(new FailCommand());
