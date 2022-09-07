@@ -40,7 +40,8 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,
             RepositoryUrl = options.RepositoryLocation,
-            UseCommitHistory = options.CommitHistory
+            UseCommitHistory = options.CommitHistory,
+            GitPath = options.GitPath
         });
 
         _eventEngine.On<AnalysisStartedEvent>(startEvent =>
