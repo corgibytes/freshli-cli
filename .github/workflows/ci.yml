@@ -25,7 +25,7 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-    - name: "[Setup] - Install .NET tools"
+      - name: "[Setup] - Install .NET tools"
         run: |
           dotnet tool restore
 
@@ -116,9 +116,9 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags:
-            - corgibytes/freshli-cli:latest,
-            - corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }},
-            - corgibytes/freshli-cli:${{ steps.gitversion.outputs.informationalVersion }}
+            corgibytes/freshli-cli:latest,
+            corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }},
+            corgibytes/freshli-cli:${{ steps.gitversion.outputs.informationalVersion }}
 
       - name: "[Lint] - Install eclint"
         env:
