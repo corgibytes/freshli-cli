@@ -19,7 +19,6 @@ public class CacheWasNotPreparedEventTest
 
         var cacheEvent = new CacheWasNotPreparedEvent
         {
-            ServiceProvider = serviceProvider.Object,
             CacheDirectory = "example",
             RepositoryUrl = "https://git.example.com",
             RepositoryBranch = "main",
