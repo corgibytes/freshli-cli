@@ -9,6 +9,7 @@ using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
@@ -18,12 +19,17 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
     private readonly IApplicationActivityEngine _activityEngine;
     private readonly ICacheManager _cacheManager;
     private readonly IApplicationEventEngine _eventEngine;
+    private readonly IResultsApi _resultsApi;
 
-    public AnalyzeRunner(IServiceProvider serviceProvider, Runner runner, IApplicationActivityEngine activityEngine, ICacheManager cacheManager, IApplicationEventEngine eventEngine) : base(serviceProvider, runner)
+    public AnalyzeRunner(
+        IServiceProvider serviceProvider, Runner runner, IApplicationActivityEngine activityEngine,
+        ICacheManager cacheManager, IApplicationEventEngine eventEngine, IResultsApi resultsApi
+    ) : base(serviceProvider, runner)
     {
         _activityEngine = activityEngine;
         _cacheManager = cacheManager;
         _eventEngine = eventEngine;
+        _resultsApi = resultsApi;
     }
 
     public override int Run(AnalyzeCommandOptions options, InvocationContext context)
@@ -37,6 +43,11 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             UseCommitHistory = options.CommitHistory
         });
 
+        _eventEngine.On<AnalysisStartedEvent>(startEvent =>
+        {
+            context.Console.Out.WriteLine("Results will be available at: " + _resultsApi.GetResultsUrl(startEvent.AnalysisId));
+        });
+
         _eventEngine.On<LibYearComputedEvent>(computedEvent =>
         {
             var libYearSummed = 0.0;
@@ -44,13 +55,10 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             {
                 libYearSummed = computedEvent.LibYearPackages.Sum(libYear => libYear.LibYear);
             }
-            context.Console.Out.WriteLine($"Libyear at {computedEvent.AnalysisLocation?.GitCommitIdentifier} is {libYearSummed}");
+            context.Console.Out.WriteLine($"Libyear at {computedEvent.AnalysisLocation?.CommitId} is {libYearSummed}");
         });
 
-        // @TODO
-        // Return URL after submitting it to Freshli
-
-        context.Console.Out.WriteLine("https://freshli.app/");
+        _activityEngine.Wait();
 
         return 0;
     }
