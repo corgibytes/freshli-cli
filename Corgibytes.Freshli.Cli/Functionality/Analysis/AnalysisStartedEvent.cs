@@ -14,6 +14,10 @@ public class AnalysisStartedEvent : IApplicationEvent
 
     public string GitPath { get; init; } = null!;
 
+    public string RepositoryUrl { get; init; }
+
+    public string? Branch { get; init; }
+
     public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new CloneGitRepositoryActivity(_serviceProvider, AnalysisId, CacheDir, GitPath));
+        eventClient.Dispatch(new CloneGitRepositoryActivity(RepositoryUrl, Branch, CacheDir, GitPath, AnalysisId));
 }
