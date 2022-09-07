@@ -63,6 +63,7 @@ public class FreshliServiceBuilder
     {
         Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
         Services.AddScoped<IResultsApi, ResultsApi>();
+        Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
     }
 
     private void RegisterLoadServiceCommand() =>
