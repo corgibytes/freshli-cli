@@ -126,6 +126,8 @@ jobs:
             corgibytes/freshli-cli:latest,
             corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }},
             corgibytes/freshli-cli:${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.fullBuildMetadata }}
+          cache-from: type=registry,ref=corgibytes/freshli-cli:buildcache
+          cache-to: type=registry,ref=corgibytes/freshli-cli:buildcache,mode=max
 
       - name: "[Build] - Setup for Acceptance Test Coverage Collection, and for running the linters"
         run: |
