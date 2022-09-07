@@ -49,7 +49,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         var existingCachedGitSource = db.CachedGitSources.Find(hash);
         if (existingCachedGitSource is not null)
         {
-            return db.CachedGitSources.Find(hash) ?? throw new InvalidOperationException();
+            return existingCachedGitSource;
         }
 
         var directory = CacheManager.GetDirectoryInCache(cacheDir, new[] { "repositories", hash });
