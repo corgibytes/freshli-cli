@@ -8,14 +8,7 @@ Feature: analyze
     With no options specified, performs analysis locally, and then sends the results to the Freshli web app so that the results can be viewed at at URL that will be provided in the command output.
 
 
-    NOTE: These scenarios are not complete nor properly tested but at the time of writing not everything is done. So the entire chain can't be tested yet.
-
-    Scenario: Run the analysis locally
-        When I run `freshli analyze`
-        Then the output should contain:
-        """
-        https://freshli.app/
-        """
+    NOTE: These scenarios are not complete nor properly tested because at the time of writing not everything is done. So the entire chain can't be tested yet.
 
     Scenario: Run the analysis with default options.
         When I run `freshli analyze https://github.com/corgibytes/freshli-fixture-ruby-nokotest`
