@@ -1,4 +1,3 @@
-using System;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,8 +6,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class CacheWasNotPreparedEvent : ErrorEvent
 {
-    public IServiceProvider ServiceProvider { get; init; } = null!;
-
     public string GitPath { get; init; } = null!;
     public string CacheDirectory { get; init; } = null!;
     public string RepositoryUrl { get; init; } = null!;
@@ -26,8 +23,8 @@ public class CacheWasNotPreparedEvent : ErrorEvent
         });
 
         eventClient.Dispatch(new RestartAnalysisActivity(
-            ServiceProvider.GetRequiredService<ICacheManager>(),
-            ServiceProvider.GetRequiredService<IHistoryIntervalParser>()
+            eventClient.ServiceProvider.GetRequiredService<ICacheManager>(),
+            eventClient.ServiceProvider.GetRequiredService<IHistoryIntervalParser>()
         )
         {
             GitPath = GitPath,
