@@ -1,6 +1,5 @@
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
@@ -16,17 +15,6 @@ public class CacheWasNotPreparedEvent : ErrorEvent
     public override void Handle(IApplicationActivityEngine eventClient)
     {
         eventClient.Dispatch(new PrepareCacheActivity(CacheDirectory, RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory)
-        {
-            CacheDirectory = CacheDirectory,
-            RepositoryUrl = RepositoryUrl,
-            RepositoryBranch = RepositoryBranch,
-            HistoryInterval = HistoryInterval
-        });
-
-        eventClient.Dispatch(new RestartAnalysisActivity(
-            eventClient.ServiceProvider.GetRequiredService<ICacheManager>(),
-            eventClient.ServiceProvider.GetRequiredService<IHistoryIntervalParser>()
-        )
         {
             GitPath = GitPath,
             CacheDirectory = CacheDirectory,
