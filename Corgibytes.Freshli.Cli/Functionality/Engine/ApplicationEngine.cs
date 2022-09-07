@@ -18,11 +18,13 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private static bool s_isActivityDispatchingInProgress;
     private static bool s_isEventFiringInProgress;
     private readonly ILogger<ApplicationEngine> _logger;
+    public IServiceProvider ServiceProvider { get; }
 
-    public ApplicationEngine(IBackgroundJobClient jobClient, ILogger<ApplicationEngine> logger)
+    public ApplicationEngine(IBackgroundJobClient jobClient, ILogger<ApplicationEngine> logger, IServiceProvider serviceProvider)
     {
         JobClient = jobClient ?? throw new ArgumentNullException(nameof(jobClient));
         _logger = logger;
+        ServiceProvider = serviceProvider;
     }
 
     private IBackgroundJobClient JobClient { get; }

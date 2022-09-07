@@ -75,4 +75,15 @@ public class ProgramTest : FreshliTest
             "^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
         ));
     }
+
+    [Fact]
+    public void ValidateServiceProviderIsLoaded()
+    {
+        MainCommand.ShouldIncludeLoadServiceCommand = true;
+        var task = Task.Run(() => Program.Main("load-service"));
+        task.Wait();
+
+        _consoleOutput.ToString().Should().Contain("All good! Service provider is not null.");
+        _consoleOutput.ToString().Should().NotContain("Simulating loading the service provider, but the provider is null.");
+    }
 }
