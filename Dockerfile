@@ -9,7 +9,9 @@ COPY . /app/freshli
 WORKDIR /app/freshli
 
 RUN dotnet tool restore
-RUN dotnet gitversion /config GitVersion.json /updateprojectfiles /output json /output buildserver
+RUN dotnet gitversion /config GitVersion.yml /showconfig
+RUN dotnet gitversion /config GitVersion.yml /output json /output buildserver
+RUN dotnet gitversion /config GitVersion.yml /updateprojectfiles
 RUN dotnet build -c Release -o exe
 
 ### Build `freshli-agent-java` executable
