@@ -30,6 +30,7 @@ public class CacheWasNotPreparedEventTest
             .Returns(historyIntervalParser.Object);
 
         var engine = new Mock<IApplicationActivityEngine>();
+        engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         cacheEvent.Handle(engine.Object);
 
