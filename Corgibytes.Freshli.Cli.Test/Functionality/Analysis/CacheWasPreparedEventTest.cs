@@ -1,5 +1,4 @@
 using System;
-using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -9,16 +8,16 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
 [UnitTest]
-public class CacheWasNotPreparedEventTest
+public class CacheWasPreparedEventTest
 {
     [Fact]
-    public void CorrectlyDispatchesPrepareCacheActivity()
+    public void CorrectlyDispatchesRestartAnalysisActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var cacheManager = new Mock<ICacheManager>();
         var historyIntervalParser = new Mock<IHistoryIntervalParser>();
 
-        var cacheEvent = new CacheWasNotPreparedEvent
+        var cacheEvent = new CachePreparedEvent
         {
             CacheDirectory = "example",
             RepositoryUrl = "https://git.example.com",
@@ -35,11 +34,12 @@ public class CacheWasNotPreparedEventTest
 
         cacheEvent.Handle(engine.Object);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<PrepareCacheActivity>(value =>
-            value.CacheDirectory == cacheEvent.CacheDirectory &&
-            value.RepositoryUrl == cacheEvent.RepositoryUrl &&
-            value.RepositoryBranch == cacheEvent.RepositoryBranch &&
-            value.HistoryInterval == cacheEvent.HistoryInterval &&
-            value.UseCommitHistory == cacheEvent.UseCommitHistory)));
+        engine.Verify(mock => mock.Dispatch(It.Is<RestartAnalysisActivity>(value =>
+            value.CacheManager == cacheManager.Object &&
+            value.HistoryIntervalParser == historyIntervalParser.Object &&
+            value.CacheDirectory == "example" &&
+            value.RepositoryUrl == "https://git.example.com" &&
+            value.RepositoryBranch == "main" &&
+            value.HistoryInterval == "1m")));
     }
 }
