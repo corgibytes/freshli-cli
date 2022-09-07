@@ -99,6 +99,6 @@ public class AnalyzeCommandOptionsTest : FreshliTest
         var result = parser.Parse(new[] { "analyze", "https://github.com/corgibytes/freshli-fixture-ruby-nokotest" });
 
         var repositoryLocation = result.GetArgumentValueByName<string>("repository-location");
-        repositoryLocation?.Should().NotBeEmpty().And.Be("https://github.com/corgibytes/freshli-fixture-ruby-nokotest");
+        repositoryLocation.Should().NotBeEmpty().And.Be("https://github.com/corgibytes/freshli-fixture-ruby-nokotest");
     }
 }

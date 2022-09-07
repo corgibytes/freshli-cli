@@ -15,14 +15,10 @@ public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneComm
     private readonly IApplicationActivityEngine _activityEngine;
     private readonly IApplicationEventEngine _eventEngine;
 
-    private readonly ICachedGitSourceRepository _gitSourceRepository;
-
     public GitCloneCommandRunner(IServiceProvider serviceProvider, Runner runner,
-        ICachedGitSourceRepository gitSourceRepository,
         IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine)
         : base(serviceProvider, runner)
     {
-        _gitSourceRepository = gitSourceRepository;
         _activityEngine = activityEngine;
         _eventEngine = eventEngine;
     }

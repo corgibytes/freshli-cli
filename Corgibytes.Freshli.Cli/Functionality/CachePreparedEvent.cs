@@ -11,7 +11,7 @@ public class CachePreparedEvent : IApplicationEvent
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
-    public bool UseCommitHistory { get; init; } = false;
+    public bool UseCommitHistory { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new RestartAnalysisActivity(

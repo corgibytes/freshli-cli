@@ -12,7 +12,7 @@ public class AnalysisStartedEvent : IApplicationEvent
 
     public string GitPath { get; init; } = null!;
 
-    public string RepositoryUrl { get; init; }
+    public string RepositoryUrl { get; init; } = null!;
 
     public string? Branch { get; init; }
 
