@@ -4,6 +4,7 @@
 
 ### Build `freshli` executable
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0.400-1-bullseye-slim AS dotnet_build
+ARG TARGETARCH
 
 COPY . /app/freshli
 WORKDIR /app/freshli
@@ -12,7 +13,23 @@ RUN dotnet tool restore
 RUN dotnet gitversion /config GitVersion.yml /showconfig
 RUN dotnet gitversion /config GitVersion.yml /output json /output buildserver
 RUN dotnet gitversion /config GitVersion.yml /updateprojectfiles
-RUN dotnet build -c Release -o exe
+RUN set -eux; \
+    case "${TARGETARCH}" in \
+    aarch64|arm64) \
+    DOTNET_RUNTIME_ID='linux-arm64'; \
+    ;; \
+    armhf|arm) \
+    DOTNET_RUNTIME_ID='linux-arm'; \
+    ;; \
+    amd64|i386:x86-64) \
+    DOTNET_RUNTIME_ID='linux-x64'; \
+    ;; \
+    *) \
+    echo "Unsupported arch: ${TARGETARCH}"; \
+    exit 1; \
+    ;; \
+    esac; \
+    dotnet build Corgibytes.Freshli.Cli/Corgibytes.Freshli.Cli.csproj -c Release -o exe --self-contained --runtime ${DOTNET_RUNTIME_ID}
 
 ### Build `freshli-agent-java` executable
 FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk-jammy AS java_build
