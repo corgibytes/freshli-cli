@@ -25,5 +25,4 @@ public class CachedAnalysis
 
     // TODO: Research how to use a value class here instead of a string
     [Required] public string HistoryInterval { get; set; }
-
 }

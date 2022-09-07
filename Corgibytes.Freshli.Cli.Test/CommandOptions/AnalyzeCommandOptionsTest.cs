@@ -27,39 +27,46 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             // If passing no arguments, the default git path should be 'git'
             new object[]
             {
-                new[] { "analyze" }, "git", ExpectedBranch, ExpectedCommitHistory, ExpectedHistoryInterval, ExpectedWorkerCount
+                new[] { "analyze" }, "git", ExpectedBranch, ExpectedCommitHistory, ExpectedHistoryInterval,
+                ExpectedWorkerCount
             },
             // Specific git path expected
             new object[]
             {
-                new[] { "analyze" , "--git-path", "/usr/bin/local/git" }, "/usr/bin/local/git", ExpectedBranch, ExpectedCommitHistory, ExpectedHistoryInterval,ExpectedWorkerCount
+                new[] { "analyze", "--git-path", "/usr/bin/local/git" }, "/usr/bin/local/git", ExpectedBranch,
+                ExpectedCommitHistory, ExpectedHistoryInterval, ExpectedWorkerCount
             },
             // Specific branch expected
             new object[]
             {
-                new[] { "analyze" , "--branch", "feature-fix-final.2.0" }, ExpectedGitPath, "feature-fix-final.2.0", ExpectedCommitHistory, ExpectedHistoryInterval,ExpectedWorkerCount
+                new[] { "analyze", "--branch", "feature-fix-final.2.0" }, ExpectedGitPath, "feature-fix-final.2.0",
+                ExpectedCommitHistory, ExpectedHistoryInterval, ExpectedWorkerCount
             },
             // Entire commit history expected
             new object[]
             {
-                new[] { "analyze" , "--commit-history" }, ExpectedGitPath, ExpectedBranch, true, ExpectedHistoryInterval, ExpectedWorkerCount
+                new[] { "analyze", "--commit-history" }, ExpectedGitPath, ExpectedBranch, true,
+                ExpectedHistoryInterval, ExpectedWorkerCount
             },
             // Three yearly history interval expected
             new object[]
             {
-                new[] { "analyze" , "--history-interval", "3y" }, ExpectedGitPath, ExpectedBranch, ExpectedCommitHistory, "3y", ExpectedWorkerCount
+                new[] { "analyze", "--history-interval", "3y" }, ExpectedGitPath, ExpectedBranch,
+                ExpectedCommitHistory, "3y", ExpectedWorkerCount
             },
             // 24 workers expected
             new object[]
             {
-                new[] { "analyze" , "--workers", "24" }, ExpectedGitPath, ExpectedBranch, ExpectedCommitHistory, ExpectedHistoryInterval, 24
+                new[] { "analyze", "--workers", "24" }, ExpectedGitPath, ExpectedBranch, ExpectedCommitHistory,
+                ExpectedHistoryInterval, 24
             }
         };
 
     [Theory]
     [MemberData(nameof(AnalyzeOptionsArgs))]
     public void Send_Args_ReturnsAnalyzeOptions(
-        string[] args, string expectedGitPath, string expectedBranch, bool expectedCommitHistory, string expectedHistoryInterval, int expectedWorkers
+        string[] args, string expectedGitPath, string expectedBranch, bool expectedCommitHistory,
+        string expectedHistoryInterval, int expectedWorkers
     )
     {
         var cmBuilder = Program.CreateCommandLineBuilder();

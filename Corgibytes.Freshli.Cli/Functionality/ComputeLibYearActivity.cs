@@ -7,13 +7,13 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class ComputeLibYearActivity : IApplicationActivity
 {
+    [JsonProperty] private readonly AnalysisLocation _analysisLocation;
     [JsonProperty] private readonly ICalculateLibYearFromFile _calculateLibYearFromFile;
 
     [JsonProperty] private readonly string _pathToBoM;
 
-    [JsonProperty] private readonly AnalysisLocation _analysisLocation;
-
-    public ComputeLibYearActivity(ICalculateLibYearFromFile calculateLibYearFromFile, string pathToBoM, AnalysisLocation analysisLocation)
+    public ComputeLibYearActivity(ICalculateLibYearFromFile calculateLibYearFromFile, string pathToBoM,
+        AnalysisLocation analysisLocation)
     {
         _calculateLibYearFromFile = calculateLibYearFromFile;
         _pathToBoM = pathToBoM;
@@ -23,6 +23,10 @@ public class ComputeLibYearActivity : IApplicationActivity
     public void Handle(IApplicationEventEngine eventClient)
     {
         var libYearPackages = _calculateLibYearFromFile.AsList(_pathToBoM);
-        eventClient.Fire(new LibYearComputedEvent { LibYearPackages = libYearPackages, AnalysisLocation = _analysisLocation});
+        eventClient.Fire(new LibYearComputedEvent
+        {
+            LibYearPackages = libYearPackages,
+            AnalysisLocation = _analysisLocation
+        });
     }
 }

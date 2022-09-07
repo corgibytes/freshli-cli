@@ -6,8 +6,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AnalysisStartedEvent : IApplicationEvent
 {
-    private readonly IServiceProvider _serviceProvider = null!;
-
     public Guid AnalysisId { get; init; }
 
     public string CacheDir { get; init; } = null!;
