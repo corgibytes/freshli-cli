@@ -47,15 +47,6 @@ RUN ./gradlew installDist
 # Use Java JRE as the base image -- the `freshli` executable is self contained (meaning it does not need the .NET runtime to be installed)
 FROM eclipse-temurin:17-jre-jammy AS final
 
-# Install libraries required by `freshli`
-RUN apt-get -y update \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        sqlite3 \
-        libsqlite3-dev \
-    && echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
-    && locale-gen en_US.UTF-8 \
-    && rm -rf /var/lib/apt/lists/*
-
 # Copy `freshli` executable from the `dotnet_build` image
 RUN mkdir -p /usr/local/share/freshli
 COPY --from=dotnet_build /app/freshli/exe/ /usr/local/share/freshli/
