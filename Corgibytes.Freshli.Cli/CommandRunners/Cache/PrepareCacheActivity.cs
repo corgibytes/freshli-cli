@@ -41,8 +41,9 @@ public class PrepareCacheActivity : IApplicationActivity
         {
             cacheManager.Prepare(CacheDirectory).ToExitCode();
             var cacheDb = cacheManager.GetCacheDb(CacheDirectory);
-            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory));
-            eventClient.Fire(new CachePreparedEvent()
+            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
+                UseCommitHistory));
+            eventClient.Fire(new CachePreparedEvent
             {
                 GitPath = GitPath,
                 CacheDirectory = CacheDirectory,

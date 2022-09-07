@@ -84,6 +84,7 @@ public class ProgramTest : FreshliTest
         task.Wait();
 
         _consoleOutput.ToString().Should().Contain("All good! Service provider is not null.");
-        _consoleOutput.ToString().Should().NotContain("Simulating loading the service provider, but the provider is null.");
+        _consoleOutput.ToString().Should()
+            .NotContain("Simulating loading the service provider, but the provider is null.");
     }
 }

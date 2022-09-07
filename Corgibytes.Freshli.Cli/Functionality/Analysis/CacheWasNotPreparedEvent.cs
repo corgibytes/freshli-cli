@@ -12,16 +12,15 @@ public class CacheWasNotPreparedEvent : ErrorEvent
     public string HistoryInterval { get; init; } = null!;
     public bool UseCommitHistory { get; init; } = false;
 
-    public override void Handle(IApplicationActivityEngine eventClient)
-    {
-        eventClient.Dispatch(new PrepareCacheActivity(CacheDirectory, RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory)
-        {
-            GitPath = GitPath,
-            CacheDirectory = CacheDirectory,
-            RepositoryUrl = RepositoryUrl,
-            RepositoryBranch = RepositoryBranch,
-            HistoryInterval = HistoryInterval,
-            UseCommitHistory = UseCommitHistory
-        });
-    }
+    public override void Handle(IApplicationActivityEngine eventClient) =>
+        eventClient.Dispatch(
+            new PrepareCacheActivity(CacheDirectory, RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory)
+            {
+                GitPath = GitPath,
+                CacheDirectory = CacheDirectory,
+                RepositoryUrl = RepositoryUrl,
+                RepositoryBranch = RepositoryBranch,
+                HistoryInterval = HistoryInterval,
+                UseCommitHistory = UseCommitHistory
+            });
 }

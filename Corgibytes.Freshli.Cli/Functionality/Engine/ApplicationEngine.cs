@@ -18,9 +18,9 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private static bool s_isActivityDispatchingInProgress;
     private static bool s_isEventFiringInProgress;
     private readonly ILogger<ApplicationEngine> _logger;
-    public IServiceProvider ServiceProvider { get; }
 
-    public ApplicationEngine(IBackgroundJobClient jobClient, ILogger<ApplicationEngine> logger, IServiceProvider serviceProvider)
+    public ApplicationEngine(IBackgroundJobClient jobClient, ILogger<ApplicationEngine> logger,
+        IServiceProvider serviceProvider)
     {
         JobClient = jobClient ?? throw new ArgumentNullException(nameof(jobClient));
         _logger = logger;
@@ -71,6 +71,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         watch.Stop();
         LogWaitStop(watch.ElapsedMilliseconds);
     }
+
+    public IServiceProvider ServiceProvider { get; }
 
     public void Fire(IApplicationEvent applicationEvent)
     {

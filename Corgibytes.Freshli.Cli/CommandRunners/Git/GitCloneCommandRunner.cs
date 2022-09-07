@@ -30,7 +30,8 @@ public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneComm
     public override int Run(GitCloneCommandOptions options, InvocationContext context)
     {
         // RepositoryUrl, Branch, CacheDir, GitPath, AnalysisId
-        _activityEngine.Dispatch(new CloneGitRepositoryActivity(options.RepoUrl, options.Branch, options.CacheDir, options.GitPath));
+        _activityEngine.Dispatch(new CloneGitRepositoryActivity(options.RepoUrl, options.Branch, options.CacheDir,
+            options.GitPath));
 
         var exitCode = true.ToExitCode();
         _eventEngine.On<GitRepositoryClonedEvent>(clonedEvent =>

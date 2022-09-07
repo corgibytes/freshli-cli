@@ -16,7 +16,8 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
     [JsonProperty] private readonly string _repoUrl;
 
-    public CloneGitRepositoryActivity(string repoUrl, string? branch, string cacheDir, string gitPath, Guid analysisId = new())
+    public CloneGitRepositoryActivity(string repoUrl, string? branch, string cacheDir, string gitPath,
+        Guid analysisId = new())
     {
         _repoUrl = repoUrl;
         _branch = branch;
@@ -31,7 +32,9 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         try
         {
             // Null warning suppressed, if we can't fetch it from the service container we got way bigger problems.
-            var gitRepository = eventClient.ServiceProvider.GetService<ICachedGitSourceRepository>()!.CloneOrPull(_repoUrl, _branch, _cacheDir, _gitPath);
+            var gitRepository =
+                eventClient.ServiceProvider.GetService<ICachedGitSourceRepository>()!.CloneOrPull(_repoUrl, _branch,
+                    _cacheDir, _gitPath);
             eventClient.Fire(new GitRepositoryClonedEvent
             {
                 GitRepositoryId = gitRepository.Id,
