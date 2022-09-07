@@ -45,6 +45,7 @@ public class FreshliServiceBuilder
         RegisterBaseCommand();
         RegisterAnalyzeCommand();
         RegisterFailCommand();
+        RegisterLoadServiceCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
         RegisterAgentsCommand();
@@ -63,6 +64,9 @@ public class FreshliServiceBuilder
         Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
         Services.AddScoped<IResultsApi, ResultsApi>();
     }
+
+    private void RegisterLoadServiceCommand() =>
+        Services.AddScoped<ICommandRunner<LoadServiceCommand, EmptyCommandOptions>, LoadServiceCommandRunner>();
 
     private void RegisterScanCommand()
     {
