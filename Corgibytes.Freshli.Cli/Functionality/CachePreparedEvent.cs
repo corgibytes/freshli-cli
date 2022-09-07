@@ -13,8 +13,7 @@ public class CachePreparedEvent : IApplicationEvent
     public string HistoryInterval { get; init; } = null!;
     public bool UseCommitHistory { get; init; } = false;
 
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
+    public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new RestartAnalysisActivity(
             eventClient.ServiceProvider.GetRequiredService<ICacheManager>(),
             eventClient.ServiceProvider.GetRequiredService<IHistoryIntervalParser>()
@@ -27,5 +26,4 @@ public class CachePreparedEvent : IApplicationEvent
             HistoryInterval = HistoryInterval,
             UseCommitHistory = UseCommitHistory
         });
-    }
 }

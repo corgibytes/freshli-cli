@@ -1,6 +1,4 @@
-using System;
 using System.CommandLine;
-using System.Text.RegularExpressions;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Functionality;
 
@@ -24,7 +22,7 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
 
         var branch = new Option<string>(
             "--branch",
-            description: "The branch to checkout after cloning the repository. If the option is not specified, then no checkout command will be issued. The remote server’s default branch will be used instead."
+            "The branch to checkout after cloning the repository. If the option is not specified, then no checkout command will be issued. The remote server’s default branch will be used instead."
         )
         {
             AllowMultipleArgumentsPerToken = false,
@@ -54,7 +52,8 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
             var givenValue = optionResult.GetValueOrDefault<string>();
             if (givenValue != null && !new HistoryIntervalParser().IsValid(givenValue))
             {
-                optionResult.ErrorMessage = $"Option {givenValue} not valid. Valid values are a number followed by a suffix. For example: 2m";
+                optionResult.ErrorMessage =
+                    $"Option {givenValue} not valid. Valid values are a number followed by a suffix. For example: 2m";
             }
         });
         AddOption(historyInterval);
@@ -68,7 +67,8 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
         AddOption(workers);
 
         var repositoryLocation =
-            new Argument<string>("repository-location", "The location of the repository. This could be either a direct URL or a local directory")
+            new Argument<string>("repository-location",
+                "The location of the repository. This could be either a direct URL or a local directory")
             {
                 Arity = ArgumentArity.ZeroOrOne
             };

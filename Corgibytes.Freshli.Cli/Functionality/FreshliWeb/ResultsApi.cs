@@ -6,12 +6,10 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class ResultsApi : IResultsApi
 {
-    public void SubmitAnalysisResults(AnalysisLocation analysisLocation, IList<PackageLibYear> libYears) => throw new NotImplementedException();
+    public void SubmitAnalysisResults(AnalysisLocation analysisLocation, IList<PackageLibYear> libYears) =>
+        throw new NotImplementedException();
 
-    public string GetResultsUrl(Guid analysisId)
-    {
+    public string GetResultsUrl(Guid analysisId) =>
         // Not the final implementation
-        return "https://freshli.app/" + analysisId;
-    }
+        "https://freshli.app/" + analysisId;
 }
-

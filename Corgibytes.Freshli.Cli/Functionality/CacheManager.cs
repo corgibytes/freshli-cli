@@ -16,6 +16,7 @@ public class CacheManager : ICacheManager
         {
             return false;
         }
+
         var dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
         // Folder is valid cache if empty or if contains "freshli.db"
         return

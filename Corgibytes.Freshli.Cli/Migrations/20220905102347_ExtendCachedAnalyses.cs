@@ -2,21 +2,20 @@
 
 #nullable disable
 
-namespace Corgibytes.Freshli.Cli.Migrations
+namespace Corgibytes.Freshli.Cli.Migrations;
+
+/// <inheritdoc />
+public partial class ExtendCachedAnalyses : Migration
 {
     /// <inheritdoc />
-    public partial class ExtendCachedAnalyses : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<bool>(name: "UseCommitHistory", table: "CachedAnalyses", type: "boolean", nullable: true);
-        }
+        migrationBuilder.AddColumn<bool>(name: "UseCommitHistory", table: "CachedAnalyses", type: "boolean", nullable: true);
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(name: "UseCommitHistory", table: "CachedAnalyses");
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(name: "UseCommitHistory", table: "CachedAnalyses");
     }
 }
