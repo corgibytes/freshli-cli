@@ -25,9 +25,16 @@ jobs:
         with:
           dotnet-version: 6.0.x
 
-      - name: "[Setup] - Install .NET tools"
-        run: |
-          dotnet tool restore
+      - name: "[Setup] - Install GitVersion"
+        uses: gittools/actions/gitversion/setup@v0.9.13
+        with:
+          versionSpec: '5.10.3'
+
+      - name: "[Setup] - Install GitReleaseManager"
+        if: ${{ github.event_name == 'push' }}
+        uses: gittools/actions/gitreleasemanager/setup@v0.9.13
+        with:
+          versionSpec: '0.13.0'
 
       - name: "[Setup] - Install Ruby"
         uses: ruby/setup-ruby@v1
@@ -119,6 +126,10 @@ jobs:
             corgibytes/freshli-cli:latest,
             corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }},
             corgibytes/freshli-cli:${{ steps.gitversion.outputs.informationalVersion }}
+
+      - name: "[Build] - Setup for Acceptance Test Coverage Collection, and for running the linters"
+        run: |
+          dotnet tool restore
 
       - name: "[Lint] - Install eclint"
         env:
