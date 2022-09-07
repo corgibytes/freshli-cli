@@ -3,7 +3,7 @@
 # directory.
 
 ### Build `freshli` executable
-FROM mcr.microsoft.com/dotnet/sdk:6.0.400-1-bullseye-slim AS dotnet_build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0.400-1-bullseye-slim AS dotnet_build
 
 COPY . /app/freshli
 WORKDIR /app/freshli
@@ -15,7 +15,7 @@ RUN dotnet gitversion /config GitVersion.yml /updateprojectfiles
 RUN dotnet build -c Release -o exe
 
 ### Build `freshli-agent-java` executable
-FROM eclipse-temurin:17-jdk-jammy AS java_build
+FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk-jammy AS java_build
 
 RUN mkdir -p /app
 WORKDIR /app
