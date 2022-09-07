@@ -5,16 +5,9 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class LoadServiceProviderActivity : IApplicationActivity
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public LoadServiceProviderActivity(IServiceProvider serviceProvider)
-    {
-        _serviceProvider = serviceProvider;
-    }
-
     public void Handle(IApplicationEventEngine eventClient)
     {
-        if (_serviceProvider == null)
+        if (eventClient.ServiceProvider == null)
         {
             throw new Exception("Simulating loading the service provider, but the provider is null.");
         }
