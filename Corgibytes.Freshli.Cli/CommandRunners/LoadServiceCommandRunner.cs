@@ -10,12 +10,9 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class LoadServiceCommandRunner : CommandRunner<LoadServiceCommand, EmptyCommandOptions>
 {
-    private readonly IServiceProvider _serviceProvider;
-
     public LoadServiceCommandRunner(IServiceProvider serviceProvider, Runner runner, IApplicationActivityEngine activityEngine)
         : base(serviceProvider, runner)
     {
-        _serviceProvider = serviceProvider;
         ActivityEngine = activityEngine;
     }
 
@@ -23,7 +20,7 @@ public class LoadServiceCommandRunner : CommandRunner<LoadServiceCommand, EmptyC
 
     public override int Run(EmptyCommandOptions options, InvocationContext context)
     {
-        ActivityEngine.Dispatch(new LoadServiceProviderActivity(_serviceProvider));
+        ActivityEngine.Dispatch(new LoadServiceProviderActivity());
         ActivityEngine.Wait();
         return 0;
     }
