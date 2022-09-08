@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 public class PrepareCacheActivity : IApplicationActivity
 {
     public PrepareCacheActivity(string cacheDirectory, string repositoryUrl = "", string? repositoryBranch = null,
-        string historyInterval = "", bool useCommitHistory = false, string gitPath = "")
+        string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval, string gitPath = "")
     {
         CacheDirectory = cacheDirectory;
         RepositoryUrl = repositoryUrl;
@@ -24,7 +24,7 @@ public class PrepareCacheActivity : IApplicationActivity
 
     public string? RepositoryBranch { get; init; }
 
-    public bool UseCommitHistory { get; init; }
+    public CommitHistory UseCommitHistory { get; init; }
 
     public string GitPath { get; init; }
 

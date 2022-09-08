@@ -38,7 +38,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,
             RepositoryUrl = options.RepositoryLocation,
-            UseCommitHistory = options.CommitHistory,
+            UseCommitHistory = options.CommitHistory ? CommitHistory.Full : CommitHistory.AtInterval,
             GitPath = options.GitPath
         });
 
