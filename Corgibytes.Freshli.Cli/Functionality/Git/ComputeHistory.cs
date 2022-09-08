@@ -41,6 +41,11 @@ public class ComputeHistory : IComputeHistory
             _ => null
         };
 
+        if (groupedHistories == null)
+        {
+            return new List<HistoryIntervalStop>();
+        }
+
         // Per group, select the most recent commit.
         // So if grouped per day, pick the commit committed last on that day.
         return (
