@@ -82,7 +82,7 @@ public class CloneGitRepositoryActivityTest
         var sampleGuid = new Guid();
         const string historyInterval = "1m";
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(sampleGuid))
-            .Returns(new CachedAnalysis(_url, _branch, historyInterval, true));
+            .Returns(new CachedAnalysis(_url, _branch, historyInterval, CommitHistory.Full));
         SetupCloneOrPullUsingDefaults();
 
         var activity = new CloneGitRepositoryActivity(_url, _branch, _cacheDir, _gitPath);
@@ -100,7 +100,7 @@ public class CloneGitRepositoryActivityTest
         var sampleGuid = new Guid();
         const string historyInterval = "1m";
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(sampleGuid))
-            .Returns(new CachedAnalysis(_url, _branch, historyInterval, false));
+            .Returns(new CachedAnalysis(_url, _branch, historyInterval, CommitHistory.AtInterval));
 
         _gitSourceRepository.Setup(mock => mock.CloneOrPull(_url, _branch, _cacheDir, _gitPath))
             .Throws(new GitException("Git clone failed"));

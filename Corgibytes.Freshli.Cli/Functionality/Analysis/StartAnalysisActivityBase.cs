@@ -17,7 +17,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
-    public bool UseCommitHistory { get; init; }
+    public CommitHistory UseCommitHistory { get; init; }
 
     public ICacheManager CacheManager { get; }
     public IHistoryIntervalParser HistoryIntervalParser { get; }
