@@ -21,22 +21,20 @@ public class GitRepositoryClonedEventTest
         var analysisId = new Guid();
         var clonedEvent = new GitRepositoryClonedEvent
         {
-            ServiceProvider = serviceProvider.Object,
             GitRepositoryId = "example",
             AnalysisId = analysisId,
             GitPath = gitPath
         };
 
-        var cacheDb = new Mock<ICacheDb>();
-        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheDb))).Returns(cacheDb.Object);
+        var cacheManager = new Mock<ICacheManager>();
+        cacheManager.Setup(mock => mock.GetCacheDb(It.IsAny<string>())).Returns(new CacheDb("example"));
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
         var computeHistoryService = new Mock<IComputeHistory>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(computeHistoryService.Object);
 
-        var analysisLocation = new Mock<IAnalysisLocation>();
-        serviceProvider.Setup(mock => mock.GetService(typeof(IAnalysisLocation))).Returns(analysisLocation.Object);
-
         var engine = new Mock<IApplicationActivityEngine>();
+        engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         clonedEvent.Handle(engine.Object);
 
