@@ -43,6 +43,7 @@ public class FreshliServiceBuilder
         Services.AddSingleton<IAgentManager, AgentManager>();
         RegisterBaseCommand();
         RegisterFailCommand();
+        RegisterLoadServiceCommand();
         RegisterScanCommand();
         RegisterCacheCommand();
         RegisterAgentsCommand();
@@ -55,6 +56,9 @@ public class FreshliServiceBuilder
 
     private void RegisterFailCommand() =>
         Services.AddScoped<ICommandRunner<FailCommand, EmptyCommandOptions>, FailCommandRunner>();
+
+    private void RegisterLoadServiceCommand() =>
+        Services.AddScoped<ICommandRunner<LoadServiceCommand, EmptyCommandOptions>, LoadServiceCommandRunner>();
 
     private void RegisterScanCommand()
     {
