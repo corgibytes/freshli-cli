@@ -7,10 +7,10 @@ public class CacheWasNotPreparedEvent : ErrorEvent
 {
     public string GitPath { get; init; } = null!;
     public string CacheDirectory { get; init; } = null!;
-    public string RepositoryUrl { get; init; } = null!;
+    public string RepositoryUrl { get; init; }
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
-    public bool UseCommitHistory { get; init; }
+    public CommitHistory UseCommitHistory { get; init; }
 
     public override void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(
