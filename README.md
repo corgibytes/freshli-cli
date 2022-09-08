@@ -447,6 +447,67 @@ There are two paths to working with this DevContainer setup.
 
 2. Run `docker` directly. Run `docker build -t freshli-cli-dev .devcontainer/` to build the container. Then you'll be able to run `docker run --rm -it -v $PWD:/code -w /code freshli-cli-dev bash` to create a shell session inside of a running container with everything set up for you. (Note, you may need to run `bundle install` when you first start the container to install the ruby-based dependencies. This step is performed for you if you use the `devcontainer` CLI to open a Visual Studio Code instance.)
 
+## Production container
+
+### Building for local use
+
+A production-ready container can be created from the `Dockerfile` in this project by running:
+
+```bash
+docker build -t freshli-cli .
+```
+
+You can then run the container with:
+
+```bash
+docker run --rm freshli-cli agents detect
+```
+
+You should see output that looks similar to:
+
+```
+❯ docker run --rm freshli-cli agents detect
++------------------+---------------------------------+
+|Agent file        |Agent path                       |
++------------------+---------------------------------+
+|freshli-agent-java|/usr/local/bin/freshli-agent-java|
++------------------+---------------------------------+
+```
+
+### Manually publishing to DockerHub
+
+Docker images are built and published to DockerHub by the CI process whenever a commit is added to the `main` or `release/*` branches.
+
+Follow these instructions if you need to produce a build manually.
+
+1. Log into DockerHub
+
+   The account that you login with will need to have write permissions for the `corgibytes/freshli` project.
+
+   ```
+   docker login
+   ```
+
+2. Create a local buildx node
+
+   ```
+   docker buildx create --use
+   ```
+
+3. Build and publish
+
+   This will create images that can run on Intel/AMD 64-bit or ARM 64-bit processors.
+
+   You'll need to update the tag list with the specific tag list to include the specific tags that you want to publish.
+
+   ```
+   docker buildx build \
+      --push \
+      --platform linux/arm64/v8,linux/amd64 \
+      --tag corgibytes/freshli-cli:latest \
+      .
+   ```
+
 ## Migrations
 
 This project uses C#'s Code First Migrations: https://docs.microsoft.com/en-us/ef/ef6/modeling/code-first/migrations/
