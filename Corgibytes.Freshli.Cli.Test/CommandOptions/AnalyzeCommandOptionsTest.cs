@@ -11,11 +11,11 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions;
 [IntegrationTest]
 public class AnalyzeCommandOptionsTest : FreshliTest
 {
-    private const string ExpectedGitPath = "git";
-    private const string ExpectedBranch = "";
-    private const int ExpectedWorkerCount = 0;
-    private const string ExpectedHistoryInterval = "1m";
-    private const bool ExpectedCommitHistory = false;
+    private const string DefaultGitPath = "git";
+    private const string DefaultBranch = "";
+    private const int DefaultWorkerCount = 0;
+    private const string DefaultHistoryInterval = "1m";
+    private const bool DefaultCommitHistory = false;
 
     public AnalyzeCommandOptionsTest(ITestOutputHelper output) : base(output)
     {
@@ -27,38 +27,38 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             // If passing no arguments, the default git path should be 'git'
             new object[]
             {
-                new[] { "analyze" }, "git", ExpectedBranch, ExpectedCommitHistory, ExpectedHistoryInterval,
-                ExpectedWorkerCount
+                new[] { "analyze" }, "git", DefaultBranch, DefaultCommitHistory, DefaultHistoryInterval,
+                DefaultWorkerCount
             },
             // Specific git path expected
             new object[]
             {
-                new[] { "analyze", "--git-path", "/usr/bin/local/git" }, "/usr/bin/local/git", ExpectedBranch,
-                ExpectedCommitHistory, ExpectedHistoryInterval, ExpectedWorkerCount
+                new[] { "analyze", "--git-path", "/usr/bin/local/git" }, "/usr/bin/local/git", DefaultBranch,
+                DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount
             },
             // Specific branch expected
             new object[]
             {
-                new[] { "analyze", "--branch", "feature-fix-final.2.0" }, ExpectedGitPath, "feature-fix-final.2.0",
-                ExpectedCommitHistory, ExpectedHistoryInterval, ExpectedWorkerCount
+                new[] { "analyze", "--branch", "feature-fix-final.2.0" }, DefaultGitPath, "feature-fix-final.2.0",
+                DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount
             },
             // Entire commit history expected
             new object[]
             {
-                new[] { "analyze", "--commit-history" }, ExpectedGitPath, ExpectedBranch, true,
-                ExpectedHistoryInterval, ExpectedWorkerCount
+                new[] { "analyze", "--commit-history" }, DefaultGitPath, DefaultBranch, true,
+                DefaultHistoryInterval, DefaultWorkerCount
             },
             // Three yearly history interval expected
             new object[]
             {
-                new[] { "analyze", "--history-interval", "3y" }, ExpectedGitPath, ExpectedBranch,
-                ExpectedCommitHistory, "3y", ExpectedWorkerCount
+                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, DefaultBranch,
+                DefaultCommitHistory, "3y", DefaultWorkerCount
             },
             // 24 workers expected
             new object[]
             {
-                new[] { "analyze", "--workers", "24" }, ExpectedGitPath, ExpectedBranch, ExpectedCommitHistory,
-                ExpectedHistoryInterval, 24
+                new[] { "analyze", "--workers", "24" }, DefaultGitPath, DefaultBranch, DefaultCommitHistory,
+                DefaultHistoryInterval, 24
             }
         };
 
