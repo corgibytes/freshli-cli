@@ -32,7 +32,13 @@ public class MainCommand : RootCommand
         {
             Add(new FailCommand());
         }
+
+        if (ShouldIncludeLoadServiceCommand)
+        {
+            Add(new LoadServiceCommand());
+        }
     }
 
     public static bool ShouldIncludeFailCommand { get; set; }
+    public static bool ShouldIncludeLoadServiceCommand { get; set; }
 }
