@@ -21,43 +21,43 @@ public class AnalyzeCommandOptionsTest : FreshliTest
     {
     }
 
-    public static IEnumerable<object[]> AnalyzeOptionsArgs =>
-        new List<object[]>
+    public static IEnumerable<object?[]> AnalyzeOptionsArgs =>
+        new List<object?[]>
         {
             // If passing no arguments, the default git path should be 'git'
-            new object[]
+            new object?[]
             {
-                new[] { "analyze" }, "git", DefaultBranch, DefaultCommitHistory, DefaultHistoryInterval,
+                new[] { "analyze" }, "git", null, DefaultCommitHistory, DefaultHistoryInterval,
                 DefaultWorkerCount
             },
             // Specific git path expected
-            new object[]
+            new object?[]
             {
-                new[] { "analyze", "--git-path", "/usr/bin/local/git" }, "/usr/bin/local/git", DefaultBranch,
+                new[] { "analyze", "--git-path", "/usr/bin/local/git" }, "/usr/bin/local/git", null,
                 DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount
             },
             // Specific branch expected
-            new object[]
+            new object?[]
             {
                 new[] { "analyze", "--branch", "feature-fix-final.2.0" }, DefaultGitPath, "feature-fix-final.2.0",
                 DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount
             },
             // Entire commit history expected
-            new object[]
+            new object?[]
             {
-                new[] { "analyze", "--commit-history" }, DefaultGitPath, DefaultBranch, true,
+                new[] { "analyze", "--commit-history" }, DefaultGitPath, null, true,
                 DefaultHistoryInterval, DefaultWorkerCount
             },
             // Three yearly history interval expected
-            new object[]
+            new object?[]
             {
-                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, DefaultBranch,
+                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, null,
                 DefaultCommitHistory, "3y", DefaultWorkerCount
             },
             // 24 workers expected
-            new object[]
+            new object?[]
             {
-                new[] { "analyze", "--workers", "24" }, DefaultGitPath, DefaultBranch, DefaultCommitHistory,
+                new[] { "analyze", "--workers", "24" }, DefaultGitPath, null, DefaultCommitHistory,
                 DefaultHistoryInterval, 24
             }
         };
@@ -65,7 +65,7 @@ public class AnalyzeCommandOptionsTest : FreshliTest
     [Theory]
     [MemberData(nameof(AnalyzeOptionsArgs))]
     public void Send_Args_ReturnsAnalyzeOptions(
-        string[] args, string expectedGitPath, string expectedBranch, bool expectedCommitHistory,
+        string[] args, string expectedGitPath, string? expectedBranch, bool expectedCommitHistory,
         string expectedHistoryInterval, int expectedWorkers
     )
     {
@@ -75,16 +75,19 @@ public class AnalyzeCommandOptionsTest : FreshliTest
         var result = parser.Parse(args);
 
         var gitPath = result.GetOptionValueByName<string>("git-path");
-        gitPath?.Should().NotBeEmpty().And.Be(expectedGitPath);
+        gitPath.Should().NotBeEmpty().And.Be(expectedGitPath);
 
-        var branch = result.GetOptionValueByName<string>("branch");
-        branch?.Should().NotBeEmpty().And.Be(expectedBranch);
+        if (expectedBranch != null)
+        {
+            var branch = result.GetOptionValueByName<string>("branch");
+            branch.Should().NotBeEmpty().And.Be(expectedBranch);
+        }
 
         var commitHistory = result.GetOptionValueByName<bool>("commit-history");
         commitHistory.Should().Be(expectedCommitHistory);
 
         var historyInterval = result.GetOptionValueByName<string>("history-interval");
-        historyInterval?.Should().NotBeEmpty().And.Be(expectedHistoryInterval);
+        historyInterval.Should().NotBeEmpty().And.Be(expectedHistoryInterval);
 
         var workers = result.GetOptionValueByName<int>("workers");
         workers.Should().Be(expectedWorkers);
