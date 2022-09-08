@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 public class ComputeHistoryTest : FreshliTest
 {
     private readonly ComputeHistory _computeHistory;
-    private MockListCommits _listCommits;
+    private readonly MockListCommits _listCommits;
 
     public ComputeHistoryTest(ITestOutputHelper output) : base(output)
     {
