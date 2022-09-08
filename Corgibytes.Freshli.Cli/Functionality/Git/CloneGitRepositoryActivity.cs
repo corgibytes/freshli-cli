@@ -56,7 +56,8 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             {
                 GitRepositoryId = gitRepository.Id,
                 AnalysisId = _analysisId,
-                GitPath = _gitPath
+                GitPath = _gitPath,
+                CacheDir = _cacheDir
             });
         }
         catch (GitException e)
