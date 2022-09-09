@@ -23,7 +23,8 @@ public class CacheWasNotPreparedEventTest
             CacheDirectory = "example",
             RepositoryUrl = "https://git.example.com",
             RepositoryBranch = "main",
-            HistoryInterval = "1m"
+            HistoryInterval = "1m",
+            UseCommitHistory = CommitHistory.Full
         };
 
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);

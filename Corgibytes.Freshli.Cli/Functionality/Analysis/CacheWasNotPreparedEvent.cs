@@ -7,7 +7,7 @@ public class CacheWasNotPreparedEvent : ErrorEvent
 {
     public string GitPath { get; init; } = null!;
     public string CacheDirectory { get; init; } = null!;
-    public string RepositoryUrl { get; init; }
+    public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
     public CommitHistory UseCommitHistory { get; init; }

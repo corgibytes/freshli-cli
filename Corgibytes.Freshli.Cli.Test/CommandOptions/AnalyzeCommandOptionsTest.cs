@@ -12,7 +12,6 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions;
 public class AnalyzeCommandOptionsTest : FreshliTest
 {
     private const string DefaultGitPath = "git";
-    private const string DefaultBranch = "";
     private const int DefaultWorkerCount = 0;
     private const string DefaultHistoryInterval = "1m";
     private const bool DefaultCommitHistory = false;
@@ -27,8 +26,7 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             // If passing no arguments, the default git path should be 'git'
             new object?[]
             {
-                new[] { "analyze" }, "git", null, DefaultCommitHistory, DefaultHistoryInterval,
-                DefaultWorkerCount
+                new[] { "analyze" }, "git", null, DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount
             },
             // Specific git path expected
             new object?[]
@@ -45,14 +43,14 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             // Entire commit history expected
             new object?[]
             {
-                new[] { "analyze", "--commit-history" }, DefaultGitPath, null, true,
-                DefaultHistoryInterval, DefaultWorkerCount
+                new[] { "analyze", "--commit-history" }, DefaultGitPath, null, true, DefaultHistoryInterval,
+                DefaultWorkerCount
             },
             // Three yearly history interval expected
             new object?[]
             {
-                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, null,
-                DefaultCommitHistory, "3y", DefaultWorkerCount
+                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, null, DefaultCommitHistory, "3y",
+                DefaultWorkerCount
             },
             // 24 workers expected
             new object?[]
