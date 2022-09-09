@@ -12,7 +12,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>corgibytes freshli static-code-analysis metrics dependencies dependency-metrics</PackageTags>
     <Authors>Corgibytes</Authors>
-    <PackAsTool>true</PackAsTool>
+    <PackAsTool>false</PackAsTool>
     <ToolCommandName>freshli</ToolCommandName>
     <LangVersion>latestmajor</LangVersion>
     <PackageId>Corgibytes.Freshli.Cli</PackageId>
