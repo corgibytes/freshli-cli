@@ -22,9 +22,8 @@ public class ComputeHistoryActivityTest
     {
         // Arrange
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "month");
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
-
 
         // Have interval stops available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -69,6 +68,50 @@ public class ComputeHistoryActivityTest
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
                         value.GitCommitIdentifier == "583d813db3e28b9b44a29db352e2f0e1b4c6e420" &&
+                        value.AnalysisLocation == analysisLocation.Object
+                )
+            )
+        );
+    }
+
+    [Fact]
+    public void FiresHistoryIntervalStopFoundEventsForComputeHistory()
+    {
+        // Arrange
+        // Have an analysis available
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full);
+        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
+
+        // Have interval stops available
+        var historyIntervalStops = new List<HistoryIntervalStop>
+        {
+            new(
+                "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
+            )
+        };
+        _computeHistory.Setup(mock => mock.ComputeCommitHistory(
+                It.IsAny<IAnalysisLocation>(), It.IsAny<string>())
+            )
+            .Returns(historyIntervalStops);
+
+        var analysisLocation = new Mock<IAnalysisLocation>();
+
+        // Act
+        new ComputeHistoryActivity(
+            "git",
+            _cacheDb.Object,
+            _computeHistory.Object,
+            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
+            analysisLocation.Object
+        ).Handle(_eventEngine.Object);
+
+        // Assert
+        _eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<HistoryIntervalStopFoundEvent>(
+                    value =>
+                        value.GitCommitIdentifier == "75c7fcc7336ee718050c4a5c8dfb5598622787b2" &&
                         value.AnalysisLocation == analysisLocation.Object
                 )
             )
