@@ -2,7 +2,6 @@ using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -18,10 +17,7 @@ public class GitRepositoryClonedEvent : IApplicationEvent
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
-        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var analysisLocation = new AnalysisLocation(CacheDir, GitRepositoryId);
-
-        eventClient.Dispatch(new ComputeHistoryActivity(GitPath, cacheManager.GetCacheDb(CacheDir), computeHistoryService, AnalysisId, analysisLocation));
+        eventClient.Dispatch(new ComputeHistoryActivity(GitPath, CacheDir, AnalysisId, analysisLocation));
     }
 }
