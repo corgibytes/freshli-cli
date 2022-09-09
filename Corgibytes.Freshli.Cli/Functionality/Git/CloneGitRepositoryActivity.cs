@@ -31,10 +31,8 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         // Clone or pull the given repository and branch.
         try
         {
-            // Null warning suppressed, if we can't fetch it from the service container we got way bigger problems.
             var gitRepository =
-                eventClient.ServiceProvider.GetService<ICachedGitSourceRepository>()!.CloneOrPull(_repoUrl, _branch,
-                    _cacheDir, _gitPath);
+                eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>().CloneOrPull(_repoUrl, _branch, _cacheDir, _gitPath);
             eventClient.Fire(new GitRepositoryClonedEvent
             {
                 GitRepositoryId = gitRepository.Id,
