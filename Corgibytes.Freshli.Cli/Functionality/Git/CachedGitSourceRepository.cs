@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -49,7 +48,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         var existingCachedGitSource = db.CachedGitSources.Find(hash);
         if (existingCachedGitSource is not null)
         {
-            return db.CachedGitSources.Find(hash) ?? throw new InvalidOperationException();
+            return existingCachedGitSource;
         }
 
         var directory = CacheManager.GetDirectoryInCache(cacheDir, new[] { "repositories", hash });

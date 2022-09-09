@@ -128,8 +128,8 @@ public class ScanCommandOptionsTest : FreshliTest
     public void Send_Args_ReturnsScanOptions(string[] args, string expectedPath, FormatType expectedFormat,
         IList<OutputStrategyType> expectedOutput)
     {
-        var cmBuilder = Program.CreateCommandLineBuilder();
-        var parser = new Parser(cmBuilder.Command);
+        var builder = Program.CreateCommandLineBuilder();
+        var parser = new Parser(builder.Command);
 
         var result = parser.Parse(args);
 
