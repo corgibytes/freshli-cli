@@ -2,38 +2,43 @@ using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
-using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class ComputeHistoryActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly Guid _analysisId;
-    [JsonProperty] private readonly IAnalysisLocation _analysisLocation;
-    [JsonProperty] private readonly ICacheDb _cacheDb;
-    [JsonProperty] private readonly IComputeHistory _computeHistoryService;
-    private readonly string _gitExecutablePath;
+    public Guid AnalysisId;
 
-    public ComputeHistoryActivity(string gitExecutablePath, ICacheDb cacheDb, IComputeHistory computeHistoryService,
+    // ReSharper disable once MemberCanBePrivate.Global
+    public readonly IAnalysisLocation AnalysisLocation;
+
+    public readonly string GitExecutablePath;
+
+    public readonly string CacheDir;
+
+    public ComputeHistoryActivity(string gitExecutablePath, string cacheDir,
         Guid analysisId, IAnalysisLocation analysisLocation)
     {
-        _gitExecutablePath = gitExecutablePath;
-        _cacheDb = cacheDb;
-        _computeHistoryService = computeHistoryService;
-        _analysisId = analysisId;
-        _analysisLocation = analysisLocation;
+        GitExecutablePath = gitExecutablePath;
+        CacheDir = cacheDir;
+        AnalysisId = analysisId;
+        AnalysisLocation = analysisLocation;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var analysis = _cacheDb.RetrieveAnalysis(_analysisId);
+        var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
+        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+        var cacheDb = cacheManager.GetCacheDb(CacheDir);
+        var analysis = cacheDb.RetrieveAnalysis(AnalysisId);
         if (analysis == null)
         {
             return;
         }
 
         var historyIntervalStops =
-            _computeHistoryService.ComputeWithHistoryInterval(_analysisLocation, _gitExecutablePath,
+            computeHistoryService.ComputeWithHistoryInterval(AnalysisLocation, GitExecutablePath,
                 analysis.HistoryInterval);
 
         foreach (var historyIntervalStop in historyIntervalStops)
@@ -41,7 +46,7 @@ public class ComputeHistoryActivity : IApplicationActivity
             eventClient.Fire(new HistoryIntervalStopFoundEvent
             {
                 GitCommitIdentifier = historyIntervalStop.GitCommitIdentifier,
-                AnalysisLocation = _analysisLocation
+                AnalysisLocation = AnalysisLocation
             });
         }
     }
