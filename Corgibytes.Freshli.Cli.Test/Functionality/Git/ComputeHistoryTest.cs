@@ -87,7 +87,6 @@ public class ComputeHistoryTest : FreshliTest
 
     [Theory]
     [MethodData(nameof(ExpectedStopsForDayIntervalForRealWorldScenario))]
-    [MethodData(nameof(ExpectedStopsForWeekIntervalForRealWorldScenario))]
     [MethodData(nameof(ExpectedStopsForMonthIntervalForRealWorldScenario))]
     [MethodData(nameof(ExpectedStopsForYearIntervalForRealWorldScenario))]
     [MethodData(nameof(ExpectedStopsForTwoWeekInterval))]
@@ -185,30 +184,6 @@ public class ComputeHistoryTest : FreshliTest
                     )
                 },
                 "1d",
-                CommitsAvailableFromRealWorldScenario()
-            }
-        };
-
-    private static TheoryData<List<HistoryIntervalStop>, string, List<GitCommit>> ExpectedStopsForWeekIntervalForRealWorldScenario() =>
-        new()
-        {
-            {
-                new List<HistoryIntervalStop>
-                {
-                    new(
-                        "b2bd95f16a8587dd0bd618ea3415fc8928832c91",
-                        new DateTimeOffset(2021, 2, 2, 13, 17, 05, TimeSpan.Zero)
-                    ),
-                    new(
-                        "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
-                        new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
-                    ),
-                    new(
-                        "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
-                        new DateTimeOffset(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
-                    )
-                },
-                "1w",
                 CommitsAvailableFromRealWorldScenario()
             }
         };
