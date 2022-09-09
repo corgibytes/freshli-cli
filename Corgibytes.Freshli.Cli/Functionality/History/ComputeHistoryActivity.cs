@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -32,10 +33,18 @@ public class ComputeHistoryActivity : IApplicationActivity
             return;
         }
 
-        // @TODO: Check if CommitHistory.Full otherwise compute with interval
-        var historyIntervalStops =
-            _computeHistoryService.ComputeWithHistoryInterval(_analysisLocation, _gitExecutablePath,
-                analysis.HistoryInterval);
+        IEnumerable<HistoryIntervalStop> historyIntervalStops;
+
+        if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
+        {
+            historyIntervalStops = _computeHistoryService
+                .ComputeWithHistoryInterval(_analysisLocation, _gitExecutablePath, analysis.HistoryInterval);
+        }
+        else
+        {
+            historyIntervalStops =
+                _computeHistoryService.ComputeCommitHistory(_analysisLocation, _gitExecutablePath);
+        }
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
