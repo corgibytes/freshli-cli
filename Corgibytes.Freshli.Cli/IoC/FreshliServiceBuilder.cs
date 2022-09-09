@@ -1,12 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.CommandLine.Hosting;
 using Corgibytes.Freshli.Cli.CommandOptions;
-using Corgibytes.Freshli.Cli.CommandOptions.Git;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
-using Corgibytes.Freshli.Cli.CommandRunners.Git;
 using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.Commands.Git;
 using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -111,22 +108,6 @@ public class FreshliServiceBuilder
 
     private void RegisterGitCommand()
     {
-        Services.AddScoped<ICommandRunner<GitCommand, GitCommandOptions>, GitCommandRunner>();
-        Services.AddOptions<GitCommandOptions>().BindCommandLine();
-
-        Services
-            .AddScoped<ICommandRunner<CheckoutHistoryCommand, CheckoutHistoryCommandOptions>,
-                CheckoutHistoryCommandRunner>();
-        Services.AddOptions<CheckoutHistoryCommandOptions>().BindCommandLine();
-
-        Services.AddScoped<ICommandRunner<GitCloneCommand, GitCloneCommandOptions>, GitCloneCommandRunner>();
-        Services.AddOptions<GitCloneCommandOptions>().BindCommandLine();
-
-        Services
-            .AddScoped<ICommandRunner<ComputeHistoryCommand, ComputeHistoryCommandOptions>,
-                ComputeHistoryCommandRunner>();
-        Services.AddOptions<ComputeHistoryCommandOptions>().BindCommandLine();
-
         Services.AddScoped<IComputeHistory, ComputeHistory>();
         Services.AddScoped<IListCommits, ListCommits>();
 
@@ -137,11 +118,6 @@ public class FreshliServiceBuilder
 
     private void RegisterComputeLibYearCommand()
     {
-        Services
-            .AddScoped<ICommandRunner<ComputeLibYearCommand, ComputeLibYearCommandOptions>,
-                ComputeLibYearCommandRunner>();
-        Services.AddOptions<ComputeLibYearCommandOptions>().BindCommandLine();
-
         Services.AddScoped<ICalculateLibYearFromFile, CalculateLibYearFromCycloneDxFile>();
         Services.AddTransient<ReadCycloneDxFile>();
         Services.AddScoped<IFileReader, CycloneDxFileReaderFromFileReaderSystem>();
