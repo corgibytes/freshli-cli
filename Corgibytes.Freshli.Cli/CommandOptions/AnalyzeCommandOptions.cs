@@ -4,7 +4,6 @@ namespace Corgibytes.Freshli.Cli.CommandOptions;
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
-
 public class AnalyzeCommandOptions : CommandOptions
 {
     public string GitPath { get; set; } = null!;
