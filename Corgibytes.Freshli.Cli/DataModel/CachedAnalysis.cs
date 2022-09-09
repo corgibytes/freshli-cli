@@ -10,7 +10,8 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 [Index(nameof(Id), IsUnique = true)]
 public class CachedAnalysis
 {
-    public CachedAnalysis(string repositoryUrl, string? repositoryBranch, string historyInterval, CommitHistory useCommitHistory)
+    public CachedAnalysis(string repositoryUrl, string? repositoryBranch, string historyInterval,
+        CommitHistory useCommitHistory)
     {
         RepositoryUrl = repositoryUrl;
         RepositoryBranch = repositoryBranch;
