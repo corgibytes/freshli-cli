@@ -32,6 +32,7 @@ public class ComputeHistoryActivity : IApplicationActivity
             return;
         }
 
+        // @TODO: Check if CommitHistory.Full otherwise compute with interval
         var historyIntervalStops =
             _computeHistoryService.ComputeWithHistoryInterval(_analysisLocation, _gitExecutablePath,
                 analysis.HistoryInterval);

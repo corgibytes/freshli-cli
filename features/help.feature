@@ -16,15 +16,7 @@ Feature: Freshli.Cli
         """
         And the output should contain:
         """
-          git                            Uses git to traverse through a repository's history
-        """
-        And the output should contain:
-        """
           cache                          Manages the local cache database and directory
-        """
-        And the output should contain:
-        """
-          compute-libyear <file-path>    Computes the libyear for a given CycloneDX file
         """
         And the output should contain:
         """
