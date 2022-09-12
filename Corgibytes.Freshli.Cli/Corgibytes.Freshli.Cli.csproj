@@ -12,7 +12,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>corgibytes freshli static-code-analysis metrics dependencies dependency-metrics</PackageTags>
     <Authors>Corgibytes</Authors>
-    <PackAsTool>true</PackAsTool>
+    <PackAsTool>false</PackAsTool>
     <ToolCommandName>freshli</ToolCommandName>
     <LangVersion>latestmajor</LangVersion>
     <PackageId>Corgibytes.Freshli.Cli</PackageId>
@@ -26,7 +26,7 @@
       <Link>LICENSE</Link>
     </None>
     <PackageReference Include="CliWrap" Version="3.5.0" />
-    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.4.0" />
+    <PackageReference Include="Corgibytes.Freshli.Lib" Version="0.5.0" />
     <PackageReference Include="CycloneDX.Core" Version="5.2.2" />
     <PackageReference Include="Hangfire.Core" Version="1.7.31" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
