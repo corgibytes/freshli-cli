@@ -26,8 +26,8 @@ public class MainCommand : RootCommand
         Add(new ScanCommand());
         Add(new CacheCommand());
         Add(new AgentsCommand());
-        Add(new GitCommand());
-        Add(new ComputeLibYearCommand());
+        Add(new AnalyzeCommand());
+
         if (ShouldIncludeFailCommand)
         {
             Add(new FailCommand());

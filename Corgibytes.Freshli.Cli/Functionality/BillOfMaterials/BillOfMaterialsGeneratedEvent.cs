@@ -1,6 +1,7 @@
-using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
@@ -15,5 +16,10 @@ public class BillOfMaterialsGeneratedEvent : IApplicationEvent
     public IAnalysisLocation AnalysisLocation { get; }
     public string PathToBillOfMaterials { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient) => throw new NotImplementedException();
+    public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
+        new ComputeLibYearActivity(
+            eventClient.ServiceProvider.GetRequiredService<ICalculateLibYearFromFile>(),
+            PathToBillOfMaterials,
+            AnalysisLocation
+        ));
 }
