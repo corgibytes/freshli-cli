@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -33,9 +34,18 @@ public class ComputeHistoryActivity : IApplicationActivity
             return;
         }
 
-        var historyIntervalStops =
-            computeHistoryService.ComputeWithHistoryInterval(AnalysisLocation, GitExecutablePath,
-                analysis.HistoryInterval);
+        IEnumerable<HistoryIntervalStop> historyIntervalStops;
+
+        if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
+        {
+            historyIntervalStops = computeHistoryService
+                .ComputeWithHistoryInterval(AnalysisLocation, GitExecutablePath, analysis.HistoryInterval);
+        }
+        else
+        {
+            historyIntervalStops =
+                computeHistoryService.ComputeCommitHistory(AnalysisLocation, GitExecutablePath);
+        }
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
