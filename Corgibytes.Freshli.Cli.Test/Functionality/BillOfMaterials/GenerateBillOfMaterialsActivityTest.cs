@@ -14,19 +14,15 @@ public class GenerateBillOfMaterialsActivityTest
     public void Handle()
     {
         // Arrange
-        var agentManager = new Mock<IAgentManager>();
         var javaAgentReader = new Mock<IAgentReader>();
         var eventEngine = new Mock<IApplicationEventEngine>();
         var analysisLocation = new Mock<IAnalysisLocation>();
 
-        agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-java")).Returns(javaAgentReader.Object);
         javaAgentReader.Setup(mock => mock.ProcessManifest("/path/to/manifest", It.IsAny<DateTime>()))
             .Returns("/path/to/bill-of-materials");
 
         // Act
-        var activity = new GenerateBillOfMaterialsActivity(
-            agentManager.Object, analysisLocation.Object, "/path/to/manifest", "/usr/local/bin/freshli-agent-java"
-        );
+        var activity = new GenerateBillOfMaterialsActivity(javaAgentReader.Object, analysisLocation.Object, "/path/to/manifest");
         activity.Handle(eventEngine.Object);
 
         // Assert
