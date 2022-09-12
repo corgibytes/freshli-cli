@@ -32,7 +32,8 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         try
         {
             var gitRepository =
-                eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>().CloneOrPull(_repoUrl, _branch, _cacheDir, _gitPath);
+                eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>()
+                    .CloneOrPull(_repoUrl, _branch, _cacheDir, _gitPath);
             eventClient.Fire(new GitRepositoryClonedEvent
             {
                 GitRepositoryId = gitRepository.Id,
