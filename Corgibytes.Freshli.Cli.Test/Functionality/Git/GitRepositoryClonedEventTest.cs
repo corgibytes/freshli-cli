@@ -1,4 +1,5 @@
 using System;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -15,13 +16,15 @@ public class GitRepositoryClonedEventTest
     {
         var gitPath = "test";
         var cacheDir = "example";
+        var gitRepositoryId = "example";
         var analysisId = new Guid();
+        var analysisLocation = new AnalysisLocation(cacheDir, gitRepositoryId);
+
         var clonedEvent = new GitRepositoryClonedEvent
         {
-            GitRepositoryId = "example",
             AnalysisId = analysisId,
             GitPath = gitPath,
-            CacheDir = cacheDir
+            AnalysisLocation = analysisLocation
         };
 
         var engine = new Mock<IApplicationActivityEngine>();
@@ -31,7 +34,7 @@ public class GitRepositoryClonedEventTest
         // Verify that it dispatches ComputeHistoryActivity
         engine.Verify(mock => mock.Dispatch(It.Is<ComputeHistoryActivity>(value =>
             value.AnalysisId == analysisId &&
-            value.CacheDir == cacheDir &&
-            value.GitExecutablePath == gitPath)));
+            value.GitExecutablePath == gitPath &&
+            value.AnalysisLocation == analysisLocation)));
     }
 }

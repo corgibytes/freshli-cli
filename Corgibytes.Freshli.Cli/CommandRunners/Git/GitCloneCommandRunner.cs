@@ -36,7 +36,7 @@ public class GitCloneCommandRunner : CommandRunner<GitCloneCommand, GitCloneComm
         _eventEngine.On<GitRepositoryClonedEvent>(clonedEvent =>
         {
             // Output the id to the command line for use by the caller.
-            context.Console.Out.WriteLine(clonedEvent.GitRepositoryId);
+            context.Console.Out.WriteLine(clonedEvent.AnalysisLocation.RepositoryId);
         });
 
         _eventEngine.On<CloneGitRepositoryFailedEvent>(clonedEvent =>

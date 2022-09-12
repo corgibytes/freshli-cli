@@ -1,5 +1,6 @@
 using System;
 using Corgibytes.Freshli.Cli.Exceptions;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -52,12 +53,12 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         try
         {
             var gitRepository = _gitSourceRepository.CloneOrPull(_repoUrl, _branch, _cacheDir, _gitPath);
+            var analysisLocation = new AnalysisLocation(_cacheDir, gitRepository.Id);
             eventClient.Fire(new GitRepositoryClonedEvent
             {
-                GitRepositoryId = gitRepository.Id,
                 AnalysisId = _analysisId,
                 GitPath = _gitPath,
-                CacheDir = _cacheDir
+                AnalysisLocation = analysisLocation
             });
         }
         catch (GitException e)

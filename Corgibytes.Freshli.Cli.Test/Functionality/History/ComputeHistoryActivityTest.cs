@@ -48,7 +48,6 @@ public class ComputeHistoryActivityTest
         var serviceProvider = new Mock<IServiceProvider>();
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var cacheDir = "example";
         var cacheManager = new Mock<ICacheManager>();
         cacheManager.Setup(mock => mock.GetCacheDb(It.IsAny<string>())).Returns(_cacheDb.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
@@ -58,7 +57,6 @@ public class ComputeHistoryActivityTest
         // Act
         new ComputeHistoryActivity(
             "git",
-            cacheDir,
             new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
             analysisLocation.Object
         ).Handle(_eventEngine.Object);
