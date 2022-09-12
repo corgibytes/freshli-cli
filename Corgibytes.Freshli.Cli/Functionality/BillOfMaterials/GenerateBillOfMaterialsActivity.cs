@@ -7,27 +7,22 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class GenerateBillOfMaterialsActivity : IApplicationActivity
 {
-    private readonly IAgentManager _agentManager;
-    private readonly string _agentPath;
-    private readonly IAnalysisLocation _analysisLocation;
-    private readonly string _manifestPath;
+    public readonly IAgentReader AgentReader;
+    public readonly IAnalysisLocation AnalysisLocation;
+    public readonly string ManifestPath;
 
-    public GenerateBillOfMaterialsActivity(
-        IAgentManager agentManager, IAnalysisLocation analysisLocation, string manifestPath, string agentPath
-    )
+    public GenerateBillOfMaterialsActivity(IAgentReader agentReader, IAnalysisLocation analysisLocation, string manifestPath)
     {
-        _agentManager = agentManager;
-        _analysisLocation = analysisLocation;
-        _manifestPath = manifestPath;
-        _agentPath = agentPath;
+        AgentReader = agentReader;
+        AnalysisLocation = analysisLocation;
+        ManifestPath = manifestPath;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var agent = _agentManager.GetReader(_agentPath);
         var asOfDate = DateTime.Now;
-        var pathToBillOfMaterials = agent.ProcessManifest(_manifestPath, asOfDate);
+        var pathToBillOfMaterials = AgentReader.ProcessManifest(ManifestPath, asOfDate);
 
-        eventClient.Fire(new BillOfMaterialsGeneratedEvent(_analysisLocation, pathToBillOfMaterials));
+        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisLocation, pathToBillOfMaterials));
     }
 }
