@@ -56,7 +56,8 @@ public class CloneGitRepositoryActivityTest
         activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<GitRepositoryClonedEvent>(value => value.GitRepositoryId == _repositoryId)));
+            mock.Fire(It.Is<GitRepositoryClonedEvent>(value =>
+                value.AnalysisLocation.RepositoryId == _repositoryId)));
     }
 
     [Fact]

@@ -10,18 +10,14 @@ public class ComputeHistoryActivity : IApplicationActivity
 {
     public Guid AnalysisId;
 
-    // ReSharper disable once MemberCanBePrivate.Global
     public readonly IAnalysisLocation AnalysisLocation;
 
     public readonly string GitExecutablePath;
 
-    public readonly string CacheDir;
-
-    public ComputeHistoryActivity(string gitExecutablePath, string cacheDir,
-        Guid analysisId, IAnalysisLocation analysisLocation)
+    public ComputeHistoryActivity(string gitExecutablePath, Guid analysisId,
+        IAnalysisLocation analysisLocation)
     {
         GitExecutablePath = gitExecutablePath;
-        CacheDir = cacheDir;
         AnalysisId = analysisId;
         AnalysisLocation = analysisLocation;
     }
@@ -30,7 +26,7 @@ public class ComputeHistoryActivity : IApplicationActivity
     {
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb(CacheDir);
+        var cacheDb = cacheManager.GetCacheDb(AnalysisLocation.CacheDirectory);
         var analysis = cacheDb.RetrieveAnalysis(AnalysisId);
         if (analysis == null)
         {
