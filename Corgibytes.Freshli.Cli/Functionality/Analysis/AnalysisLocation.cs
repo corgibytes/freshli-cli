@@ -4,13 +4,13 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AnalysisLocation : IAnalysisLocation
 {
-    [JsonProperty] private readonly string _cacheDirectory;
-    [JsonProperty] private readonly string _repositoryId;
+    [JsonProperty] public string CacheDirectory { get; }
+    [JsonProperty] public string RepositoryId { get; }
 
     public AnalysisLocation(string cacheDirectory, string repositoryId, string? commitId = null)
     {
-        _cacheDirectory = cacheDirectory;
-        _repositoryId = repositoryId;
+        CacheDirectory = cacheDirectory;
+        RepositoryId = repositoryId;
         CommitId = commitId;
     }
 
@@ -22,10 +22,10 @@ public class AnalysisLocation : IAnalysisLocation
         {
             if (CommitId == null)
             {
-                return System.IO.Path.Combine(_cacheDirectory, "repositories", _repositoryId);
+                return System.IO.Path.Combine(CacheDirectory, "repositories", RepositoryId);
             }
 
-            return System.IO.Path.Combine(_cacheDirectory, "histories", _repositoryId, CommitId);
+            return System.IO.Path.Combine(CacheDirectory, "histories", RepositoryId, CommitId);
         }
     }
 }

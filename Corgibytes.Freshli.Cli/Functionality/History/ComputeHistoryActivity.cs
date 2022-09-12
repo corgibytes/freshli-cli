@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
-using Corgibytes.Freshli.Cli.Services;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
@@ -30,18 +28,11 @@ public class ComputeHistoryActivity : IApplicationActivity
     public void Handle(IApplicationEventEngine eventClient)
     {
         var analysis = _cacheDb.RetrieveAnalysis(_analysisId);
-
         if (analysis == null)
         {
             return;
         }
 
-<<<<<<< HEAD
-
-        var historyIntervalStops =
-            _computeHistoryService.ComputeWithHistoryInterval(_analysisLocation, _gitExecutablePath,
-                analysis.HistoryInterval);
-=======
         IEnumerable<HistoryIntervalStop> historyIntervalStops;
 
         if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
@@ -54,14 +45,11 @@ public class ComputeHistoryActivity : IApplicationActivity
             historyIntervalStops =
                 _computeHistoryService.ComputeCommitHistory(_analysisLocation, _gitExecutablePath);
         }
->>>>>>> bom-dispatches-compute-libyear
-
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
             eventClient.Fire(new HistoryIntervalStopFoundEvent
             {
-                GitExecutablePath = _gitExecutablePath,
                 GitCommitIdentifier = historyIntervalStop.GitCommitIdentifier,
                 AnalysisLocation = _analysisLocation
             });
