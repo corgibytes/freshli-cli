@@ -43,12 +43,9 @@ public class ComputeHistory : IComputeHistory
             return new List<HistoryIntervalStop>();
         }
 
-        var oldestCommit = gitCommits.MinBy(commit => commit.CommittedAt);
-        var latestCommit = gitCommits.MaxBy(commit => commit.CommittedAt);
-        if (oldestCommit == null || latestCommit == null)
-        {
-            throw new ArgumentException("");
-        }
+        // Technically this could return null, but not in our case since we already know we have some commits
+        var oldestCommit = gitCommits.MinBy(commit => commit.CommittedAt)!;
+        var latestCommit = gitCommits.MaxBy(commit => commit.CommittedAt)!;
 
         // Here be dragons!
         // The code that follows looks odd but it's important to remember we are walking back in time.
