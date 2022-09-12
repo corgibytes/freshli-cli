@@ -439,7 +439,7 @@ dotnet coverlet --target "bundle" --targetargs "exec cucumber" ./exe
 ```
 ## Working with the DevContainer
 
-This project has uses DevContainer to assist with creating a full configured development environment.
+This project uses DevContainer to assist with creating a full configured development environment.
 
 There are two paths to working with this DevContainer setup.
 
@@ -508,6 +508,29 @@ Follow these instructions if you need to produce a build manually.
       .
    ```
 
+## Migrations
+
+This project uses C#'s Code First Migrations: https://docs.microsoft.com/en-us/ef/ef6/modeling/code-first/migrations/
+Migrations allow us to keep track of changes we make to models saved in a database, and it keeps our databases up-to-date.
+
+### Creating a new migration
+
+From the CLI:
+1. `dotnet ef migrations add [name]`
+
+### Running migrations
+
+By default it'll update to the latest available migration.
+
+From the CLI:
+1. `dotnet ef database update`
+
+### Reverting migrations
+
+Reverting a migration is done similarly as to updating the database though we are now specifying til what point in time we want to revert.
+
+From the CLI:
+1. `dotnet ef database update [specific migration name]`
 
 ## Contributing
 
