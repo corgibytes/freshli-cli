@@ -6,7 +6,7 @@ public class AnalysisLocation : IAnalysisLocation
 {
     [JsonProperty] private readonly string _cacheDirectory;
     [JsonProperty] private readonly string _repositoryId;
-    [JsonProperty] public readonly string? CommitId;
+    [JsonProperty] public string? CommitId { get; }
 
     public AnalysisLocation(string cacheDirectory, string repositoryId, string? commitId = null)
     {
