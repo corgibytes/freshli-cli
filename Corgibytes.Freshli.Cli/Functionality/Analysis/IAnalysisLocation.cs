@@ -4,5 +4,9 @@ public interface IAnalysisLocation
 {
     public string? CommitId { get; }
 
+    public string? CacheDirectory { get; }
+
+    public string? RepositoryId { get; }
+
     public string Path { get; }
 }
