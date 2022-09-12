@@ -61,19 +61,6 @@ public class ComputeHistoryTest : FreshliTest
             _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "git", "1w"));
     }
 
-    [Fact]
-    public void Verify_it_returns_an_empty_list_when_an_invalid_interval_is_used()
-    {
-        _listCommits.HasCommitsAvailable(new List<GitCommit>
-        {
-            new("583d813db3e28b9b44a29db352e2f0e1b4c6e420",
-                // 2021/05/19 15:24:24
-                new DateTimeOffset(2021, 5, 19, 15, 24, 24, TimeSpan.Zero))
-        });
-        Assert.Equivalent(new List<HistoryIntervalStop>(),
-            _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "git", "icannotbelievethisisrealhistoryinterval"));
-    }
-
     [Theory]
     [MethodData(nameof(ExpectedStopsForCommitHistoryForRealWorldScenario))]
     public void Verify_it_can_find_sha_identifiers_and_dates_for_the_all_commits(
