@@ -10,17 +10,23 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 public class PrepareCacheActivity : IApplicationActivity
 {
     public PrepareCacheActivity(string cacheDirectory, string repositoryUrl = "", string? repositoryBranch = null,
-        string historyInterval = "")
+        string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval, string gitPath = "")
     {
         CacheDirectory = cacheDirectory;
         RepositoryUrl = repositoryUrl;
         RepositoryBranch = repositoryBranch;
         HistoryInterval = historyInterval;
+        UseCommitHistory = useCommitHistory;
+        GitPath = gitPath;
     }
 
     public string RepositoryUrl { get; init; }
 
     public string? RepositoryBranch { get; init; }
+
+    public CommitHistory UseCommitHistory { get; init; }
+
+    public string GitPath { get; init; }
 
     // TODO: Research how to use a value class here instead of a string
     public string HistoryInterval { get; init; }
@@ -35,8 +41,17 @@ public class PrepareCacheActivity : IApplicationActivity
         {
             cacheManager.Prepare(CacheDirectory).ToExitCode();
             var cacheDb = cacheManager.GetCacheDb(CacheDirectory);
-            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval));
-            eventClient.Fire(new CachePreparedEvent());
+            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
+                UseCommitHistory));
+            eventClient.Fire(new CachePreparedEvent
+            {
+                GitPath = GitPath,
+                CacheDirectory = CacheDirectory,
+                RepositoryUrl = RepositoryUrl,
+                RepositoryBranch = RepositoryBranch,
+                HistoryInterval = HistoryInterval,
+                UseCommitHistory = UseCommitHistory
+            });
         }
         catch (CacheException e)
         {
