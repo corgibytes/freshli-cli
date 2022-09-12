@@ -22,17 +22,7 @@ public class ComputeHistory : IComputeHistory
         string historyInterval
     )
     {
-        int interval;
-        string? quantifier;
-
-        try
-        {
-            _historyIntervalParser.Parse(historyInterval, out interval, out quantifier);
-        }
-        catch (ArgumentException)
-        {
-            return new List<HistoryIntervalStop>();
-        }
+        _historyIntervalParser.Parse(historyInterval, out var interval, out var quantifier);
 
         var commitHistory = _listCommits.ForRepository(analysisLocation, gitPath);
 
@@ -95,6 +85,7 @@ public class ComputeHistory : IComputeHistory
             }
             catch (InvalidOperationException)
             {
+                // We ignore the exception as it could be that there's no commit for these dates
             }
             previousOffset = offset;
         }
