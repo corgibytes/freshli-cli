@@ -1,4 +1,4 @@
-using System;
+using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
 
@@ -17,5 +17,9 @@ public class ManifestDetectedEvent : IApplicationEvent
     public IAgentReader AgentReader { get; }
     public string ManifestPath { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient) => throw new NotImplementedException();
+    public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(new GenerateBillOfMaterialsActivity(
+        AgentReader,
+        AnalysisLocation,
+        ManifestPath
+    ));
 }
