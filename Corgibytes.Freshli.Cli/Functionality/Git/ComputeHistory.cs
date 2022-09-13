@@ -39,27 +39,12 @@ public class ComputeHistory : IComputeHistory
 
         // Here be dragons!
         // The code that follows looks odd but it's important to remember we are walking back in time.
-        var rangeStartDate = startAtDate;
         var range = new List<DateTimeOffset>
         {
             startAtDate
         };
 
-        switch (quantifier)
-        {
-            case "w":
-                {
-                    var daysToSubtract = (7 + (int)rangeStartDate.DayOfWeek - (int)DayOfWeek.Monday) % 7;
-                    rangeStartDate = rangeStartDate.AddDays(-daysToSubtract);
-                    break;
-                }
-            case "m":
-                rangeStartDate = new DateTimeOffset(rangeStartDate.Year, rangeStartDate.Month, 1, 0, 0, 0, rangeStartDate.Offset);
-                break;
-            case "y":
-                rangeStartDate = new DateTimeOffset(rangeStartDate.Year, 1, 1, 0, 0, 0, rangeStartDate.Offset);
-                break;
-        }
+        var rangeStartDate = DetermineRangeStartDate(startAtDate, quantifier);
 
         if (rangeStartDate != startAtDate)
         {
@@ -101,6 +86,31 @@ public class ComputeHistory : IComputeHistory
             let lastCommitForOffset = gitCommits.First(commit => commit.CommittedAt <= offset)
             select new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, offset))
         .ToList();
+    }
+
+    private static DateTimeOffset DetermineRangeStartDate(DateTimeOffset startAtDate, string? quantifier)
+    {
+        var rangeStartDate = startAtDate;
+        switch (quantifier)
+        {
+            case "w":
+                {
+                    // Start at first monday
+                    var daysToSubtract = (7 + (int)rangeStartDate.DayOfWeek - (int)DayOfWeek.Monday) % 7;
+                    rangeStartDate = rangeStartDate.AddDays(-daysToSubtract);
+                    break;
+                }
+            case "m":
+                // Start at first day of the month
+                rangeStartDate = new DateTimeOffset(rangeStartDate.Year, rangeStartDate.Month, 1, 0, 0, 0, rangeStartDate.Offset);
+                break;
+            case "y":
+                // Start at first day of the year
+                rangeStartDate = new DateTimeOffset(rangeStartDate.Year, 1, 1, 0, 0, 0, rangeStartDate.Offset);
+                break;
+        }
+
+        return rangeStartDate;
     }
 
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath)
