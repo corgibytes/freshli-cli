@@ -1,17 +1,18 @@
 using System;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitRepositoryClonedEvent : IApplicationEvent
 {
-    public string GitRepositoryId { get; init; } = null!;
-
-    // ReSharper disable once UnusedAutoPropertyAccessor.Global
     public Guid AnalysisId { get; init; }
 
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
-        // TODO - Dispatch(ComputeHistoryActivity)
-    }
+    public string GitPath { get; init; } = null!;
+
+    public AnalysisLocation AnalysisLocation { get; init; } = null!;
+
+    public void Handle(IApplicationActivityEngine eventClient) =>
+        eventClient.Dispatch(new ComputeHistoryActivity(GitPath, AnalysisId, AnalysisLocation));
 }
