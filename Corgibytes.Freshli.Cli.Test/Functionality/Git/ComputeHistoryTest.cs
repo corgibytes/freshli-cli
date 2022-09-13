@@ -54,27 +54,30 @@ public class ComputeHistoryTest : FreshliTest
         Assert.Equal(expectedStops.Count, actualStops.Count);
     }
 
+    private static List<GitCommit> AvailableCommits() =>
+        new()
+        {
+            // Friday week 4
+            new GitCommit("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+                new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero)),
+            // Tuesday week 2
+            new GitCommit("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
+                new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
+            // Wednesday week 2
+            new GitCommit("ef14791d014431952aa721fa2a9b22afb8d4f144",
+                new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero)),
+            // Thursday week 53
+            new GitCommit("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
+        };
+
     public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>> DataForTwoWeekInterval() =>
         new()
         {
             {
                 "2w",
                 new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero),
-                new List<GitCommit>()
-                {
-                    // Friday week 4
-                    new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
-                        new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero)),
-                    // Tuesday week 2
-                    new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
-                        new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
-                    // Wednesday week 2
-                    new("ef14791d014431952aa721fa2a9b22afb8d4f144",
-                        new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero)),
-                    // Thursday week 53
-                    new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
-                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
-                },
+                AvailableCommits(),
                 new List<HistoryIntervalStop>
                 {
                     // Friday week 4
@@ -134,21 +137,7 @@ public class ComputeHistoryTest : FreshliTest
             {
                 "1w",
                 new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero),
-                new List<GitCommit>()
-                {
-                    // Friday week 4
-                    new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
-                        new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero)),
-                    // Tuesday week 2
-                    new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
-                        new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
-                    // Wednesday week 2
-                    new("ef14791d014431952aa721fa2a9b22afb8d4f144",
-                        new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero)),
-                    // Thursday week 53
-                    new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
-                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
-                },
+                AvailableCommits(),
                 new List<HistoryIntervalStop>
                 {
                     // Friday week 4
@@ -179,21 +168,7 @@ public class ComputeHistoryTest : FreshliTest
             {
                 "1m",
                 new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero),
-                new List<GitCommit>()
-                {
-                    // Friday week 4
-                    new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
-                        new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero)),
-                    // Tuesday week 2
-                    new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
-                        new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
-                    // Wednesday week 2
-                    new("ef14791d014431952aa721fa2a9b22afb8d4f144",
-                        new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero)),
-                    // Thursday week 53
-                    new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
-                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
-                },
+                AvailableCommits(),
                 new List<HistoryIntervalStop>
                 {
                     // Start date
