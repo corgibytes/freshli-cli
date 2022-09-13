@@ -38,7 +38,7 @@ public class ComputeHistoryActivityTest
             )
         };
         _computeHistory.Setup(mock => mock.ComputeWithHistoryInterval(
-                It.IsAny<IAnalysisLocation>(), It.IsAny<string>(), It.IsAny<string>())
+                It.IsAny<IAnalysisLocation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>())
             )
             .Returns(historyIntervalStops);
 
