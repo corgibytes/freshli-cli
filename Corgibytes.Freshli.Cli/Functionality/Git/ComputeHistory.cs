@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 
@@ -8,13 +9,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 public class ComputeHistory : IComputeHistory
 {
     private readonly IListCommits _listCommits;
-    private readonly IHistoryIntervalParser _historyIntervalParser;
 
-    public ComputeHistory(IListCommits listCommits, IHistoryIntervalParser historyIntervalParser)
-    {
-        _listCommits = listCommits;
-        _historyIntervalParser = historyIntervalParser;
-    }
+    public ComputeHistory(IListCommits listCommits) => _listCommits = listCommits;
 
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
         IAnalysisLocation analysisLocation,
@@ -22,75 +18,39 @@ public class ComputeHistory : IComputeHistory
         string historyInterval
     )
     {
-        _historyIntervalParser.Parse(historyInterval, out var interval, out var quantifier);
-
         var commitHistory = _listCommits.ForRepository(analysisLocation, gitPath);
 
-        // Prevent multiple enumeration
-        var gitCommits = commitHistory.OrderByDescending(commit => commit.CommittedAt).ToList();
-        if (gitCommits.Count == 0)
+        var groupedHistories = historyInterval switch
         {
-            return new List<HistoryIntervalStop>();
-        }
+            // Group by day of year instead of just Date otherwise the object returned it's key value is a DateTime.
+            // This is different from the other checks as their key value is an integer.
+            "day" => commitHistory.GroupBy(commit => commit.CommittedAt.Date.DayOfYear),
 
-        // Technically this could return null, but not in our case since we already know we have some commits
-        var oldestCommit = gitCommits.MinBy(commit => commit.CommittedAt)!;
-        var latestCommit = gitCommits.MaxBy(commit => commit.CommittedAt)!;
+            // FirstFourDayWeek means the first week of the year that has four days before the day of the week noted.
+            // So if the year starts on a Thursday and the Day of Week is set to Sunday, it'll see the next week as the first week.
+            // See also https://docs.microsoft.com/en-us/dotnet/api/system.globalization.calendarweekrule?view=net-6.0
+            "week" => commitHistory.GroupBy(commit =>
+                CultureInfo.CurrentCulture.Calendar.GetWeekOfYear(commit.CommittedAt.Date,
+                    CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Sunday)),
 
-        // Here be dragons!
-        // The code that follows looks odd but it's important to remember we are walking back in time.
-        var startDate = new DateTimeOffset(
-            latestCommit.CommittedAt.Year,
-            latestCommit.CommittedAt.Month,
-            latestCommit.CommittedAt.Day,
-            0,
-            0,
-            0,
-            latestCommit.CommittedAt.Offset
-        );
-        var range = new List<DateTimeOffset>();
-        while (startDate > oldestCommit.CommittedAt)
-        {
-            var dateTimeOffset = quantifier switch
-            {
-                "d" =>
-                    // Go back at interval -x days
-                    startDate.AddDays(-interval),
-                "w" =>
-                    // Go back at interval of -7 * interval days
-                    startDate.AddDays(-7 * interval),
-                "m" =>
-                    // Go back at interval of -x months
-                    startDate.AddMonths(-interval),
-                "y" =>
-                    // Go back at interval of -x years
-                    startDate.AddYears(-interval),
-                _ => default
-            };
+            // Grouped by month
+            "month" => commitHistory.GroupBy(commit => commit.CommittedAt.Month),
 
-            range.Add(dateTimeOffset);
-            startDate = dateTimeOffset;
-        }
+            // Grouped by year
+            "year" => commitHistory.GroupBy(commit => commit.CommittedAt.Year),
+            _ => null
+        };
 
-        var filteredCommits = new List<HistoryIntervalStop>();
-        var previousOffset = latestCommit.CommittedAt;
-
-        foreach (var offset in range)
-        {
-            try
-            {
-                // Pick the youngest commit closest to, but not older than, the offset or younger than the previous offset
-                var lastCommitForOffset = gitCommits.First(commit => commit.CommittedAt > offset && commit.CommittedAt <= previousOffset);
-                filteredCommits.Add(new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, lastCommitForOffset.CommittedAt));
-            }
-            catch (InvalidOperationException)
-            {
-                // We ignore the exception as it could be that there's no commit for these dates
-            }
-            previousOffset = offset;
-        }
-
-        return filteredCommits;
+        // Per group, select the most recent commit.
+        // So if grouped per day, pick the commit committed last on that day.
+        return (
+                from groupedHistory in groupedHistories
+                select groupedHistory.MaxBy(i => i.CommittedAt)
+                into mostRecentCommitForThisGroupedPeriod
+                where mostRecentCommitForThisGroupedPeriod != null
+                select new HistoryIntervalStop(mostRecentCommitForThisGroupedPeriod.ShaIdentifier,
+                    mostRecentCommitForThisGroupedPeriod.CommittedAt))
+            .ToList();
     }
 
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath)
