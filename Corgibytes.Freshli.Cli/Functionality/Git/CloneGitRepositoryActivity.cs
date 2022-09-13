@@ -14,9 +14,6 @@ public class CloneGitRepositoryActivity : IApplicationActivity
     [JsonProperty] private readonly string _cacheDir;
     [JsonProperty] private readonly string _gitPath;
 
-    [JsonProperty] private string? Branch { get; set; }
-    [JsonProperty] private string RepoUrl { get; set; }
-
     public CloneGitRepositoryActivity(string repoUrl, string? branch, string cacheDir, string gitPath,
         Guid analysisId = new())
     {
@@ -26,6 +23,9 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         _gitPath = gitPath;
         _analysisId = analysisId;
     }
+
+    [JsonProperty] private string? Branch { get; set; }
+    [JsonProperty] private string RepoUrl { get; set; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -42,7 +42,8 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             }
 
             var gitRepository =
-                eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>().CloneOrPull(RepoUrl, Branch, _cacheDir, _gitPath);
+                eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>()
+                    .CloneOrPull(RepoUrl, Branch, _cacheDir, _gitPath);
 
             var analysisLocation = new AnalysisLocation(_cacheDir, gitRepository.Id);
 
