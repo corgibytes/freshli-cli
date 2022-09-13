@@ -95,16 +95,12 @@ public class ComputeHistory : IComputeHistory
             rangeStartDate = dateTimeOffset;
         }
 
-        var filteredCommits = new List<HistoryIntervalStop>();
-
-        foreach (var offset in range)
-        {
-            // Pick the youngest commit closest to, and younger than, the offset
-            var lastCommitForOffset = gitCommits.First(commit => commit.CommittedAt <= offset);
-            filteredCommits.Add(new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, offset));
-        }
-
-        return filteredCommits;
+        // Foreach offset in range, select the youngest commit, as long as it's not younger than the offset.
+        return (
+            from offset in range
+            let lastCommitForOffset = gitCommits.First(commit => commit.CommittedAt <= offset)
+            select new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, offset))
+        .ToList();
     }
 
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath)
