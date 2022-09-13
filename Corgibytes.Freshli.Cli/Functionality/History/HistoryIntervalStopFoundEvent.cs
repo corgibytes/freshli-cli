@@ -19,7 +19,7 @@ public class HistoryIntervalStopFoundEvent : IApplicationEvent
         {
             eventClient.Dispatch(new CheckoutHistoryActivity(
                 eventClient.ServiceProvider.GetRequiredService<IGitManager>(), GitExecutablePath,
-                AnalysisLocation.CacheDirectory, AnalysisLocation.RepositoryId, AnalysisLocation.CommitId));
+                AnalysisLocation));
         }
     }
 }
