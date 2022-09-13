@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AnalysisLocation : IAnalysisLocation
