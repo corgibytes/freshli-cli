@@ -19,7 +19,8 @@ public class ComputeHistory : IComputeHistory
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
         IAnalysisLocation analysisLocation,
         string gitPath,
-        string historyInterval
+        string historyInterval,
+        DateTimeOffset startAtDate
     )
     {
         _historyIntervalParser.Parse(historyInterval, out var interval, out var quantifier);
@@ -35,59 +36,72 @@ public class ComputeHistory : IComputeHistory
 
         // Technically this could return null, but not in our case since we already know we have some commits
         var oldestCommit = gitCommits.MinBy(commit => commit.CommittedAt)!;
-        var latestCommit = gitCommits.MaxBy(commit => commit.CommittedAt)!;
 
         // Here be dragons!
         // The code that follows looks odd but it's important to remember we are walking back in time.
-        var startDate = new DateTimeOffset(
-            latestCommit.CommittedAt.Year,
-            latestCommit.CommittedAt.Month,
-            latestCommit.CommittedAt.Day,
-            0,
-            0,
-            0,
-            latestCommit.CommittedAt.Offset
-        );
-        var range = new List<DateTimeOffset>();
-        while (startDate > oldestCommit.CommittedAt)
+        var rangeStartDate = startAtDate;
+        var range = new List<DateTimeOffset>
+        {
+            startAtDate
+        };
+
+        switch (quantifier)
+        {
+            case "w":
+                {
+                    var daysToSubtract = (7 + (int)rangeStartDate.DayOfWeek - (int)DayOfWeek.Monday) % 7;
+                    rangeStartDate = rangeStartDate.AddDays(-daysToSubtract);
+                    break;
+                }
+            case "m":
+                rangeStartDate = new DateTimeOffset(rangeStartDate.Year, rangeStartDate.Month, 1, 0, 0, 0, rangeStartDate.Offset);
+                break;
+            case "y":
+                rangeStartDate = new DateTimeOffset(rangeStartDate.Year, 1, 1, 0, 0, 0, rangeStartDate.Offset);
+                break;
+        }
+
+        if (rangeStartDate != startAtDate)
+        {
+            range.Add(rangeStartDate);
+        }
+
+        while (rangeStartDate > oldestCommit.CommittedAt)
         {
             var dateTimeOffset = quantifier switch
             {
                 "d" =>
                     // Go back at interval -x days
-                    startDate.AddDays(-interval),
+                    rangeStartDate.AddDays(-interval),
                 "w" =>
                     // Go back at interval of -7 * interval days
-                    startDate.AddDays(-7 * interval),
+                    rangeStartDate.AddDays(-7 * interval),
                 "m" =>
                     // Go back at interval of -x months
-                    startDate.AddMonths(-interval),
+                    rangeStartDate.AddMonths(-interval),
                 "y" =>
                     // Go back at interval of -x years
-                    startDate.AddYears(-interval),
+                    rangeStartDate.AddYears(-interval),
                 _ => default
             };
 
+            if (dateTimeOffset < oldestCommit.CommittedAt)
+            {
+                range.Add(oldestCommit.CommittedAt);
+                break;
+            }
+
             range.Add(dateTimeOffset);
-            startDate = dateTimeOffset;
+            rangeStartDate = dateTimeOffset;
         }
 
         var filteredCommits = new List<HistoryIntervalStop>();
-        var previousOffset = latestCommit.CommittedAt;
 
         foreach (var offset in range)
         {
-            try
-            {
-                // Pick the youngest commit closest to, but not older than, the offset or younger than the previous offset
-                var lastCommitForOffset = gitCommits.First(commit => commit.CommittedAt > offset && commit.CommittedAt <= previousOffset);
-                filteredCommits.Add(new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, lastCommitForOffset.CommittedAt));
-            }
-            catch (InvalidOperationException)
-            {
-                // We ignore the exception as it could be that there's no commit for these dates
-            }
-            previousOffset = offset;
+            // Pick the youngest commit closest to, and younger than, the offset
+            var lastCommitForOffset = gitCommits.First(commit => commit.CommittedAt <= offset);
+            filteredCommits.Add(new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, offset));
         }
 
         return filteredCommits;
