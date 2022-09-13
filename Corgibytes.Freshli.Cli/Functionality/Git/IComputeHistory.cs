@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 
@@ -8,7 +9,8 @@ public interface IComputeHistory
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
         IAnalysisLocation analysisLocation,
         string gitPath,
-        string historyInterval
+        string historyInterval,
+        DateTimeOffset startDate
     );
 
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath);
