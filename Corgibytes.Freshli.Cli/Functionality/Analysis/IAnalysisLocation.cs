@@ -1,4 +1,5 @@
 // ReSharper disable UnusedMemberInSuper.Global
+
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public interface IAnalysisLocation
