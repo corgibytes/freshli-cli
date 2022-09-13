@@ -44,7 +44,8 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
 
         _eventEngine.On<AnalysisStartedEvent>(startEvent =>
         {
-            context.Console.Out.WriteLine("Results will be available at: " + _resultsApi.GetResultsUrl(startEvent.AnalysisId));
+            context.Console.Out.WriteLine("Results will be available at: " +
+                                          _resultsApi.GetResultsUrl(startEvent.AnalysisId));
         });
 
         _eventEngine.On<LibYearComputedEvent>(computedEvent =>
