@@ -9,11 +9,10 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class ComputeHistoryActivity : IApplicationActivity
 {
-    public Guid AnalysisId;
-
     public readonly IAnalysisLocation AnalysisLocation;
 
     public readonly string GitExecutablePath;
+    public Guid AnalysisId;
 
     public ComputeHistoryActivity(string gitExecutablePath, Guid analysisId,
         IAnalysisLocation analysisLocation)
