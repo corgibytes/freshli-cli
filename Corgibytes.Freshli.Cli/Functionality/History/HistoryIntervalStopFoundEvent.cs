@@ -16,7 +16,8 @@ public class HistoryIntervalStopFoundEvent : IApplicationEvent
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
-        if (AnalysisLocation != null )
+        if (AnalysisLocation != null  && GitExecutablePath != null && AnalysisLocation.CacheDirectory != null && AnalysisLocation.RepositoryId != null
+            && AnalysisLocation.CommitId != null)
         {
             eventClient.Dispatch(new CheckoutHistoryActivity(
                 eventClient.ServiceProvider.GetRequiredService<IGitManager>(), GitExecutablePath, AnalysisLocation.CacheDirectory, AnalysisLocation.RepositoryId, AnalysisLocation.CommitId));
