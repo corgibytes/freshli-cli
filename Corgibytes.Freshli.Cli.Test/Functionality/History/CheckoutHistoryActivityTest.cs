@@ -1,4 +1,5 @@
 using System;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -19,10 +20,12 @@ public class CheckoutHistoryActivityTest
         var cacheDirectory = "/path/to/cache/dir";
         var archiveLocation = $"{cacheDirectory}/histories/{repositoryId}/{commitId}";
 
+        var analysisLocation = new AnalysisLocation(cacheDirectory,repositoryId,commitId);
+
         var gitManager = new Mock<IGitManager>();
 
         var activity = new CheckoutHistoryActivity(
-            gitManager.Object, gitExecutablePath, cacheDirectory, repositoryId, commitId);
+            gitManager.Object, gitExecutablePath, analysisLocation);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
 
