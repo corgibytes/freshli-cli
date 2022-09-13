@@ -50,6 +50,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         {
             eventClient.Fire(new HistoryIntervalStopFoundEvent
             {
+                GitExecutablePath = _gitExecutablePath,
                 GitCommitIdentifier = historyIntervalStop.GitCommitIdentifier,
                 AnalysisLocation = _analysisLocation
             });
