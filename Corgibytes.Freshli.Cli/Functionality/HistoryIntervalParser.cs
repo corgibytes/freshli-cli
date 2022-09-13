@@ -20,17 +20,4 @@ public class HistoryIntervalParser : IHistoryIntervalParser
         var isValuePositive = interval > 0;
         return isValuePositive;
     }
-
-    public void Parse(string value, out int interval, out string? quantifier)
-    {
-        if (!IsValid(value))
-        {
-            throw new ArgumentException("Can not parse history interval. Value given: " + value);
-        }
-
-        var characters = Regex.Split(value, string.Empty);
-
-        interval = int.Parse(characters[1]);
-        quantifier = characters[2];
-    }
 }
