@@ -7,8 +7,8 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class ComputeLibYearActivity : IApplicationActivity
 {
-    public readonly IAnalysisLocation AnalysisLocation;
     [JsonProperty] private readonly ICalculateLibYearFromFile _calculateLibYearFromFile;
+    public readonly IAnalysisLocation AnalysisLocation;
     public readonly string PathToBoM;
 
     public ComputeLibYearActivity(ICalculateLibYearFromFile calculateLibYearFromFile, string pathToBoM,
