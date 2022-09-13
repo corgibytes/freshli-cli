@@ -38,7 +38,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
         {
             historyIntervalStops = computeHistoryService
-                .ComputeWithHistoryInterval(AnalysisLocation, GitExecutablePath, analysis.HistoryInterval);
+                .ComputeWithHistoryInterval(AnalysisLocation, GitExecutablePath, analysis.HistoryInterval, DateTimeOffset.Now);
         }
         else
         {
