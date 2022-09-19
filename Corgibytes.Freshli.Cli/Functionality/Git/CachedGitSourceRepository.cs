@@ -64,12 +64,12 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         }
 
         // If not yet cloned, clone from URL.
-        Clone(cachedGitSource, gitPath);
+        Clone(cachedGitSource, gitPath, cacheDir);
 
         // If a branch is defined, checkout branch
         if (!string.IsNullOrEmpty(branch))
         {
-            Checkout(cachedGitSource, gitPath);
+            Checkout(cachedGitSource, gitPath, cacheDir);
         }
 
         return cachedGitSource;
@@ -99,7 +99,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         }
     }
 
-    private static void Checkout(CachedGitSource cachedGitSource, string gitPath)
+    private static void Checkout(CachedGitSource cachedGitSource, string gitPath, string cacheDirectory)
     {
         try
         {
@@ -107,22 +107,22 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         }
         catch (IOException e)
         {
-            Delete(cachedGitSource);
+            Delete(cachedGitSource, cacheDirectory);
             throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
         }
     }
 
-    private static void Delete(CachedGitSource cachedGitSource)
+    private static void Delete(CachedGitSource cachedGitSource, string cacheDirectory)
     {
         var directory = new DirectoryInfo(cachedGitSource.LocalPath);
-        using var db = new CacheContext(directory.FullName);
+        using var db = new CacheContext(cacheDirectory);
         var entry = db.CachedGitSources.Find(cachedGitSource.Id);
         db.CachedGitSources.Remove(entry!);
 
         directory.Delete(true);
     }
 
-    private static void Clone(CachedGitSource cachedGitSource, string gitPath)
+    private static void Clone(CachedGitSource cachedGitSource, string gitPath, string cacheDirectory)
     {
         try
         {
@@ -130,7 +130,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         }
         catch (IOException e)
         {
-            Delete(cachedGitSource);
+            Delete(cachedGitSource, cacheDirectory);
             throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
         }
     }
