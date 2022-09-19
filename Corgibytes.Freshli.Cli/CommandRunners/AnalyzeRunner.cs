@@ -42,6 +42,14 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             GitPath = options.GitPath
         });
 
+        var exitStatus = 0;
+
+        _eventEngine.On<AnalysisFailureLoggedEvent>(analysisFailure =>
+        {
+            context.Console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
+            exitStatus = 1;
+        });
+
         _eventEngine.On<AnalysisStartedEvent>(startEvent =>
         {
             context.Console.Out.WriteLine("Results will be available at: " +
@@ -61,6 +69,6 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
 
         _activityEngine.Wait();
 
-        return 0;
+        return exitStatus;
     }
 }
