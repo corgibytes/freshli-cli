@@ -9,23 +9,17 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CloneGitRepositoryActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly Guid _analysisId;
+    [JsonProperty] private readonly Guid _cachedAnalysisId;
 
     [JsonProperty] private readonly string _cacheDir;
     [JsonProperty] private readonly string _gitPath;
 
-    public CloneGitRepositoryActivity(string repoUrl, string? branch, string cacheDir, string gitPath,
-        Guid analysisId = new())
+    public CloneGitRepositoryActivity(Guid cachedAnalysisId,  string cacheDir, string gitPath)
     {
-        RepoUrl = repoUrl;
-        Branch = branch;
         _cacheDir = cacheDir;
         _gitPath = gitPath;
-        _analysisId = analysisId;
+        _cachedAnalysisId = cachedAnalysisId;
     }
-
-    [JsonProperty] private string? Branch { get; set; }
-    [JsonProperty] private string RepoUrl { get; set; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -34,22 +28,17 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb(_cacheDir);
-            var cachedAnalysis = cacheDb.RetrieveAnalysis(_analysisId);
-            if (cachedAnalysis != null)
-            {
-                RepoUrl = cachedAnalysis.RepositoryUrl;
-                Branch = cachedAnalysis.RepositoryBranch;
-            }
+            var cachedAnalysis = cacheDb.RetrieveAnalysis(_cachedAnalysisId);
 
             var gitRepository =
                 eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>()
-                    .CloneOrPull(RepoUrl, Branch, _cacheDir, _gitPath);
+                    .CloneOrPull(cachedAnalysis!.RepositoryUrl, cachedAnalysis.RepositoryBranch, _cacheDir, _gitPath);
 
             var analysisLocation = new AnalysisLocation(_cacheDir, gitRepository.Id);
 
             eventClient.Fire(new GitRepositoryClonedEvent
             {
-                AnalysisId = _analysisId,
+                AnalysisId = _cachedAnalysisId,
                 GitPath = _gitPath,
                 AnalysisLocation = analysisLocation
             });
