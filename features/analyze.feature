@@ -51,3 +51,13 @@ Feature: analyze
         """
         https://freshli.app/
         """
+
+    Scenario: Run the analysis, trigger error event.
+        When I run `freshli analyze https://github.com/this-repository-does-not-exist`
+        Then the output should contain:
+        """
+        Analysis failed because: Git encountered an error:
+        Cloning into '.'...
+        remote: Not Found
+        fatal: repository 'https://github.com/this-repository-does-not-exist/' not found
+        """
