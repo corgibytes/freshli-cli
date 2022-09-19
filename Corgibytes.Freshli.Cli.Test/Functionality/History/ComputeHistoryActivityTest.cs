@@ -38,17 +38,24 @@ public class ComputeHistoryActivityTest
             )
         };
         _computeHistory.Setup(mock => mock.ComputeWithHistoryInterval(
-                It.IsAny<IAnalysisLocation>(), It.IsAny<string>(), It.IsAny<string>())
+                It.IsAny<IAnalysisLocation>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>())
             )
             .Returns(historyIntervalStops);
 
         var analysisLocation = new Mock<IAnalysisLocation>();
 
+        var serviceProvider = new Mock<IServiceProvider>();
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+
+        var cacheManager = new Mock<ICacheManager>();
+        cacheManager.Setup(mock => mock.GetCacheDb(It.IsAny<string>())).Returns(_cacheDb.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
+
+        serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
+
         // Act
         new ComputeHistoryActivity(
             "git",
-            _cacheDb.Object,
-            _computeHistory.Object,
             new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
             analysisLocation.Object
         ).Handle(_eventEngine.Object);
@@ -97,11 +104,18 @@ public class ComputeHistoryActivityTest
 
         var analysisLocation = new Mock<IAnalysisLocation>();
 
+        var serviceProvider = new Mock<IServiceProvider>();
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+
+        var cacheManager = new Mock<ICacheManager>();
+        cacheManager.Setup(mock => mock.GetCacheDb(It.IsAny<string>())).Returns(_cacheDb.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
+
+        serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
+
         // Act
         new ComputeHistoryActivity(
             "git",
-            _cacheDb.Object,
-            _computeHistory.Object,
             new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
             analysisLocation.Object
         ).Handle(_eventEngine.Object);
