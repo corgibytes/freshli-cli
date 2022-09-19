@@ -1,12 +1,7 @@
-using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
-public class CloneGitRepositoryFailedEvent : IApplicationEvent
+public class CloneGitRepositoryFailedEvent : FailureEvent
 {
-    public string ErrorMessage { get; init; } = null!;
-
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
-    }
 }
