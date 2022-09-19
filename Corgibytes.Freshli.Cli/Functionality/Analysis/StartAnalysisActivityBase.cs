@@ -33,9 +33,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
         {
             AnalysisId = id,
             CacheDir = CacheDirectory,
-            GitPath = GitPath,
-            RepositoryUrl = RepositoryUrl,
-            Branch = RepositoryBranch
+            GitPath = GitPath
         });
     }
 
