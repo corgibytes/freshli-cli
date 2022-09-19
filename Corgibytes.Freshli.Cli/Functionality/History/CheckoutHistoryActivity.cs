@@ -8,31 +8,34 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 public class CheckoutHistoryActivity : IApplicationActivity
 {
     [JsonProperty] private readonly string _cacheDirectory;
-    [JsonProperty] private readonly string _commitId;
+    [JsonProperty] private readonly string? _commitId;
     [JsonProperty] private readonly string _gitExecutablePath;
     [JsonProperty] private readonly IGitManager _gitManager;
     [JsonProperty] private readonly string _repositoryId;
 
     public CheckoutHistoryActivity(IGitManager gitManager, string gitExecutablePath,
-        string cacheDirectory, string repositoryId, string commitSha)
+        IAnalysisLocation analysisLocation)
     {
         _gitManager = gitManager;
         _gitExecutablePath = gitExecutablePath;
-        _cacheDirectory = cacheDirectory;
-        _repositoryId = repositoryId;
-        _commitId = commitSha;
+        _cacheDirectory = analysisLocation.CacheDirectory;
+        _repositoryId = analysisLocation.RepositoryId;
+        _commitId = analysisLocation.CommitId;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        _gitManager.CreateArchive(
-            _repositoryId,
-            _cacheDirectory,
-            _gitManager.ParseCommitId(_commitId),
-            _gitExecutablePath
-        );
+        if (_commitId != null)
+        {
+            _gitManager.CreateArchive(
+                _repositoryId,
+                _cacheDirectory,
+                _gitManager.ParseCommitId(_commitId),
+                _gitExecutablePath
+            );
 
-        eventClient.Fire(
-            new HistoryStopCheckedOutEvent(new AnalysisLocation(_cacheDirectory, _repositoryId, _commitId)));
+            eventClient.Fire(
+                new HistoryStopCheckedOutEvent(new AnalysisLocation(_cacheDirectory, _repositoryId, _commitId)));
+        }
     }
 }
