@@ -8,8 +8,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class HistoryStopCheckedOutEvent : IApplicationEvent
 {
-    public HistoryStopCheckedOutEvent(IAnalysisLocation analysisLocation) => AnalysisLocation = analysisLocation;
-    public IAnalysisLocation AnalysisLocation { get; }
+    public IAnalysisLocation AnalysisLocation { get; init; } = null!;
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
