@@ -1,5 +1,6 @@
 using System;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.Git;
 
 namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
@@ -10,7 +11,9 @@ public class AnalysisApiCreatedEvent : IApplicationEvent
     public string Branch { get; set; }
     public string CacheDir { get; set; }
     public string GitPath { get; set; }
-    public Guid ApiAnalysisId { get; set; }
 
-    public void Handle(IApplicationActivityEngine eventClient) => throw new NotImplementedException();
+    public void Handle(IApplicationActivityEngine eventClient)
+    {
+        eventClient.Dispatch(new CloneGitRepositoryActivity(Url, Branch, CacheDir, GitPath, CachedAnalysisId) );
+    }
 }
