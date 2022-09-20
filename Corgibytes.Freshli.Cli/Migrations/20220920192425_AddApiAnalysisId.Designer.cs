@@ -3,6 +3,7 @@ using System;
 using Corgibytes.Freshli.Cli.DataModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     [DbContext(typeof(CacheContext))]
-    partial class CacheContextModelSnapshot : ModelSnapshot
+    [Migration("20220920192425_AddApiAnalysisId")]
+    partial class AddApiAnalysisId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.0-rc.1.22426.7");
