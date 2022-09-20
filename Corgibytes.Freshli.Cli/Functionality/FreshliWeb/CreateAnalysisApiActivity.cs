@@ -23,16 +23,22 @@ public class CreateAnalysisApiActivity : IApplicationActivity
 
     public void Handle(IApplicationEventEngine eventClient)
     {
+        var cacheDb = eventClient.ServiceProvider.GetRequiredService<ICacheManager>().GetCacheDb(CacheDir);
         var apiService = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
-        var apiAnalysisId = apiService.CreateAnalysis(Url);
+
+        var cachedAnalysis = cacheDb.RetrieveAnalysis(CachedAnalysisId);
+
+        cachedAnalysis.ApiAnalysisId = apiService.CreateAnalysis(Url);
+
+        cacheDb.SaveAnalysis(cachedAnalysis);
+
         eventClient.Fire(new AnalysisApiCreatedEvent()
         {
             CachedAnalysisId = CachedAnalysisId,
             Url = Url,
             Branch = Branch,
             CacheDir = CacheDir,
-            GitPath = GitPath,
-            ApiAnalysisId = apiAnalysisId
+            GitPath = GitPath
         });
     }
 }

@@ -9,23 +9,21 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CloneGitRepositoryActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly Guid _analysisId;
-
-    [JsonProperty] private readonly string _cacheDir;
-    [JsonProperty] private readonly string _gitPath;
+    public Guid AnalysisId { get; }
+    public string CacheDir { get; }
+    public string GitPath { get; }
+    public string? Branch { get; set; }
+    public string RepoUrl { get; set; }
 
     public CloneGitRepositoryActivity(string repoUrl, string? branch, string cacheDir, string gitPath,
         Guid analysisId = new())
     {
         RepoUrl = repoUrl;
         Branch = branch;
-        _cacheDir = cacheDir;
-        _gitPath = gitPath;
-        _analysisId = analysisId;
+        CacheDir = cacheDir;
+        GitPath = gitPath;
+        AnalysisId = analysisId;
     }
-
-    [JsonProperty] private string? Branch { get; set; }
-    [JsonProperty] private string RepoUrl { get; set; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -33,8 +31,8 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         try
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb(_cacheDir);
-            var cachedAnalysis = cacheDb.RetrieveAnalysis(_analysisId);
+            var cacheDb = cacheManager.GetCacheDb(CacheDir);
+            var cachedAnalysis = cacheDb.RetrieveAnalysis(AnalysisId);
             if (cachedAnalysis != null)
             {
                 RepoUrl = cachedAnalysis.RepositoryUrl;
@@ -43,14 +41,14 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
             var gitRepository =
                 eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>()
-                    .CloneOrPull(RepoUrl, Branch, _cacheDir, _gitPath);
+                    .CloneOrPull(RepoUrl, Branch, CacheDir, GitPath);
 
-            var analysisLocation = new AnalysisLocation(_cacheDir, gitRepository.Id);
+            var analysisLocation = new AnalysisLocation(CacheDir, gitRepository.Id);
 
             eventClient.Fire(new GitRepositoryClonedEvent
             {
-                AnalysisId = _analysisId,
-                GitPath = _gitPath,
+                AnalysisId = AnalysisId,
+                GitPath = GitPath,
                 AnalysisLocation = analysisLocation
             });
         }
