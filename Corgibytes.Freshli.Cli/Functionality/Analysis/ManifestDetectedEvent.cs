@@ -1,6 +1,5 @@
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Services;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
