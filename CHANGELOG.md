@@ -13,7 +13,7 @@ __Dependencies__
 ## v0.5.0
 
 
-As part of this release we had [3 issues](https://github.com/corgibytes/freshli-cli/milestone/3?closed=1) closed.
+As part of this release we had [4 issues](https://github.com/corgibytes/freshli-cli/milestone/3?closed=1) closed.
 
 Goals for this milestone:
 
@@ -24,9 +24,10 @@ __DevOps__
 - [__#33__](https://github.com/corgibytes/freshli-cli/issues/33) Warning when adding assets to GitHub release in CI
 - [__#41__](https://github.com/corgibytes/freshli-cli/pull/41) Fixes #33, removes warning for GitReleaseManager on Add Asset
 
-__Enhancement__
+__Enhancements__
 
 - [__#25__](https://github.com/corgibytes/freshli-cli/issues/25) Add Scan and Help commands
+- [__#45__](https://github.com/corgibytes/freshli-cli/issues/45) Specify level of debug information
 
 ## v0.4.0
 
