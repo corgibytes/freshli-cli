@@ -92,6 +92,7 @@ jobs:
         with:
           commit_message: Committing auto generated change log.
           file_pattern: CHANGELOG.md
+          create_branch: true
 
       - name: "[Build] - Build"
         run: dotnet build --configuration Release
