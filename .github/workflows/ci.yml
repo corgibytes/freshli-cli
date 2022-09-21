@@ -69,29 +69,12 @@ jobs:
       - name: "[Versioning] -  Display updated csproj File"
         run: cat Corgibytes.Freshli.Cli/Corgibytes.Freshli.Cli.csproj
 
-      # If there are no closed issues generating the Github Release will fail because it raises an exception.
-      # Work around this by checking for success or no closed issue errors.
       - name: "[Draft Release] - Create/Update GitHub Release ${{ steps.gitversion.outputs.majorMinorPatch }}"
-        if: ${{ github.event_name == 'push' }}
-        run: |
-          dotnet-gitreleasemanager create --owner corgibytes --repository freshli-cli --token ${{ secrets.GITHUB_TOKEN }} --milestone v${{ steps.gitversion.outputs.majorMinorPatch }} --logFilePath output.txt || true
-          cat output.txt | grep 'No closed issues have been found for milestone\|Drafted release is available at'
-
-      # This will generate the change log for all the GitHub Releases, feature
-      # is not included in the GitReleaseManager action yet.
-      - name: "[Draft Release] - Generate Change Log"
-        if: ${{ github.event_name == 'push' }}
-        run: |
-          dotnet-gitreleasemanager export --token ${{ secrets.GITHUB_TOKEN }} -o 'corgibytes' -r 'freshli-cli' -f 'CHANGELOG.md'
-          git add --renormalize CHANGELOG.md
-          cat CHANGELOG.md
-
-      - name: "[Draft Release] - Commit Change Log and if it Changed"
-        if: ${{ github.event_name == 'push' && !startsWith(github.ref, 'refs/tags/') }}
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: release-drafter/release-drafter@v5
         with:
-          commit_message: Committing auto generated change log.
-          file_pattern: CHANGELOG.md
+          disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "[Build] - Build"
         run: dotnet build --configuration Release
