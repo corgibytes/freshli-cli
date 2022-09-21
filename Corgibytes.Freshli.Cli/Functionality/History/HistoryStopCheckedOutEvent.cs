@@ -12,8 +12,6 @@ public class HistoryStopCheckedOutEvent : IApplicationEvent
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
-        eventClient.Dispatch(new DetectAgentsForDetectManifestsActivity(
-            eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>(),  eventClient.ServiceProvider.GetRequiredService<IAgentManager>(),
-            AnalysisLocation));
+        eventClient.Dispatch(new DetectAgentsForDetectManifestsActivity(AnalysisLocation));
     }
 }
