@@ -48,11 +48,13 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
+            var historyStopLocation = new AnalysisLocation(AnalysisLocation.CacheDirectory,
+                AnalysisLocation.RepositoryId, historyIntervalStop.GitCommitIdentifier);
+
             eventClient.Fire(new HistoryIntervalStopFoundEvent
             {
                 GitExecutablePath = GitExecutablePath,
-                GitCommitIdentifier = historyIntervalStop.GitCommitIdentifier,
-                AnalysisLocation = AnalysisLocation
+                AnalysisLocation = historyStopLocation
             });
         }
     }
