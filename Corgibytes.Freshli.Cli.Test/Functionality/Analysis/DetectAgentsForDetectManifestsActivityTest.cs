@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Services;
 using Moq;
 using Xunit;
 
@@ -23,33 +23,26 @@ public class DetectAgentsForDetectManifestsActivityTest
         var agentsDetector = new Mock<IAgentsDetector>();
         agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
-        var agentManager = new Mock<IAgentManager>();
-
-        var javaAgentReader = new Mock<IAgentReader>();
-        var dotnetAgentReader = new Mock<IAgentReader>();
-
-        agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-java")).Returns(javaAgentReader.Object);
-        agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-dotnet"))
-            .Returns(dotnetAgentReader.Object);
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(IAgentsDetector))).Returns(agentsDetector.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
+        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         var analysisLocation = new Mock<IAnalysisLocation>();
-
         var activity =
-            new DetectAgentsForDetectManifestsActivity(agentsDetector.Object, agentManager.Object,
-                analysisLocation.Object);
+            new DetectAgentsForDetectManifestsActivity(analysisLocation.Object);
 
         activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
                 appEvent.AnalysisLocation == analysisLocation.Object &&
-                appEvent.AgentReader == javaAgentReader.Object)));
+                appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-java")));
 
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
                 appEvent.AnalysisLocation == analysisLocation.Object &&
-                appEvent.AgentReader == dotnetAgentReader.Object)));
+                appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet")));
     }
 }
