@@ -45,7 +45,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("CachedAnalyses");
+                    b.ToTable("CachedAnalyses", (string)null);
                 });
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedGitSource", b =>
@@ -69,7 +69,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("CachedGitSources");
+                    b.ToTable("CachedGitSources", (string)null);
                 });
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedProperty", b =>
@@ -91,7 +91,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.HasIndex("Key")
                         .IsUnique();
 
-                    b.ToTable("CachedProperties");
+                    b.ToTable("CachedProperties", (string)null);
                 });
 #pragma warning restore 612, 618
         }
