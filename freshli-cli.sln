@@ -28,6 +28,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\cla.yml = .github\workflows\cla.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "diagram-generator", "diagram-generator\diagram-generator.csproj", "{0DDF7B85-D793-40FE-998C-D0D726458E19}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,18 @@ Global
 		{91306A42-A29B-410A-8549-598B33DD0378}.Release|x64.Build.0 = Release|Any CPU
 		{91306A42-A29B-410A-8549-598B33DD0378}.Release|x86.ActiveCfg = Release|Any CPU
 		{91306A42-A29B-410A-8549-598B33DD0378}.Release|x86.Build.0 = Release|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Debug|x64.Build.0 = Debug|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Debug|x86.Build.0 = Debug|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Release|x64.ActiveCfg = Release|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Release|x64.Build.0 = Release|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Release|x86.ActiveCfg = Release|Any CPU
+		{0DDF7B85-D793-40FE-998C-D0D726458E19}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
