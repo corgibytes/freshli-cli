@@ -10,7 +10,8 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 public class PrepareCacheActivity : IApplicationActivity
 {
     public PrepareCacheActivity(string cacheDirectory, string repositoryUrl = "", string? repositoryBranch = null,
-        string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval, string gitPath = "")
+        string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval, string gitPath = "",
+        LatestOnly latestOnly = LatestOnly.WalkBackInRevisionHistory)
     {
         CacheDirectory = cacheDirectory;
         RepositoryUrl = repositoryUrl;
@@ -18,14 +19,13 @@ public class PrepareCacheActivity : IApplicationActivity
         HistoryInterval = historyInterval;
         UseCommitHistory = useCommitHistory;
         GitPath = gitPath;
+        LatestOnly = latestOnly;
     }
 
     public string RepositoryUrl { get; init; }
-
     public string? RepositoryBranch { get; init; }
-
     public CommitHistory UseCommitHistory { get; init; }
-
+    public LatestOnly LatestOnly { get; init; }
     public string GitPath { get; init; }
 
     // TODO: Research how to use a value class here instead of a string
@@ -41,8 +41,7 @@ public class PrepareCacheActivity : IApplicationActivity
         {
             cacheManager.Prepare(CacheDirectory).ToExitCode();
             var cacheDb = cacheManager.GetCacheDb(CacheDirectory);
-            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
-                UseCommitHistory));
+            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory, LatestOnly));
             eventClient.Fire(new CachePreparedEvent
             {
                 GitPath = GitPath,
@@ -50,7 +49,8 @@ public class PrepareCacheActivity : IApplicationActivity
                 RepositoryUrl = RepositoryUrl,
                 RepositoryBranch = RepositoryBranch,
                 HistoryInterval = HistoryInterval,
-                UseCommitHistory = UseCommitHistory
+                UseCommitHistory = UseCommitHistory,
+                LatestOnly = LatestOnly
             });
         }
         catch (CacheException e)
