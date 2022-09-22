@@ -87,7 +87,7 @@ foreach (var tree in compilation!.SyntaxTrees)
                 }
             }
 
-            targetTypeSymbols = targetTypeSymbols.Distinct().ToList();
+            targetTypeSymbols = targetTypeSymbols.DistinctBy(symbol => symbol.Name).ToList();
 
             foreach (var targetClassSymbol in targetTypeSymbols)
             {
