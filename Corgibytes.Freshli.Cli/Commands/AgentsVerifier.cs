@@ -75,7 +75,7 @@ public class AgentsVerifier
         string workingDirectory, string detectManifestFiles, DateTime startDate)
     {
         var processManifestOutput = Invoke.Command(agentFileAndPath,
-            argument + " " + detectManifestFiles + " " + DateTimeOffset.Now.ToString("s") + "Z", workingDirectory);
+            argument + " " + detectManifestFiles + " " + DateTimeOffset.Now.ToString("o"), workingDirectory);
         var processDetectManifestFiles = DetectManifestFileCount(detectManifestFiles);
         var processManifestFiles = VerifyFiles(processManifestOutput);
 
