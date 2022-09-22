@@ -12,102 +12,65 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class CloneGitRepositoryActivityTest
 {
-    private readonly string? _branch;
-    private readonly Mock<ICacheDb> _cacheDb = new();
+    private const string CacheDir = "/path/to/cache";
+    private const string Url = "http://git.example.com";
+    private const string Branch = "test_branch";
+    private const string GitPath = "git";
+    private const string LocalPath = "/local/path";
+    private const string RepositoryId = "test";
 
-    private readonly string _cacheDir;
+    private readonly Guid _analysisId = Guid.NewGuid();
+
+    private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
-
-    private readonly string _gitPath;
     private readonly Mock<ICachedGitSourceRepository> _gitSourceRepository = new();
-    private readonly string _localPath;
-    private readonly string _repositoryId;
     private readonly Mock<IServiceProvider> _serviceProvider = new();
-    private readonly string _url;
+
+    private readonly CachedAnalysis _cachedAnalysis;
 
     public CloneGitRepositoryActivityTest()
     {
-        _cacheDir = "example";
-        _url = "http://git.exaple.com";
-        _branch = "main";
+        _cacheManager.Setup(mock => mock.GetCacheDb(CacheDir)).Returns(_cacheDb.Object);
 
-        _gitPath = "git";
-        _repositoryId = "test";
-        _localPath = "test";
+        _cachedAnalysis = new CachedAnalysis(Url, Branch, "1m", new CommitHistory());
 
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICachedGitSourceRepository)))
             .Returns(_gitSourceRepository.Object);
-        _cacheManager.Setup(mock => mock.GetCacheDb(_cacheDir)).Returns(_cacheDb.Object);
 
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
     }
 
     private void SetupCloneOrPullUsingDefaults() =>
-        _gitSourceRepository.Setup(mock => mock.CloneOrPull(_url, _branch, _cacheDir, _gitPath))
-            .Returns(new CachedGitSource(_repositoryId, _url, _branch, _localPath));
+        _gitSourceRepository.Setup(mock => mock.CloneOrPull(Url, Branch, CacheDir, GitPath))
+            .Returns(new CachedGitSource(RepositoryId, Url, Branch, LocalPath));
 
-    [Fact]
-    public void HandlerFiresGitRepositoryClonedEventWhenInvokedFromCli()
-    {
-        SetupCloneOrPullUsingDefaults();
-
-        var activity = new CloneGitRepositoryActivity(_url, _branch, _cacheDir, _gitPath);
-
-        activity.Handle(_eventEngine.Object);
-
-        _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<GitRepositoryClonedEvent>(value =>
-                value.AnalysisLocation.RepositoryId == _repositoryId)));
-    }
-
-    [Fact]
-    public void HandlerFiresCloneGitRepositoryFailedEventWhenCloneFailsAndInvokedFromCli()
-    {
-        _gitSourceRepository.Setup(mock => mock.CloneOrPull(_url, _branch, _cacheDir, _gitPath))
-            .Throws(new GitException("Git clone failed"));
-
-        var activity = new CloneGitRepositoryActivity(_url, _branch, _cacheDir, _gitPath);
-
-        activity.Handle(_eventEngine.Object);
-
-        _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<CloneGitRepositoryFailedEvent>(value => value.ErrorMessage == "Git clone failed")));
-    }
+    private void SetupCachedAnalysis() =>
+        _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).Returns(_cachedAnalysis);
 
     [Fact]
     public void HandlerFiresGitRepositoryClonedEventWhenAnalysisStarted()
     {
-        // Saved analysis exists
-        var sampleGuid = new Guid();
-        const string historyInterval = "1m";
-        _cacheDb.Setup(mock => mock.RetrieveAnalysis(sampleGuid))
-            .Returns(new CachedAnalysis(_url, _branch, historyInterval, CommitHistory.Full));
+        SetupCachedAnalysis();
         SetupCloneOrPullUsingDefaults();
 
-        var activity = new CloneGitRepositoryActivity(_url, _branch, _cacheDir, _gitPath);
-
+        var activity = new CloneGitRepositoryActivity(_analysisId, CacheDir, GitPath);
         activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<GitRepositoryClonedEvent>(value => value.AnalysisId == sampleGuid)));
+            mock.Fire(It.Is<GitRepositoryClonedEvent>(value => value.AnalysisId == _analysisId)));
     }
 
     [Fact]
-    public void HandlerFiresCloneGitRepositoryFailedEventWhenAnalysisIsNotSaved()
+    public void HandlerFiresCloneGitRepositoryFailedEventWhenGitCloneFails()
     {
-        // Saved analysis exists
-        var sampleGuid = new Guid();
-        const string historyInterval = "1m";
-        _cacheDb.Setup(mock => mock.RetrieveAnalysis(sampleGuid))
-            .Returns(new CachedAnalysis(_url, _branch, historyInterval, CommitHistory.AtInterval));
+        SetupCachedAnalysis();
 
-        _gitSourceRepository.Setup(mock => mock.CloneOrPull(_url, _branch, _cacheDir, _gitPath))
+        _gitSourceRepository.Setup(mock => mock.CloneOrPull(Url, Branch, CacheDir, GitPath))
             .Throws(new GitException("Git clone failed"));
 
-        var activity = new CloneGitRepositoryActivity(_url, _branch, _cacheDir, _gitPath);
-
+        var activity = new CloneGitRepositoryActivity(_analysisId, CacheDir, GitPath);
         activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
