@@ -31,6 +31,13 @@ Feature: analyze
         https://freshli.app/
         """
 
+    Scenario: Run the analysis for only the latest point changed.
+        When I run `freshli analyze --latest-only https://github.com/corgibytes/freshli-fixture-ruby-nokotest`
+        Then the output should contain:
+        """
+        https://freshli.app/
+        """
+
     Scenario: Run the analysis for every point in time when the files have changed.
         When I run `freshli analyze --commit-history https://github.com/corgibytes/freshli-fixture-ruby-nokotest`
         Then the output should contain:
