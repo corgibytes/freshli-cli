@@ -7,12 +7,22 @@ using Microsoft.CodeAnalysis.MSBuild;
 MSBuildLocator.RegisterDefaults();
 var workspace = MSBuildWorkspace.Create();
 
-var projectFilePath = "../../../../Corgibytes.Freshli.Cli/Corgibytes.Freshli.Cli.csproj";
-if (!File.Exists(projectFilePath))
+var projectFilePath = Path.Combine("Corgibytes.Freshli.Cli", "Corgibytes.Freshli.Cli.csproj");
+while (!File.Exists(projectFilePath))
 {
-    Console.WriteLine($"Couldn't find {Path.GetFullPath(projectFilePath)}");
-    return -1;
+    // check the parent directory to see if the file is accessible from there
+    var nextProjectFilePath = Path.Combine("..", projectFilePath);
+
+    // stop walking up the directory tree if we've reached the top
+    if (Path.GetFullPath(projectFilePath) == Path.GetFullPath(nextProjectFilePath))
+    {
+        Console.WriteLine("Coulndn't find the project file for Corgibytes.Freshli.Cli");
+        return -1;
+    }
+
+    projectFilePath = nextProjectFilePath;
 }
+
 var project = await workspace.OpenProjectAsync(projectFilePath);
 
 var compilation = await project.GetCompilationAsync();
