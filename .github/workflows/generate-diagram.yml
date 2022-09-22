@@ -1,0 +1,39 @@
+name: Generate Diagram
+
+on:
+  push:
+    branches: [ main, release* ]
+    tags: [ v* ]
+  pull_request:
+    branches: [ main, release* ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: "[Setup] - Checkout code"
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Required for GitVersion
+          submodules: 'recursive'
+
+      - name: "[Setup] - .NET Core"
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: 6.0.x
+
+      - name: "[Setup] - Install Ruby"
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.1 # Not needed with a .ruby-version file
+          bundler-cache: true
+
+      - name: "Generate Diagram"
+        run: bin/generate-diagram.rb
+
+      - name: "Committing Diagram"
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Committing auto generated diagram.
+          file_pattern: docs/activities-and-events.md
