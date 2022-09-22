@@ -1,24 +1,27 @@
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class DetectManifestsUsingAgentActivity : IApplicationActivity
 {
-    public DetectManifestsUsingAgentActivity(IAnalysisLocation analysisLocation, IAgentReader agentReader)
+    public DetectManifestsUsingAgentActivity(IAnalysisLocation analysisLocation, string agentExecutablePath)
     {
         AnalysisLocation = analysisLocation;
-        AgentReader = agentReader;
+        AgentExecutablePath = agentExecutablePath;
     }
 
     public IAnalysisLocation AnalysisLocation { get; }
-    public IAgentReader AgentReader { get; }
+    public string AgentExecutablePath { get; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        foreach (var manifestPath in AgentReader.DetectManifests(AnalysisLocation.Path))
+        var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
+        var agentReader = agentManager.GetReader(AgentExecutablePath);
+        foreach (var manifestPath in agentReader.DetectManifests(AnalysisLocation.Path))
         {
-            eventClient.Fire(new ManifestDetectedEvent(AnalysisLocation, AgentReader, manifestPath));
+            eventClient.Fire(new ManifestDetectedEvent(AnalysisLocation, AgentExecutablePath, manifestPath));
         }
     }
 }
