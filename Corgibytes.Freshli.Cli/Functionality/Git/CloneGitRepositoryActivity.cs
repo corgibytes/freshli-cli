@@ -12,17 +12,12 @@ public class CloneGitRepositoryActivity : IApplicationActivity
     public Guid AnalysisId { get; }
     public string CacheDir { get; }
     public string GitPath { get; }
-    public string? Branch { get; set; }
-    public string RepoUrl { get; set; }
 
-    public CloneGitRepositoryActivity(string repoUrl, string? branch, string cacheDir, string gitPath,
-        Guid analysisId = new())
+    public CloneGitRepositoryActivity(Guid cachedAnalysisId,  string cacheDir, string gitPath)
     {
-        RepoUrl = repoUrl;
-        Branch = branch;
         CacheDir = cacheDir;
         GitPath = gitPath;
-        AnalysisId = analysisId;
+        AnalysisId = cachedAnalysisId;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
@@ -33,15 +28,10 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb(CacheDir);
             var cachedAnalysis = cacheDb.RetrieveAnalysis(AnalysisId);
-            if (cachedAnalysis != null)
-            {
-                RepoUrl = cachedAnalysis.RepositoryUrl;
-                Branch = cachedAnalysis.RepositoryBranch;
-            }
 
             var gitRepository =
                 eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>()
-                    .CloneOrPull(RepoUrl, Branch, CacheDir, GitPath);
+                    .CloneOrPull(cachedAnalysis!.RepositoryUrl, cachedAnalysis.RepositoryBranch, CacheDir, GitPath);
 
             var analysisLocation = new AnalysisLocation(CacheDir, gitRepository.Id);
 
