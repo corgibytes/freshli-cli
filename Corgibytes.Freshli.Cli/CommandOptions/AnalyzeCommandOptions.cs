@@ -11,4 +11,5 @@ public class AnalyzeCommandOptions : CommandOptions
     public bool CommitHistory { get; set; }
     public string HistoryInterval { get; set; } = null!;
     public string RepositoryLocation { get; set; } = null!;
+    public bool LatestOnly { get; set; }
 }

@@ -66,6 +66,14 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
         };
         AddOption(workers);
 
+        var latestOnly = new Option<bool>("--latest-only",
+            "When this is set, analyze will not walk back in history, and overwrites the options --commit-history, --history-interval")
+        {
+            AllowMultipleArgumentsPerToken = false,
+            Arity = ArgumentArity.ZeroOrOne
+        };
+        AddOption(latestOnly);
+
         var repositoryLocation =
             new Argument<string>("repository-location",
                 "The location of the repository. This could be either a direct URL or a local directory")
