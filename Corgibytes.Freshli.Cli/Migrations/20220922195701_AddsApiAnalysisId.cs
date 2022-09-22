@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     /// <inheritdoc />
-    public partial class AddApiAnalysisId : Migration
+    public partial class AddsApiAnalysisId : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -16,13 +16,6 @@ namespace Corgibytes.Freshli.Cli.Migrations
                 table: "CachedAnalyses",
                 type: "TEXT",
                 nullable: true);
-
-            migrationBuilder.AddColumn<int>(
-                name: "UseCommitHistory",
-                table: "CachedAnalyses",
-                type: "INTEGER",
-                nullable: false,
-                defaultValue: 0);
         }
 
         /// <inheritdoc />
@@ -30,10 +23,6 @@ namespace Corgibytes.Freshli.Cli.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "ApiAnalysisId",
-                table: "CachedAnalyses");
-
-            migrationBuilder.DropColumn(
-                name: "UseCommitHistory",
                 table: "CachedAnalyses");
         }
     }

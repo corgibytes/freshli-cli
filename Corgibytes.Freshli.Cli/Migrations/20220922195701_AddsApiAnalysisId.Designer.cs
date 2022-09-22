@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     [DbContext(typeof(CacheContext))]
-    [Migration("20220920192425_AddApiAnalysisId")]
-    partial class AddApiAnalysisId
+    [Migration("20220922195701_AddsApiAnalysisId")]
+    partial class AddsApiAnalysisId
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
