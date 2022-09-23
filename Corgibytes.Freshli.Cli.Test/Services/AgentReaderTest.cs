@@ -44,8 +44,32 @@ public class AgentReaderTest
         checkoutDirectory.Delete(true);
     }
 
+    [Fact]
+    public void AgentReaderReturnsEmptyListWhenNoManifestsFound()
+    {
+        var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);
+        var reader = new AgentReader("freshli-agent-java");
+        var repositoryLocation = Path.Combine(checkoutLocation, "invalid_repository");
+
+        var actualManifests = reader.DetectManifests(repositoryLocation);
+        Assert.Empty(actualManifests);
+        checkoutDirectory.Delete();
+    }
+
     private static void SetupDirectory(out string repositoryLocation, out AgentReader reader,
         out DirectoryInfo checkoutDirectory)
+    {
+        var checkoutLocation = CreateCheckoutLocation(out checkoutDirectory);
+
+        // clone https://github.com/protocolbuffers/protobuf to a temp location
+        Invoke.Command("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
+
+        repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
+
+        reader = new AgentReader("freshli-agent-java");
+    }
+
+    private static string CreateCheckoutLocation(out DirectoryInfo checkoutDirectory)
     {
         var checkoutLocation = Path.Combine(Path.GetTempPath(), "repositories");
 
@@ -56,12 +80,6 @@ public class AgentReaderTest
         }
 
         checkoutDirectory.Create();
-
-        // clone https://github.com/protocolbuffers/protobuf to a temp location
-        Invoke.Command("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
-
-        repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
-
-        reader = new AgentReader("freshli-agent-java");
+        return checkoutLocation;
     }
 }
