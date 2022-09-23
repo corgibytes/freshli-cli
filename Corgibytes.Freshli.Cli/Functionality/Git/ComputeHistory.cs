@@ -119,4 +119,10 @@ public class ComputeHistory : IComputeHistory
         return commitHistory
             .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt)).ToList();
     }
+
+    public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IAnalysisLocation analysisLocation, string gitPath)
+    {
+        var gitCommit = _listCommits.MostRecentCommit(analysisLocation, gitPath);
+        return new List<HistoryIntervalStop>{new(gitCommit.ShaIdentifier, gitCommit.CommittedAt)};
+    }
 }
