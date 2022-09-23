@@ -47,12 +47,13 @@ public class AgentReaderTest
     [Fact]
     public void AgentReaderReturnsEmptyListWhenNoManifestsFound()
     {
-        var checkoutLocation = CreateCheckoutLocation(out checkoutDirectory);
+        var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);
         var reader = new AgentReader("freshli-agent-java");
         var repositoryLocation = Path.Combine(checkoutLocation, "invalid_repository");
 
         var actualManifests = reader.DetectManifests(repositoryLocation);
         Assert.Empty(actualManifests);
+        checkoutDirectory.Delete();
     }
 
     private static void SetupDirectory(out string repositoryLocation, out AgentReader reader,
