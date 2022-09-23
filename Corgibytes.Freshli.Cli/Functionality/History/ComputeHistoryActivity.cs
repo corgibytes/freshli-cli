@@ -35,7 +35,11 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         IEnumerable<HistoryIntervalStop> historyIntervalStops;
 
-        if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
+        if (analysis.LatestOnly.Equals(LatestOnly.ShowLatestOnly))
+        {
+            historyIntervalStops = computeHistoryService.ComputeLatestOnly(AnalysisLocation, GitExecutablePath);
+        }
+        else if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
         {
             historyIntervalStops = computeHistoryService
                 .ComputeWithHistoryInterval(AnalysisLocation, GitExecutablePath, analysis.HistoryInterval, DateTimeOffset.Now);
