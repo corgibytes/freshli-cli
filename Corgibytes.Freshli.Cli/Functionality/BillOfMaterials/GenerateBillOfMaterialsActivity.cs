@@ -25,7 +25,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
         var agentReader = agentManager.GetReader(AgentExecutablePath);
 
         var asOfDate = DateTime.Now;
-        var pathToBillOfMaterials = agentReader.ProcessManifest(ManifestPath, asOfDate);
+        var pathToBillOfMaterials = agentReader.ProcessManifest(System.IO.Path.Combine(AnalysisLocation.Path, ManifestPath), asOfDate);
 
         eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisLocation, pathToBillOfMaterials));
     }
