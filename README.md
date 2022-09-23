@@ -532,6 +532,28 @@ Reverting a migration is done similarly as to updating the database though we ar
 From the CLI:
 1. `dotnet ef database update [specific migration name]`
 
+## Activities and Events
+
+See the documentation for [Activities and Events](docs/activities-and-events.md), which includes a diagram showing the relationships between the current set of activities and events.
+
+The diagram referenced above is generated as part of our continuous integration process. This ensures that it stays up-to-date as changes are made to the application.
+
+### Generating an Activity/Event diagram on demand
+
+To update the contents of `docs/activities-and-events.md` with an updated diagram, you can simply run:
+
+```bash
+bin/generate-diagram.rb
+```
+
+If you want just the raw diagram text, you can run:
+
+```bash
+dotnet run --project diagram-generator
+```
+
+The text that is output can be pasted into [mermaid.live](https://mermaid.live) to see the rendered diagram.
+
 ## Contributing
 
 If you have any questions, notice a bug, or have a suggestion/enhancment please let us know by opening a [issue](https://github.com/corgibytes/freshli-cli/issues) or [pull request](https://github.com/corgibytes/freshli-cli/pulls).
