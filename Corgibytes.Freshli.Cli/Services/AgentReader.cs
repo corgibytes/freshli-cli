@@ -55,7 +55,7 @@ public class AgentReader : IAgentReader
     public string ProcessManifest(string manifestPath, DateTime asOfDate)
     {
         var billOfMaterialsPath =
-            Invoke.Command(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDate:s}", ".");
+            Invoke.Command(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDate:o}", ".");
 
         return billOfMaterialsPath.TrimEnd('\n', '\n');
     }
