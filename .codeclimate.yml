@@ -11,6 +11,6 @@ checks:
   argument-count:
     enabled: true
     config:
-      threshold: 6
+      threshold: 7
   similar-code:
     enabled: false
