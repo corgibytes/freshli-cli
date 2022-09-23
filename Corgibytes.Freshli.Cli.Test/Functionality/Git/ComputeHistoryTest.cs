@@ -34,6 +34,28 @@ public class ComputeHistoryTest : FreshliTest
         Assert.Equivalent(expectedStops, _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "git", "1d", DateTimeOffset.Now));
     }
 
+    [Fact]
+    public void Verify_it_can_list_all_commits()
+    {
+        _listCommits.HasCommitsAvailable(AvailableCommits());
+        var expectedStops = new List<HistoryIntervalStop>()
+        {
+            new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+                new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero)),
+            new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
+                new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
+            new("ef14791d014431952aa721fa2a9b22afb8d4f144",
+                new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero)),
+            new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
+        };
+
+        var actualStops = _computeHistory.ComputeCommitHistory(_analysisLocation.Object, "git").ToList();
+
+        Assert.NotStrictEqual(expectedStops, actualStops);
+        Assert.Equal(expectedStops.Count, actualStops.Count);
+    }
+
     [Theory]
     [MethodData(nameof(DataForTwoWeekInterval))]
     [MethodData(nameof(DataForOneDayInterval))]
