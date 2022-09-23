@@ -16,7 +16,7 @@ while (!File.Exists(projectFilePath))
     // stop walking up the directory tree if we've reached the top
     if (Path.GetFullPath(projectFilePath) == Path.GetFullPath(nextProjectFilePath))
     {
-        Console.WriteLine("Coulndn't find the project file for Corgibytes.Freshli.Cli");
+        Console.WriteLine("Couldn't find the project file for Corgibytes.Freshli.Cli");
         return -1;
     }
 
