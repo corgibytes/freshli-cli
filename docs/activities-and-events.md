@@ -17,7 +17,7 @@ flowchart TD;
     DetectAgentsActivity --> AgentsDetectedEvent
     AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
     AnalysisFailureLoggedEvent
-    AnalysisStartedEvent --> CloneGitRepositoryActivity
+    AnalysisStartedEvent --> CreateAnalysisApiActivity
     CacheWasNotPreparedEvent -.-> ErrorEvent
     CacheWasNotPreparedEvent --> PrepareCacheActivity
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
