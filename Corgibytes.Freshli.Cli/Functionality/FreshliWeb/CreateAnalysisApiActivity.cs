@@ -7,16 +7,12 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 public class CreateAnalysisApiActivity : IApplicationActivity
 {
     public Guid CachedAnalysisId { get; }
-    public string Url { get; }
-    public string Branch { get; }
     public string CacheDir { get; }
     public string GitPath { get; }
 
-    public CreateAnalysisApiActivity(Guid cachedAnalysisId, string url, string branch, string cacheDir, string gitPath)
+    public CreateAnalysisApiActivity(Guid cachedAnalysisId, string cacheDir, string gitPath)
     {
         CachedAnalysisId = cachedAnalysisId;
-        Url = url;
-        Branch = branch;
         CacheDir = cacheDir;
         GitPath = gitPath;
     }
@@ -28,15 +24,13 @@ public class CreateAnalysisApiActivity : IApplicationActivity
 
         var cachedAnalysis = cacheDb.RetrieveAnalysis(CachedAnalysisId);
 
-        cachedAnalysis.ApiAnalysisId = apiService.CreateAnalysis(Url);
+        cachedAnalysis.ApiAnalysisId = apiService.CreateAnalysis(cachedAnalysis.RepositoryUrl);
 
         cacheDb.SaveAnalysis(cachedAnalysis);
 
         eventClient.Fire(new AnalysisApiCreatedEvent()
         {
             CachedAnalysisId = CachedAnalysisId,
-            Url = Url,
-            Branch = Branch,
             CacheDir = CacheDir,
             GitPath = GitPath
         });
