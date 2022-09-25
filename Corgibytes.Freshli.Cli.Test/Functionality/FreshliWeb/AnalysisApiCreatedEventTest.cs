@@ -17,8 +17,6 @@ public class AnalysisApiCreatedEventTest
         var apiEvent = new AnalysisApiCreatedEvent
         {
             CachedAnalysisId = Guid.NewGuid(),
-            Url = "something",
-            Branch = "somethingelse",
             CacheDir = "/path/to/cache",
             GitPath = "/git"
         };
@@ -29,8 +27,6 @@ public class AnalysisApiCreatedEventTest
 
         engine.Verify(mock => mock.Dispatch(It.Is<CloneGitRepositoryActivity>(value =>
             value.AnalysisId == apiEvent.CachedAnalysisId &&
-            value.RepoUrl == apiEvent.Url &&
-            value.Branch == apiEvent.Branch &&
             value.CacheDir == apiEvent.CacheDir &&
             value.GitPath == apiEvent.GitPath
         )));
