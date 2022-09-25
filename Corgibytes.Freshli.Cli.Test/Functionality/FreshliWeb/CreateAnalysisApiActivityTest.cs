@@ -31,7 +31,7 @@ public class CreateAnalysisApiActivityTest
         var apiAnalysisId = Guid.NewGuid();
         var cachedAnalysisId = Guid.NewGuid();
         api.Setup(mock => mock.CreateAnalysis(url)).Returns(apiAnalysisId);
-        var activity = new CreateAnalysisApiActivity(cachedAnalysisId, url, branch, cacheDir, gitPath);
+        var activity = new CreateAnalysisApiActivity(cachedAnalysisId, cacheDir, gitPath);
 
         var cachedAnalysis = new CachedAnalysis(url, branch, null!, CommitHistory.AtInterval) {Id = cachedAnalysisId};
         var cacheDb = new Mock<ICacheDb>();
@@ -55,8 +55,6 @@ public class CreateAnalysisApiActivityTest
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AnalysisApiCreatedEvent>(value =>
                 value.CachedAnalysisId == cachedAnalysisId &&
-                value.Url == url &&
-                value.Branch == branch &&
                 value.CacheDir == cacheDir &&
                 value.GitPath == gitPath
             )));
