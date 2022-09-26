@@ -12,7 +12,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     public string HistoryInterval { get; init; } = null!;
     public CommitHistory UseCommitHistory { get; init; }
 
-    protected IConfiguration Configuration { get; set; } = null!;
+    protected IConfiguration Configuration { get; private set; } = null!;
     private ICacheManager CacheManager { get; set; } = null!;
     private IHistoryIntervalParser HistoryIntervalParser { get; set; } = null!;
 
@@ -30,10 +30,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
         var cacheDb = CacheManager.GetCacheDb();
         var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
             UseCommitHistory));
-        eventClient.Fire(new AnalysisStartedEvent
-        {
-            AnalysisId = id
-        });
+        eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id });
     }
 
     private bool FireInvalidHistoryEventIfNeeded(IApplicationEventEngine eventClient)
@@ -64,7 +61,11 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
 
     protected virtual TErrorEvent CreateErrorEvent() =>
         // ReSharper disable once UseStringInterpolation
-        new() { ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", Configuration.CacheDir) };
+        new()
+        {
+            ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.",
+                Configuration.CacheDir)
+        };
 
     private void HandleWithCacheFailure(IApplicationEventEngine eventClient)
     {

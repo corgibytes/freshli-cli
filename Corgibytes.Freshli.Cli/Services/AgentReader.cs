@@ -48,8 +48,7 @@ public class AgentReader : IAgentReader
     {
         var manifests = Invoke.Command(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
 
-        return manifests.IsEmpty() ? new List<string>() :
-            manifests.TrimEnd('\n', '\r').Split("\n").ToList();
+        return manifests.IsEmpty() ? new List<string>() : manifests.TrimEnd('\n', '\r').Split("\n").ToList();
     }
 
     public string ProcessManifest(string manifestPath, DateTime asOfDate)

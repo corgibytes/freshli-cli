@@ -38,7 +38,8 @@ foreach (var tree in compilation!.SyntaxTrees)
         var classModel = compilation.GetSemanticModel(classNode.SyntaxTree);
         var classSymbol = classModel.GetDeclaredSymbol(classNode);
 
-        if (classSymbol!.HasInterfaceNamed("IApplicationActivity") || classSymbol!.HasInterfaceNamed("IApplicationEvent"))
+        if (classSymbol!.HasInterfaceNamed("IApplicationActivity") ||
+            classSymbol!.HasInterfaceNamed("IApplicationEvent"))
         {
             List<ITypeSymbol> targetTypeSymbols = new();
 
@@ -112,4 +113,3 @@ public static class TypeSymbolExtensions
         return interfaceNames.Contains(interfaceName);
     }
 }
-

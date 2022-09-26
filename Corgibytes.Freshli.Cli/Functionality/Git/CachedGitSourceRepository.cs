@@ -91,7 +91,8 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
         try
         {
-            commandOutput = Invoke.Command(Configuration.GitPath, $"pull origin {branch ?? ""}", cachedGitSource.LocalPath)
+            commandOutput = Invoke.Command(Configuration.GitPath, $"pull origin {branch ?? ""}",
+                    cachedGitSource.LocalPath)
                 .Replace("\n", " ");
         }
         catch (IOException e)
@@ -107,7 +108,8 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         try
         {
-            Invoke.Command(Configuration.GitPath, $"checkout {cachedGitSource.Branch ?? ""}", cachedGitSource.LocalPath);
+            Invoke.Command(Configuration.GitPath, $"checkout {cachedGitSource.Branch ?? ""}",
+                cachedGitSource.LocalPath);
         }
         catch (IOException e)
         {

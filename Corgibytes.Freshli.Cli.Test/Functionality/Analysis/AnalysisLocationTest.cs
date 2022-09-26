@@ -9,14 +9,10 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
 public class AnalysisLocationTest
 {
-    private Mock<IConfiguration> _configuration = new();
+    private readonly string _cacheDirectory = "/path/to/cache/dir";
+    private readonly Mock<IConfiguration> _configuration = new();
 
-    private string _cacheDirectory = "/path/to/cache/dir";
-
-    public AnalysisLocationTest()
-    {
-        _configuration.Setup(mock => mock.CacheDir).Returns(_cacheDirectory);
-    }
+    public AnalysisLocationTest() => _configuration.Setup(mock => mock.CacheDir).Returns(_cacheDirectory);
 
     [Fact]
     public void PathWithoutCommitId()

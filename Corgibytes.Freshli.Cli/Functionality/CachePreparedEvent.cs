@@ -1,6 +1,5 @@
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -12,7 +11,7 @@ public class CachePreparedEvent : IApplicationEvent
     public CommitHistory UseCommitHistory { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new RestartAnalysisActivity()
+        eventClient.Dispatch(new RestartAnalysisActivity
         {
             RepositoryUrl = RepositoryUrl,
             RepositoryBranch = RepositoryBranch,

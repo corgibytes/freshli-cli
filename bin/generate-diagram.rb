@@ -5,6 +5,6 @@
 diagram_contents = `dotnet run --project diagram-generator`
 
 doc_template_contents = File.read('./docs/activities-and-events.md-template')
-rendered_contents = doc_template_contents.sub("{{diagram}}", diagram_contents)
+rendered_contents = doc_template_contents.sub('{{diagram}}', diagram_contents)
 
 File.write('./docs/activities-and-events.md', rendered_contents)

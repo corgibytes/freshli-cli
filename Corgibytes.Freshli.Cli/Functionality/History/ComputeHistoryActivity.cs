@@ -46,12 +46,10 @@ public class ComputeHistoryActivity : IApplicationActivity
         foreach (var historyIntervalStop in historyIntervalStops)
         {
             var historyStopLocation =
-                new AnalysisLocation(configuration, AnalysisLocation.RepositoryId, historyIntervalStop.GitCommitIdentifier);
+                new AnalysisLocation(configuration, AnalysisLocation.RepositoryId,
+                    historyIntervalStop.GitCommitIdentifier);
 
-            eventClient.Fire(new HistoryIntervalStopFoundEvent
-            {
-                AnalysisLocation = historyStopLocation
-            });
+            eventClient.Fire(new HistoryIntervalStopFoundEvent { AnalysisLocation = historyStopLocation });
         }
     }
 }

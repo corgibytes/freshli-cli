@@ -15,10 +15,10 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class ComputeHistoryTest : FreshliTest
 {
-    private readonly ComputeHistory _computeHistory;
-    private readonly MockListCommits _listCommits;
     private readonly Mock<IAnalysisLocation> _analysisLocation = new();
+    private readonly ComputeHistory _computeHistory;
     private readonly Mock<IConfiguration> _configuration = new();
+    private readonly MockListCommits _listCommits;
 
     public ComputeHistoryTest(ITestOutputHelper output) : base(output)
     {
@@ -32,7 +32,8 @@ public class ComputeHistoryTest : FreshliTest
     {
         _listCommits.HasCommitsAvailable(new List<GitCommit>());
         var expectedStops = new List<HistoryIntervalStop>();
-        Assert.Equivalent(expectedStops, _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "1d", DateTimeOffset.Now));
+        Assert.Equivalent(expectedStops,
+            _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "1d", DateTimeOffset.Now));
     }
 
     [Theory]
@@ -71,13 +72,12 @@ public class ComputeHistoryTest : FreshliTest
                 new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
         };
 
-    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>> DataForTwoWeekInterval() =>
+    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>>
+        DataForTwoWeekInterval() =>
         new()
         {
             {
-                "2w",
-                new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero),
-                AvailableCommits(),
+                "2w", new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero), AvailableCommits(),
                 new List<HistoryIntervalStop>
                 {
                     // Friday week 4
@@ -96,13 +96,12 @@ public class ComputeHistoryTest : FreshliTest
             }
         };
 
-    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>> DataForOneDayInterval() =>
+    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>>
+        DataForOneDayInterval() =>
         new()
         {
             {
-                "1d",
-                new DateTimeOffset(2021, 1, 5, 00, 00, 00, TimeSpan.Zero),
-                new List<GitCommit>
+                "1d", new DateTimeOffset(2021, 1, 5, 00, 00, 00, TimeSpan.Zero), new List<GitCommit>
                 {
                     new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
                         new DateTimeOffset(2021, 1, 4, 00, 00, 00, TimeSpan.Zero)),
@@ -131,13 +130,12 @@ public class ComputeHistoryTest : FreshliTest
             }
         };
 
-    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>> DataForOneWeekInterval() =>
+    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>>
+        DataForOneWeekInterval() =>
         new()
         {
             {
-                "1w",
-                new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero),
-                AvailableCommits(),
+                "1w", new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero), AvailableCommits(),
                 new List<HistoryIntervalStop>
                 {
                     // Friday week 4
@@ -162,13 +160,12 @@ public class ComputeHistoryTest : FreshliTest
             }
         };
 
-    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>> DataForOneMonthInterval() =>
+    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>>
+        DataForOneMonthInterval() =>
         new()
         {
             {
-                "1m",
-                new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero),
-                AvailableCommits(),
+                "1m", new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero), AvailableCommits(),
                 new List<HistoryIntervalStop>
                 {
                     // Start date
@@ -184,13 +181,12 @@ public class ComputeHistoryTest : FreshliTest
             }
         };
 
-    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>> DataForOneYearInterval() =>
+    public static TheoryData<string, DateTimeOffset, List<GitCommit>, List<HistoryIntervalStop>>
+        DataForOneYearInterval() =>
         new()
         {
             {
-                "1y",
-                new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero),
-                new List<GitCommit>()
+                "1y", new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero), new List<GitCommit>
                 {
                     // Friday week 4
                     new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",

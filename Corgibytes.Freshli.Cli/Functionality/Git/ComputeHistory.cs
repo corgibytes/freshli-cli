@@ -7,8 +7,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class ComputeHistory : IComputeHistory
 {
-    private readonly IListCommits _listCommits;
     private readonly IHistoryIntervalParser _historyIntervalParser;
+    private readonly IListCommits _listCommits;
 
     public ComputeHistory(IListCommits listCommits, IHistoryIntervalParser historyIntervalParser)
     {
@@ -38,10 +38,7 @@ public class ComputeHistory : IComputeHistory
 
         // Here be dragons!
         // The code that follows looks odd but it's important to remember we are walking back in time.
-        var range = new List<DateTimeOffset>
-        {
-            startAtDate
-        };
+        var range = new List<DateTimeOffset> { startAtDate };
 
         var rangeStartDate = DetermineRangeStartDate(startAtDate, quantifier);
 
@@ -81,10 +78,17 @@ public class ComputeHistory : IComputeHistory
 
         // Foreach offset in range, select the youngest commit, as long as it's not younger than the offset.
         return (
-            from offset in range
-            let lastCommitForOffset = gitCommits.First(commit => commit.CommittedAt <= offset)
-            select new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, offset))
-        .ToList();
+                from offset in range
+                let lastCommitForOffset = gitCommits.First(commit => commit.CommittedAt <= offset)
+                select new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, offset))
+            .ToList();
+    }
+
+    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation)
+    {
+        var commitHistory = _listCommits.ForRepository(analysisLocation);
+        return commitHistory
+            .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt)).ToList();
     }
 
     private static DateTimeOffset DetermineRangeStartDate(DateTimeOffset startAtDate, string? quantifier)
@@ -101,7 +105,8 @@ public class ComputeHistory : IComputeHistory
                 }
             case "m":
                 // Start at first day of the month
-                rangeStartDate = new DateTimeOffset(rangeStartDate.Year, rangeStartDate.Month, 1, 0, 0, 0, rangeStartDate.Offset);
+                rangeStartDate = new DateTimeOffset(rangeStartDate.Year, rangeStartDate.Month, 1, 0, 0, 0,
+                    rangeStartDate.Offset);
                 break;
             case "y":
                 // Start at first day of the year
@@ -110,12 +115,5 @@ public class ComputeHistory : IComputeHistory
         }
 
         return rangeStartDate;
-    }
-
-    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation)
-    {
-        var commitHistory = _listCommits.ForRepository(analysisLocation);
-        return commitHistory
-            .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt)).ToList();
     }
 }
