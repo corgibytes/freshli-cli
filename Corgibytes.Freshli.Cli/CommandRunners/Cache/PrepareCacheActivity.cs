@@ -11,19 +11,20 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 public class PrepareCacheActivity : IApplicationActivity
 {
     public PrepareCacheActivity(string repositoryUrl = "", string? repositoryBranch = null,
-        string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval)
+        string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval,
+        RevisionHistoryMode revisionHistoryMode = RevisionHistoryMode.AllRevisions)
     {
         RepositoryUrl = repositoryUrl;
         RepositoryBranch = repositoryBranch;
         HistoryInterval = historyInterval;
         UseCommitHistory = useCommitHistory;
+        RevisionHistoryMode = revisionHistoryMode;
     }
 
     public string RepositoryUrl { get; init; }
-
     public string? RepositoryBranch { get; init; }
-
     public CommitHistory UseCommitHistory { get; init; }
+    public RevisionHistoryMode RevisionHistoryMode { get; init; }
 
     // TODO: Research how to use a value class here instead of a string
     public string HistoryInterval { get; init; }
@@ -38,13 +39,14 @@ public class PrepareCacheActivity : IApplicationActivity
             cacheManager.Prepare().ToExitCode();
             var cacheDb = cacheManager.GetCacheDb();
             cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
-                UseCommitHistory));
+                UseCommitHistory, RevisionHistoryMode));
             eventClient.Fire(new CachePreparedEvent
             {
                 RepositoryUrl = RepositoryUrl,
                 RepositoryBranch = RepositoryBranch,
                 HistoryInterval = HistoryInterval,
-                UseCommitHistory = UseCommitHistory
+                UseCommitHistory = UseCommitHistory,
+                RevisionHistoryMode = RevisionHistoryMode
             });
         }
         catch (CacheException e)
