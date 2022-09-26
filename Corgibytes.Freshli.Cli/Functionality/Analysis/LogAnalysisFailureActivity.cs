@@ -6,13 +6,8 @@ public class LogAnalysisFailureActivity : IApplicationActivity
 {
     public readonly ErrorEvent ErrorEvent;
 
-    public LogAnalysisFailureActivity(ErrorEvent errorEvent)
-    {
-        ErrorEvent = errorEvent;
-    }
+    public LogAnalysisFailureActivity(ErrorEvent errorEvent) => ErrorEvent = errorEvent;
 
-    public void Handle(IApplicationEventEngine eventClient)
-    {
+    public void Handle(IApplicationEventEngine eventClient) =>
         eventClient.Fire(new AnalysisFailureLoggedEvent(ErrorEvent));
-    }
 }

@@ -30,15 +30,22 @@ namespace Corgibytes.Freshli.Cli.IoC;
 
 public class FreshliServiceBuilder
 {
-    public FreshliServiceBuilder(IServiceCollection services) => Services = services;
+    public FreshliServiceBuilder(IServiceCollection services, IConfiguration configuration)
+    {
+        Services = services;
+        Configuration = configuration;
+    }
 
     private IServiceCollection Services { get; }
+    private IConfiguration Configuration { get; }
 
     public void Register()
     {
-        Services.AddSingleton<IEnvironment, Environment>();
-        Services.AddSingleton<ICacheManager, CacheManager>();
-        Services.AddSingleton<IAgentManager, AgentManager>();
+        Services.AddSingleton(Configuration);
+        Services.AddScoped<IEnvironment, Environment>();
+        Services.AddScoped<ICacheManager, CacheManager>();
+        Services.AddScoped<IAgentManager, AgentManager>();
+        Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
         RegisterBaseCommand();
         RegisterAnalyzeCommand();
         RegisterFailCommand();

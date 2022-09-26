@@ -6,11 +6,14 @@ public class GitManager : IGitManager
 {
     [JsonProperty] private readonly GitArchive _gitArchive;
 
-    public GitManager(GitArchive gitArchive) => _gitArchive = gitArchive;
+    public GitManager(GitArchive gitArchive)
+    {
+        _gitArchive = gitArchive;
+    }
 
     public string CreateArchive(
-        string repositoryId, string cacheDirectory, GitCommitIdentifier gitCommitIdentifier, string gitPath) =>
-        _gitArchive.CreateArchive(repositoryId, cacheDirectory, gitCommitIdentifier, gitPath);
+        string repositoryId, GitCommitIdentifier gitCommitIdentifier) =>
+        _gitArchive.CreateArchive(repositoryId, gitCommitIdentifier);
 
     public GitCommitIdentifier ParseCommitId(string commitId) => new(commitId);
 }

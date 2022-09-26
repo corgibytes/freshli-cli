@@ -9,9 +9,13 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class CacheManager : ICacheManager
 {
-    public bool ValidateDirIsCache(string cacheDirPath)
+    private readonly IConfiguration _configuration;
+
+    public CacheManager(IConfiguration configuration) => _configuration = configuration;
+
+    public bool ValidateCacheDirectory()
     {
-        var cacheDir = new DirectoryInfo(cacheDirPath);
+        var cacheDir = new DirectoryInfo(_configuration.CacheDir);
         if (!cacheDir.Exists)
         {
             return false;
@@ -24,20 +28,20 @@ public class CacheManager : ICacheManager
             || dirContents.Contains(CacheContext.CacheDbName);
     }
 
-    public bool Prepare(string cacheDirPath)
+    public bool Prepare()
     {
-        var cacheDir = new DirectoryInfo(cacheDirPath);
+        var cacheDir = new DirectoryInfo(_configuration.CacheDir);
         // Create the directory if it doesn't already exist
         if (!cacheDir.Exists)
         {
             cacheDir.Create();
         }
-        else if (!ValidateDirIsCache(cacheDirPath))
+        else if (!ValidateCacheDirectory())
         {
             throw new CacheException(CliOutput.Exception_Cache_Prepare_NonEmpty);
         }
 
-        using var db = new CacheContext(cacheDirPath);
+        using var db = new CacheContext(_configuration.CacheDir);
         try
         {
             MigrateIfPending(db);
@@ -50,10 +54,10 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public DirectoryInfo GetDirectoryInCache(string cacheDirPath, string[] directoryStructure)
+    public DirectoryInfo GetDirectoryInCache(string[] directoryStructure)
     {
-        var cacheDir = new DirectoryInfo(cacheDirPath);
-        Prepare(cacheDirPath);
+        var cacheDir = new DirectoryInfo(_configuration.CacheDir);
+        Prepare();
         var focus = cacheDir;
 
         foreach (var directory in directoryStructure)
@@ -78,16 +82,16 @@ public class CacheManager : ICacheManager
         return focus;
     }
 
-    public bool Destroy(string cacheDirPath)
+    public bool Destroy()
     {
-        var cacheDir = new DirectoryInfo(cacheDirPath);
+        var cacheDir = new DirectoryInfo(_configuration.CacheDir);
         // If the directory doesn't exist, do nothing (be idempotent).
         if (!cacheDir.Exists)
         {
             throw new CacheException(CliOutput.Warning_Cache_Destroy_DoesNotExist) { IsWarning = true };
         }
 
-        if (!ValidateDirIsCache(cacheDirPath))
+        if (!ValidateCacheDirectory())
         {
             throw new CacheException(CliOutput.Exception_Cache_Destroy_NonCache);
         }
@@ -96,7 +100,7 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public ICacheDb GetCacheDb(string cacheDir) => new CacheDb(cacheDir);
+    public ICacheDb GetCacheDb() => new CacheDb(_configuration.CacheDir);
 
     private static void MigrateIfPending(CacheContext context)
     {

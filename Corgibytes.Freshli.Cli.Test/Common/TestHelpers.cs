@@ -10,6 +10,12 @@ public static class TestHelpers
         where T : Command, new()
     {
         var command = new T();
+        command.VerifyAlias(alias, arity, allowMultipleArgumentsPerToken);
+    }
+
+    public static void VerifyAlias(this Command command, string alias, ArgumentArity arity,
+        bool allowMultipleArgumentsPerToken)
+    {
         var option = command.Options.FirstOrDefault(x => x.Aliases.Contains(alias));
         option.Should().NotBeNull();
         option!.AllowMultipleArgumentsPerToken.Should().Be(allowMultipleArgumentsPerToken);
