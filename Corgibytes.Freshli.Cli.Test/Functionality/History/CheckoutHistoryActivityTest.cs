@@ -28,9 +28,12 @@ public class CheckoutHistoryActivityTest
 
         var gitManager = new Mock<IGitManager>();
 
-        var activity = new CheckoutHistoryActivity(gitManager.Object, analysisLocation);
+        var activity = new CheckoutHistoryActivity(analysisLocation);
 
+        var serviceProvider = new Mock<IServiceProvider>();
         var eventEngine = new Mock<IApplicationEventEngine>();
+        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(IGitManager))).Returns(gitManager.Object);
 
         var parsedCommitId = new GitCommitIdentifier(commitId);
         gitManager.Setup(mock => mock.ParseCommitId(commitId)).Returns(parsedCommitId);

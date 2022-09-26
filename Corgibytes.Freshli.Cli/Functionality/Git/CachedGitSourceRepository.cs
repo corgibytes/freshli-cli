@@ -11,8 +11,9 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CachedGitSourceRepository : ICachedGitSourceRepository
 {
-    public CachedGitSourceRepository(ICacheManager cacheManager)
+    public CachedGitSourceRepository(IConfiguration configuration, ICacheManager cacheManager)
     {
+        Configuration = configuration;
         CacheManager = cacheManager;
     }
 

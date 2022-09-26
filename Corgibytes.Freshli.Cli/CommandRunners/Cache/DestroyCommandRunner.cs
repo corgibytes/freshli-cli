@@ -15,20 +15,24 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestroyCommandOptions>
 {
     public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner, ICacheManager cacheManager,
-        IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine)
+        IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine, IConfiguration configuration)
         : base(serviceProvider, runner)
     {
+        Configuration = configuration;
         CacheManager = cacheManager;
         ActivityEngine = activityEngine;
         EventEngine = eventEngine;
     }
 
+    private IConfiguration Configuration { get; }
     private ICacheManager CacheManager { get; }
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
     public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
     {
+        Configuration.CacheDir = options.CacheDir;
+
         var strConfirmDestroy = string.Format(
             CliOutput.CacheDestroyCommandRunner_Run_Prompt,
             options.CacheDir);
@@ -47,7 +51,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
             options.CacheDir);
         context.Console.Out.WriteLine(strDestroyingCache);
 
-        ActivityEngine.Dispatch(new DestroyCacheActivity(CacheManager, options.CacheDir));
+        ActivityEngine.Dispatch(new DestroyCacheActivity());
 
         var exitCode = WaitForCacheDestroyEvents(context);
         return exitCode;

@@ -13,9 +13,7 @@ public class HistoryIntervalStopFoundEvent : IApplicationEvent
     {
         if (AnalysisLocation != null && AnalysisLocation.CommitId != null)
         {
-            eventClient.Dispatch(new CheckoutHistoryActivity(
-                eventClient.ServiceProvider.GetRequiredService<IGitManager>(), AnalysisLocation)
-            );
+            eventClient.Dispatch(new CheckoutHistoryActivity(AnalysisLocation));
         }
     }
 }
