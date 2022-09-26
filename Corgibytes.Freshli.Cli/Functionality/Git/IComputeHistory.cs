@@ -14,4 +14,6 @@ public interface IComputeHistory
     );
 
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath);
+
+    public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IAnalysisLocation analysisLocation, string gitPath);
 }
