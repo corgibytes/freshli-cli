@@ -1,5 +1,5 @@
-using System;
 using System.IO;
+using Corgibytes.Freshli.Cli.Functionality;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
@@ -16,9 +16,6 @@ public class CacheContext : DbContext
     }
 
     // ReSharper disable once UnusedMember.Global
-    public static string DefaultCacheDir =>
-        Path.Combine(Environment.GetEnvironmentVariable("HOME")!, ".freshli");
-
     private DirectoryInfo CacheDir { get; }
     private string DbPath { get; }
 
@@ -36,11 +33,11 @@ public class CacheContextFactory : IDesignTimeDbContextFactory<CacheContext>
 {
     public CacheContext CreateDbContext(string[] args)
     {
+        var configuration = new Configuration(new Environment());
         var optionsBuilder = new DbContextOptionsBuilder<CacheContext>();
-        var cacheDir = CacheContext.DefaultCacheDir;
-        var dbPath = Path.Join(cacheDir, CacheContext.CacheDbName);
+        var dbPath = Path.Join(configuration.CacheDir, CacheContext.CacheDbName);
         optionsBuilder.UseSqlite($"Data Source={dbPath}");
 
-        return new CacheContext(cacheDir);
+        return new CacheContext(configuration.CacheDir);
     }
 }

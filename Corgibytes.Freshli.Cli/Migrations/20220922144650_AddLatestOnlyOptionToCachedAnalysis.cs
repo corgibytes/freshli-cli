@@ -1,23 +1,22 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Corgibytes.Freshli.Cli.Migrations
+namespace Corgibytes.Freshli.Cli.Migrations;
+
+/// <inheritdoc />
+public partial class AddLatestOnlyOptionToCachedAnalysis : Migration
 {
     /// <inheritdoc />
-    public partial class AddLatestOnlyOptionToCachedAnalysis : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.AddColumn<bool>(name: "RevisionHistoryMode", table: "CachedAnalyses", type: "boolean", nullable: true);
-        }
+        migrationBuilder.AddColumn<bool>(name: "RevisionHistoryMode", table: "CachedAnalyses", type: "boolean", nullable: true);
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropColumn(name: "RevisionHistoryMode", table: "CachedAnalyses");
-        }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropColumn(name: "RevisionHistoryMode", table: "CachedAnalyses");
     }
 }

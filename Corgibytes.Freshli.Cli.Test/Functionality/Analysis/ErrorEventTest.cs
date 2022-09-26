@@ -11,7 +11,7 @@ public class ErrorEventTest
     [Fact]
     public void CorrectlyDispatchesLogAnalysisFailureActivity()
     {
-        var errorEvent = new InvalidHistoryIntervalEvent() { ErrorMessage = "Uh-oh!"};
+        var errorEvent = new InvalidHistoryIntervalEvent { ErrorMessage = "Uh-oh!" };
         var engine = new Mock<IApplicationActivityEngine>();
 
         errorEvent.Handle(engine.Object);
@@ -21,4 +21,3 @@ public class ErrorEventTest
         )));
     }
 }
-

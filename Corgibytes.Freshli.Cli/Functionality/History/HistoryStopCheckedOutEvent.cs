@@ -7,8 +7,6 @@ public class HistoryStopCheckedOutEvent : IApplicationEvent
 {
     public IAnalysisLocation AnalysisLocation { get; init; } = null!;
 
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
+    public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new DetectAgentsForDetectManifestsActivity(AnalysisLocation));
-    }
 }
