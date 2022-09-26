@@ -19,6 +19,6 @@ public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPrepar
             RepositoryBranch = RepositoryBranch,
             HistoryInterval = HistoryInterval,
             UseCommitHistory = UseCommitHistory,
-            LatestOnly = LatestOnly
+            RevisionHistoryMode = RevisionHistoryMode
         };
 }
