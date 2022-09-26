@@ -18,7 +18,6 @@ public class BillOfMaterialsGeneratedEvent : IApplicationEvent
 
     public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
         new ComputeLibYearActivity(
-            eventClient.ServiceProvider.GetRequiredService<ICalculateLibYearFromFile>(),
             PathToBillOfMaterials,
             AnalysisLocation
         ));
