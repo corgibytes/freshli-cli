@@ -14,17 +14,20 @@ public class GitArchive
     private static readonly Dictionary<string, Task<string>> s_gitIdsAndSourceTargets = new();
     private static readonly object s_gitIdsAndSourceTargetsLock = new();
 
+    private readonly IConfiguration _configuration;
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
-    public GitArchive(ICachedGitSourceRepository cachedGitSourceRepository) =>
+    public GitArchive(IConfiguration configuration, ICachedGitSourceRepository cachedGitSourceRepository)
+    {
+        _configuration = configuration;
         _cachedGitSourceRepository = cachedGitSourceRepository;
+    }
 
-    public string CreateArchive(string repositoryId, string cacheDirectory,
-        GitCommitIdentifier gitCommitIdentifier, string gitPath)
+    public string CreateArchive(string repositoryId, GitCommitIdentifier gitCommitIdentifier)
     {
         var gitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId);
 
-        var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory, "histories", gitSource.Id,
+        var gitSourceTarget = new DirectoryInfo(Path.Combine(_configuration.CacheDir, "histories", gitSource.Id,
             gitCommitIdentifier.ToString()));
 
         Task<string>? createArchiveTask = null;
@@ -49,7 +52,7 @@ public class GitArchive
             }
 
             s_gitIdsAndSourceTargets.Add(gitSource.Id, new Task<string>(() =>
-                CreateArchiveTask(gitCommitIdentifier, gitPath, gitSourceTarget, gitSource)));
+                CreateArchiveTask(gitCommitIdentifier, gitSourceTarget, gitSource)));
 
             createArchiveTask = s_gitIdsAndSourceTargets[gitSource.Id];
             createArchiveTask.Start();
@@ -58,7 +61,7 @@ public class GitArchive
         return createArchiveTask.Result;
     }
 
-    private static string CreateArchiveTask(GitCommitIdentifier gitCommitIdentifier, string gitPath,
+    private string CreateArchiveTask(GitCommitIdentifier gitCommitIdentifier,
         DirectoryInfo gitSourceTarget, CachedGitSource gitSource)
     {
         // Create the directory where we want to place the archive
@@ -69,7 +72,7 @@ public class GitArchive
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = gitPath,
+                FileName = _configuration.GitPath,
                 WorkingDirectory = gitSource.LocalPath,
                 Arguments = $"archive --output={archivePath} --format=zip {gitCommitIdentifier}",
                 RedirectStandardOutput = true,
