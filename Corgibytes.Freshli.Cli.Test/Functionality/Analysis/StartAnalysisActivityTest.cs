@@ -7,7 +7,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 // ReSharper disable once UnusedType.Global
 public class StartAnalysisActivityTest : StartAnalysisActivityTestBase<StartAnalysisActivity, CacheWasNotPreparedEvent>
 {
-    protected override StartAnalysisActivity Activity => new(Configuration.Object, CacheManager.Object, IntervalParser.Object)
+    protected override StartAnalysisActivity Activity => new()
     {
         RepositoryUrl = "http://git.example.com",
         RepositoryBranch = "main",

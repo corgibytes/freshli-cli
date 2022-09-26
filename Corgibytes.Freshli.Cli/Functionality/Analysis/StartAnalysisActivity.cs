@@ -2,11 +2,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPreparedEvent>
 {
-    public StartAnalysisActivity(IConfiguration configuration, ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser) : base(
-        configuration, cacheManager, historyIntervalParser)
-    {
-    }
-
     protected override CacheWasNotPreparedEvent CreateErrorEvent() =>
         new()
         {

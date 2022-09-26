@@ -1,28 +1,29 @@
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActivity
     where TErrorEvent : ErrorEvent, new()
 {
-    protected StartAnalysisActivityBase(IConfiguration configuration, ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser)
-    {
-        Configuration = configuration;
-        CacheManager = cacheManager;
-        HistoryIntervalParser = historyIntervalParser;
-    }
-
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
     public CommitHistory UseCommitHistory { get; init; }
 
-    public IConfiguration Configuration { get; }
-    public ICacheManager CacheManager { get; }
-    public IHistoryIntervalParser HistoryIntervalParser { get; }
+    protected IConfiguration Configuration { get; set; } = null!;
+    protected ICacheManager CacheManager { get; set; } = null!;
+    protected IHistoryIntervalParser HistoryIntervalParser { get; set; } = null!;
 
-    public void Handle(IApplicationEventEngine eventClient) => HandleWithCacheFailure(eventClient);
+    public void Handle(IApplicationEventEngine eventClient)
+    {
+        Configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
+        CacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+        HistoryIntervalParser = eventClient.ServiceProvider.GetRequiredService<IHistoryIntervalParser>();
+
+        HandleWithCacheFailure(eventClient);
+    }
 
     private void FireAnalysisStartedEvent(IApplicationEventEngine eventClient)
     {

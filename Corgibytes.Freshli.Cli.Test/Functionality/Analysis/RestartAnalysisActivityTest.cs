@@ -7,7 +7,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class RestartAnalysisActivityTest :
     StartAnalysisActivityTestBase<RestartAnalysisActivity, UnableToRestartAnalysisEvent>
 {
-    protected override RestartAnalysisActivity Activity => new(Configuration.Object, CacheManager.Object, IntervalParser.Object)
+    protected override RestartAnalysisActivity Activity => new()
     {
         RepositoryUrl = "http://git.example.com",
         RepositoryBranch = "main",

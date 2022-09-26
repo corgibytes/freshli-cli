@@ -36,8 +36,6 @@ public class CacheWasPreparedEventTest
         cacheEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<RestartAnalysisActivity>(value =>
-            value.CacheManager == cacheManager.Object &&
-            value.HistoryIntervalParser == historyIntervalParser.Object &&
             value.RepositoryUrl == "https://git.example.com" &&
             value.RepositoryBranch == "main" &&
             value.HistoryInterval == "1m")));
