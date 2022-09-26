@@ -7,8 +7,8 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality;
 [UnitTest]
 public class ConfigurationTest
 {
-    private Mock<IEnvironment> _environment = new();
-    private Configuration _configuration;
+    private readonly Configuration _configuration;
+    private readonly Mock<IEnvironment> _environment = new();
 
     public ConfigurationTest()
     {
@@ -17,14 +17,8 @@ public class ConfigurationTest
     }
 
     [Fact]
-    public void DefaultGitPath()
-    {
-        Assert.Equal("git", _configuration.GitPath);
-    }
+    public void DefaultGitPath() => Assert.Equal("git", _configuration.GitPath);
 
     [Fact]
-    public void DefaultCacheDir()
-    {
-        Assert.Equal("/path/to/home/dir/.freshli", _configuration.CacheDir);
-    }
+    public void DefaultCacheDir() => Assert.Equal("/path/to/home/dir/.freshli", _configuration.CacheDir);
 }

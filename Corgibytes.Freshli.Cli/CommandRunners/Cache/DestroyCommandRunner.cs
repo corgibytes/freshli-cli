@@ -14,18 +14,16 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
 public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestroyCommandOptions>
 {
-    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner, ICacheManager cacheManager,
+    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner,
         IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine, IConfiguration configuration)
         : base(serviceProvider, runner)
     {
         Configuration = configuration;
-        CacheManager = cacheManager;
         ActivityEngine = activityEngine;
         EventEngine = eventEngine;
     }
 
     private IConfiguration Configuration { get; }
-    private ICacheManager CacheManager { get; }
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 

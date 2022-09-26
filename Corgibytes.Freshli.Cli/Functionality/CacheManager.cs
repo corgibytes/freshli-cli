@@ -11,10 +11,7 @@ public class CacheManager : ICacheManager
 {
     private readonly IConfiguration _configuration;
 
-    public CacheManager(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    public CacheManager(IConfiguration configuration) => _configuration = configuration;
 
     public bool ValidateCacheDirectory()
     {
@@ -103,10 +100,7 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public ICacheDb GetCacheDb()
-    {
-        return new CacheDb(_configuration.CacheDir);
-    }
+    public ICacheDb GetCacheDb() => new CacheDb(_configuration.CacheDir);
 
     private static void MigrateIfPending(CacheContext context)
     {

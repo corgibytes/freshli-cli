@@ -1,7 +1,6 @@
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
 

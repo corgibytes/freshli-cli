@@ -9,10 +9,8 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
 {
     [JsonProperty] private readonly IAnalysisLocation _analysisLocation;
 
-    public DetectAgentsForDetectManifestsActivity(IAnalysisLocation analysisLocation)
-    {
+    public DetectAgentsForDetectManifestsActivity(IAnalysisLocation analysisLocation) =>
         _analysisLocation = analysisLocation;
-    }
 
     public void Handle(IApplicationEventEngine eventClient)
     {

@@ -12,10 +12,7 @@ public class ListCommits : IListCommits
 {
     private readonly IConfiguration _configuration;
 
-    public ListCommits(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    public ListCommits(IConfiguration configuration) => _configuration = configuration;
 
     public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation)
     {

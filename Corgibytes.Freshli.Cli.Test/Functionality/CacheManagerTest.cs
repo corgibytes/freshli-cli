@@ -10,13 +10,10 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality;
 [IntegrationTest]
 public class CacheManagerTest : IDisposable
 {
-    private readonly string _tempCacheDir = Path.Combine(Path.GetTempPath(), "Freshli", "CacheManagerTest");
     private readonly Mock<IConfiguration> _configuration = new();
+    private readonly string _tempCacheDir = Path.Combine(Path.GetTempPath(), "Freshli", "CacheManagerTest");
 
-    public CacheManagerTest()
-    {
-        _configuration.Setup(mock => mock.CacheDir).Returns(_tempCacheDir);
-    }
+    public CacheManagerTest() => _configuration.Setup(mock => mock.CacheDir).Returns(_tempCacheDir);
 
     public void Dispose()
     {
