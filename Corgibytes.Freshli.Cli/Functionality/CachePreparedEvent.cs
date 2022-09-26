@@ -12,11 +12,7 @@ public class CachePreparedEvent : IApplicationEvent
     public CommitHistory UseCommitHistory { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new RestartAnalysisActivity(
-            eventClient.ServiceProvider.GetRequiredService<IConfiguration>(),
-            eventClient.ServiceProvider.GetRequiredService<ICacheManager>(),
-            eventClient.ServiceProvider.GetRequiredService<IHistoryIntervalParser>()
-        )
+        eventClient.Dispatch(new RestartAnalysisActivity()
         {
             RepositoryUrl = RepositoryUrl,
             RepositoryBranch = RepositoryBranch,

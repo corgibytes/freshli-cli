@@ -37,7 +37,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
 
-        _activityEngine.Dispatch(new StartAnalysisActivity(_configuration, _cacheManager, new HistoryIntervalParser())
+        _activityEngine.Dispatch(new StartAnalysisActivity()
         {
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,

@@ -11,6 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> where TActivity : IApplicationActivity
     where TErrorEvent : ErrorEvent
 {
+    private readonly Mock<IServiceProvider> _serviceProvider = new();
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     protected readonly Mock<IConfiguration> Configuration = new();
@@ -19,6 +20,14 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     protected abstract TActivity Activity { get; }
 
     protected virtual Func<TErrorEvent, bool> EventValidator => _ => true;
+
+    public StartAnalysisActivityTestBase()
+    {
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(Configuration.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(CacheManager.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IHistoryIntervalParser))).Returns(IntervalParser.Object);
+    }
 
     [Fact]
     public void HandlerFiresCacheWasNotPreparedEventWhenCacheIsMissing()
