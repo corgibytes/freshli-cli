@@ -24,7 +24,7 @@ public class ComputeHistoryTest : FreshliTest
     {
         _listCommits = new MockListCommits();
         _configuration.Setup(mock => mock.GitPath).Returns("git");
-        _computeHistory = new ComputeHistory(_configuration.Object, _listCommits, new HistoryIntervalParser());
+        _computeHistory = new ComputeHistory(_listCommits, new HistoryIntervalParser());
     }
 
     [Fact]

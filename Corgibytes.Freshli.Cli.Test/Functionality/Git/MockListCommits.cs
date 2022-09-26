@@ -10,7 +10,7 @@ public class MockListCommits : IListCommits
 
     public MockListCommits() => _availableCommits = new List<GitCommit>();
 
-    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation, string gitPath) =>
+    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation) =>
         _availableCommits;
 
     public void HasCommitsAvailable(IEnumerable<GitCommit> availableGitCommits) =>

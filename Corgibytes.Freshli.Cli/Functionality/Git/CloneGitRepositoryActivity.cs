@@ -18,7 +18,6 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        // TODO: Pull cache dir value from config service
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
 
         // Clone or pull the given repository and branch.

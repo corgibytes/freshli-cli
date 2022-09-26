@@ -10,11 +10,18 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class ListCommits : IListCommits
 {
-    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation, string gitPath)
+    private readonly IConfiguration _configuration;
+
+    public ListCommits(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
+    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation)
     {
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();
-        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
+        var command = CliWrap.Cli.Wrap(_configuration.GitPath).WithArguments(
                 args => args
                     .Add("log")
                     // Commit hash, author date, strict ISO 8601 format
