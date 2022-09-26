@@ -96,14 +96,6 @@ jobs:
       - name: "[Build] - Build"
         run: dotnet build --configuration Release
 
-      - name: "[Build] - Copy NuGet Package to Build Artifacts"
-        run: |
-          mkdir ${{ env.BUILD_ARTIFACTS_FOLDER }}
-          cp Corgibytes.Freshli.Cli/bin/Release/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg ${{ env.BUILD_ARTIFACTS_FOLDER }}
-          ls -la ${{ env.BUILD_ARTIFACTS_FOLDER }}
-          echo "NUGET_PACKAGE_FILE=Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
-          echo "NUGET_PACKAGE_PATH=${{ env.BUILD_ARTIFACTS_FOLDER }}/Corgibytes.Freshli.Cli.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg" >> $GITHUB_ENV
-
       - name: "[Build, Docker] - Set up QEMU"
         if: github.event_name != 'pull_request'
         uses: docker/setup-qemu-action@v2
@@ -231,12 +223,6 @@ jobs:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-osx-x64.zip
           path: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip
 
-      - name: "[Post Publish] - Upload NuGet Package as Github Workflow Artifacts"
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ env.NUGET_PACKAGE_FILE }}
-          path: ${{ env.NUGET_PACKAGE_PATH }}
-
       - name: "[Post Publish] - Add Assets to Release Draft"
         if: github.event_name == 'push'
         run: |
@@ -253,8 +239,3 @@ jobs:
       - name: "[Push] - Push to GitHub"
         if: github.event_name == 'push'
         run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.GITHUB_TOKEN }} --skip-duplicate --no-symbols -s https://nuget.pkg.github.com/corgibytes/index.json
-
-      # Only push production or release candidates to Nuget.org.  These will be tagged.
-      - name: "[Push] - Push to NuGet"
-        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
-        run: dotnet nuget push ${{ env.NUGET_PACKAGE_PATH }} -k ${{ secrets.NUGET_API_KEY }} --skip-duplicate --no-symbols -s https://api.nuget.org/v3/index.json
