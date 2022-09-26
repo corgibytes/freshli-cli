@@ -116,4 +116,10 @@ public class ComputeHistory : IComputeHistory
 
         return rangeStartDate;
     }
+
+    public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IAnalysisLocation analysisLocation)
+    {
+        var gitCommit = _listCommits.MostRecentCommit(analysisLocation);
+        return new List<HistoryIntervalStop>{new(gitCommit.ShaIdentifier, gitCommit.CommittedAt)};
+    }
 }

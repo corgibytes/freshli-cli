@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -12,6 +13,12 @@ public class MockListCommits : IListCommits
 
     public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation) =>
         _availableCommits;
+
+    public GitCommit MostRecentCommit(IAnalysisLocation analysisLocation)
+    {
+        // Assuming _availableCommits is sorted with most recent first
+        return _availableCommits.First();
+    }
 
     public void HasCommitsAvailable(IEnumerable<GitCommit> availableGitCommits) =>
         _availableCommits = availableGitCommits;

@@ -33,7 +33,11 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         IEnumerable<HistoryIntervalStop> historyIntervalStops;
 
-        if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
+        if (analysis.RevisionHistoryMode.Equals(RevisionHistoryMode.OnlyLatestRevision))
+        {
+            historyIntervalStops = computeHistoryService.ComputeLatestOnly(AnalysisLocation);
+        }
+        else if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
         {
             historyIntervalStops = computeHistoryService
                 .ComputeWithHistoryInterval(AnalysisLocation, analysis.HistoryInterval, DateTimeOffset.Now);

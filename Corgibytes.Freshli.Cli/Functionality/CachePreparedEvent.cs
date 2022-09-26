@@ -9,6 +9,7 @@ public class CachePreparedEvent : IApplicationEvent
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
     public CommitHistory UseCommitHistory { get; init; }
+    public RevisionHistoryMode RevisionHistoryMode { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new RestartAnalysisActivity
@@ -16,6 +17,7 @@ public class CachePreparedEvent : IApplicationEvent
             RepositoryUrl = RepositoryUrl,
             RepositoryBranch = RepositoryBranch,
             HistoryInterval = HistoryInterval,
-            UseCommitHistory = UseCommitHistory
+            UseCommitHistory = UseCommitHistory,
+            RevisionHistoryMode = RevisionHistoryMode
         });
 }
