@@ -42,7 +42,8 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             RepositoryBranch = options.Branch,
             RepositoryUrl = options.RepositoryLocation,
             UseCommitHistory = options.CommitHistory ? CommitHistory.Full : CommitHistory.AtInterval,
-            RevisionHistoryMode = options.LatestOnly ? RevisionHistoryMode.OnlyLatestRevision : RevisionHistoryMode.AllRevisions
+            RevisionHistoryMode =
+                options.LatestOnly ? RevisionHistoryMode.OnlyLatestRevision : RevisionHistoryMode.AllRevisions
         });
 
         var exitStatus = 0;

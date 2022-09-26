@@ -15,10 +15,7 @@ public class ListCommits : IListCommits
 
     public ListCommits(IConfiguration configuration) => _configuration = configuration;
 
-    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation)
-    {
-        return GitLog(analysisLocation);
-    }
+    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation) => GitLog(analysisLocation);
 
     public GitCommit MostRecentCommit(IAnalysisLocation analysisLocation)
     {
