@@ -53,7 +53,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
 
     private bool FireCacheNotFoundEventIfNeeded(IApplicationEventEngine eventClient)
     {
-        if (!CacheManager.ValidateDirIsCache(Configuration.CacheDir))
+        if (!CacheManager.ValidateCacheDirectory())
         {
             eventClient.Fire(CreateErrorEvent());
             return true;
