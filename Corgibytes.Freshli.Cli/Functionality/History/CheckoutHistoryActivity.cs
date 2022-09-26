@@ -10,10 +10,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
 {
     [JsonProperty] private readonly IAnalysisLocation _analysisLocation;
 
-    public CheckoutHistoryActivity(IAnalysisLocation analysisLocation)
-    {
-        _analysisLocation = analysisLocation;
-    }
+    public CheckoutHistoryActivity(IAnalysisLocation analysisLocation) => _analysisLocation = analysisLocation;
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -26,7 +23,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
                 gitManager.ParseCommitId(_analysisLocation.CommitId)
             );
 
-            eventClient.Fire(new HistoryStopCheckedOutEvent{ AnalysisLocation = _analysisLocation });
+            eventClient.Fire(new HistoryStopCheckedOutEvent { AnalysisLocation = _analysisLocation });
         }
     }
 }

@@ -11,10 +11,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 {
     [JsonProperty] private readonly Guid _cachedAnalysisId;
 
-    public CloneGitRepositoryActivity(Guid cachedAnalysisId)
-    {
-        _cachedAnalysisId = cachedAnalysisId;
-    }
+    public CloneGitRepositoryActivity(Guid cachedAnalysisId) => _cachedAnalysisId = cachedAnalysisId;
 
     public void Handle(IApplicationEventEngine eventClient)
     {

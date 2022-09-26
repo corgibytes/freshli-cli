@@ -4,7 +4,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AnalysisLocation : IAnalysisLocation
 {
-    [JsonProperty] private IConfiguration _configuration;
+    [JsonProperty] private readonly IConfiguration _configuration;
 
     public AnalysisLocation(IConfiguration configuration, string repositoryId, string? commitId = null)
     {

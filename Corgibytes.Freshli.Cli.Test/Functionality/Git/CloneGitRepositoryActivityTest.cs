@@ -21,14 +21,14 @@ public class CloneGitRepositoryActivityTest
 
     private readonly Guid _analysisId = Guid.NewGuid();
 
-    private readonly Mock<IConfiguration> _configuration = new();
+    private readonly CachedAnalysis _cachedAnalysis;
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<ICacheManager> _cacheManager = new();
+
+    private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<ICachedGitSourceRepository> _gitSourceRepository = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
-
-    private readonly CachedAnalysis _cachedAnalysis;
 
     public CloneGitRepositoryActivityTest()
     {

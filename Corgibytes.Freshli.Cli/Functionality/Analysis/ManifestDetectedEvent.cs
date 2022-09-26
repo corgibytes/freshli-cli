@@ -16,9 +16,10 @@ public class ManifestDetectedEvent : IApplicationEvent
     public string AgentExecutablePath { get; }
     public string ManifestPath { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(new GenerateBillOfMaterialsActivity(
-        AgentExecutablePath,
-        AnalysisLocation,
-        ManifestPath
-    ));
+    public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
+        new GenerateBillOfMaterialsActivity(
+            AgentExecutablePath,
+            AnalysisLocation,
+            ManifestPath
+        ));
 }

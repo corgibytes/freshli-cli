@@ -14,20 +14,19 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions>
 {
-    private readonly IConfiguration _configuration;
     private readonly IApplicationActivityEngine _activityEngine;
-    private readonly ICacheManager _cacheManager;
+    private readonly IConfiguration _configuration;
     private readonly IApplicationEventEngine _eventEngine;
     private readonly IResultsApi _resultsApi;
 
     public AnalyzeRunner(
-        IServiceProvider serviceProvider, Runner runner, IConfiguration configuration, IApplicationActivityEngine activityEngine,
-        ICacheManager cacheManager, IApplicationEventEngine eventEngine, IResultsApi resultsApi
+        IServiceProvider serviceProvider, Runner runner, IConfiguration configuration,
+        IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine,
+        IResultsApi resultsApi
     ) : base(serviceProvider, runner)
     {
         _configuration = configuration;
         _activityEngine = activityEngine;
-        _cacheManager = cacheManager;
         _eventEngine = eventEngine;
         _resultsApi = resultsApi;
     }
@@ -37,12 +36,12 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
 
-        _activityEngine.Dispatch(new StartAnalysisActivity()
+        _activityEngine.Dispatch(new StartAnalysisActivity
         {
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,
             RepositoryUrl = options.RepositoryLocation,
-            UseCommitHistory = options.CommitHistory ? CommitHistory.Full : CommitHistory.AtInterval,
+            UseCommitHistory = options.CommitHistory ? CommitHistory.Full : CommitHistory.AtInterval
         });
 
         var exitStatus = 0;
@@ -55,8 +54,10 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
 
         _eventEngine.On<AnalysisStartedEvent>(startEvent =>
         {
-            context.Console.Out.WriteLine("Results will be available at: " +
-                                          _resultsApi.GetResultsUrl(startEvent.AnalysisId));
+            context.Console.Out.WriteLine(
+                "Results will be available at: " +
+                _resultsApi.GetResultsUrl(startEvent.AnalysisId)
+            );
         });
 
         _eventEngine.On<LibYearComputedEvent>(computedEvent =>

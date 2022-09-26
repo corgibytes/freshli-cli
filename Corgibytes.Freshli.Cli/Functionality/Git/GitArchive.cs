@@ -13,9 +13,9 @@ public class GitArchive
 {
     private static readonly Dictionary<string, Task<string>> s_gitIdsAndSourceTargets = new();
     private static readonly object s_gitIdsAndSourceTargetsLock = new();
+    private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
     private readonly IConfiguration _configuration;
-    private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
     public GitArchive(IConfiguration configuration, ICachedGitSourceRepository cachedGitSourceRepository)
     {
