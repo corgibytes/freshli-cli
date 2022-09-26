@@ -22,7 +22,7 @@ public class GitArchive
     public string CreateArchive(string repositoryId, string cacheDirectory,
         GitCommitIdentifier gitCommitIdentifier, string gitPath)
     {
-        var gitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId, cacheDirectory);
+        var gitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId);
 
         var gitSourceTarget = new DirectoryInfo(Path.Combine(cacheDirectory, "histories", gitSource.Id,
             gitCommitIdentifier.ToString()));

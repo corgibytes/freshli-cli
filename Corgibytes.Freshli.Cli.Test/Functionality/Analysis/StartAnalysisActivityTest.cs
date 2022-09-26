@@ -7,9 +7,8 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 // ReSharper disable once UnusedType.Global
 public class StartAnalysisActivityTest : StartAnalysisActivityTestBase<StartAnalysisActivity, CacheWasNotPreparedEvent>
 {
-    protected override StartAnalysisActivity Activity => new(CacheManager.Object, IntervalParser.Object)
+    protected override StartAnalysisActivity Activity => new(Configuration.Object, CacheManager.Object, IntervalParser.Object)
     {
-        CacheDirectory = "example",
         RepositoryUrl = "http://git.example.com",
         RepositoryBranch = "main",
         HistoryInterval = "1m"
@@ -17,7 +16,6 @@ public class StartAnalysisActivityTest : StartAnalysisActivityTestBase<StartAnal
 
     protected override Func<CacheWasNotPreparedEvent, bool> EventValidator =>
         value =>
-            value.CacheDirectory == "example" &&
             value.RepositoryUrl == "http://git.example.com" &&
             value.RepositoryBranch == "main" &&
             value.HistoryInterval == "1m";

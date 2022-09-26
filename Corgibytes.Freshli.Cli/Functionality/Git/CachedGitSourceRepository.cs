@@ -11,14 +11,17 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CachedGitSourceRepository : ICachedGitSourceRepository
 {
-    public CachedGitSourceRepository(ICacheManager cacheManager) =>
+    public CachedGitSourceRepository(ICacheManager cacheManager)
+    {
         CacheManager = cacheManager;
+    }
 
     [JsonProperty] private ICacheManager CacheManager { get; }
+    [JsonProperty] private IConfiguration Configuration { get; }
 
-    public CachedGitSource FindOneByHash(string hash, string cacheDir)
+    public CachedGitSource FindOneByHash(string hash)
     {
-        using var db = new CacheContext(cacheDir);
+        using var db = new CacheContext(Configuration.CacheDir);
         var entry = db.CachedGitSources.Find(hash);
         if (entry == null)
         {
@@ -28,10 +31,10 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         return entry;
     }
 
-    public CachedGitSource CloneOrPull(string url, string? branch, string cacheDir, string gitPath)
+    public CachedGitSource CloneOrPull(string url, string? branch)
     {
         // Ensure the cache directory is ready for use.
-        CacheManager.Prepare(cacheDir);
+        CacheManager.Prepare(Configuration.CacheDir);
 
         // Generate a unique hash for the repository based on its URL and branch.
         using var sha256 = SHA256.Create();
@@ -44,14 +47,14 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
         var hash = stringBuilder.ToString();
 
-        using var db = new CacheContext(cacheDir);
+        using var db = new CacheContext(Configuration.CacheDir);
         var existingCachedGitSource = db.CachedGitSources.Find(hash);
         if (existingCachedGitSource is not null)
         {
             return existingCachedGitSource;
         }
 
-        var directory = CacheManager.GetDirectoryInCache(cacheDir, new[] { "repositories", hash });
+        var directory = CacheManager.GetDirectoryInCache(Configuration.CacheDir, new[] { "repositories", hash });
 
         var cachedGitSource = new CachedGitSource(hash, url, branch, directory.FullName);
         db.CachedGitSources.Add(cachedGitSource);
@@ -59,35 +62,35 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
         if (directory.GetFiles().Any() || directory.GetDirectories().Any())
         {
-            Pull(cachedGitSource, gitPath);
+            Pull(cachedGitSource);
             return cachedGitSource;
         }
 
         // If not yet cloned, clone from URL.
-        Clone(cachedGitSource, gitPath, cacheDir);
+        Clone(cachedGitSource);
 
         // If a branch is defined, checkout branch
         if (!string.IsNullOrEmpty(branch))
         {
-            Checkout(cachedGitSource, gitPath, cacheDir);
+            Checkout(cachedGitSource);
         }
 
         return cachedGitSource;
     }
 
-    private static void Pull(CachedGitSource cachedGitSource, string gitPath)
+    private void Pull(CachedGitSource cachedGitSource)
     {
         var branch = cachedGitSource.Branch;
         if (cachedGitSource.Branch == null)
         {
-            branch = FetchCurrentBranch(cachedGitSource, gitPath);
+            branch = FetchCurrentBranch(cachedGitSource);
         }
 
         string? commandOutput = null;
 
         try
         {
-            commandOutput = Invoke.Command(gitPath, $"pull origin {branch ?? ""}", cachedGitSource.LocalPath)
+            commandOutput = Invoke.Command(Configuration.GitPath, $"pull origin {branch ?? ""}", cachedGitSource.LocalPath)
                 .Replace("\n", " ");
         }
         catch (IOException e)
@@ -99,42 +102,42 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         }
     }
 
-    private static void Checkout(CachedGitSource cachedGitSource, string gitPath, string cacheDirectory)
+    private void Checkout(CachedGitSource cachedGitSource)
     {
         try
         {
-            Invoke.Command(gitPath, $"checkout {cachedGitSource.Branch ?? ""}", cachedGitSource.LocalPath);
+            Invoke.Command(Configuration.GitPath, $"checkout {cachedGitSource.Branch ?? ""}", cachedGitSource.LocalPath);
         }
         catch (IOException e)
         {
-            Delete(cachedGitSource, cacheDirectory);
+            Delete(cachedGitSource);
             throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
         }
     }
 
-    private static void Delete(CachedGitSource cachedGitSource, string cacheDirectory)
+    private void Delete(CachedGitSource cachedGitSource)
     {
         var directory = new DirectoryInfo(cachedGitSource.LocalPath);
-        using var db = new CacheContext(cacheDirectory);
+        using var db = new CacheContext(Configuration.CacheDir);
         var entry = db.CachedGitSources.Find(cachedGitSource.Id);
         db.CachedGitSources.Remove(entry!);
 
         directory.Delete(true);
     }
 
-    private static void Clone(CachedGitSource cachedGitSource, string gitPath, string cacheDirectory)
+    private void Clone(CachedGitSource cachedGitSource)
     {
         try
         {
-            Invoke.Command(gitPath, $"clone {cachedGitSource.Url} .", cachedGitSource.LocalPath);
+            Invoke.Command(Configuration.GitPath, $"clone {cachedGitSource.Url} .", cachedGitSource.LocalPath);
         }
         catch (IOException e)
         {
-            Delete(cachedGitSource, cacheDirectory);
+            Delete(cachedGitSource);
             throw new GitException($"{CliOutput.Exception_Git_EncounteredError}\n{e.Message}");
         }
     }
 
-    private static string FetchCurrentBranch(CachedGitSource cachedGitSource, string gitPath) =>
-        Invoke.Command(gitPath, "branch --show-current", cachedGitSource.LocalPath).Replace("\n", "");
+    private string FetchCurrentBranch(CachedGitSource cachedGitSource) =>
+        Invoke.Command(Configuration.GitPath, "branch --show-current", cachedGitSource.LocalPath).Replace("\n", "");
 }

@@ -20,7 +20,6 @@ public class CacheWasNotPreparedEventTest
 
         var cacheEvent = new CacheWasNotPreparedEvent
         {
-            CacheDirectory = "example",
             RepositoryUrl = "https://git.example.com",
             RepositoryBranch = "main",
             HistoryInterval = "1m",
@@ -37,7 +36,6 @@ public class CacheWasNotPreparedEventTest
         cacheEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<PrepareCacheActivity>(value =>
-            value.CacheDirectory == cacheEvent.CacheDirectory &&
             value.RepositoryUrl == cacheEvent.RepositoryUrl &&
             value.RepositoryBranch == cacheEvent.RepositoryBranch &&
             value.HistoryInterval == cacheEvent.HistoryInterval &&

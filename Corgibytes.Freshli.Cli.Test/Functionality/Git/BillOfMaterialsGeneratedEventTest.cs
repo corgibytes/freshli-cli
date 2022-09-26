@@ -16,7 +16,9 @@ public class BillOfMaterialsGeneratedEventTest
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var calculateLibYearFromFile = new Mock<ICalculateLibYearFromFile>();
-        var analysisLocation = new AnalysisLocation("/cache/directory", "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d",
+        var configuration = new Mock<IConfiguration>();
+        configuration.Setup(mock => mock.CacheDir).Returns("/cache/directory");
+        var analysisLocation = new AnalysisLocation(configuration.Object, "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d",
             "da39a3ee5e6b4b0d3255bfef95601890afd80709");
         var pathToBoM = "/path/to/bom";
 

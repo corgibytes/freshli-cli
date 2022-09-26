@@ -9,6 +9,13 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class CacheManager : ICacheManager
 {
+    private IConfiguration _configuration;
+
+    public CacheManager(IConfiguration configuration)
+    {
+        _configuration = configuration;
+    }
+
     public bool ValidateDirIsCache(string cacheDirPath)
     {
         var cacheDir = new DirectoryInfo(cacheDirPath);
@@ -96,7 +103,10 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public ICacheDb GetCacheDb(string cacheDir) => new CacheDb(cacheDir);
+    public ICacheDb GetCacheDb()
+    {
+        return new CacheDb(_configuration.CacheDir);
+    }
 
     private static void MigrateIfPending(CacheContext context)
     {

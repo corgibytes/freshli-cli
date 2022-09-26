@@ -7,25 +7,26 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class ComputeHistory : IComputeHistory
 {
+    private readonly IConfiguration _configuration;
     private readonly IListCommits _listCommits;
     private readonly IHistoryIntervalParser _historyIntervalParser;
 
-    public ComputeHistory(IListCommits listCommits, IHistoryIntervalParser historyIntervalParser)
+    public ComputeHistory(IConfiguration configuration, IListCommits listCommits, IHistoryIntervalParser historyIntervalParser)
     {
+        _configuration = configuration;
         _listCommits = listCommits;
         _historyIntervalParser = historyIntervalParser;
     }
 
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
         IAnalysisLocation analysisLocation,
-        string gitPath,
         string historyInterval,
         DateTimeOffset startAtDate
     )
     {
         _historyIntervalParser.Parse(historyInterval, out var interval, out var quantifier);
 
-        var commitHistory = _listCommits.ForRepository(analysisLocation, gitPath);
+        var commitHistory = _listCommits.ForRepository(analysisLocation, _configuration.GitPath);
 
         // Prevent multiple enumeration
         var gitCommits = commitHistory.OrderByDescending(commit => commit.CommittedAt).ToList();
@@ -113,9 +114,9 @@ public class ComputeHistory : IComputeHistory
         return rangeStartDate;
     }
 
-    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath)
+    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation)
     {
-        var commitHistory = _listCommits.ForRepository(analysisLocation, gitPath);
+        var commitHistory = _listCommits.ForRepository(analysisLocation, _configuration.GitPath);
         return commitHistory
             .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt)).ToList();
     }
