@@ -25,21 +25,17 @@ public class PrepareCacheActivity : IApplicationActivity
 
     public CommitHistory UseCommitHistory { get; init; }
 
-    public string GitPath { get; init; }
-
     // TODO: Research how to use a value class here instead of a string
     public string HistoryInterval { get; init; }
-
-    public string CacheDirectory { get; init; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var cacheManager = new CacheManager(configuration);
-        Console.Out.WriteLine(CliOutput.CachePrepareCommandRunner_Run_Preparing_cache, CacheDirectory);
+        Console.Out.WriteLine(CliOutput.CachePrepareCommandRunner_Run_Preparing_cache, configuration.CacheDir);
         try
         {
-            cacheManager.Prepare(CacheDirectory).ToExitCode();
+            cacheManager.Prepare().ToExitCode();
             var cacheDb = cacheManager.GetCacheDb();
             cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
                 UseCommitHistory));

@@ -33,7 +33,7 @@ public class CacheManagerTest : IDisposable
     public void SavePersistsACachedAnalysisAndGeneratesAnId()
     {
         var cacheManager = new CacheManager(_configuration.Object);
-        cacheManager.Prepare(_tempCacheDir);
+        cacheManager.Prepare();
 
         var cache = cacheManager.GetCacheDb();
 

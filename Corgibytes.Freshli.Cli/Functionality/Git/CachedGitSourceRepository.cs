@@ -35,7 +35,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     public CachedGitSource CloneOrPull(string url, string? branch)
     {
         // Ensure the cache directory is ready for use.
-        CacheManager.Prepare(Configuration.CacheDir);
+        CacheManager.Prepare();
 
         // Generate a unique hash for the repository based on its URL and branch.
         using var sha256 = SHA256.Create();
@@ -55,7 +55,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
             return existingCachedGitSource;
         }
 
-        var directory = CacheManager.GetDirectoryInCache(Configuration.CacheDir, new[] { "repositories", hash });
+        var directory = CacheManager.GetDirectoryInCache(new[] { "repositories", hash });
 
         var cachedGitSource = new CachedGitSource(hash, url, branch, directory.FullName);
         db.CachedGitSources.Add(cachedGitSource);
