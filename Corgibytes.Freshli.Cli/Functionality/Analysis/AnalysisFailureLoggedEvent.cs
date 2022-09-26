@@ -4,15 +4,11 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AnalysisFailureLoggedEvent : IApplicationEvent
 {
-    public ErrorEvent ErrorEvent { get; }
+    public AnalysisFailureLoggedEvent(ErrorEvent errorEvent) => ErrorEvent = errorEvent;
 
-    public AnalysisFailureLoggedEvent(ErrorEvent errorEvent)
-    {
-        ErrorEvent = errorEvent;
-    }
+    public ErrorEvent ErrorEvent { get; }
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
     }
 }
-

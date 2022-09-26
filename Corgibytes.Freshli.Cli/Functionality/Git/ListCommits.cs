@@ -11,23 +11,24 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class ListCommits : IListCommits
 {
-    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation, string gitPath)
-    {
-        return GitLog(analysisLocation, gitPath);
-    }
+    private readonly IConfiguration _configuration;
 
-    public GitCommit MostRecentCommit(IAnalysisLocation analysisLocation, string gitPath)
+    public ListCommits(IConfiguration configuration) => _configuration = configuration;
+
+    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation) => GitLog(analysisLocation);
+
+    public GitCommit MostRecentCommit(IAnalysisLocation analysisLocation)
     {
         // Fetch only the latest as this returns a list (for re-usability) we have to return the first item of that list
-        var commit = GitLog(analysisLocation, gitPath, true);
+        var commit = GitLog(analysisLocation, true);
         return commit.First();
     }
 
-    private static IEnumerable<GitCommit> GitLog(IAnalysisLocation analysisLocation, string gitPath, bool latestOnly = false)
+    private IEnumerable<GitCommit> GitLog(IAnalysisLocation analysisLocation, bool latestOnly = false)
     {
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();
-        var command = CliWrap.Cli.Wrap(gitPath).WithArguments(
+        var command = CliWrap.Cli.Wrap(_configuration.GitPath).WithArguments(
                 args => args
                     .Add("log")
                     // Commit hash, author date, strict ISO 8601 format
