@@ -7,9 +7,8 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class RestartAnalysisActivityTest :
     StartAnalysisActivityTestBase<RestartAnalysisActivity, UnableToRestartAnalysisEvent>
 {
-    protected override RestartAnalysisActivity Activity => new(CacheManager.Object, IntervalParser.Object)
+    protected override RestartAnalysisActivity Activity => new(Configuration.Object, CacheManager.Object, IntervalParser.Object)
     {
-        CacheDirectory = "example",
         RepositoryUrl = "http://git.example.com",
         RepositoryBranch = "main",
         HistoryInterval = "1m"

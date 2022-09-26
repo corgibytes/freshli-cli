@@ -8,10 +8,9 @@ public interface IComputeHistory
 {
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
         IAnalysisLocation analysisLocation,
-        string gitPath,
         string historyInterval,
         DateTimeOffset startDate
     );
 
-    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath);
+    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation);
 }

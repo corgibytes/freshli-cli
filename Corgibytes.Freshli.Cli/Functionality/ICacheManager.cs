@@ -9,5 +9,5 @@ public interface ICacheManager
     public bool Destroy(string cacheDir);
     public DirectoryInfo GetDirectoryInCache(string cacheDirPath, string[] directoryStructure);
 
-    public ICacheDb GetCacheDb(string cacheDir);
+    public ICacheDb GetCacheDb();
 }

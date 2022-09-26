@@ -7,15 +7,12 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class CheckoutHistoryActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly string _gitExecutablePath;
     [JsonProperty] private readonly IGitManager _gitManager;
     [JsonProperty] private readonly IAnalysisLocation _analysisLocation;
 
-    public CheckoutHistoryActivity(IGitManager gitManager, string gitExecutablePath,
-        IAnalysisLocation analysisLocation)
+    public CheckoutHistoryActivity(IGitManager gitManager, IAnalysisLocation analysisLocation)
     {
         _gitManager = gitManager;
-        _gitExecutablePath = gitExecutablePath;
         _analysisLocation = analysisLocation;
     }
 
@@ -25,9 +22,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
         {
             _gitManager.CreateArchive(
                 _analysisLocation.RepositoryId,
-                _analysisLocation.CacheDirectory,
-                _gitManager.ParseCommitId(_analysisLocation.CommitId),
-                _gitExecutablePath
+                _gitManager.ParseCommitId(_analysisLocation.CommitId)
             );
 
             eventClient.Fire(new HistoryStopCheckedOutEvent{ AnalysisLocation = _analysisLocation });

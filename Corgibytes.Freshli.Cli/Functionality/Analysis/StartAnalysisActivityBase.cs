@@ -6,19 +6,19 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActivity
     where TErrorEvent : ErrorEvent, new()
 {
-    protected StartAnalysisActivityBase(ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser)
+    protected StartAnalysisActivityBase(IConfiguration configuration, ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser)
     {
+        Configuration = configuration;
         CacheManager = cacheManager;
         HistoryIntervalParser = historyIntervalParser;
     }
 
-    public string GitPath { get; init; } = null!;
-    public string CacheDirectory { get; init; } = null!;
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
     public CommitHistory UseCommitHistory { get; init; }
 
+    public IConfiguration Configuration { get; }
     public ICacheManager CacheManager { get; }
     public IHistoryIntervalParser HistoryIntervalParser { get; }
 
@@ -26,14 +26,12 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
 
     private void FireAnalysisStartedEvent(IApplicationEventEngine eventClient)
     {
-        var cacheDb = CacheManager.GetCacheDb(CacheDirectory);
+        var cacheDb = CacheManager.GetCacheDb();
         var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
             UseCommitHistory));
         eventClient.Fire(new AnalysisStartedEvent
         {
-            AnalysisId = id,
-            CacheDir = CacheDirectory,
-            GitPath = GitPath
+            AnalysisId = id
         });
     }
 
@@ -54,7 +52,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
 
     private bool FireCacheNotFoundEventIfNeeded(IApplicationEventEngine eventClient)
     {
-        if (!CacheManager.ValidateDirIsCache(CacheDirectory))
+        if (!CacheManager.ValidateDirIsCache(Configuration.CacheDir))
         {
             eventClient.Fire(CreateErrorEvent());
             return true;
@@ -65,7 +63,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
 
     protected virtual TErrorEvent CreateErrorEvent() =>
         // ReSharper disable once UseStringInterpolation
-        new() { ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", CacheDirectory) };
+        new() { ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", Configuration.CacheDir) };
 
     private void HandleWithCacheFailure(IApplicationEventEngine eventClient)
     {

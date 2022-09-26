@@ -14,16 +14,18 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions>
 {
+    private readonly IConfiguration _configuration;
     private readonly IApplicationActivityEngine _activityEngine;
     private readonly ICacheManager _cacheManager;
     private readonly IApplicationEventEngine _eventEngine;
     private readonly IResultsApi _resultsApi;
 
     public AnalyzeRunner(
-        IServiceProvider serviceProvider, Runner runner, IApplicationActivityEngine activityEngine,
+        IServiceProvider serviceProvider, Runner runner, IConfiguration configuration, IApplicationActivityEngine activityEngine,
         ICacheManager cacheManager, IApplicationEventEngine eventEngine, IResultsApi resultsApi
     ) : base(serviceProvider, runner)
     {
+        _configuration = configuration;
         _activityEngine = activityEngine;
         _cacheManager = cacheManager;
         _eventEngine = eventEngine;
@@ -32,14 +34,15 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
 
     public override int Run(AnalyzeCommandOptions options, InvocationContext context)
     {
-        _activityEngine.Dispatch(new StartAnalysisActivity(_cacheManager, new HistoryIntervalParser())
+        _configuration.CacheDir = options.CacheDir;
+        _configuration.GitPath = options.GitPath;
+
+        _activityEngine.Dispatch(new StartAnalysisActivity(_configuration, _cacheManager, new HistoryIntervalParser())
         {
-            CacheDirectory = options.CacheDir,
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,
             RepositoryUrl = options.RepositoryLocation,
             UseCommitHistory = options.CommitHistory ? CommitHistory.Full : CommitHistory.AtInterval,
-            GitPath = options.GitPath
         });
 
         var exitStatus = 0;

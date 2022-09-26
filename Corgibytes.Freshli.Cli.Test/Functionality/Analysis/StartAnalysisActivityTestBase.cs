@@ -13,6 +13,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
 {
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    protected readonly Mock<IConfiguration> Configuration = new();
     protected readonly Mock<ICacheManager> CacheManager = new();
     protected readonly Mock<IHistoryIntervalParser> IntervalParser = new();
     protected abstract TActivity Activity { get; }
@@ -22,6 +23,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     [Fact]
     public void HandlerFiresCacheWasNotPreparedEventWhenCacheIsMissing()
     {
+        Configuration.Setup(mock => mock.CacheDir).Returns("example");
         IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
         CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(false);
 
@@ -38,10 +40,11 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     {
         var sampleGuid = new Guid();
 
+        Configuration.Setup(mock => mock.CacheDir).Returns("example");
         IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
 
         CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
-        CacheManager.Setup(mock => mock.GetCacheDb("example")).Returns(_cacheDb.Object);
+        CacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
         _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).Returns(sampleGuid);
 
         Activity.Handle(_eventEngine.Object);
@@ -57,6 +60,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     [Fact]
     public void HandlerFiresInvalidHistoryIntervalEventWhenHistoryIntervalValueIsInvalid()
     {
+        Configuration.Setup(mock => mock.CacheDir).Returns("example");
         IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(false);
         CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
 

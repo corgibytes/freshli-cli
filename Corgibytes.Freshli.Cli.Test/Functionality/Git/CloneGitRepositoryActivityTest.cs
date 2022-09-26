@@ -21,6 +21,7 @@ public class CloneGitRepositoryActivityTest
 
     private readonly Guid _analysisId = Guid.NewGuid();
 
+    private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
@@ -31,10 +32,14 @@ public class CloneGitRepositoryActivityTest
 
     public CloneGitRepositoryActivityTest()
     {
-        _cacheManager.Setup(mock => mock.GetCacheDb(CacheDir)).Returns(_cacheDb.Object);
+        _configuration.Setup(mock => mock.CacheDir).Returns(CacheDir);
+        _configuration.Setup(mock => mock.GitPath).Returns(GitPath);
+
+        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
 
         _cachedAnalysis = new CachedAnalysis(Url, Branch, "1m", new CommitHistory());
 
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICachedGitSourceRepository)))
             .Returns(_gitSourceRepository.Object);
@@ -43,7 +48,7 @@ public class CloneGitRepositoryActivityTest
     }
 
     private void SetupCloneOrPullUsingDefaults() =>
-        _gitSourceRepository.Setup(mock => mock.CloneOrPull(Url, Branch, CacheDir, GitPath))
+        _gitSourceRepository.Setup(mock => mock.CloneOrPull(Url, Branch))
             .Returns(new CachedGitSource(RepositoryId, Url, Branch, LocalPath));
 
     private void SetupCachedAnalysis() =>
@@ -55,7 +60,7 @@ public class CloneGitRepositoryActivityTest
         SetupCachedAnalysis();
         SetupCloneOrPullUsingDefaults();
 
-        var activity = new CloneGitRepositoryActivity(_analysisId, CacheDir, GitPath);
+        var activity = new CloneGitRepositoryActivity(_analysisId);
         activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
@@ -67,10 +72,10 @@ public class CloneGitRepositoryActivityTest
     {
         SetupCachedAnalysis();
 
-        _gitSourceRepository.Setup(mock => mock.CloneOrPull(Url, Branch, CacheDir, GitPath))
+        _gitSourceRepository.Setup(mock => mock.CloneOrPull(Url, Branch))
             .Throws(new GitException("Git clone failed"));
 
-        var activity = new CloneGitRepositoryActivity(_analysisId, CacheDir, GitPath);
+        var activity = new CloneGitRepositoryActivity(_analysisId);
         activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
