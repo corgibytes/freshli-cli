@@ -71,28 +71,6 @@ Then run the container:
 docker run --rm freshli-cli --help
 ```
 
-### .NET Tool
-
-If you have .NET 6.0 SDK [installed](https://dotnet.microsoft.com/download/dotnet/6.0) you can install Freshli as .NET Tool:
-
-```
-> dotnet tool install Corgibytes.Freshli.Cli -g
-
-You can invoke the tool using the following command: Freshli
-Tool 'corgibytes.freshli.cli' (version 'X.Y.Z') was successfully installed.
-```
-
-To run Freshli use the `Freshli` command as such:
-
-```
-> Freshli https://github.com/corgibytes/freshli-fixture-ruby-nokotest
-Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
-2017-01-01              0.0000  0                       0
-2017-02-01              0.0219  1                       0
-2017-03-01              0.0219  1                       0
-...
-```
-
 ### Alpha/Beta Releases
 
 If you like to live on the edge you can find alpha/beta builds of Freshli as .NET Tool on our GitHub Packages [feed](https://github.com/corgibytes/freshli-cli/packages/875174). To download from the GitHub Packages feed you need to add the GitHub Packages as a NuGet source:
