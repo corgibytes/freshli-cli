@@ -91,6 +91,12 @@ public class ComputeHistory : IComputeHistory
             .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt)).ToList();
     }
 
+    public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IAnalysisLocation analysisLocation)
+    {
+        var gitCommit = _listCommits.MostRecentCommit(analysisLocation);
+        return new List<HistoryIntervalStop> { new(gitCommit.ShaIdentifier, gitCommit.CommittedAt) };
+    }
+
     private static DateTimeOffset DetermineRangeStartDate(DateTimeOffset startAtDate, string? quantifier)
     {
         var rangeStartDate = startAtDate;
@@ -115,11 +121,5 @@ public class ComputeHistory : IComputeHistory
         }
 
         return rangeStartDate;
-    }
-
-    public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IAnalysisLocation analysisLocation)
-    {
-        var gitCommit = _listCommits.MostRecentCommit(analysisLocation);
-        return new List<HistoryIntervalStop>{new(gitCommit.ShaIdentifier, gitCommit.CommittedAt)};
     }
 }

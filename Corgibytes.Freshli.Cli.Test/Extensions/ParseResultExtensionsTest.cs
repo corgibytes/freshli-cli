@@ -4,13 +4,15 @@ using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Xunit;
+using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
 namespace Corgibytes.Freshli.Cli.Test.Extensions;
 
 [IntegrationTest]
 public class ParseResultExtensionsTest
 {
-    MainCommand _command = new(new Configuration(new Cli.Functionality.Environment()));
+    private readonly MainCommand _command = new(new Configuration(new Environment()));
+
     [Fact]
     public void GetOptionValueByNameForCommandOption()
     {

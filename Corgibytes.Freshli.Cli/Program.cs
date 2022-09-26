@@ -17,6 +17,7 @@ using NLog.Extensions.Hosting;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using static System.String;
+using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 using LogLevel = NLog.LogLevel;
 
 namespace Corgibytes.Freshli.Cli;
@@ -27,7 +28,7 @@ public class Program
         "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
 
     private static ILogger<Program>? Logger { get; set; }
-    private static IConfiguration Configuration { get; set; } = new Configuration(new Functionality.Environment());
+    private static IConfiguration Configuration { get; } = new Configuration(new Environment());
 
     public static async Task<int> Main(params string[] args)
     {

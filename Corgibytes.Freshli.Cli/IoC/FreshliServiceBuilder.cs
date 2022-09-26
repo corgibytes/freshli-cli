@@ -41,7 +41,7 @@ public class FreshliServiceBuilder
 
     public void Register()
     {
-        Services.AddSingleton<IConfiguration>(Configuration);
+        Services.AddSingleton(Configuration);
         Services.AddScoped<IEnvironment, Environment>();
         Services.AddScoped<ICacheManager, CacheManager>();
         Services.AddScoped<IAgentManager, AgentManager>();
