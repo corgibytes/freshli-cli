@@ -11,7 +11,7 @@ public class PrepareCacheActivity : IApplicationActivity
 {
     public PrepareCacheActivity(string cacheDirectory, string repositoryUrl = "", string? repositoryBranch = null,
         string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval, string gitPath = "",
-        LatestOnly latestOnly = LatestOnly.WalkBackInRevisionHistory)
+        RevisionHistoryMode revisionHistoryMode = RevisionHistoryMode.AllRevisions)
     {
         CacheDirectory = cacheDirectory;
         RepositoryUrl = repositoryUrl;
@@ -19,13 +19,13 @@ public class PrepareCacheActivity : IApplicationActivity
         HistoryInterval = historyInterval;
         UseCommitHistory = useCommitHistory;
         GitPath = gitPath;
-        LatestOnly = latestOnly;
+        RevisionHistoryMode = revisionHistoryMode;
     }
 
     public string RepositoryUrl { get; init; }
     public string? RepositoryBranch { get; init; }
     public CommitHistory UseCommitHistory { get; init; }
-    public LatestOnly LatestOnly { get; init; }
+    public RevisionHistoryMode RevisionHistoryMode { get; init; }
     public string GitPath { get; init; }
 
     // TODO: Research how to use a value class here instead of a string
@@ -41,7 +41,7 @@ public class PrepareCacheActivity : IApplicationActivity
         {
             cacheManager.Prepare(CacheDirectory).ToExitCode();
             var cacheDb = cacheManager.GetCacheDb(CacheDirectory);
-            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory, LatestOnly));
+            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory, RevisionHistoryMode));
             eventClient.Fire(new CachePreparedEvent
             {
                 GitPath = GitPath,
@@ -50,7 +50,7 @@ public class PrepareCacheActivity : IApplicationActivity
                 RepositoryBranch = RepositoryBranch,
                 HistoryInterval = HistoryInterval,
                 UseCommitHistory = UseCommitHistory,
-                LatestOnly = LatestOnly
+                RevisionHistoryMode = RevisionHistoryMode
             });
         }
         catch (CacheException e)

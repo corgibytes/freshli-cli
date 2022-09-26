@@ -22,7 +22,7 @@ public class ComputeHistoryActivityTest
     {
         // Arrange
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval, LatestOnly.WalkBackInRevisionHistory);
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval, RevisionHistoryMode.AllRevisions);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
 
         // Have interval stops available
@@ -88,7 +88,7 @@ public class ComputeHistoryActivityTest
     {
         // Arrange
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full, LatestOnly.WalkBackInRevisionHistory);
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full, RevisionHistoryMode.AllRevisions);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
 
         // Have interval stops available
@@ -140,7 +140,7 @@ public class ComputeHistoryActivityTest
     {
         // Arrange
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full, LatestOnly.ShowLatestOnly);
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full, RevisionHistoryMode.OnlyLatestRevision);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
 
         // Have interval stop available

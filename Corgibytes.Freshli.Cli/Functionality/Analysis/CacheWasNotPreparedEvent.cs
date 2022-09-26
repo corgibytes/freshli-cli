@@ -11,7 +11,7 @@ public class CacheWasNotPreparedEvent : ErrorEvent
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
     public CommitHistory UseCommitHistory { get; init; }
-    public LatestOnly LatestOnly { get; init; }
+    public RevisionHistoryMode RevisionHistoryMode { get; init; }
 
     public override void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(
@@ -23,6 +23,6 @@ public class CacheWasNotPreparedEvent : ErrorEvent
                 RepositoryBranch = RepositoryBranch,
                 HistoryInterval = HistoryInterval,
                 UseCommitHistory = UseCommitHistory,
-                LatestOnly = LatestOnly
+                RevisionHistoryMode = RevisionHistoryMode
             });
 }

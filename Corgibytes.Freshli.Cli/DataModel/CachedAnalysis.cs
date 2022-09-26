@@ -11,13 +11,13 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 public class CachedAnalysis
 {
     public CachedAnalysis(string repositoryUrl, string? repositoryBranch, string historyInterval,
-        CommitHistory useCommitHistory, LatestOnly latestOnly)
+        CommitHistory useCommitHistory, RevisionHistoryMode revisionHistoryMode)
     {
         RepositoryUrl = repositoryUrl;
         RepositoryBranch = repositoryBranch;
         HistoryInterval = historyInterval;
         UseCommitHistory = useCommitHistory;
-        LatestOnly = latestOnly;
+        RevisionHistoryMode = revisionHistoryMode;
     }
 
     [Required] public Guid Id { get; set; }
@@ -25,7 +25,7 @@ public class CachedAnalysis
 
     public string? RepositoryBranch { get; set; }
     public CommitHistory UseCommitHistory { get; set; }
-    public LatestOnly LatestOnly { get; set; }
+    public RevisionHistoryMode RevisionHistoryMode { get; set; }
 
     // TODO: Research how to use a value class here instead of a string
     [Required] public string HistoryInterval { get; set; }
