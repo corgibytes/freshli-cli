@@ -34,7 +34,7 @@ public class CacheManagerTest : IDisposable
 
         var cache = cacheManager.GetCacheDb();
 
-        var expectedAnalysis = new CachedAnalysis("https://git.example.com", "main", "1m", CommitHistory.Full);
+        var expectedAnalysis = new CachedAnalysis("https://git.example.com", "main", "1m", CommitHistory.Full, RevisionHistoryMode.OnlyLatestRevision);
 
         var id = cache.SaveAnalysis(expectedAnalysis);
 
@@ -46,5 +46,6 @@ public class CacheManagerTest : IDisposable
         Assert.Equal(expectedAnalysis.RepositoryBranch, actualAnalysis.RepositoryBranch);
         Assert.Equal(expectedAnalysis.HistoryInterval, actualAnalysis.HistoryInterval);
         Assert.Equal(expectedAnalysis.UseCommitHistory, actualAnalysis.UseCommitHistory);
+        Assert.Equal(expectedAnalysis.RevisionHistoryMode, actualAnalysis.RevisionHistoryMode);
     }
 }

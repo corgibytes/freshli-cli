@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CliWrap;
 using Corgibytes.Freshli.Cli.Exceptions;
@@ -16,6 +17,18 @@ public class ListCommits : IListCommits
 
     public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation)
     {
+        return GitLog(analysisLocation);
+    }
+
+    public GitCommit MostRecentCommit(IAnalysisLocation analysisLocation)
+    {
+        // Fetch only the latest as this returns a list (for re-usability) we have to return the first item of that list
+        var commit = GitLog(analysisLocation, true);
+        return commit.First();
+    }
+
+    private IEnumerable<GitCommit> GitLog(IAnalysisLocation analysisLocation, bool latestOnly = false)
+    {
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();
         var command = CliWrap.Cli.Wrap(_configuration.GitPath).WithArguments(
@@ -25,6 +38,7 @@ public class ListCommits : IListCommits
                     // Lists commits as '583d813db3e28b9b44a29db352e2f0e1b4c6e420 2021-05-19T15:24:24-04:00'
                     // Source: https://git-scm.com/docs/pretty-formats
                     .Add("--pretty=format:%H %aI")
+                    .Add(latestOnly ? "--max-count=1" : "")
             )
             .WithValidation(CommandResultValidation.None)
             .WithWorkingDirectory(analysisLocation.Path)

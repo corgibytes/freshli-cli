@@ -23,7 +23,7 @@ public class ComputeHistoryActivityTest
     {
         // Arrange
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval);
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval, RevisionHistoryMode.AllRevisions);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
 
         // Have interval stops available
@@ -89,7 +89,7 @@ public class ComputeHistoryActivityTest
     {
         // Arrange
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full);
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full, RevisionHistoryMode.AllRevisions);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
 
         // Have interval stops available
@@ -135,4 +135,58 @@ public class ComputeHistoryActivityTest
             )
         );
     }
+
+    [Fact]
+    public void FiresHistoryIntervalStopFoundEventsForLatestOnly()
+    {
+        // Arrange
+        // Have an analysis available
+        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full, RevisionHistoryMode.OnlyLatestRevision);
+        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
+
+        // Have interval stop available
+        var historyIntervalStops = new List<HistoryIntervalStop>
+        {
+            new(
+                "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
+            )
+        };
+        _computeHistory.Setup(mock => mock.ComputeLatestOnly(
+                It.IsAny<IAnalysisLocation>())
+            )
+            .Returns(historyIntervalStops);
+
+        var analysisLocation = new Mock<IAnalysisLocation>();
+
+        var serviceProvider = new Mock<IServiceProvider>();
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+
+        serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
+
+        var cacheManager = new Mock<ICacheManager>();
+        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
+
+        serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
+
+        // Act
+        new ComputeHistoryActivity(
+            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
+            analysisLocation.Object
+        ).Handle(_eventEngine.Object);
+
+        // Assert
+        _eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<HistoryIntervalStopFoundEvent>(
+                    value =>
+                        value.AnalysisLocation != null &&
+                        value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                )
+            )
+        );
+    }
+
+
 }

@@ -13,4 +13,6 @@ public interface IComputeHistory
     );
 
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation);
+
+    public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IAnalysisLocation analysisLocation);
 }
