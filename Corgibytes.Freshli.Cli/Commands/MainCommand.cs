@@ -1,17 +1,18 @@
 ﻿using System.CommandLine;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Resources;
+using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
 public class MainCommand : RootCommand
 {
-    public MainCommand() : base(CliOutput.Help_MainCommand_Description)
+    public MainCommand(IConfiguration configuration) : base(CliOutput.Help_MainCommand_Description)
     {
         var cacheDirOption = new Option<string>(
             new[] { "--cache-dir" },
             description: CliOutput.Help_Option_CacheDir_Description,
-            getDefaultValue: () => CacheContext.DefaultCacheDir)
+            getDefaultValue: () => configuration.CacheDir)
         { Arity = ArgumentArity.ExactlyOne };
         AddGlobalOption(cacheDirOption);
 
@@ -26,7 +27,7 @@ public class MainCommand : RootCommand
         Add(new ScanCommand());
         Add(new CacheCommand());
         Add(new AgentsCommand());
-        Add(new AnalyzeCommand());
+        Add(new AnalyzeCommand(configuration));
 
         if (ShouldIncludeFailCommand)
         {

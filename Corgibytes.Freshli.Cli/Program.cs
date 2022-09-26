@@ -6,6 +6,7 @@ using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.IoC;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +27,7 @@ public class Program
         "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
 
     private static ILogger<Program>? Logger { get; set; }
+    private static IConfiguration Configuration { get; set; } = new Configuration(new Functionality.Environment());
 
     public static async Task<int> Main(params string[] args)
     {
@@ -69,14 +71,14 @@ public class Program
             .UseNLog()
             .ConfigureServices((_, services) =>
             {
-                new FreshliServiceBuilder(services).Register();
+                new FreshliServiceBuilder(services, Configuration).Register();
                 Logger = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
             });
 
 
     public static CommandLineBuilder CreateCommandLineBuilder()
     {
-        var builder = new CommandLineBuilder(new MainCommand())
+        var builder = new CommandLineBuilder(new MainCommand(Configuration))
             .UseHost(CreateHostBuilder)
             .AddMiddleware(async (context, next) =>
             {
