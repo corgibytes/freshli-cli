@@ -35,7 +35,7 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         IEnumerable<HistoryIntervalStop> historyIntervalStops;
 
-        if (analysis.LatestOnly.Equals(LatestOnly.ShowLatestOnly))
+        if (analysis.RevisionHistoryMode.Equals(RevisionHistoryMode.OnlyLatestRevision))
         {
             historyIntervalStops = computeHistoryService.ComputeLatestOnly(AnalysisLocation, GitExecutablePath);
         }

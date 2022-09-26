@@ -39,7 +39,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             RepositoryBranch = options.Branch,
             RepositoryUrl = options.RepositoryLocation,
             UseCommitHistory = options.CommitHistory ? CommitHistory.Full : CommitHistory.AtInterval,
-            LatestOnly = options.LatestOnly ? LatestOnly.ShowLatestOnly : LatestOnly.WalkBackInRevisionHistory,
+            RevisionHistoryMode = options.LatestOnly ? RevisionHistoryMode.OnlyLatestRevision : RevisionHistoryMode.AllRevisions,
             GitPath = options.GitPath
         });
 
