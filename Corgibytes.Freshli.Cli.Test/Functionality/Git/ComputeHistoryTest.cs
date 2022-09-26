@@ -17,13 +17,14 @@ public class ComputeHistoryTest : FreshliTest
 {
     private readonly ComputeHistory _computeHistory;
     private readonly MockListCommits _listCommits;
-    private readonly Mock<IAnalysisLocation> _analysisLocation;
+    private readonly Mock<IAnalysisLocation> _analysisLocation = new();
+    private readonly Mock<IConfiguration> _configuration = new();
 
     public ComputeHistoryTest(ITestOutputHelper output) : base(output)
     {
         _listCommits = new MockListCommits();
-        _computeHistory = new ComputeHistory(_listCommits, new HistoryIntervalParser());
-        _analysisLocation = new Mock<IAnalysisLocation>();
+        _configuration.Setup(mock => mock.GitPath).Returns("git");
+        _computeHistory = new ComputeHistory(_configuration.Object, _listCommits, new HistoryIntervalParser());
     }
 
     [Fact]
@@ -31,7 +32,7 @@ public class ComputeHistoryTest : FreshliTest
     {
         _listCommits.HasCommitsAvailable(new List<GitCommit>());
         var expectedStops = new List<HistoryIntervalStop>();
-        Assert.Equivalent(expectedStops, _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "git", "1d", DateTimeOffset.Now));
+        Assert.Equivalent(expectedStops, _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "1d", DateTimeOffset.Now));
     }
 
     [Theory]
@@ -46,7 +47,6 @@ public class ComputeHistoryTest : FreshliTest
         _listCommits.HasCommitsAvailable(availableCommits);
         var actualStops = _computeHistory.ComputeWithHistoryInterval(
             _analysisLocation.Object,
-            "git",
             interval,
             startAtDate
         ).ToList();

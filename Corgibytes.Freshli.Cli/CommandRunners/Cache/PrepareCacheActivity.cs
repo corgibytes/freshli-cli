@@ -4,20 +4,19 @@ using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Resources;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
 public class PrepareCacheActivity : IApplicationActivity
 {
-    public PrepareCacheActivity(string cacheDirectory, string repositoryUrl = "", string? repositoryBranch = null,
-        string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval, string gitPath = "")
+    public PrepareCacheActivity(string repositoryUrl = "", string? repositoryBranch = null,
+        string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval)
     {
-        CacheDirectory = cacheDirectory;
         RepositoryUrl = repositoryUrl;
         RepositoryBranch = repositoryBranch;
         HistoryInterval = historyInterval;
         UseCommitHistory = useCommitHistory;
-        GitPath = gitPath;
     }
 
     public string RepositoryUrl { get; init; }
@@ -35,18 +34,17 @@ public class PrepareCacheActivity : IApplicationActivity
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var cacheManager = new CacheManager();
+        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
+        var cacheManager = new CacheManager(configuration);
         Console.Out.WriteLine(CliOutput.CachePrepareCommandRunner_Run_Preparing_cache, CacheDirectory);
         try
         {
             cacheManager.Prepare(CacheDirectory).ToExitCode();
-            var cacheDb = cacheManager.GetCacheDb(CacheDirectory);
+            var cacheDb = cacheManager.GetCacheDb();
             cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
                 UseCommitHistory));
             eventClient.Fire(new CachePreparedEvent
             {
-                GitPath = GitPath,
-                CacheDirectory = CacheDirectory,
                 RepositoryUrl = RepositoryUrl,
                 RepositoryBranch = RepositoryBranch,
                 HistoryInterval = HistoryInterval,

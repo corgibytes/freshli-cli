@@ -14,17 +14,18 @@ public class CacheWasPreparedEventTest
     public void CorrectlyDispatchesRestartAnalysisActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
+        var configuration = new Mock<IConfiguration>();
         var cacheManager = new Mock<ICacheManager>();
         var historyIntervalParser = new Mock<IHistoryIntervalParser>();
 
         var cacheEvent = new CachePreparedEvent
         {
-            CacheDirectory = "example",
             RepositoryUrl = "https://git.example.com",
             RepositoryBranch = "main",
             HistoryInterval = "1m"
         };
 
+        serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(configuration.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IHistoryIntervalParser)))
             .Returns(historyIntervalParser.Object);
@@ -37,7 +38,6 @@ public class CacheWasPreparedEventTest
         engine.Verify(mock => mock.Dispatch(It.Is<RestartAnalysisActivity>(value =>
             value.CacheManager == cacheManager.Object &&
             value.HistoryIntervalParser == historyIntervalParser.Object &&
-            value.CacheDirectory == "example" &&
             value.RepositoryUrl == "https://git.example.com" &&
             value.RepositoryBranch == "main" &&
             value.HistoryInterval == "1m")));
