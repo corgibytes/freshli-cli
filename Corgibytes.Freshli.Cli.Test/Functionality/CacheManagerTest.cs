@@ -34,7 +34,8 @@ public class CacheManagerTest : IDisposable
 
         var cache = cacheManager.GetCacheDb();
 
-        var expectedAnalysis = new CachedAnalysis("https://git.example.com", "main", "1m", CommitHistory.Full, RevisionHistoryMode.OnlyLatestRevision);
+        var expectedAnalysis = new CachedAnalysis("https://git.example.com", "main", "1m", CommitHistory.Full,
+            RevisionHistoryMode.OnlyLatestRevision);
 
         var id = cache.SaveAnalysis(expectedAnalysis);
 

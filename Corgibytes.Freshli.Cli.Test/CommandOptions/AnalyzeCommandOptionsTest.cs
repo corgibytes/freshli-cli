@@ -27,7 +27,8 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             // If passing no arguments, the default git path should be 'git'
             new object?[]
             {
-                new[] { "analyze" }, "git", null, DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount, DefaultLatestOnly
+                new[] { "analyze" }, "git", null, DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount,
+                DefaultLatestOnly
             },
             // Specific git path expected
             new object?[]
@@ -56,12 +57,14 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             // 24 workers expected
             new object?[]
             {
-                new[] { "analyze", "--workers", "24" }, DefaultGitPath, null, DefaultCommitHistory, DefaultHistoryInterval, 24, DefaultLatestOnly
+                new[] { "analyze", "--workers", "24" }, DefaultGitPath, null, DefaultCommitHistory,
+                DefaultHistoryInterval, 24, DefaultLatestOnly
             },
             // Latest only
             new object?[]
             {
-                new[] { "analyze", "--latest-only" }, DefaultGitPath, null, DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount, true
+                new[] { "analyze", "--latest-only" }, DefaultGitPath, null, DefaultCommitHistory,
+                DefaultHistoryInterval, DefaultWorkerCount, true
             }
         };
 

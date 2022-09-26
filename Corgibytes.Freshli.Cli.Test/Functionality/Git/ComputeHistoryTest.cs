@@ -40,7 +40,7 @@ public class ComputeHistoryTest : FreshliTest
     public void Verify_it_can_list_all_commits()
     {
         _listCommits.HasCommitsAvailable(AvailableCommits());
-        var expectedStops = new List<HistoryIntervalStop>()
+        var expectedStops = new List<HistoryIntervalStop>
         {
             new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
                 new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero)),
@@ -64,7 +64,7 @@ public class ComputeHistoryTest : FreshliTest
         _listCommits.HasCommitsAvailable(AvailableCommits());
         var expectedStops = new List<HistoryIntervalStop>
         {
-            new ("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+            new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
                 new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero))
         };
 

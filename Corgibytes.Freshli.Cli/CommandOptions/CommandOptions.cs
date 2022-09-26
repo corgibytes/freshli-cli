@@ -1,4 +1,4 @@
-﻿using Corgibytes.Freshli.Cli.DataModel;
+﻿
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
