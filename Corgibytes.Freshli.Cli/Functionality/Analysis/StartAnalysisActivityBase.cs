@@ -13,8 +13,8 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     public CommitHistory UseCommitHistory { get; init; }
 
     protected IConfiguration Configuration { get; set; } = null!;
-    protected ICacheManager CacheManager { get; set; } = null!;
-    protected IHistoryIntervalParser HistoryIntervalParser { get; set; } = null!;
+    private ICacheManager CacheManager { get; set; } = null!;
+    private IHistoryIntervalParser HistoryIntervalParser { get; set; } = null!;
 
     public void Handle(IApplicationEventEngine eventClient)
     {
