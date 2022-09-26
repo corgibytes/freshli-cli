@@ -79,10 +79,13 @@ jobs:
 
       # This will generate the change log for all the GitHub Releases, feature
       # is not included in the GitReleaseManager action yet.
+      # The sed line finds the current release and replaces the line with a new link to the Docker image.
+      # Note that it uses ! as the delimiter.
       - name: "[Draft Release] - Generate Change Log"
         if: ${{ github.event_name == 'push' }}
         run: |
           dotnet-gitreleasemanager export --token ${{ secrets.GITHUB_TOKEN }} -o 'corgibytes' -r 'freshli-cli' -f 'CHANGELOG.md'
+          sed -i -e '\!## v${{ steps.gitversion.outputs.majorMinorPatch }}!{n;s!.*!Associated Docker image: [corgibytes/freshli-cli:${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.fullBuildMetadata }}](https://hub.docker.com/r/corgibytes/freshli-cli/tags?page=1&name=${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.fullBuildMetadata }})!}' CHANGELOG.md
           git add --renormalize CHANGELOG.md
           cat CHANGELOG.md
 
