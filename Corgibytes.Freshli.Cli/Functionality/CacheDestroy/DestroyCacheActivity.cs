@@ -10,11 +10,10 @@ public class DestroyCacheActivity : IApplicationActivity
     public void Handle(IApplicationEventEngine eventClient)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         // Destroy the cache
         try
         {
-            var exitCode = cacheManager.Destroy(configuration.CacheDir).ToExitCode();
+            var exitCode = cacheManager.Destroy().ToExitCode();
             eventClient.Fire(new CacheDestroyedEvent { ExitCode = exitCode });
         }
         catch (CacheException error)

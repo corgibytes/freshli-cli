@@ -34,7 +34,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     {
         Configuration.Setup(mock => mock.CacheDir).Returns("example");
         IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
-        CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(false);
+        CacheManager.Setup(mock => mock.ValidateCacheDirectory()).Returns(false);
 
         Activity.Handle(_eventEngine.Object);
 
@@ -52,7 +52,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
         Configuration.Setup(mock => mock.CacheDir).Returns("example");
         IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
 
-        CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
+        CacheManager.Setup(mock => mock.ValidateCacheDirectory()).Returns(true);
         CacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
         _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).Returns(sampleGuid);
 
@@ -71,7 +71,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     {
         Configuration.Setup(mock => mock.CacheDir).Returns("example");
         IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(false);
-        CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
+        CacheManager.Setup(mock => mock.ValidateCacheDirectory()).Returns(true);
 
         Activity.Handle(_eventEngine.Object);
 
