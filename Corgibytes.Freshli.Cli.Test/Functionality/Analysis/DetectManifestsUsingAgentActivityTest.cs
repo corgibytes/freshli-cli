@@ -35,7 +35,8 @@ public class DetectManifestsUsingAgentActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var activity = new DetectManifestsUsingAgentActivity(analysisLocation.Object, agentExecutablePath);
+        var activity =
+            new DetectManifestsUsingAgentActivity(Guid.NewGuid(), analysisLocation.Object, agentExecutablePath);
 
         activity.Handle(eventEngine.Object);
 

@@ -31,7 +31,7 @@ public class DetectAgentsForDetectManifestsActivityTest
 
         var analysisLocation = new Mock<IAnalysisLocation>();
         var activity =
-            new DetectAgentsForDetectManifestsActivity(analysisLocation.Object);
+            new DetectAgentsForDetectManifestsActivity(Guid.NewGuid(), analysisLocation.Object);
 
         activity.Handle(eventEngine.Object);
 
