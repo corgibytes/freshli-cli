@@ -4,18 +4,22 @@ using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class GenerateBillOfMaterialsActivity : IApplicationActivity
 {
+    [JsonProperty] private readonly Guid _analysisId;
     public readonly string AgentExecutablePath;
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string ManifestPath;
 
-    public GenerateBillOfMaterialsActivity(string agentExecutablePath, IAnalysisLocation analysisLocation,
+    public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
+        IAnalysisLocation analysisLocation,
         string manifestPath)
     {
+        _analysisId = analysisId;
         AgentExecutablePath = agentExecutablePath;
         AnalysisLocation = analysisLocation;
         ManifestPath = manifestPath;
@@ -30,6 +34,6 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
         var pathToBillOfMaterials =
             agentReader.ProcessManifest(Path.Combine(AnalysisLocation.Path, ManifestPath), asOfDate);
 
-        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisLocation, pathToBillOfMaterials));
+        eventClient.Fire(new BillOfMaterialsGeneratedEvent(_analysisId, AnalysisLocation, pathToBillOfMaterials));
     }
 }

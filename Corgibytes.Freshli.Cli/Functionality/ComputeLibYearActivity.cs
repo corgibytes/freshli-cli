@@ -1,17 +1,21 @@
+using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class ComputeLibYearActivity : IApplicationActivity
 {
+    [JsonProperty] private readonly Guid _analysisId;
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string PathToBoM;
 
-    public ComputeLibYearActivity(string pathToBoM, IAnalysisLocation analysisLocation)
+    public ComputeLibYearActivity(Guid analysisId, string pathToBoM, IAnalysisLocation analysisLocation)
     {
+        _analysisId = analysisId;
         PathToBoM = pathToBoM;
         AnalysisLocation = analysisLocation;
     }
