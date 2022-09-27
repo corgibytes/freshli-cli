@@ -1,3 +1,4 @@
+using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -8,9 +9,14 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class CheckoutHistoryActivity : IApplicationActivity
 {
+    [JsonProperty] private readonly Guid _analysisId;
     [JsonProperty] private readonly IAnalysisLocation _analysisLocation;
 
-    public CheckoutHistoryActivity(IAnalysisLocation analysisLocation) => _analysisLocation = analysisLocation;
+    public CheckoutHistoryActivity(Guid analysisId, IAnalysisLocation analysisLocation)
+    {
+        _analysisId = analysisId;
+        _analysisLocation = analysisLocation;
+    }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -23,7 +29,11 @@ public class CheckoutHistoryActivity : IApplicationActivity
                 gitManager.ParseCommitId(_analysisLocation.CommitId)
             );
 
-            eventClient.Fire(new HistoryStopCheckedOutEvent { AnalysisLocation = _analysisLocation });
+            eventClient.Fire(new HistoryStopCheckedOutEvent
+            {
+                AnalysisId = _analysisId,
+                AnalysisLocation = _analysisLocation
+            });
         }
     }
 }

@@ -28,7 +28,7 @@ public class CheckoutHistoryActivityTest
 
         var gitManager = new Mock<IGitManager>();
 
-        var activity = new CheckoutHistoryActivity(analysisLocation);
+        var activity = new CheckoutHistoryActivity(Guid.NewGuid(), analysisLocation);
 
         var serviceProvider = new Mock<IServiceProvider>();
         var eventEngine = new Mock<IApplicationEventEngine>();
