@@ -21,7 +21,6 @@ public class AgentReaderTest
         {
             "java/pom.xml",
             "java/protoc/pom.xml",
-            "protoc-artifacts/pom.xml",
             "ruby/pom.xml"
         };
         Assert.Equal(expectedManifests, actualManifests);
