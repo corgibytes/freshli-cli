@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-And('a Git repository exists at {string} with a Git SHA {string} checked out') do |path, sha|
+Then('a Git repository exists at {string} with a Git SHA {string} checked out') do |path, sha|
   repo = resolve_path path
   expect(repo.nil?).to match(false)
   git_index = "#{repo}/.git/index"
@@ -9,7 +9,7 @@ And('a Git repository exists at {string} with a Git SHA {string} checked out') d
   expect(actual_sha).to match(sha)
 end
 
-And('a Git repository exists at {string} with a branch {string} checked out') do |path, branch|
+Then('a Git repository exists at {string} with a branch {string} checked out') do |path, branch|
   repo = resolve_path path
   expect(repo.nil?).to match(false)
   current_branch = run_from repo, 'git branch --show-current'
