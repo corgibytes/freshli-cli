@@ -1,27 +1,25 @@
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
-using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class ComputeLibYearActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly ICalculateLibYearFromFile _calculateLibYearFromFile;
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string PathToBoM;
 
-    public ComputeLibYearActivity(ICalculateLibYearFromFile calculateLibYearFromFile, string pathToBoM,
-        IAnalysisLocation analysisLocation)
+    public ComputeLibYearActivity(string pathToBoM, IAnalysisLocation analysisLocation)
     {
-        _calculateLibYearFromFile = calculateLibYearFromFile;
         PathToBoM = pathToBoM;
         AnalysisLocation = analysisLocation;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var libYearPackages = _calculateLibYearFromFile.AsList(PathToBoM);
+        var calculateLibYearFromFile = eventClient.ServiceProvider.GetRequiredService<ICalculateLibYearFromFile>();
+        var libYearPackages = calculateLibYearFromFile.AsList(PathToBoM);
         eventClient.Fire(new LibYearComputedEvent
         {
             LibYearPackages = libYearPackages,

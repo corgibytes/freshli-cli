@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
@@ -12,7 +13,8 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string ManifestPath;
 
-    public GenerateBillOfMaterialsActivity(string agentExecutablePath, IAnalysisLocation analysisLocation, string manifestPath)
+    public GenerateBillOfMaterialsActivity(string agentExecutablePath, IAnalysisLocation analysisLocation,
+        string manifestPath)
     {
         AgentExecutablePath = agentExecutablePath;
         AnalysisLocation = analysisLocation;
@@ -25,7 +27,8 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
         var agentReader = agentManager.GetReader(AgentExecutablePath);
 
         var asOfDate = DateTime.Now;
-        var pathToBillOfMaterials = agentReader.ProcessManifest(ManifestPath, asOfDate);
+        var pathToBillOfMaterials =
+            agentReader.ProcessManifest(Path.Combine(AnalysisLocation.Path, ManifestPath), asOfDate);
 
         eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisLocation, pathToBillOfMaterials));
     }

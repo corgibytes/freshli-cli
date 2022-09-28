@@ -30,7 +30,9 @@ public class GenerateBillOfMaterialsActivityTest
 
         // Act
         var analysisLocation = new Mock<IAnalysisLocation>();
-        var activity = new GenerateBillOfMaterialsActivity(agentExecutablePath, analysisLocation.Object, "/path/to/manifest");
+        analysisLocation.Setup(mock => mock.Path).Returns("/working/directory");
+        var activity =
+            new GenerateBillOfMaterialsActivity(agentExecutablePath, analysisLocation.Object, "/path/to/manifest");
         activity.Handle(eventEngine.Object);
 
         // Assert

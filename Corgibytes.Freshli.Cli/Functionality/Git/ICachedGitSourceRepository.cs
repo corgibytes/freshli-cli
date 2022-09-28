@@ -4,7 +4,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public interface ICachedGitSourceRepository
 {
-    public CachedGitSource FindOneByHash(string hash, string cacheDir);
+    public CachedGitSource FindOneByHash(string hash);
 
-    public CachedGitSource CloneOrPull(string url, string? branch, string cacheDir, string gitPath);
+    public CachedGitSource CloneOrPull(string url, string? branch);
 }

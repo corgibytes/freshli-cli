@@ -11,22 +11,20 @@ public class ComputeHistoryActivity : IApplicationActivity
 {
     public readonly IAnalysisLocation AnalysisLocation;
 
-    public readonly string GitExecutablePath;
     public Guid AnalysisId;
 
-    public ComputeHistoryActivity(string gitExecutablePath, Guid analysisId,
-        IAnalysisLocation analysisLocation)
+    public ComputeHistoryActivity(Guid analysisId, IAnalysisLocation analysisLocation)
     {
-        GitExecutablePath = gitExecutablePath;
         AnalysisId = analysisId;
         AnalysisLocation = analysisLocation;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
+        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb(AnalysisLocation.CacheDirectory);
+        var cacheDb = cacheManager.GetCacheDb();
         var analysis = cacheDb.RetrieveAnalysis(AnalysisId);
         if (analysis == null)
         {
@@ -35,27 +33,27 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         IEnumerable<HistoryIntervalStop> historyIntervalStops;
 
-        if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
+        if (analysis.RevisionHistoryMode.Equals(RevisionHistoryMode.OnlyLatestRevision))
+        {
+            historyIntervalStops = computeHistoryService.ComputeLatestOnly(AnalysisLocation);
+        }
+        else if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
         {
             historyIntervalStops = computeHistoryService
-                .ComputeWithHistoryInterval(AnalysisLocation, GitExecutablePath, analysis.HistoryInterval, DateTimeOffset.Now);
+                .ComputeWithHistoryInterval(AnalysisLocation, analysis.HistoryInterval, DateTimeOffset.Now);
         }
         else
         {
-            historyIntervalStops =
-                computeHistoryService.ComputeCommitHistory(AnalysisLocation, GitExecutablePath);
+            historyIntervalStops = computeHistoryService.ComputeCommitHistory(AnalysisLocation);
         }
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
-            var historyStopLocation = new AnalysisLocation(AnalysisLocation.CacheDirectory,
-                AnalysisLocation.RepositoryId, historyIntervalStop.GitCommitIdentifier);
+            var historyStopLocation =
+                new AnalysisLocation(configuration, AnalysisLocation.RepositoryId,
+                    historyIntervalStop.GitCommitIdentifier);
 
-            eventClient.Fire(new HistoryIntervalStopFoundEvent
-            {
-                GitExecutablePath = GitExecutablePath,
-                AnalysisLocation = historyStopLocation
-            });
+            eventClient.Fire(new HistoryIntervalStopFoundEvent { AnalysisLocation = historyStopLocation });
         }
     }
 }
