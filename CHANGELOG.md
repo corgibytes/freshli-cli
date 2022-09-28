@@ -11,7 +11,7 @@ __Dependencies__
 
 
 ## v0.5.0
-
+Associated Docker image: [corgibytes/freshli-cli:0.5.0-alpha.1084-Branch.main.Sha.c30bb8609c39450b93066962b620f6f6d84fe9de](https://hub.docker.com/r/corgibytes/freshli-cli/tags?page=1name=0.5.0-alpha.1084-Branch.main.Sha.c30bb8609c39450b93066962b620f6f6d84fe9de)
 
 As part of this release we had [4 issues](https://github.com/corgibytes/freshli-cli/milestone/3?closed=1) closed.
 
