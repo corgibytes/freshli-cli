@@ -3,18 +3,14 @@ using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CloneGitRepositoryActivity : IApplicationActivity
 {
-    public Guid AnalysisId { get; }
+    public CloneGitRepositoryActivity(Guid cachedAnalysisId) => AnalysisId = cachedAnalysisId;
 
-    public CloneGitRepositoryActivity(Guid cachedAnalysisId)
-    {
-        AnalysisId = cachedAnalysisId;
-    }
+    public Guid AnalysisId { get; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
