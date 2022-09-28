@@ -20,6 +20,9 @@ Feature: analyze
         Then a directory named "~/.freshli/histories" exists
         And a directory named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5" is not empty
         And a file named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5/*/archive.zip" does not exist
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-09-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-08-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-07-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
         Then the output should contain:
         """
         https://freshli.app/
