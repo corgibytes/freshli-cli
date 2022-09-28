@@ -59,7 +59,11 @@ public class ComputeHistoryActivity : IApplicationActivity
                 new AnalysisLocation(configuration, AnalysisLocation.RepositoryId,
                     historyIntervalStop.GitCommitIdentifier);
 
-            eventClient.Fire(new HistoryIntervalStopFoundEvent { AnalysisLocation = historyStopLocation });
+            eventClient.Fire(new HistoryIntervalStopFoundEvent
+            {
+                AnalysisId = AnalysisId,
+                AnalysisLocation = historyStopLocation
+            });
         }
     }
 }

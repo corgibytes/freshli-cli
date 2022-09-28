@@ -7,7 +7,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class HistoryIntervalStopFoundEvent : IApplicationEvent
 {
-    [JsonProperty] private Guid AnalysisId { get; init; }
+    public Guid AnalysisId { get; init; }
     public IAnalysisLocation? AnalysisLocation { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient)
