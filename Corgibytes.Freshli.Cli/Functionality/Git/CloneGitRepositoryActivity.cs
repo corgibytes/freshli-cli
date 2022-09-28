@@ -24,9 +24,15 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             var cacheDb = cacheManager.GetCacheDb();
             var cachedAnalysis = cacheDb.RetrieveAnalysis(_cachedAnalysisId);
 
+            if (cachedAnalysis == null)
+            {
+                eventClient.Fire(new AnalysisIdNotFoundEvent());
+                return;
+            }
+
             var gitRepository =
                 eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>()
-                    .CloneOrPull(cachedAnalysis!.RepositoryUrl, cachedAnalysis.RepositoryBranch);
+                    .CloneOrPull(cachedAnalysis.RepositoryUrl, cachedAnalysis.RepositoryBranch);
 
             var analysisLocation = new AnalysisLocation(configuration, gitRepository.Id);
 

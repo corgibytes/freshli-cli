@@ -26,22 +26,24 @@ public class ComputeHistoryActivity : IApplicationActivity
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
-        var analysis = cacheDb.RetrieveAnalysis(AnalysisId);
-        if (analysis == null)
+        var cachedAnalysis = cacheDb.RetrieveAnalysis(AnalysisId);
+
+        if (cachedAnalysis == null)
         {
+            eventClient.Fire(new AnalysisIdNotFoundEvent());
             return;
         }
 
         IEnumerable<HistoryIntervalStop> historyIntervalStops;
 
-        if (analysis.RevisionHistoryMode.Equals(RevisionHistoryMode.OnlyLatestRevision))
+        if (cachedAnalysis.RevisionHistoryMode.Equals(RevisionHistoryMode.OnlyLatestRevision))
         {
             historyIntervalStops = computeHistoryService.ComputeLatestOnly(AnalysisLocation);
         }
-        else if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
+        else if (cachedAnalysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
         {
             historyIntervalStops = computeHistoryService
-                .ComputeWithHistoryInterval(AnalysisLocation, analysis.HistoryInterval, DateTimeOffset.Now);
+                .ComputeWithHistoryInterval(AnalysisLocation, cachedAnalysis.HistoryInterval, DateTimeOffset.Now);
         }
         else
         {
