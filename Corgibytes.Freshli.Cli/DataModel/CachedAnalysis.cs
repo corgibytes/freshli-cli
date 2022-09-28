@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Corgibytes.Freshli.Cli.Functionality;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,7 @@ public class CachedAnalysis
         HistoryInterval = historyInterval;
         UseCommitHistory = useCommitHistory;
         RevisionHistoryMode = revisionHistoryMode;
+        HistoryIntervalStops = new List<CachedHistoryIntervalStop>();
     }
 
     [Required] public Guid Id { get; set; }
@@ -29,4 +31,6 @@ public class CachedAnalysis
 
     // TODO: Research how to use a value class here instead of a string
     [Required] public string HistoryInterval { get; set; }
+
+    [Required] public List<CachedHistoryIntervalStop> HistoryIntervalStops { get; set; }
 }
