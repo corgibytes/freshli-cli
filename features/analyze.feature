@@ -23,6 +23,8 @@ Feature: analyze
         And the "~/.freshli/freshli.db" contains history interval stop at "2022-09-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
         And the "~/.freshli/freshli.db" contains history interval stop at "2022-08-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
         And the "~/.freshli/freshli.db" contains history interval stop at "2022-07-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2021-05-01 00:00:00-06:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2020-09-01 00:00:00-06:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
         Then the output should contain:
         """
         https://freshli.app/
@@ -50,9 +52,11 @@ Feature: analyze
         And a file named "~/.freshli/freshli.db" should exist
         And we can open a SQLite connection to "~/.freshli/freshli.db"
         Then a Git repository exists at "~/.freshli/repositories/d86d1c6cc90d10f22a33e795f68a4120e40e18d7728de6735be62377e3fedccb" with a branch "test_branch" checked out
-        Then a directory named "~/.freshli/histories" exists
-        And a directory named "~/.freshli/histories/d86d1c6cc90d10f22a33e795f68a4120e40e18d7728de6735be62377e3fedccb/054452d2a28e0b1717c8e8002532a8e572abe66b" is not empty
-        And a file named "~/.freshli/histories/d86d1c6cc90d10f22a33e795f68a4120e40e18d7728de6735be62377e3fedccb/054452d2a28e0b1717c8e8002532a8e572abe66b/archive.zip" does not exist
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-09-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-08-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-07-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2021-05-01 00:00:00-06:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2020-09-01 00:00:00-06:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
         Then the output should contain:
         """
         https://freshli.app/
