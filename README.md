@@ -53,26 +53,22 @@ The specified framework can be found at:
   - https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=5.0.0&arch=x64&rid=pop.22.04-x64
 ```
 
-### .NET Tool
+### Docker
 
-If you have .NET 6.0 SDK [installed](https://dotnet.microsoft.com/download/dotnet/6.0) you can install Freshli as .NET Tool:
+A production-ready container is available at [Docker Hub](https://hub.docker.com/r/corgibytes/freshli-cli). Make sure you are logged in to Docker Hub:
 
-```
-> dotnet tool install Corgibytes.Freshli.Cli -g
-
-You can invoke the tool using the following command: Freshli
-Tool 'corgibytes.freshli.cli' (version 'X.Y.Z') was successfully installed.
+```bash
+docker login -u $USERNAME
 ```
 
-To run Freshli use the `Freshli` command as such:
-
+After logging in, pull the image:
+```bash
+docker pull corgibytes/freshli-cli
 ```
-> Freshli https://github.com/corgibytes/freshli-fixture-ruby-nokotest
-Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
-2017-01-01              0.0000  0                       0
-2017-02-01              0.0219  1                       0
-2017-03-01              0.0219  1                       0
-...
+
+Then run the container:
+```bash
+docker run --rm freshli-cli --help
 ```
 
 ### Alpha/Beta Releases

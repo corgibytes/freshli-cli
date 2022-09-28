@@ -17,15 +17,11 @@ public class AnalysisStartedEventTest
 
         var analysisStartedEvent = new AnalysisStartedEvent()
         {
-            CacheDir = "/path/to/cache/dir",
-            GitPath = "/path/to/git",
             AnalysisId = Guid.NewGuid()
         };
         analysisStartedEvent.Handle(eventClient.Object);
 
         eventClient.Verify(mock => mock.Dispatch(It.Is<CreateAnalysisApiActivity>(value =>
-            value.CacheDir == analysisStartedEvent.CacheDir &&
-            value.GitPath == analysisStartedEvent.GitPath &&
             value.CachedAnalysisId == analysisStartedEvent.AnalysisId
         )));
     }
