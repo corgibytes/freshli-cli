@@ -2,7 +2,6 @@ using System;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
-using Corgibytes.Freshli.Cli.Functionality.History;
 using Moq;
 using Xunit;
 
@@ -14,10 +13,7 @@ public class AnalysisApiCreatedEventTest
     [Fact]
     public void HandleDispatchesGitCloneRepositoryActivity()
     {
-        var apiEvent = new AnalysisApiCreatedEvent
-        {
-            CachedAnalysisId = Guid.NewGuid(),
-        };
+        var apiEvent = new AnalysisApiCreatedEvent { CachedAnalysisId = Guid.NewGuid() };
 
         var engine = new Mock<IApplicationActivityEngine>();
 
@@ -26,6 +22,5 @@ public class AnalysisApiCreatedEventTest
         engine.Verify(mock => mock.Dispatch(It.Is<CloneGitRepositoryActivity>(value =>
             value.AnalysisId == apiEvent.CachedAnalysisId
         )));
-
     }
 }

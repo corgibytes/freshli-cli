@@ -6,10 +6,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class AnalysisApiCreatedEvent : IApplicationEvent
 {
-    public Guid CachedAnalysisId { get; set; }
+    public Guid CachedAnalysisId { get; init; }
 
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
+    public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new CloneGitRepositoryActivity(CachedAnalysisId));
-    }
 }

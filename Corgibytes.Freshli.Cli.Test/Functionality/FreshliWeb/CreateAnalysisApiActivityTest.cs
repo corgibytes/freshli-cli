@@ -3,7 +3,6 @@ using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
-using Corgibytes.Freshli.Cli.Functionality.Git;
 using Moq;
 using Xunit;
 
@@ -15,10 +14,8 @@ public class CreateAnalysisApiActivityTest
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
 
-    public CreateAnalysisApiActivityTest()
-    {
+    public CreateAnalysisApiActivityTest() =>
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
-    }
 
     [Fact]
     public void HandleSendsRequest()
@@ -31,7 +28,11 @@ public class CreateAnalysisApiActivityTest
         api.Setup(mock => mock.CreateAnalysis(url)).Returns(apiAnalysisId);
         var activity = new CreateAnalysisApiActivity(cachedAnalysisId);
 
-        var cachedAnalysis = new CachedAnalysis(url, branch, null!, CommitHistory.AtInterval, RevisionHistoryMode.OnlyLatestRevision) {Id = cachedAnalysisId};
+        var cachedAnalysis =
+            new CachedAnalysis(url, branch, null!, CommitHistory.AtInterval, RevisionHistoryMode.OnlyLatestRevision)
+            {
+                Id = cachedAnalysisId
+            };
         var cacheDb = new Mock<ICacheDb>();
         cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).Returns(cachedAnalysis);
 

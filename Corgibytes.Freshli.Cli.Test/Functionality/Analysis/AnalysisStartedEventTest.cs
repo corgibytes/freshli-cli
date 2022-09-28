@@ -15,10 +15,7 @@ public class AnalysisStartedEventTest
     {
         var eventClient = new Mock<IApplicationActivityEngine>();
 
-        var analysisStartedEvent = new AnalysisStartedEvent()
-        {
-            AnalysisId = Guid.NewGuid()
-        };
+        var analysisStartedEvent = new AnalysisStartedEvent { AnalysisId = Guid.NewGuid() };
         analysisStartedEvent.Handle(eventClient.Object);
 
         eventClient.Verify(mock => mock.Dispatch(It.Is<CreateAnalysisApiActivity>(value =>

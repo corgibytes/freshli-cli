@@ -6,12 +6,9 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class CreateAnalysisApiActivity : IApplicationActivity
 {
-    public Guid CachedAnalysisId { get; }
+    public CreateAnalysisApiActivity(Guid cachedAnalysisId) => CachedAnalysisId = cachedAnalysisId;
 
-    public CreateAnalysisApiActivity(Guid cachedAnalysisId)
-    {
-        CachedAnalysisId = cachedAnalysisId;
-    }
+    public Guid CachedAnalysisId { get; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -24,9 +21,6 @@ public class CreateAnalysisApiActivity : IApplicationActivity
 
         cacheDb.SaveAnalysis(cachedAnalysis);
 
-        eventClient.Fire(new AnalysisApiCreatedEvent()
-        {
-            CachedAnalysisId = CachedAnalysisId
-        });
+        eventClient.Fire(new AnalysisApiCreatedEvent { CachedAnalysisId = CachedAnalysisId });
     }
 }
