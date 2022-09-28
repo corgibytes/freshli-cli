@@ -25,20 +25,18 @@ public class CreateAnalysisApiActivityTest
     {
         var url = "anything";
         var branch = "anythingelse";
-        var cacheDir = "/actually/a/cache/dir";
-        var gitPath = "git";
         var api = new Mock<IResultsApi>();
         var apiAnalysisId = Guid.NewGuid();
         var cachedAnalysisId = Guid.NewGuid();
         api.Setup(mock => mock.CreateAnalysis(url)).Returns(apiAnalysisId);
-        var activity = new CreateAnalysisApiActivity(cachedAnalysisId, cacheDir, gitPath);
+        var activity = new CreateAnalysisApiActivity(cachedAnalysisId);
 
-        var cachedAnalysis = new CachedAnalysis(url, branch, null!, CommitHistory.AtInterval) {Id = cachedAnalysisId};
+        var cachedAnalysis = new CachedAnalysis(url, branch, null!, CommitHistory.AtInterval, RevisionHistoryMode.OnlyLatestRevision) {Id = cachedAnalysisId};
         var cacheDb = new Mock<ICacheDb>();
         cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).Returns(cachedAnalysis);
 
         var cacheManager = new Mock<ICacheManager>();
-        cacheManager.Setup(mock => mock.GetCacheDb(It.IsAny<string>())).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
 
         _serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(api.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
@@ -54,9 +52,7 @@ public class CreateAnalysisApiActivityTest
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AnalysisApiCreatedEvent>(value =>
-                value.CachedAnalysisId == cachedAnalysisId &&
-                value.CacheDir == cacheDir &&
-                value.GitPath == gitPath
+                value.CachedAnalysisId == cachedAnalysisId
             )));
     }
 }

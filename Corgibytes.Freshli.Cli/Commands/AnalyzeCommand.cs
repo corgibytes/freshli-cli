@@ -6,13 +6,13 @@ namespace Corgibytes.Freshli.Cli.Commands;
 
 public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOptions>
 {
-    public AnalyzeCommand() : base("analyze",
+    public AnalyzeCommand(IConfiguration configuration) : base("analyze",
         "The primary user-facing command. This command will delegate to other freshli activities to accomplish its work. It will manage work queues to enable parallelization.")
     {
         var gitPath = new Option<string>(
             "--git-path",
             description: "Path to the git binary. Default = 'git'",
-            getDefaultValue: () => "git"
+            getDefaultValue: () => configuration.GitPath
         )
         {
             AllowMultipleArgumentsPerToken = false,
@@ -65,6 +65,14 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
             Arity = ArgumentArity.ZeroOrOne
         };
         AddOption(workers);
+
+        var latestOnly = new Option<bool>("--latest-only",
+            "When this is set, analyze will not walk back in history, and overwrites the options --commit-history, --history-interval")
+        {
+            AllowMultipleArgumentsPerToken = false,
+            Arity = ArgumentArity.ZeroOrOne
+        };
+        AddOption(latestOnly);
 
         var repositoryLocation =
             new Argument<string>("repository-location",
