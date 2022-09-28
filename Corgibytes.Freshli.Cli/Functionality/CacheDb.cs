@@ -20,6 +20,13 @@ public class CacheDb : ICacheDb, IDisposable
 
     public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
 
+    public void AddHistoryIntervalStop(Guid analysisId, CachedHistoryIntervalStop historyIntervalStop)
+    {
+        var cachedAnalysis = Db.CachedAnalyses.Find(analysisId);
+        cachedAnalysis?.HistoryIntervalStops.Add(historyIntervalStop);
+        Db.SaveChanges();
+    }
+
     public void Dispose()
     {
         if (_disposed)

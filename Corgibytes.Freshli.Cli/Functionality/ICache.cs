@@ -7,4 +7,5 @@ public interface ICacheDb
 {
     public Guid SaveAnalysis(CachedAnalysis analysis);
     public CachedAnalysis? RetrieveAnalysis(Guid id);
+    void AddHistoryIntervalStop(Guid analysisId, CachedHistoryIntervalStop cachedHistoryIntervalStop);
 }
