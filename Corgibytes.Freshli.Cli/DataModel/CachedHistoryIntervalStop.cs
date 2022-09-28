@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
+[Table("CachedHistoryIntervalStops")]
 public class CachedHistoryIntervalStop
 {
     public CachedHistoryIntervalStop(string gitCommitId, DateTimeOffset gitCommitDate)
