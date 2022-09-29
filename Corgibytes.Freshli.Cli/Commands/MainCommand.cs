@@ -27,6 +27,7 @@ public class MainCommand : RootCommand
         Add(new CacheCommand());
         Add(new AgentsCommand());
         Add(new AnalyzeCommand());
+        Add(new DoctorCommand());
 
         if (ShouldIncludeFailCommand)
         {

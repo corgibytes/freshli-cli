@@ -49,12 +49,18 @@ public class FreshliServiceBuilder
         RegisterGitCommand();
         RegisterComputeLibYearCommand();
         RegisterApplicationEngine();
+        RegisterDoctorCommand();
     }
 
     private void RegisterBaseCommand() => Services.AddScoped<Runner>();
 
     private void RegisterFailCommand() =>
         Services.AddScoped<ICommandRunner<FailCommand, EmptyCommandOptions>, FailCommandRunner>();
+
+    private void RegisterDoctorCommand()
+    {
+        Services.AddScoped<ICommandRunner<DoctorCommand, DoctorCommandOptions>, DoctorRunner>();
+    }
 
     private void RegisterAnalyzeCommand()
     {
