@@ -20,8 +20,15 @@ public class Environment : IEnvironment
         }
     }
 
+    public string? GetVariable(string variableName)
+    {
+        return System.Environment.GetEnvironmentVariable(variableName);
+    }
+
     public IList<string> DirectoriesInSearchPath =>
         System.Environment.GetEnvironmentVariable("PATH")!.Split(Path.PathSeparator).ToList();
 
     public string HomeDirectory => System.Environment.GetEnvironmentVariable("HOME")!;
+
+
 }
