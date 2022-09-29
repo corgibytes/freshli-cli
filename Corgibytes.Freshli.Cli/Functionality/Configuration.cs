@@ -5,19 +5,47 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class Configuration : IConfiguration
 {
+    [JsonProperty] private IEnvironment _environment;
+    [JsonProperty] private string? _gitPath;
+    [JsonProperty] private string? _cacheDir;
+
     public Configuration(IEnvironment environment)
     {
-        GitPath = "git";
-        CacheDir = Path.Combine(environment.HomeDirectory, ".freshli");
+        _environment = environment;
     }
 
-    [JsonConstructor]
-    public Configuration(string gitPath, string cacheDir)
+    public string GitPath
     {
-        GitPath = gitPath;
-        CacheDir = cacheDir;
+        get
+        {
+            if (_gitPath != null)
+            {
+                return _gitPath;
+            }
+
+            return "git";
+        }
+        set
+        {
+            _gitPath = value;
+        }
     }
 
-    public string GitPath { get; set; }
-    public string CacheDir { get; set; }
+    public string CacheDir
+    {
+        get
+        {
+            if (_cacheDir != null)
+            {
+                return _cacheDir;
+            }
+
+            return Path.Combine(_environment.HomeDirectory, ".freshli");
+        }
+        set
+        {
+            _cacheDir = value;
+        }
+    }
+
 }
