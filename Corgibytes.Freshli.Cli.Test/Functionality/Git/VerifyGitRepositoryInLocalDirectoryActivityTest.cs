@@ -1,0 +1,77 @@
+using System;
+using System.IO;
+using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.Git;
+using Moq;
+using ServiceStack;
+using Xunit;
+
+namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
+
+[UnitTest]
+public class VerifyGitRepositoryInLocalDirectoryActivityTest
+{
+    private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly Mock<IConfiguration> _configuration = new();
+    private readonly Mock<ICacheManager> _cacheManager = new();
+    private readonly Mock<IGitManager> _gitManager = new();
+    private readonly Mock<ICacheDb> _cacheDb = new();
+    private readonly string _repositoryLocation;
+    private readonly Guid _analysisId;
+
+    public VerifyGitRepositoryInLocalDirectoryActivityTest()
+    {
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IGitManager))).Returns(_gitManager.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+
+        _repositoryLocation = Path.Combine(Path.GetTempPath(), new Guid().ToString());
+        _analysisId = new Guid();
+
+        _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).Returns(
+            new CachedAnalysis(_repositoryLocation, "main", "1m", CommitHistory.Full, RevisionHistoryMode.AllRevisions)
+        );
+    }
+
+    [Fact]
+    public void VerifyHandlerFiresEvent()
+    {
+        var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
+        activity.Handle(_eventEngine.Object);
+
+        _eventEngine.Verify(mock => mock.Fire(It.Is<GitRepositoryInLocalDirectoryVerifiedEvent>(value =>
+            value.AnalysisId == _analysisId &&
+            value.AnalysisLocation.Path == _repositoryLocation &&
+            value.AnalysisLocation.RepositoryId.IsEmpty() == false
+        )));
+    }
+
+    [Fact]
+    public void VerifyHandlerFiresFailureEventIfDirectoryDoesNotExist()
+    {
+        var activity = new VerifyGitRepositoryInLocalDirectoryActivity{ AnalysisId = _analysisId };
+        activity.Handle(_eventEngine.Object);
+
+        _eventEngine.Verify(mock => mock.Fire(It.Is<DirectoryDoesNotExistFailureEvent>(value =>
+            value.ErrorMessage == $"Directory does not exist at {_repositoryLocation}"
+        )));
+    }
+
+    [Fact]
+    public void VerifyHandlerFiresFailureEventIfDirectoryIsNotGitInitialized()
+    {
+        _gitManager.Setup(mock => mock.GitRepositoryInitialized(_repositoryLocation)).Returns(false);
+
+        var activity = new VerifyGitRepositoryInLocalDirectoryActivity{ AnalysisId = _analysisId };
+        activity.Handle(_eventEngine.Object);
+
+        _eventEngine.Verify(mock => mock.Fire(It.Is<DirectoryIsNotGitInitializedFailureEvent>(value =>
+            value.ErrorMessage == $"Directory is not a git initialised directory at {_repositoryLocation}"
+        )));
+    }
+}

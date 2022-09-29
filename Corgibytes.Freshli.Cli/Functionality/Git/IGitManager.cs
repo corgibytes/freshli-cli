@@ -5,4 +5,6 @@ public interface IGitManager
     public GitCommitIdentifier ParseCommitId(string commitId);
 
     string CreateArchive(string repositoryId, GitCommitIdentifier gitCommitIdentifier);
+
+    public bool GitRepositoryInitialized(string repositoryLocation);
 }

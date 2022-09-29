@@ -15,5 +15,7 @@ public class GitManager : IGitManager
         string repositoryId, GitCommitIdentifier gitCommitIdentifier) =>
         _gitArchive.CreateArchive(repositoryId, gitCommitIdentifier);
 
+    public bool GitRepositoryInitialized(string repositoryLocation) => throw new System.NotImplementedException();
+
     public GitCommitIdentifier ParseCommitId(string commitId) => new(commitId);
 }
