@@ -20,11 +20,11 @@ Feature: analyze
         Then a directory named "~/.freshli/histories" exists
         And a directory named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5" is not empty
         And a file named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5/f58c3f8773da4ea4f01d819b842e384b3a343d40/archive.zip" does not exist
-        And the "~/.freshli/freshli.db" contains history interval stop at "2022-09-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2022-08-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2022-07-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2021-05-01 00:00:00-06:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2020-09-01 00:00:00-06:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-09-01T00:00:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-08-01T00:00:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-07-01T00:00:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2021-05-01T00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2020-09-01T00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
         Then the output should contain:
         """
         https://freshli.app/
@@ -52,10 +52,10 @@ Feature: analyze
         And a file named "~/.freshli/freshli.db" should exist
         And we can open a SQLite connection to "~/.freshli/freshli.db"
         Then a Git repository exists at "~/.freshli/repositories/d86d1c6cc90d10f22a33e795f68a4120e40e18d7728de6735be62377e3fedccb" with a branch "test_branch" checked out
-        And the "~/.freshli/freshli.db" contains history interval stop at "2022-09-01 00:00:00-06:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2022-08-01 00:00:00-06:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2022-07-01 00:00:00-06:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2020-09-01 00:00:00-06:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-09-01T00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-08-01T00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-07-01T00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2020-09-01T00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
         Then the output should contain:
         """
         https://freshli.app/
@@ -70,7 +70,7 @@ Feature: analyze
         Then a directory named "~/.freshli/histories" exists
         And a directory named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5" is not empty
         And a file named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5/7601fe07ea76d9ce8c9d5332db237d71e236ef4a/archive.zip" does not exist
-        And the "~/.freshli/freshli.db" contains history interval stop at "2021-05-27 11:01:27-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2021-05-27T11:01:27" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
         Then the output should contain:
         """
         https://freshli.app/
@@ -86,9 +86,9 @@ Feature: analyze
         Then a directory named "~/.freshli/histories" exists
         And a directory named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5" is not empty
         And a file named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5/f58c3f8773da4ea4f01d819b842e384b3a343d40/archive.zip" does not exist
-        And the "~/.freshli/freshli.db" contains history interval stop at "2021-05-27 11:01:27-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2020-09-20 09:13:39-06:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2019-03-11 14:27:53-06:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2021-05-27T11:01:27" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2020-09-20T09:13:39" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2019-03-11T14:27:53" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
         Then the output should contain:
         """
         https://freshli.app/
@@ -104,10 +104,10 @@ Feature: analyze
         Then a directory named "~/.freshli/histories" exists
         And a directory named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5" is not empty
         And a file named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5/f58c3f8773da4ea4f01d819b842e384b3a343d40/archive.zip" does not exist
-        And the "~/.freshli/freshli.db" contains history interval stop at "2022-01-01 00:00:00-06:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2021-01-01 00:00:00-06:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2020-01-01 00:00:00-06:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
-        And the "~/.freshli/freshli.db" contains history interval stop at "2019-03-11 14:27:53-06:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2022-01-01T00:00:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2021-01-01T00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2020-01-01T00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2019-03-11T14:27:53" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
         Then the output should contain:
         """
         https://freshli.app/
