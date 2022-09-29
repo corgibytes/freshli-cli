@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +16,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+        var gitSourceRepository = eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>();
         var cacheDb = cacheManager.GetCacheDb();
         var analysis = cacheDb.RetrieveAnalysis(AnalysisId);
 
@@ -34,6 +36,10 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
         }
 
         var analysisLocation = new AnalysisLocation(configuration, new Guid().ToString()) { LocalDirectory = analysis.RepositoryUrl};
+        var cachedGitSource = new CachedGitSource(
+            new CachedGitSourceId(analysis.RepositoryUrl).Id, analysis.RepositoryUrl, null, analysis.RepositoryUrl);
+        gitSourceRepository.Save(cachedGitSource);
+
         eventClient.Fire(new GitRepositoryInLocalDirectoryVerifiedEvent{ AnalysisId = analysis.Id, AnalysisLocation = analysisLocation});
     }
 }
