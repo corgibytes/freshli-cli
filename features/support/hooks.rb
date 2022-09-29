@@ -27,7 +27,7 @@ Before do |scenario|
 end
 
 After do |scenario|
-  hooks.after_each scenario.name
+  hooks.after_each scenario.name if scenario.status == :passed
 end
 
 AfterAll do
