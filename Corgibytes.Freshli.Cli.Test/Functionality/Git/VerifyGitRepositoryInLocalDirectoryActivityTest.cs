@@ -13,6 +13,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class VerifyGitRepositoryInLocalDirectoryActivityTest
 {
+    private readonly Mock<ICachedGitSourceRepository> _repository = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
     private readonly Mock<IConfiguration> _configuration = new();
@@ -24,6 +25,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
 
     public VerifyGitRepositoryInLocalDirectoryActivityTest()
     {
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICachedGitSourceRepository))).Returns(_repository.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IGitManager))).Returns(_gitManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
@@ -43,6 +45,17 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     {
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
         activity.Handle(_eventEngine.Object);
+
+        var expectedCachedGitSource = new CachedGitSource(
+            new CachedGitSourceId(_repositoryLocation).Id, _repositoryLocation, null, _repositoryLocation
+        );
+
+        _repository.Verify(mock => mock.Save(It.Is<CachedGitSource>(value =>
+            value.Branch == expectedCachedGitSource.Branch &&
+            value.Id == expectedCachedGitSource.Id &&
+            value.Url == expectedCachedGitSource.Url &&
+            value.LocalPath == expectedCachedGitSource.LocalPath
+        )));
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<GitRepositoryInLocalDirectoryVerifiedEvent>(value =>
             value.AnalysisId == _analysisId &&
