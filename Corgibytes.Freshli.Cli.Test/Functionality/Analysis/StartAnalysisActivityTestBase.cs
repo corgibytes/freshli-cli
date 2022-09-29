@@ -64,7 +64,10 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
             value.RepositoryBranch == "main" &&
             value.HistoryInterval == "1m"
         )));
-        _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value => value.AnalysisId == sampleGuid)));
+        _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value =>
+            value.AnalysisId == sampleGuid &&
+            value.RepositoryUrl == "http://git.example.com"
+            )));
     }
 
     [Fact]
