@@ -14,7 +14,7 @@ public class AgentDetectedForDetectManifestEvent : IApplicationEvent
         AgentExecutablePath = agentExecutablePath;
     }
 
-    [JsonProperty] private Guid AnalysisId { get; }
+    public Guid AnalysisId { get; }
 
     public IAnalysisLocation AnalysisLocation { get; }
     public string AgentExecutablePath { get; }
