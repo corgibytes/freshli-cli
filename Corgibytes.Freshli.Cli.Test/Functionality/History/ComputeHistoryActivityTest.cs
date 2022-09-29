@@ -56,8 +56,9 @@ public class ComputeHistoryActivityTest
             .Returns(historyIntervalStops);
 
         // Act
+        var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
-            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
+            analysisId,
             _analysisLocation.Object
         ).Handle(_eventEngine.Object);
 
@@ -66,6 +67,7 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
+                        value.AnalysisId == analysisId &&
                         value.AnalysisLocation != null &&
                         value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
@@ -102,8 +104,9 @@ public class ComputeHistoryActivityTest
             .Returns(historyIntervalStops);
 
         // Act
+        var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
-            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
+            analysisId,
             _analysisLocation.Object
         ).Handle(_eventEngine.Object);
 
@@ -112,6 +115,7 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
+                        value.AnalysisId == analysisId &&
                         value.AnalysisLocation != null &&
                         value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
@@ -139,8 +143,9 @@ public class ComputeHistoryActivityTest
             .Returns(historyIntervalStops);
 
         // Act
+        var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
-            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
+            analysisId,
             _analysisLocation.Object
         ).Handle(_eventEngine.Object);
 
@@ -149,6 +154,7 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
+                        value.AnalysisId == analysisId &&
                         value.AnalysisLocation != null &&
                         value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )

@@ -22,8 +22,9 @@ public class BillOfMaterialsGeneratedEventTest
             "da39a3ee5e6b4b0d3255bfef95601890afd80709");
         var pathToBoM = "/path/to/bom";
 
+        var analysisId = Guid.NewGuid();
         var billOfMaterialsGeneratedEvent =
-            new BillOfMaterialsGeneratedEvent(Guid.NewGuid(), analysisLocation, pathToBoM);
+            new BillOfMaterialsGeneratedEvent(analysisId, analysisLocation, pathToBoM);
 
         serviceProvider.Setup(mock => mock.GetService(typeof(ICalculateLibYearFromFile)))
             .Returns(calculateLibYearFromFile.Object);
@@ -34,6 +35,7 @@ public class BillOfMaterialsGeneratedEventTest
         billOfMaterialsGeneratedEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearActivity>(value =>
+            value.AnalysisId == analysisId &&
             value.AnalysisLocation == analysisLocation &&
             value.PathToBoM == pathToBoM
         )));
