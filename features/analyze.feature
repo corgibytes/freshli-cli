@@ -60,6 +60,7 @@ Feature: analyze
         """
 
     Scenario: Run the analysis, trigger error event.
+        Given the Freshli Web API is available
         When I run `freshli analyze https://github.com/this-repository-does-not-exist`
         Then the output should contain:
         """
