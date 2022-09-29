@@ -34,4 +34,28 @@ public class AnalysisLocationTest
         var expectedPath = Path.Combine(_cacheDirectory, "histories", repositoryId, commitId);
         Assert.Equal(expectedPath, location.Path);
     }
+
+    [Fact]
+    public void PathUsingLocalDirectory()
+    {
+        var expectedPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        var repositoryId = Guid.NewGuid().ToString();
+
+        var location = new AnalysisLocation(_configuration.Object, repositoryId) { LocalDirectory = expectedPath };
+
+        Assert.Equal(expectedPath, location.Path);
+    }
+
+    [Fact]
+    public void PathUsingLocalDirectoryWithCommitId()
+    {
+        var localDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        var repositoryId = Guid.NewGuid().ToString();
+        var commitId = Guid.NewGuid().ToString();
+
+        var location = new AnalysisLocation(_configuration.Object, repositoryId, commitId) { LocalDirectory = localDirectory };
+
+        var expectedPath = Path.Combine(_cacheDirectory, "histories", repositoryId, commitId);
+        Assert.Equal(expectedPath, location.Path);
+    }
 }
