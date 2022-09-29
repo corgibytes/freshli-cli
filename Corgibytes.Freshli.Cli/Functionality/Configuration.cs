@@ -8,6 +8,9 @@ public class Configuration : IConfiguration
     [JsonProperty] private IEnvironment _environment;
     [JsonProperty] private string? _gitPath;
     [JsonProperty] private string? _cacheDir;
+    [JsonProperty] private string? _freshliWebApiUrl;
+
+    public const string FreshliWebApiBaseUrlEnvVarName = "FRESHLI_WEB_API_BASE_URL";
 
     public Configuration(IEnvironment environment)
     {
@@ -48,4 +51,27 @@ public class Configuration : IConfiguration
         }
     }
 
+    public string FreshliWebApiUrl
+    {
+        get
+        {
+            var valueFromEnvironment = _environment.GetVariable(FreshliWebApiBaseUrlEnvVarName);
+            if (valueFromEnvironment != null)
+            {
+                return valueFromEnvironment;
+            }
+
+            if (_freshliWebApiUrl != null)
+            {
+                return _freshliWebApiUrl;
+            }
+
+            return "https://freshli.io";
+        }
+
+        set
+        {
+            _freshliWebApiUrl = value;
+        }
+    }
 }

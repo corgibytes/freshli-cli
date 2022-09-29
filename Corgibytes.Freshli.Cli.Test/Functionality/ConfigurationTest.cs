@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Functionality;
 using Moq;
 using Xunit;
@@ -36,5 +37,34 @@ public class ConfigurationTest
         _configuration.CacheDir = "/new/cache/directory";
 
         Assert.Equal("/new/cache/directory", _configuration.CacheDir);
+    }
+
+    [Fact]
+    public void FreshliWebApiUrlHasADefaultValue() => Assert.Equal("https://freshli.io", _configuration.FreshliWebApiUrl);
+
+    [Fact]
+    public void FreshliWebApiUrlCanBeSetViaEnvironmentVariable()
+    {
+        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName)).Returns("https://some/other/url");
+
+        Assert.Equal("https://some/other/url", _configuration.FreshliWebApiUrl);
+    }
+
+    [Fact]
+    public void FreshliWebApiUrlCanBeModified()
+    {
+        _configuration.FreshliWebApiUrl = "https://yet/another/url";
+
+        Assert.Equal("https://yet/another/url", _configuration.FreshliWebApiUrl);
+    }
+
+    [Fact]
+    public void FreshliWebUrlCannotBeModifiedWhenEnvironmentVariableIsSet()
+    {
+        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName)).Returns("https://url/from/env");
+
+        _configuration.FreshliWebApiUrl = "https://url/from/assignment";
+
+        Assert.Equal("https://url/from/env", _configuration.FreshliWebApiUrl);
     }
 }
