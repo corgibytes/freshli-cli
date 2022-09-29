@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 [Table("CachedHistoryIntervalStops")]
 public class CachedHistoryIntervalStop
 {
-    public CachedHistoryIntervalStop(string gitCommitId, DateTimeOffset gitCommitDate)
+    public CachedHistoryIntervalStop(string gitCommitId, string gitCommitDate)
     {
         GitCommitId = gitCommitId;
         GitCommitDate = gitCommitDate;
@@ -19,7 +19,7 @@ public class CachedHistoryIntervalStop
 
     [Required] public int Id { get; set; }
 
-    [Required] public DateTimeOffset GitCommitDate { get; set; }
+    [Required] public string GitCommitDate { get; set; }
 
     [Required] public string GitCommitId { get; set; }
 
