@@ -17,22 +17,24 @@ public class ConfigurationTest
     }
 
     [Fact]
-    public void DefaultGitPath() => Assert.Equal("git", _configuration.GitPath);
+    public void GitPathHasADefaultValue() => Assert.Equal("git", _configuration.GitPath);
 
     [Fact]
-    public void ModifyingGitPath()
+    public void GitPathCanBeModified()
     {
         _configuration.GitPath = "/new/git/path";
+
         Assert.Equal("/new/git/path", _configuration.GitPath);
     }
 
     [Fact]
-    public void DefaultCacheDir() => Assert.Equal("/path/to/home/dir/.freshli", _configuration.CacheDir);
+    public void CacheDirHasADefaultValue() => Assert.Equal("/path/to/home/dir/.freshli", _configuration.CacheDir);
 
     [Fact]
-    public void ModifyingCacheDir()
+    public void CacheDirValueCanBeModified()
     {
         _configuration.CacheDir = "/new/cache/directory";
+
         Assert.Equal("/new/cache/directory", _configuration.CacheDir);
     }
 }
