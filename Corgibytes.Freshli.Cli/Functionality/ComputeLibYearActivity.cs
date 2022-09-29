@@ -9,13 +9,13 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class ComputeLibYearActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly Guid _analysisId;
+    public readonly Guid AnalysisId;
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string PathToBoM;
 
     public ComputeLibYearActivity(Guid analysisId, string pathToBoM, IAnalysisLocation analysisLocation)
     {
-        _analysisId = analysisId;
+        AnalysisId = analysisId;
         PathToBoM = pathToBoM;
         AnalysisLocation = analysisLocation;
     }

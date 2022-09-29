@@ -22,11 +22,13 @@ public class ManifestDetectedEventTest
         var engine = new Mock<IApplicationActivityEngine>();
 
         const string agentExecutablePath = "/path/to/agent";
+        var analysisId = Guid.NewGuid();
         var manifestEvent =
-            new ManifestDetectedEvent(Guid.NewGuid(), analysisLocation, agentExecutablePath, manifestPath);
+            new ManifestDetectedEvent(analysisId, analysisLocation, agentExecutablePath, manifestPath);
         manifestEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<GenerateBillOfMaterialsActivity>(value =>
+            value.AnalysisId == analysisId &&
             value.AnalysisLocation == analysisLocation &&
             value.ManifestPath == manifestPath &&
             value.AgentExecutablePath == agentExecutablePath

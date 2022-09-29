@@ -16,7 +16,7 @@ public class ManifestDetectedEvent : IApplicationEvent
         ManifestPath = manifestPath;
     }
 
-    [JsonProperty] private Guid AnalysisId { get; }
+    public Guid AnalysisId { get; }
     public IAnalysisLocation AnalysisLocation { get; }
     public string AgentExecutablePath { get; }
     public string ManifestPath { get; }

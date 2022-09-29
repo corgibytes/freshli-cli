@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class GenerateBillOfMaterialsActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly Guid _analysisId;
+    public readonly Guid AnalysisId;
     public readonly string AgentExecutablePath;
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string ManifestPath;
@@ -19,7 +19,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
         IAnalysisLocation analysisLocation,
         string manifestPath)
     {
-        _analysisId = analysisId;
+        AnalysisId = analysisId;
         AgentExecutablePath = agentExecutablePath;
         AnalysisLocation = analysisLocation;
         ManifestPath = manifestPath;
@@ -34,6 +34,6 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
         var pathToBillOfMaterials =
             agentReader.ProcessManifest(Path.Combine(AnalysisLocation.Path, ManifestPath), asOfDate);
 
-        eventClient.Fire(new BillOfMaterialsGeneratedEvent(_analysisId, AnalysisLocation, pathToBillOfMaterials));
+        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisId, AnalysisLocation, pathToBillOfMaterials));
     }
 }

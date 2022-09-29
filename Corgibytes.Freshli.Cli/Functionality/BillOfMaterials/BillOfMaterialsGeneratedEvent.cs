@@ -15,7 +15,7 @@ public class BillOfMaterialsGeneratedEvent : IApplicationEvent
         PathToBillOfMaterials = pathToBillOfMaterials;
     }
 
-    [JsonProperty] private Guid AnalysisId { get; }
+    public Guid AnalysisId { get; }
     public IAnalysisLocation AnalysisLocation { get; }
     public string PathToBillOfMaterials { get; }
 
