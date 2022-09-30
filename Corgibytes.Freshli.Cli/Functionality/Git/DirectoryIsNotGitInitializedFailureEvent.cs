@@ -4,5 +4,4 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class DirectoryIsNotGitInitializedFailureEvent : FailureEvent
 {
-
 }
