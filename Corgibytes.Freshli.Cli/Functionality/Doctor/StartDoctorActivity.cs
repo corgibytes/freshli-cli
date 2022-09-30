@@ -19,30 +19,26 @@ public class StartDoctorActivity : IApplicationActivity
     {
         try
         {
-            if (Directory.Exists(CacheDirectory))
+            if (!Directory.Exists(CacheDirectory))
             {
                 // It's possible to create the cache directory if it does not exist
-                Console.WriteLine("Cache directory exists");
-                File.WriteAllText(CacheDirectory + Path.DirectorySeparatorChar + "TextFile.txt" , "Writing inside the file.");
-
-                // It's possible to create sub-directories in the cache directory
-                Directory.CreateDirectory(CacheDirectory + Path.DirectorySeparatorChar + "SubDirectory");
-
-                // It's possible to create and write to files in sub-directories in the cache directory
-                File.WriteAllText(CacheDirectory + Path.DirectorySeparatorChar + "SubDirectory" + Path.DirectorySeparatorChar + "SubDirectoryTextFile.txt" , "Writing inside the sub directory file.");
-            }
-            else
-            {
-                // It's possible to create and write to files in the cache directory
                 Directory.CreateDirectory(CacheDirectory);
-                File.WriteAllText(CacheDirectory + Path.DirectorySeparatorChar + "TextFile.txt" , "Writing inside the file.");
-
-                // It's possible to create sub-directories in the cache directory
-                Directory.CreateDirectory(CacheDirectory + Path.DirectorySeparatorChar + "SubDirectory");
-
-                // It's possible to create and write to files in sub-directories in the cache directory
-                File.WriteAllText(CacheDirectory + Path.DirectorySeparatorChar + "SubDirectory" + Path.DirectorySeparatorChar + "SubDirectoryTextFile.txt" , "Writing inside the sub directory file.");
+                Console.Out.Write("Successfully created the cache directory");
             }
+
+            File.WriteAllText(CacheDirectory + Path.DirectorySeparatorChar + "TextFile.txt",
+                "Writing inside the file.");
+            Console.WriteLine("Wrote inside of the cache directory file successfully");
+
+            // It's possible to create sub-directories in the cache directory
+            Directory.CreateDirectory(CacheDirectory + Path.DirectorySeparatorChar + "SubDirectory");
+            Console.WriteLine("Sub directory created");
+
+            // It's possible to create and write to files in sub-directories in the cache directory
+            File.WriteAllText(
+                CacheDirectory + Path.DirectorySeparatorChar + "SubDirectory" + Path.DirectorySeparatorChar +
+                "SubDirectoryTextFile.txt", "Writing inside the sub directory file.");
+            Console.WriteLine("Wrote inside the sub directory file successfully");
         }
         catch (Exception e)
         {
