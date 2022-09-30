@@ -6,6 +6,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 public class HistoryIntervalStopFoundEvent : IApplicationEvent
 {
     public HistoryIntervalStopFoundEvent(IHistoryStopData historyStopData) => HistoryStopData = historyStopData;
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public IHistoryStopData HistoryStopData { get; set; }
 
     public void Handle(IApplicationActivityEngine eventClient) =>
