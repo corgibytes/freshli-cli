@@ -1,8 +1,9 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
+// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
+// ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
 namespace Corgibytes.Freshli.Cli.DataModel;
@@ -23,5 +24,6 @@ public class CachedHistoryIntervalStop
 
     [Required] public string GitCommitId { get; set; }
 
+    // ReSharper disable once UnusedMember.Global
     [Required] public CachedAnalysis CachedAnalysis { get; set; }
 }

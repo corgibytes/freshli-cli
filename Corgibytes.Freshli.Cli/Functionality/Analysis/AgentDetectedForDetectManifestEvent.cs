@@ -1,6 +1,5 @@
 using System;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
