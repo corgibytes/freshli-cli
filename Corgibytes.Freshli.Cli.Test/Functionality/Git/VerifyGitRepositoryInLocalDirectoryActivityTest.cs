@@ -33,7 +33,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
         _configuration.Setup(mock => mock.CacheDir).Returns("/cache/dir");
 
-        _repositoryLocation = Path.Combine(Path.GetTempPath(), new Guid().ToString());
+        _repositoryLocation = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         _analysisId = new Guid();
 
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).Returns(
@@ -44,11 +44,17 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     [Fact]
     public void VerifyHandlerFiresEvent()
     {
+        var repositoryLocation = new DirectoryInfo(_repositoryLocation);
+        repositoryLocation.Create();
+
+        _gitManager.Setup(mock =>
+            mock.GitRepositoryInitialized(_repositoryLocation, It.IsAny<IConfiguration>())).Returns(true);
+
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
         activity.Handle(_eventEngine.Object);
 
         var expectedCachedGitSource = new CachedGitSource(
-            new CachedGitSourceId(_repositoryLocation).Id, _repositoryLocation, null, _repositoryLocation
+            new CachedGitSourceId(repositoryLocation.FullName).Id, _repositoryLocation, null, repositoryLocation.FullName
         );
 
         _repository.Verify(mock => mock.Save(It.Is<CachedGitSource>(value =>
@@ -63,6 +69,8 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
             value.AnalysisLocation.Path == _repositoryLocation &&
             value.AnalysisLocation.RepositoryId.IsEmpty() == false
         )));
+
+        repositoryLocation.Delete();
     }
 
     [Fact]
@@ -79,6 +87,9 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     [Fact]
     public void VerifyHandlerFiresFailureEventIfDirectoryIsNotGitInitialized()
     {
+        var repositoryLocation = new DirectoryInfo(_repositoryLocation);
+        repositoryLocation.Create();
+
         _gitManager.Setup(mock => mock.GitRepositoryInitialized(_repositoryLocation, _configuration.Object))
             .Returns(false);
 
@@ -88,5 +99,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _eventEngine.Verify(mock => mock.Fire(It.Is<DirectoryIsNotGitInitializedFailureEvent>(value =>
             value.ErrorMessage == $"Directory is not a git initialised directory at {_repositoryLocation}"
         )));
+
+        repositoryLocation.Delete();
     }
 }
