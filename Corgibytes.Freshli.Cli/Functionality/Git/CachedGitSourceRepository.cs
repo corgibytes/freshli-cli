@@ -36,6 +36,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         using var db = new CacheContext(Configuration.CacheDir);
         db.CachedGitSources.Add(cachedGitSource);
+        db.SaveChanges();
     }
 
     public CachedGitSource CloneOrPull(string url, string? branch)
