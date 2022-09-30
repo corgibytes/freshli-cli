@@ -1,0 +1,44 @@
+{
+  "consumer": {
+    "name": "Freshli"
+  },
+  "provider": {
+    "name": "Web API"
+  },
+  "interactions": [
+    {
+      "description": "a request to create a new analysis",
+      "providerState": "a valid database",
+      "request": {
+        "method": "post",
+        "path": "/api/v0/analysis-request",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "name": "Freshli CLI User",
+          "email": "info@freshli.io",
+          "url": "https://github.com/this-repository-does-not-exist"
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8"
+        },
+        "body": {
+          "id": "eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+          "name": "Freshli CLI User",
+          "email": "info@freshli.io",
+          "url": "https://github.com/this-repository-does-not-exist"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}

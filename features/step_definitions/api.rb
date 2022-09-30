@@ -13,12 +13,15 @@ Given('the Freshli Web API is available') do
     given('a valid database').
     upon_receiving('a request to create a new analysis').
     with(
+      headers: {
+        'Content-Type' => 'application/json'
+      },
       method: :post,
       path: '/api/v0/analysis-request',
       body: {
         name: 'Freshli CLI User',
         email: 'info@freshli.io',
-        url: 'https://github.com/this-respository-does-not-exist'
+        url: 'https://github.com/this-repository-does-not-exist'
       }
     ).
     will_respond_with(
@@ -32,7 +35,7 @@ Given('the Freshli Web API is available') do
         id: 'eaf76637-8dcb-45fa-83c8-c17e9c6f2db8',
         name: 'Freshli CLI User',
         email: 'info@freshli.io',
-        url: 'https://github.com/this-respository-does-not-exist'
+        url: 'https://github.com/this-repository-does-not-exist'
       }
     )
 
