@@ -9,6 +9,7 @@ public class HistoryIntervalStopFoundEvent : IApplicationEvent
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
+        // TODO: What happens if this condition is not true? Should the analysis fail in that case?
         if (AnalysisLocation is { CommitId: { } })
         {
             eventClient.Dispatch(new CheckoutHistoryActivity(AnalysisLocation));
