@@ -18,11 +18,11 @@ public class BillOfMaterialsGeneratedEventTest
         var calculateLibYearFromFile = new Mock<ICalculateLibYearFromFile>();
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(mock => mock.CacheDir).Returns("/cache/directory");
-        var analysisLocation = new AnalysisLocation(configuration.Object, "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d",
+        var historyStopData = new HistoryStopData(configuration.Object, "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d",
             "da39a3ee5e6b4b0d3255bfef95601890afd80709");
         var pathToBoM = "/path/to/bom";
 
-        var billOfMaterialsGeneratedEvent = new BillOfMaterialsGeneratedEvent(analysisLocation, pathToBoM);
+        var billOfMaterialsGeneratedEvent = new BillOfMaterialsGeneratedEvent(historyStopData, pathToBoM);
 
         serviceProvider.Setup(mock => mock.GetService(typeof(ICalculateLibYearFromFile)))
             .Returns(calculateLibYearFromFile.Object);
@@ -33,7 +33,7 @@ public class BillOfMaterialsGeneratedEventTest
         billOfMaterialsGeneratedEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearActivity>(value =>
-            value.AnalysisLocation == analysisLocation &&
+            value.HistoryStopData == historyStopData &&
             value.PathToBoM == pathToBoM
         )));
     }

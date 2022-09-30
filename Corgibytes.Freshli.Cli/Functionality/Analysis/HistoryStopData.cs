@@ -3,11 +3,11 @@ using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class AnalysisLocation : IAnalysisLocation
+public class HistoryStopData : IHistoryStopData
 {
     [JsonProperty] private readonly IConfiguration _configuration;
 
-    public AnalysisLocation(IConfiguration configuration, string repositoryId, string? commitId = null, DateTimeOffset? moment = null)
+    public HistoryStopData(IConfiguration configuration, string repositoryId, string? commitId = null, DateTimeOffset? moment = null)
     {
         _configuration = configuration;
         RepositoryId = repositoryId;

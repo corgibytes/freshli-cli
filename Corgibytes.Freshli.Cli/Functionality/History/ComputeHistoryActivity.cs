@@ -9,14 +9,14 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class ComputeHistoryActivity : IApplicationActivity
 {
-    public readonly IAnalysisLocation AnalysisLocation;
+    public readonly IHistoryStopData HistoryStopData;
 
     public Guid AnalysisId;
 
-    public ComputeHistoryActivity(Guid analysisId, IAnalysisLocation analysisLocation)
+    public ComputeHistoryActivity(Guid analysisId, IHistoryStopData historyStopData)
     {
         AnalysisId = analysisId;
-        AnalysisLocation = analysisLocation;
+        HistoryStopData = historyStopData;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
@@ -35,25 +35,25 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         if (analysis.RevisionHistoryMode.Equals(RevisionHistoryMode.OnlyLatestRevision))
         {
-            historyIntervalStops = computeHistoryService.ComputeLatestOnly(AnalysisLocation);
+            historyIntervalStops = computeHistoryService.ComputeLatestOnly(HistoryStopData);
         }
         else if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
         {
             historyIntervalStops = computeHistoryService
-                .ComputeWithHistoryInterval(AnalysisLocation, analysis.HistoryInterval, DateTimeOffset.Now);
+                .ComputeWithHistoryInterval(HistoryStopData, analysis.HistoryInterval, DateTimeOffset.Now);
         }
         else
         {
-            historyIntervalStops = computeHistoryService.ComputeCommitHistory(AnalysisLocation);
+            historyIntervalStops = computeHistoryService.ComputeCommitHistory(HistoryStopData);
         }
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
-            var historyStopLocation =
-                new AnalysisLocation(configuration, AnalysisLocation.RepositoryId,
+            var historyStopData =
+                new HistoryStopData(configuration, HistoryStopData.RepositoryId,
                     historyIntervalStop.GitCommitIdentifier, historyIntervalStop.CommittedAt);
 
-            eventClient.Fire(new HistoryIntervalStopFoundEvent(historyStopLocation));
+            eventClient.Fire(new HistoryIntervalStopFoundEvent(historyStopData));
         }
     }
 }

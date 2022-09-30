@@ -28,12 +28,12 @@ public class CloneGitRepositoryActivity : IApplicationActivity
                 eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>()
                     .CloneOrPull(cachedAnalysis!.RepositoryUrl, cachedAnalysis.RepositoryBranch);
 
-            var analysisLocation = new AnalysisLocation(configuration, gitRepository.Id);
+            var historyStopData = new HistoryStopData(configuration, gitRepository.Id);
 
             eventClient.Fire(new GitRepositoryClonedEvent
             {
                 AnalysisId = AnalysisId,
-                AnalysisLocation = analysisLocation
+                HistoryStopData = historyStopData
             });
         }
         catch (GitException e)

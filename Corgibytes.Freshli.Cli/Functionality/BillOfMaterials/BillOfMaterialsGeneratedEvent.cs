@@ -5,18 +5,18 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class BillOfMaterialsGeneratedEvent : IApplicationEvent
 {
-    public BillOfMaterialsGeneratedEvent(IAnalysisLocation analysisLocation, string pathToBillOfMaterials)
+    public BillOfMaterialsGeneratedEvent(IHistoryStopData historyStopData, string pathToBillOfMaterials)
     {
-        AnalysisLocation = analysisLocation;
+        HistoryStopData = historyStopData;
         PathToBillOfMaterials = pathToBillOfMaterials;
     }
 
-    public IAnalysisLocation AnalysisLocation { get; }
+    public IHistoryStopData HistoryStopData { get; }
     public string PathToBillOfMaterials { get; }
 
     public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
         new ComputeLibYearActivity(
             PathToBillOfMaterials,
-            AnalysisLocation
+            HistoryStopData
         ));
 }

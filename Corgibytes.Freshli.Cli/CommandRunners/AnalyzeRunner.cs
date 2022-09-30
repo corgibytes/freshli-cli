@@ -70,7 +70,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
                 libYearSummed = computedEvent.LibYearPackages.Sum(libYear => libYear.LibYear);
             }
 
-            context.Console.Out.WriteLine($"Libyear at {computedEvent.AnalysisLocation?.CommitId} is {libYearSummed}");
+            context.Console.Out.WriteLine($"Libyear at {computedEvent.HistoryStopData?.CommitId} is {libYearSummed}");
         });
 
         _activityEngine.Wait();

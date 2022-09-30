@@ -15,7 +15,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class ComputeHistoryTest : FreshliTest
 {
-    private readonly Mock<IAnalysisLocation> _analysisLocation = new();
+    private readonly Mock<IHistoryStopData> _historyStopData = new();
     private readonly ComputeHistory _computeHistory;
     private readonly Mock<IConfiguration> _configuration = new();
     private readonly MockListCommits _listCommits;
@@ -33,7 +33,7 @@ public class ComputeHistoryTest : FreshliTest
         _listCommits.HasCommitsAvailable(new List<GitCommit>());
         var expectedStops = new List<HistoryIntervalStop>();
         Assert.Equivalent(expectedStops,
-            _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "1d", DateTimeOffset.Now));
+            _computeHistory.ComputeWithHistoryInterval(_historyStopData.Object, "1d", DateTimeOffset.Now));
     }
 
     [Fact]
@@ -52,7 +52,7 @@ public class ComputeHistoryTest : FreshliTest
                 new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
         };
 
-        var actualStops = _computeHistory.ComputeCommitHistory(_analysisLocation.Object).ToList();
+        var actualStops = _computeHistory.ComputeCommitHistory(_historyStopData.Object).ToList();
 
         Assert.NotStrictEqual(expectedStops, actualStops);
         Assert.Equal(expectedStops.Count, actualStops.Count);
@@ -68,7 +68,7 @@ public class ComputeHistoryTest : FreshliTest
                 new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero))
         };
 
-        var actualStops = _computeHistory.ComputeLatestOnly(_analysisLocation.Object).ToList();
+        var actualStops = _computeHistory.ComputeLatestOnly(_historyStopData.Object).ToList();
 
         Assert.NotStrictEqual(expectedStops, actualStops);
         Assert.Equal(expectedStops.Count, actualStops.Count);
@@ -85,7 +85,7 @@ public class ComputeHistoryTest : FreshliTest
     {
         _listCommits.HasCommitsAvailable(availableCommits);
         var actualStops = _computeHistory.ComputeWithHistoryInterval(
-            _analysisLocation.Object,
+            _historyStopData.Object,
             interval,
             startAtDate
         ).ToList();
