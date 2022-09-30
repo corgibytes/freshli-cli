@@ -32,5 +32,6 @@ public class CachedAnalysis
     // TODO: Research how to use a value class here instead of a string
     [Required] public string HistoryInterval { get; set; }
 
+    // ReSharper disable once CollectionNeverQueried.Global
     [Required] public List<CachedHistoryIntervalStop> HistoryIntervalStops { get; set; }
 }
