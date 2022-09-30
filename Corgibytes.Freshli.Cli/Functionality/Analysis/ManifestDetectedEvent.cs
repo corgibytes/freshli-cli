@@ -5,21 +5,21 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class ManifestDetectedEvent : IApplicationEvent
 {
-    public ManifestDetectedEvent(IAnalysisLocation analysisLocation, string agentExecutablePath, string manifestPath)
+    public ManifestDetectedEvent(IHistoryStopData historyStopData, string agentExecutablePath, string manifestPath)
     {
-        AnalysisLocation = analysisLocation;
+        HistoryStopData = historyStopData;
         AgentExecutablePath = agentExecutablePath;
         ManifestPath = manifestPath;
     }
 
-    public IAnalysisLocation AnalysisLocation { get; }
+    public IHistoryStopData HistoryStopData { get; }
     public string AgentExecutablePath { get; }
     public string ManifestPath { get; }
 
     public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
         new GenerateBillOfMaterialsActivity(
             AgentExecutablePath,
-            AnalysisLocation,
+            HistoryStopData,
             ManifestPath
         ));
 }

@@ -14,8 +14,8 @@ public class DetectManifestsUsingAgentActivityTest
     [Fact]
     public void Handle()
     {
-        var analysisLocation = new Mock<IAnalysisLocation>();
-        analysisLocation.SetupGet(mock => mock.Path).Returns("/path/to/repository");
+        var historyStopData = new Mock<IHistoryStopData>();
+        historyStopData.SetupGet(mock => mock.Path).Returns("/path/to/repository");
 
         var agentReader = new Mock<IAgentReader>();
         agentReader.Setup(mock => mock.DetectManifests("/path/to/repository")).Returns(
@@ -35,17 +35,17 @@ public class DetectManifestsUsingAgentActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var activity = new DetectManifestsUsingAgentActivity(analysisLocation.Object, agentExecutablePath);
+        var activity = new DetectManifestsUsingAgentActivity(historyStopData.Object, agentExecutablePath);
 
         activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
-            appEvent.AnalysisLocation == analysisLocation.Object &&
+            appEvent.HistoryStopData == historyStopData.Object &&
             appEvent.AgentExecutablePath == agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/first/manifest")));
 
         eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
-            appEvent.AnalysisLocation == analysisLocation.Object &&
+            appEvent.HistoryStopData == historyStopData.Object &&
             appEvent.AgentExecutablePath == agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/second/manifest")));
     }

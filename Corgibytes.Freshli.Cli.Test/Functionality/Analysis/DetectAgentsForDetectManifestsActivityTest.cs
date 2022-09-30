@@ -29,20 +29,20 @@ public class DetectAgentsForDetectManifestsActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var analysisLocation = new Mock<IAnalysisLocation>();
+        var historyStopData = new Mock<IHistoryStopData>();
         var activity =
-            new DetectAgentsForDetectManifestsActivity(analysisLocation.Object);
+            new DetectAgentsForDetectManifestsActivity(historyStopData.Object);
 
         activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
-                appEvent.AnalysisLocation == analysisLocation.Object &&
+                appEvent.HistoryStopData == historyStopData.Object &&
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-java")));
 
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
-                appEvent.AnalysisLocation == analysisLocation.Object &&
+                appEvent.HistoryStopData == historyStopData.Object &&
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet")));
     }
 }

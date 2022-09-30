@@ -4,7 +4,7 @@ using System;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public interface IAnalysisLocation
+public interface IHistoryStopData
 {
     public string RepositoryId { get; }
     public string? CommitId { get; }

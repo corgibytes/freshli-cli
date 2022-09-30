@@ -6,22 +6,22 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class DetectManifestsUsingAgentActivity : IApplicationActivity
 {
-    public DetectManifestsUsingAgentActivity(IAnalysisLocation analysisLocation, string agentExecutablePath)
+    public DetectManifestsUsingAgentActivity(IHistoryStopData historyStopData, string agentExecutablePath)
     {
-        AnalysisLocation = analysisLocation;
+        HistoryStopData = historyStopData;
         AgentExecutablePath = agentExecutablePath;
     }
 
-    public IAnalysisLocation AnalysisLocation { get; }
+    public IHistoryStopData HistoryStopData { get; }
     public string AgentExecutablePath { get; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
         var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
         var agentReader = agentManager.GetReader(AgentExecutablePath);
-        foreach (var manifestPath in agentReader.DetectManifests(AnalysisLocation.Path))
+        foreach (var manifestPath in agentReader.DetectManifests(HistoryStopData.Path))
         {
-            eventClient.Fire(new ManifestDetectedEvent(AnalysisLocation, AgentExecutablePath, manifestPath));
+            eventClient.Fire(new ManifestDetectedEvent(HistoryStopData, AgentExecutablePath, manifestPath));
         }
     }
 }

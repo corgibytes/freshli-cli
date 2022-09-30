@@ -8,22 +8,22 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class CheckoutHistoryActivity : IApplicationActivity
 {
-    public IAnalysisLocation AnalysisLocation { get; set; }
+    public IHistoryStopData HistoryStopData { get; set; }
 
-    public CheckoutHistoryActivity(IAnalysisLocation analysisLocation) => AnalysisLocation = analysisLocation;
+    public CheckoutHistoryActivity(IHistoryStopData historyStopData) => HistoryStopData = historyStopData;
 
     public void Handle(IApplicationEventEngine eventClient)
     {
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
-        if (AnalysisLocation.CommitId != null)
+        if (HistoryStopData.CommitId != null)
         {
             gitManager.CreateArchive(
-                AnalysisLocation.RepositoryId,
-                gitManager.ParseCommitId(AnalysisLocation.CommitId)
+                HistoryStopData.RepositoryId,
+                gitManager.ParseCommitId(HistoryStopData.CommitId)
             );
 
-            eventClient.Fire(new HistoryStopCheckedOutEvent { AnalysisLocation = AnalysisLocation });
+            eventClient.Fire(new HistoryStopCheckedOutEvent { HistoryStopData = HistoryStopData });
         }
     }
 }
