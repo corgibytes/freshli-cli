@@ -28,11 +28,13 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
         if (new DirectoryInfo(analysis.RepositoryUrl).Exists == false)
         {
             eventClient.Fire(new DirectoryDoesNotExistFailureEvent{ ErrorMessage = $"Directory does not exist at {analysis.RepositoryUrl}"});
+            return;
         }
 
         if (gitManager.GitRepositoryInitialized(analysis.RepositoryUrl, configuration) == false)
         {
             eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent{ ErrorMessage = $"Directory is not a git initialised directory at {analysis.RepositoryUrl}"});
+            return;
         }
 
         var cachedGitSourceId = new CachedGitSourceId(analysis.RepositoryUrl);
