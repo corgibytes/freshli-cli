@@ -3,19 +3,15 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text.Json;
 using System.Text.Json.Nodes;
 
 namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class ResultsApi : IResultsApi
 {
-    private IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
 
-    public ResultsApi(IConfiguration configuration)
-    {
-        _configuration = configuration;
-    }
+    public ResultsApi(IConfiguration configuration) => _configuration = configuration;
 
     public string GetResultsUrl(Guid analysisId) =>
         // Not the final implementation
@@ -27,12 +23,13 @@ public class ResultsApi : IResultsApi
 
         var response = client.PostAsync(
             _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request",
-            JsonContent.Create(new {
+            JsonContent.Create(new
+            {
                 name = "Freshli CLI User",
                 email = "info@freshli.io",
-                url = url
+                url
             },
-            new MediaTypeHeaderValue("application/json"))
+                new MediaTypeHeaderValue("application/json"))
         ).Result;
 
         if (response.StatusCode == HttpStatusCode.Created)

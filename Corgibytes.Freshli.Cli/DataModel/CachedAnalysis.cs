@@ -20,6 +20,7 @@ public class CachedAnalysis
         RevisionHistoryMode = revisionHistoryMode;
     }
 
+    // ReSharper disable once PropertyCanBeMadeInitOnly.Global
     [Required] public Guid Id { get; set; }
     [Required] public string RepositoryUrl { get; set; }
 

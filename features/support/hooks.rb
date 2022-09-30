@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Based on https://github.com/pact-foundation/pact-ruby/blob/a619deb7d6ea72989132f5fdb5aafa80ec63a92f/lib/pact/consumer/rspec.rb
 
 require 'pact/consumer'
