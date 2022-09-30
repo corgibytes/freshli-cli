@@ -1,3 +1,4 @@
+using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -14,16 +15,18 @@ public class CheckoutHistoryActivity : IApplicationActivity
 
     public void Handle(IApplicationEventEngine eventClient)
     {
+        if (HistoryStopData.CommitId == null)
+        {
+            throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
+        }
+
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
-        if (HistoryStopData.CommitId != null)
-        {
-            gitManager.CreateArchive(
-                HistoryStopData.RepositoryId,
-                gitManager.ParseCommitId(HistoryStopData.CommitId)
-            );
+        gitManager.CreateArchive(
+            HistoryStopData.RepositoryId,
+            gitManager.ParseCommitId(HistoryStopData.CommitId)
+        );
 
-            eventClient.Fire(new HistoryStopCheckedOutEvent { HistoryStopData = HistoryStopData });
-        }
+        eventClient.Fire(new HistoryStopCheckedOutEvent { HistoryStopData = HistoryStopData });
     }
 }
