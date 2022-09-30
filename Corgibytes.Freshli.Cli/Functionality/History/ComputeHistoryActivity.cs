@@ -51,7 +51,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         {
             var historyStopLocation =
                 new AnalysisLocation(configuration, AnalysisLocation.RepositoryId,
-                    historyIntervalStop.GitCommitIdentifier);
+                    historyIntervalStop.GitCommitIdentifier, historyIntervalStop.CommittedAt);
 
             eventClient.Fire(new HistoryIntervalStopFoundEvent(historyStopLocation));
         }
