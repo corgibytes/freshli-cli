@@ -69,7 +69,6 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.HistoryStopData != null &&
                         value.HistoryStopData.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
             )
@@ -78,7 +77,6 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.HistoryStopData != null &&
                         value.HistoryStopData.CommitId == "583d813db3e28b9b44a29db352e2f0e1b4c6e420"
                 )
             )
@@ -131,7 +129,6 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.HistoryStopData != null &&
                         value.HistoryStopData.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
             )
@@ -184,7 +181,6 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.HistoryStopData != null &&
                         value.HistoryStopData.Moment == new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero) &&
                         value.HistoryStopData.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
