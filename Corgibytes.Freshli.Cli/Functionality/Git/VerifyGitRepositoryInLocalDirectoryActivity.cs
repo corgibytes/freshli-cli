@@ -35,10 +35,16 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
             eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent{ ErrorMessage = $"Directory is not a git initialised directory at {analysis.RepositoryUrl}"});
         }
 
-        var analysisLocation = new AnalysisLocation(configuration, new Guid().ToString()) { LocalDirectory = analysis.RepositoryUrl};
-        var cachedGitSource = new CachedGitSource(
-            new CachedGitSourceId(analysis.RepositoryUrl).Id, analysis.RepositoryUrl, null, analysis.RepositoryUrl);
-        gitSourceRepository.Save(cachedGitSource);
+        var cachedGitSourceId = new CachedGitSourceId(analysis.RepositoryUrl);
+
+        var entry = cacheDb.RetrieveCachedGitSource(cachedGitSourceId);
+        if (entry == null)
+        {
+            var cachedGitSource = new CachedGitSource(cachedGitSourceId.Id, analysis.RepositoryUrl, null, analysis.RepositoryUrl);
+            gitSourceRepository.Save(cachedGitSource);
+        }
+
+        var analysisLocation = new AnalysisLocation(configuration, cachedGitSourceId.Id) { LocalDirectory = analysis.RepositoryUrl};
 
         eventClient.Fire(new GitRepositoryInLocalDirectoryVerifiedEvent{ AnalysisId = analysis.Id, AnalysisLocation = analysisLocation});
     }
