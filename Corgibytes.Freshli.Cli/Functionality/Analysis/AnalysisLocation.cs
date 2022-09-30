@@ -13,7 +13,7 @@ public class AnalysisLocation : IAnalysisLocation
         CommitId = commitId;
     }
 
-    public string? LocalDirectory { get; set; }
+    public string? LocalDirectory { get; init; }
 
     public string RepositoryId { get; }
     public string? CommitId { get; }
