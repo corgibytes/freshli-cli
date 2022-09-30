@@ -7,13 +7,13 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class ComputeLibYearActivity : IApplicationActivity
 {
-    public readonly IAnalysisLocation AnalysisLocation;
+    public readonly IHistoryStopData HistoryStopData;
     public readonly string PathToBoM;
 
-    public ComputeLibYearActivity(string pathToBoM, IAnalysisLocation analysisLocation)
+    public ComputeLibYearActivity(string pathToBoM, IHistoryStopData historyStopData)
     {
         PathToBoM = pathToBoM;
-        AnalysisLocation = analysisLocation;
+        HistoryStopData = historyStopData;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
@@ -23,7 +23,7 @@ public class ComputeLibYearActivity : IApplicationActivity
         eventClient.Fire(new LibYearComputedEvent
         {
             LibYearPackages = libYearPackages,
-            AnalysisLocation = AnalysisLocation
+            HistoryStopData = HistoryStopData
         });
     }
 }

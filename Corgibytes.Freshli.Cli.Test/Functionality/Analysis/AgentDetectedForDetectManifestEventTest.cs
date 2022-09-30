@@ -12,8 +12,8 @@ public class AgentDetectedForDetectManifestEventTest
     public void Handle()
     {
         const string agentExecutablePath = "/path/to/agent";
-        var analysisLocation = new Mock<IAnalysisLocation>();
-        var appEvent = new AgentDetectedForDetectManifestEvent(analysisLocation.Object, agentExecutablePath);
+        var historyStopData = new Mock<IHistoryStopData>();
+        var appEvent = new AgentDetectedForDetectManifestEvent(historyStopData.Object, agentExecutablePath);
 
         var activityEngine = new Mock<IApplicationActivityEngine>();
 
@@ -21,7 +21,7 @@ public class AgentDetectedForDetectManifestEventTest
 
         activityEngine.Verify(mock =>
             mock.Dispatch(It.Is<DetectManifestsUsingAgentActivity>(activity =>
-                activity.AnalysisLocation == analysisLocation.Object &&
+                activity.HistoryStopData == historyStopData.Object &&
                 activity.AgentExecutablePath == agentExecutablePath)));
     }
 }

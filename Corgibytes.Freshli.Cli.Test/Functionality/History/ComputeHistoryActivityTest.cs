@@ -40,11 +40,11 @@ public class ComputeHistoryActivityTest
             )
         };
         _computeHistory.Setup(mock => mock.ComputeWithHistoryInterval(
-                It.IsAny<IAnalysisLocation>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>())
+                It.IsAny<IHistoryStopData>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>())
             )
             .Returns(historyIntervalStops);
 
-        var analysisLocation = new Mock<IAnalysisLocation>();
+        var historyStopData = new Mock<IHistoryStopData>();
 
         var serviceProvider = new Mock<IServiceProvider>();
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
@@ -61,7 +61,7 @@ public class ComputeHistoryActivityTest
         // Act
         new ComputeHistoryActivity(
             new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
-            analysisLocation.Object
+            historyStopData.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -69,8 +69,8 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.AnalysisLocation != null &&
-                        value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                        value.HistoryStopData != null &&
+                        value.HistoryStopData.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
             )
         );
@@ -78,8 +78,8 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.AnalysisLocation != null &&
-                        value.AnalysisLocation.CommitId == "583d813db3e28b9b44a29db352e2f0e1b4c6e420"
+                        value.HistoryStopData != null &&
+                        value.HistoryStopData.CommitId == "583d813db3e28b9b44a29db352e2f0e1b4c6e420"
                 )
             )
         );
@@ -103,11 +103,11 @@ public class ComputeHistoryActivityTest
             )
         };
         _computeHistory.Setup(mock => mock.ComputeCommitHistory(
-                It.IsAny<IAnalysisLocation>())
+                It.IsAny<IHistoryStopData>())
             )
             .Returns(historyIntervalStops);
 
-        var analysisLocation = new Mock<IAnalysisLocation>();
+        var historyStopData = new Mock<IHistoryStopData>();
 
         var serviceProvider = new Mock<IServiceProvider>();
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
@@ -123,7 +123,7 @@ public class ComputeHistoryActivityTest
         // Act
         new ComputeHistoryActivity(
             new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
-            analysisLocation.Object
+            historyStopData.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -131,8 +131,8 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.AnalysisLocation != null &&
-                        value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                        value.HistoryStopData != null &&
+                        value.HistoryStopData.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
             )
         );
@@ -156,11 +156,11 @@ public class ComputeHistoryActivityTest
             )
         };
         _computeHistory.Setup(mock => mock.ComputeLatestOnly(
-                It.IsAny<IAnalysisLocation>())
+                It.IsAny<IHistoryStopData>())
             )
             .Returns(historyIntervalStops);
 
-        var analysisLocation = new Mock<IAnalysisLocation>();
+        var historyStopData = new Mock<IHistoryStopData>();
 
         var serviceProvider = new Mock<IServiceProvider>();
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
@@ -176,7 +176,7 @@ public class ComputeHistoryActivityTest
         // Act
         new ComputeHistoryActivity(
             new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
-            analysisLocation.Object
+            historyStopData.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -184,9 +184,9 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.AnalysisLocation != null &&
-                        value.AnalysisLocation.Moment == new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero) &&
-                        value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                        value.HistoryStopData != null &&
+                        value.HistoryStopData.Moment == new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero) &&
+                        value.HistoryStopData.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
             )
         );

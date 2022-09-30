@@ -29,16 +29,16 @@ public class GenerateBillOfMaterialsActivityTest
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         // Act
-        var analysisLocation = new Mock<IAnalysisLocation>();
-        analysisLocation.Setup(mock => mock.Path).Returns("/working/directory");
+        var historyStopData = new Mock<IHistoryStopData>();
+        historyStopData.Setup(mock => mock.Path).Returns("/working/directory");
         var activity =
-            new GenerateBillOfMaterialsActivity(agentExecutablePath, analysisLocation.Object, "/path/to/manifest");
+            new GenerateBillOfMaterialsActivity(agentExecutablePath, historyStopData.Object, "/path/to/manifest");
         activity.Handle(eventEngine.Object);
 
         // Assert
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<BillOfMaterialsGeneratedEvent>(appEvent =>
-                appEvent.AnalysisLocation == analysisLocation.Object &&
+                appEvent.HistoryStopData == historyStopData.Object &&
                 appEvent.PathToBillOfMaterials == "/path/to/bill-of-materials")));
     }
 }

@@ -4,15 +4,15 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AgentDetectedForDetectManifestEvent : IApplicationEvent
 {
-    public AgentDetectedForDetectManifestEvent(IAnalysisLocation analysisLocation, string agentExecutablePath)
+    public AgentDetectedForDetectManifestEvent(IHistoryStopData historyStopData, string agentExecutablePath)
     {
-        AnalysisLocation = analysisLocation;
+        HistoryStopData = historyStopData;
         AgentExecutablePath = agentExecutablePath;
     }
 
-    public IAnalysisLocation AnalysisLocation { get; }
+    public IHistoryStopData HistoryStopData { get; }
     public string AgentExecutablePath { get; }
 
     public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new DetectManifestsUsingAgentActivity(AnalysisLocation, AgentExecutablePath));
+        eventClient.Dispatch(new DetectManifestsUsingAgentActivity(HistoryStopData, AgentExecutablePath));
 }
