@@ -67,4 +67,20 @@ public class ConfigurationTest
 
         Assert.Equal("https://url/from/env", _configuration.FreshliWebApiBaseUrl);
     }
+
+    [Fact]
+    public void FreshliWebUrlSetRemovesTrailingSlash()
+    {
+        _configuration.FreshliWebApiBaseUrl = "https://url/with/a/trailing/slash/";
+
+        Assert.Equal("https://url/with/a/trailing/slash", _configuration.FreshliWebApiBaseUrl);
+    }
+
+    [Fact]
+    public void FreshliWebUrlRemovesTrailingSlashFromEnvVariable()
+    {
+        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName)).Returns("https://url/with/a/trailing/slash/");
+
+        Assert.Equal("https://url/with/a/trailing/slash", _configuration.FreshliWebApiBaseUrl);
+    }
 }
