@@ -53,8 +53,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
             gitSourceRepository.Save(cachedGitSource);
         }
 
-        var analysisLocation =
-            new AnalysisLocation(configuration, cachedGitSourceId.Id) { LocalDirectory = analysis.RepositoryUrl };
+        var analysisLocation = new AnalysisLocation(configuration, cachedGitSourceId.Id) { LocalDirectory = analysis.RepositoryUrl };
 
         eventClient.Fire(new GitRepositoryInLocalDirectoryVerifiedEvent
         {
