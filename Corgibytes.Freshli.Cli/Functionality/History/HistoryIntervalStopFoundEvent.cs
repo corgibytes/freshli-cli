@@ -5,14 +5,12 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class HistoryIntervalStopFoundEvent : IApplicationEvent
 {
-    public IAnalysisLocation? AnalysisLocation { get; init; }
+    public IAnalysisLocation AnalysisLocation { get; set; }
+
+    public HistoryIntervalStopFoundEvent(IAnalysisLocation analysisLocation) => AnalysisLocation = analysisLocation;
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
-        // TODO: What happens if this condition is not true? Should the analysis fail in that case?
-        if (AnalysisLocation is { CommitId: { } })
-        {
-            eventClient.Dispatch(new CheckoutHistoryActivity(AnalysisLocation));
-        }
+        eventClient.Dispatch(new CheckoutHistoryActivity(AnalysisLocation));
     }
 }
