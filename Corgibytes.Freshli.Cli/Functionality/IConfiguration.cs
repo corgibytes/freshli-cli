@@ -4,5 +4,5 @@ public interface IConfiguration
 {
     public string GitPath { get; set; }
     public string CacheDir { get; set; }
-    public string FreshliWebApiUrl { get; set; }
+    public string FreshliWebApiBaseUrl { get; set; }
 }
