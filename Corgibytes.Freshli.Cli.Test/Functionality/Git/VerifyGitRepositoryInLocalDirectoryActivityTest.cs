@@ -79,7 +79,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     [Fact]
     public void VerifyHandlerFiresFailureEventIfDirectoryIsNotGitInitialized()
     {
-        _gitManager.Setup(mock => mock.GitRepositoryInitialized(_repositoryLocation)).Returns(false);
+        _gitManager.Setup(mock => mock.GitRepositoryInitialized(_repositoryLocation, _configuration.Object)).Returns(false);
 
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity{ AnalysisId = _analysisId };
         activity.Handle(_eventEngine.Object);
