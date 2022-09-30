@@ -14,7 +14,7 @@ public class AnalysisStartedEvent : IApplicationEvent
     {
         if (Directory.Exists(RepositoryUrl))
         {
-            eventClient.Dispatch(new VerifyGitRepositoryInLocalDirectoryActivity{AnalysisId = AnalysisId});
+            eventClient.Dispatch(new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = AnalysisId });
         }
         else
         {

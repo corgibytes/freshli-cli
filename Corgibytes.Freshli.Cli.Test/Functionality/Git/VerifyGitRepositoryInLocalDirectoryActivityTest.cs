@@ -13,15 +13,15 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class VerifyGitRepositoryInLocalDirectoryActivityTest
 {
-    private readonly Mock<ICachedGitSourceRepository> _repository = new();
-    private readonly Mock<IApplicationEventEngine> _eventEngine = new();
-    private readonly Mock<IServiceProvider> _serviceProvider = new();
-    private readonly Mock<IConfiguration> _configuration = new();
-    private readonly Mock<ICacheManager> _cacheManager = new();
-    private readonly Mock<IGitManager> _gitManager = new();
-    private readonly Mock<ICacheDb> _cacheDb = new();
-    private readonly string _repositoryLocation;
     private readonly Guid _analysisId;
+    private readonly Mock<ICacheDb> _cacheDb = new();
+    private readonly Mock<ICacheManager> _cacheManager = new();
+    private readonly Mock<IConfiguration> _configuration = new();
+    private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    private readonly Mock<IGitManager> _gitManager = new();
+    private readonly Mock<ICachedGitSourceRepository> _repository = new();
+    private readonly string _repositoryLocation;
+    private readonly Mock<IServiceProvider> _serviceProvider = new();
 
     public VerifyGitRepositoryInLocalDirectoryActivityTest()
     {
@@ -68,7 +68,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     [Fact]
     public void VerifyHandlerFiresFailureEventIfDirectoryDoesNotExist()
     {
-        var activity = new VerifyGitRepositoryInLocalDirectoryActivity{ AnalysisId = _analysisId };
+        var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
         activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<DirectoryDoesNotExistFailureEvent>(value =>
@@ -79,9 +79,10 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     [Fact]
     public void VerifyHandlerFiresFailureEventIfDirectoryIsNotGitInitialized()
     {
-        _gitManager.Setup(mock => mock.GitRepositoryInitialized(_repositoryLocation, _configuration.Object)).Returns(false);
+        _gitManager.Setup(mock => mock.GitRepositoryInitialized(_repositoryLocation, _configuration.Object))
+            .Returns(false);
 
-        var activity = new VerifyGitRepositoryInLocalDirectoryActivity{ AnalysisId = _analysisId };
+        var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
         activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<DirectoryIsNotGitInitializedFailureEvent>(value =>

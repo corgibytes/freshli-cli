@@ -1,7 +1,5 @@
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Resources;

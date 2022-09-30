@@ -53,7 +53,8 @@ public class AnalysisLocationTest
         var repositoryId = Guid.NewGuid().ToString();
         var commitId = Guid.NewGuid().ToString();
 
-        var location = new AnalysisLocation(_configuration.Object, repositoryId, commitId) { LocalDirectory = localDirectory };
+        var location =
+            new AnalysisLocation(_configuration.Object, repositoryId, commitId) { LocalDirectory = localDirectory };
 
         var expectedPath = Path.Combine(_cacheDirectory, "histories", repositoryId, commitId);
         Assert.Equal(expectedPath, location.Path);

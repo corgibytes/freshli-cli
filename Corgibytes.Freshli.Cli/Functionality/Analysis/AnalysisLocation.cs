@@ -13,9 +13,10 @@ public class AnalysisLocation : IAnalysisLocation
         CommitId = commitId;
     }
 
+    public string? LocalDirectory { get; set; }
+
     public string RepositoryId { get; }
     public string? CommitId { get; }
-    public string? LocalDirectory { get; set; }
 
     public string Path
     {
@@ -23,7 +24,9 @@ public class AnalysisLocation : IAnalysisLocation
         {
             if (LocalDirectory != null)
             {
-                return CommitId == null ? LocalDirectory : System.IO.Path.Combine(_configuration.CacheDir, "histories", RepositoryId, CommitId);
+                return CommitId == null
+                    ? LocalDirectory
+                    : System.IO.Path.Combine(_configuration.CacheDir, "histories", RepositoryId, CommitId);
             }
 
             if (CommitId == null)

@@ -67,7 +67,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
         _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value =>
             value.AnalysisId == sampleGuid &&
             value.RepositoryUrl == "http://git.example.com"
-            )));
+        )));
     }
 
     [Fact]
