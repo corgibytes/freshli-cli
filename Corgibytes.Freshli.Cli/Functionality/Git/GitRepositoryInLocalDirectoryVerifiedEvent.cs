@@ -10,8 +10,6 @@ public class GitRepositoryInLocalDirectoryVerifiedEvent : IApplicationEvent
     public Guid AnalysisId { get; init; }
     public AnalysisLocation AnalysisLocation { get; init; }
 
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
+    public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new ComputeHistoryActivity(AnalysisId, AnalysisLocation));
-    }
 }

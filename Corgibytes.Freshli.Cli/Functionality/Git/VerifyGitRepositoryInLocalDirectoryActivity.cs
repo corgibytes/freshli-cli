@@ -27,13 +27,19 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
 
         if (new DirectoryInfo(analysis.RepositoryUrl).Exists == false)
         {
-            eventClient.Fire(new DirectoryDoesNotExistFailureEvent{ ErrorMessage = $"Directory does not exist at {analysis.RepositoryUrl}"});
+            eventClient.Fire(new DirectoryDoesNotExistFailureEvent
+            {
+                ErrorMessage = $"Directory does not exist at {analysis.RepositoryUrl}"
+            });
             return;
         }
 
         if (gitManager.GitRepositoryInitialized(analysis.RepositoryUrl, configuration) == false)
         {
-            eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent{ ErrorMessage = $"Directory is not a git initialised directory at {analysis.RepositoryUrl}"});
+            eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent
+            {
+                ErrorMessage = $"Directory is not a git initialised directory at {analysis.RepositoryUrl}"
+            });
             return;
         }
 
@@ -42,12 +48,18 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
         var entry = cacheDb.RetrieveCachedGitSource(cachedGitSourceId);
         if (entry == null)
         {
-            var cachedGitSource = new CachedGitSource(cachedGitSourceId.Id, analysis.RepositoryUrl, null, analysis.RepositoryUrl);
+            var cachedGitSource = new CachedGitSource(cachedGitSourceId.Id, analysis.RepositoryUrl, null,
+                analysis.RepositoryUrl);
             gitSourceRepository.Save(cachedGitSource);
         }
 
-        var analysisLocation = new AnalysisLocation(configuration, cachedGitSourceId.Id) { LocalDirectory = analysis.RepositoryUrl};
+        var analysisLocation =
+            new AnalysisLocation(configuration, cachedGitSourceId.Id) { LocalDirectory = analysis.RepositoryUrl };
 
-        eventClient.Fire(new GitRepositoryInLocalDirectoryVerifiedEvent{ AnalysisId = analysis.Id, AnalysisLocation = analysisLocation});
+        eventClient.Fire(new GitRepositoryInLocalDirectoryVerifiedEvent
+        {
+            AnalysisId = analysis.Id,
+            AnalysisLocation = analysisLocation
+        });
     }
 }

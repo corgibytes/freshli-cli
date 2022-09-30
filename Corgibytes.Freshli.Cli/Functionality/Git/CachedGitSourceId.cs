@@ -5,8 +5,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CachedGitSourceId
 {
-    public string Id { get; }
-
     public CachedGitSourceId(string url, string? branch = null)
     {
         using var sha256 = SHA256.Create();
@@ -19,5 +17,6 @@ public class CachedGitSourceId
 
         Id = stringBuilder.ToString();
     }
-}
 
+    public string Id { get; }
+}
