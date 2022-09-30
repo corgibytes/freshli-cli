@@ -5,50 +5,30 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class Configuration : IConfiguration
 {
-    [JsonProperty] private IEnvironment _environment;
-    [JsonProperty] private string? _gitPath;
-    [JsonProperty] private string? _cacheDir;
-    [JsonProperty] private string? _freshliWebApiBaseUrl;
-
     public const string FreshliWebApiBaseUrlEnvVarName = "FRESHLI_WEB_API_BASE_URL";
+    [JsonProperty] private string? _cacheDir;
+    [JsonProperty] private readonly IEnvironment _environment;
+    [JsonProperty] private string? _freshliWebApiBaseUrl;
+    [JsonProperty] private string? _gitPath;
 
-    public Configuration(IEnvironment environment)
-    {
-        _environment = environment;
-    }
+    public Configuration(IEnvironment environment) => _environment = environment;
 
     public string GitPath
     {
         get
         {
-            if (_gitPath != null)
-            {
-                return _gitPath;
-            }
-
-            return "git";
+            return _gitPath ?? "git";
         }
-        set
-        {
-            _gitPath = value;
-        }
+        set => _gitPath = value;
     }
 
     public string CacheDir
     {
         get
         {
-            if (_cacheDir != null)
-            {
-                return _cacheDir;
-            }
-
-            return Path.Combine(_environment.HomeDirectory, ".freshli");
+            return _cacheDir ?? Path.Combine(_environment.HomeDirectory, ".freshli");
         }
-        set
-        {
-            _cacheDir = value;
-        }
+        set => _cacheDir = value;
     }
 
     public string FreshliWebApiBaseUrl
@@ -61,34 +41,14 @@ public class Configuration : IConfiguration
                 return RemoveTrailingSlash(valueFromEnvironment);
             }
 
-            if (_freshliWebApiBaseUrl != null)
-            {
-                return _freshliWebApiBaseUrl;
-            }
-
-            return "https://freshli.io";
+            return _freshliWebApiBaseUrl ?? "https://freshli.io";
         }
 
-        set
-        {
-            if (value != null)
-            {
-                _freshliWebApiBaseUrl = RemoveTrailingSlash(value);
-            }
-            else
-            {
-                _freshliWebApiBaseUrl = value;
-            }
-        }
+        set { _freshliWebApiBaseUrl = value != null! ? RemoveTrailingSlash(value) : value; }
     }
 
     private static string RemoveTrailingSlash(string value)
     {
-        if (value.EndsWith("/"))
-        {
-            return value.Remove(value.Length - 1, 1);
-        }
-
-        return value;
+        return value.EndsWith("/") ? value.Remove(value.Length - 1, 1) : value;
     }
 }

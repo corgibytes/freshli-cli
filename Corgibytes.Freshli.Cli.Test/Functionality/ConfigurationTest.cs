@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Functionality;
 using Moq;
 using Xunit;
@@ -40,12 +39,14 @@ public class ConfigurationTest
     }
 
     [Fact]
-    public void FreshliWebApiBaseUrlHasADefaultValue() => Assert.Equal("https://freshli.io", _configuration.FreshliWebApiBaseUrl);
+    public void FreshliWebApiBaseUrlHasADefaultValue() =>
+        Assert.Equal("https://freshli.io", _configuration.FreshliWebApiBaseUrl);
 
     [Fact]
     public void FreshliWebApiBaseUrlCanBeSetViaEnvironmentVariable()
     {
-        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName)).Returns("https://some/other/url");
+        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName))
+            .Returns("https://some/other/url");
 
         Assert.Equal("https://some/other/url", _configuration.FreshliWebApiBaseUrl);
     }
@@ -61,7 +62,8 @@ public class ConfigurationTest
     [Fact]
     public void FreshliWebUrlCannotBeModifiedWhenEnvironmentVariableIsSet()
     {
-        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName)).Returns("https://url/from/env");
+        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName))
+            .Returns("https://url/from/env");
 
         _configuration.FreshliWebApiBaseUrl = "https://url/from/assignment";
 
@@ -79,7 +81,8 @@ public class ConfigurationTest
     [Fact]
     public void FreshliWebUrlRemovesTrailingSlashFromEnvVariable()
     {
-        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName)).Returns("https://url/with/a/trailing/slash/");
+        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName))
+            .Returns("https://url/with/a/trailing/slash/");
 
         Assert.Equal("https://url/with/a/trailing/slash", _configuration.FreshliWebApiBaseUrl);
     }

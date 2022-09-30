@@ -18,6 +18,7 @@ public class MockEnvironment : IEnvironment
         "/home/freshli-user/bin/agents" => new List<string?> { "freshli-agent-ruby" },
         _ => throw new ArgumentException("Unrecognized Directory")
     };
+
     public string? GetVariable(string variableName) => null;
 
     public IList<string> DirectoriesInSearchPath => new List<string>
