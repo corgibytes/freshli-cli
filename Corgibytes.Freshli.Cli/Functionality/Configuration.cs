@@ -6,8 +6,8 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 public class Configuration : IConfiguration
 {
     public const string FreshliWebApiBaseUrlEnvVarName = "FRESHLI_WEB_API_BASE_URL";
-    [JsonProperty] private string? _cacheDir;
     [JsonProperty] private readonly IEnvironment _environment;
+    [JsonProperty] private string? _cacheDir;
     [JsonProperty] private string? _freshliWebApiBaseUrl;
     [JsonProperty] private string? _gitPath;
 
@@ -15,19 +15,13 @@ public class Configuration : IConfiguration
 
     public string GitPath
     {
-        get
-        {
-            return _gitPath ?? "git";
-        }
+        get => _gitPath ?? "git";
         set => _gitPath = value;
     }
 
     public string CacheDir
     {
-        get
-        {
-            return _cacheDir ?? Path.Combine(_environment.HomeDirectory, ".freshli");
-        }
+        get => _cacheDir ?? Path.Combine(_environment.HomeDirectory, ".freshli");
         set => _cacheDir = value;
     }
 
@@ -44,11 +38,9 @@ public class Configuration : IConfiguration
             return _freshliWebApiBaseUrl ?? "https://freshli.io";
         }
 
-        set { _freshliWebApiBaseUrl = value != null! ? RemoveTrailingSlash(value) : value; }
+        set => _freshliWebApiBaseUrl = value != null! ? RemoveTrailingSlash(value) : value;
     }
 
-    private static string RemoveTrailingSlash(string value)
-    {
-        return value.EndsWith("/") ? value.Remove(value.Length - 1, 1) : value;
-    }
+    private static string RemoveTrailingSlash(string value) =>
+        value.EndsWith("/") ? value.Remove(value.Length - 1, 1) : value;
 }

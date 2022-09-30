@@ -7,7 +7,8 @@ public class HistoryStopData : IHistoryStopData
 {
     [JsonProperty] private readonly IConfiguration _configuration;
 
-    public HistoryStopData(IConfiguration configuration, string repositoryId, string? commitId = null, DateTimeOffset? moment = null)
+    public HistoryStopData(IConfiguration configuration, string repositoryId, string? commitId = null,
+        DateTimeOffset? moment = null)
     {
         _configuration = configuration;
         RepositoryId = repositoryId;
