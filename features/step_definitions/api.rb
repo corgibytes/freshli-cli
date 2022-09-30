@@ -31,7 +31,6 @@ Given('the Freshli Web API is available') do
       status: 201,
       headers: {
         'Content-Type' => 'application/json',
-        ## TODO: confirm that this url isn't supposed to include the host
         'Location' => '/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8'
       },
       body: {
