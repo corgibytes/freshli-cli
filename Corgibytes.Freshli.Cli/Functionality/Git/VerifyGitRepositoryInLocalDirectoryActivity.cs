@@ -30,7 +30,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
             eventClient.Fire(new DirectoryDoesNotExistFailureEvent{ ErrorMessage = $"Directory does not exist at {analysis.RepositoryUrl}"});
         }
 
-        if (gitManager.GitRepositoryInitialized(analysis.RepositoryUrl) == false)
+        if (gitManager.GitRepositoryInitialized(analysis.RepositoryUrl, configuration) == false)
         {
             eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent{ ErrorMessage = $"Directory is not a git initialised directory at {analysis.RepositoryUrl}"});
         }

@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
@@ -15,7 +16,18 @@ public class GitManager : IGitManager
         string repositoryId, GitCommitIdentifier gitCommitIdentifier) =>
         _gitArchive.CreateArchive(repositoryId, gitCommitIdentifier);
 
-    public bool GitRepositoryInitialized(string repositoryLocation) => throw new System.NotImplementedException();
+    public bool GitRepositoryInitialized(string repositoryLocation, IConfiguration configuration)
+    {
+        try
+        {
+            Invoke.Command(configuration.GitPath, "status", repositoryLocation);
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 
     public GitCommitIdentifier ParseCommitId(string commitId) => new(commitId);
 }
