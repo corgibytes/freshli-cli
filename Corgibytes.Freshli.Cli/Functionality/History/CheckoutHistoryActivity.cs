@@ -9,6 +9,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 public class CheckoutHistoryActivity : IApplicationActivity
 {
     public CheckoutHistoryActivity(IHistoryStopData historyStopData) => HistoryStopData = historyStopData;
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public IHistoryStopData HistoryStopData { get; set; }
 
     public void Handle(IApplicationEventEngine eventClient)
