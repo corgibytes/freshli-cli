@@ -40,22 +40,22 @@ public class ConfigurationTest
     }
 
     [Fact]
-    public void FreshliWebApiUrlHasADefaultValue() => Assert.Equal("https://freshli.io", _configuration.FreshliWebApiUrl);
+    public void FreshliWebApiBaseUrlHasADefaultValue() => Assert.Equal("https://freshli.io", _configuration.FreshliWebApiBaseUrl);
 
     [Fact]
-    public void FreshliWebApiUrlCanBeSetViaEnvironmentVariable()
+    public void FreshliWebApiBaseUrlCanBeSetViaEnvironmentVariable()
     {
         _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName)).Returns("https://some/other/url");
 
-        Assert.Equal("https://some/other/url", _configuration.FreshliWebApiUrl);
+        Assert.Equal("https://some/other/url", _configuration.FreshliWebApiBaseUrl);
     }
 
     [Fact]
-    public void FreshliWebApiUrlCanBeModified()
+    public void FreshliWebApiBaseUrlCanBeModified()
     {
-        _configuration.FreshliWebApiUrl = "https://yet/another/url";
+        _configuration.FreshliWebApiBaseUrl = "https://yet/another/url";
 
-        Assert.Equal("https://yet/another/url", _configuration.FreshliWebApiUrl);
+        Assert.Equal("https://yet/another/url", _configuration.FreshliWebApiBaseUrl);
     }
 
     [Fact]
@@ -63,8 +63,8 @@ public class ConfigurationTest
     {
         _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName)).Returns("https://url/from/env");
 
-        _configuration.FreshliWebApiUrl = "https://url/from/assignment";
+        _configuration.FreshliWebApiBaseUrl = "https://url/from/assignment";
 
-        Assert.Equal("https://url/from/env", _configuration.FreshliWebApiUrl);
+        Assert.Equal("https://url/from/env", _configuration.FreshliWebApiBaseUrl);
     }
 }
