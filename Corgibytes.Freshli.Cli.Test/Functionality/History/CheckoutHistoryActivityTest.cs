@@ -16,6 +16,7 @@ public class CheckoutHistoryActivityTest
     public void Handle()
     {
         var commitId = "abcdef1";
+        var dateTimeOffset = DateTimeOffset.Now;
         var gitExecutablePath = "/path/to/git";
         var repositoryId = Guid.NewGuid().ToString();
         var cacheDirectory = "/path/to/cache/dir";
@@ -24,7 +25,8 @@ public class CheckoutHistoryActivityTest
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(mock => mock.GitPath).Returns(gitExecutablePath);
         configuration.Setup(mock => mock.CacheDir).Returns(cacheDirectory);
-        var analysisLocation = new AnalysisLocation(configuration.Object, repositoryId, commitId);
+
+        var analysisLocation = new AnalysisLocation(configuration.Object, repositoryId, commitId, dateTimeOffset);
 
         var gitManager = new Mock<IGitManager>();
 
@@ -45,6 +47,9 @@ public class CheckoutHistoryActivityTest
 
         eventEngine.Verify(
             mock => mock.Fire(It.Is<HistoryStopCheckedOutEvent>(
-                appEvent => appEvent.AnalysisLocation.Path == archiveLocation)));
+                appEvent =>
+                    appEvent.AnalysisLocation.CommitId == commitId &&
+                    appEvent.AnalysisLocation.Moment == dateTimeOffset &&
+                    appEvent.AnalysisLocation.Path == archiveLocation)));
     }
 }
