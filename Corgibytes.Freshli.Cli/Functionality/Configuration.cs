@@ -58,7 +58,7 @@ public class Configuration : IConfiguration
             var valueFromEnvironment = _environment.GetVariable(FreshliWebApiBaseUrlEnvVarName);
             if (valueFromEnvironment != null)
             {
-                return valueFromEnvironment;
+                return RemoveTrailingSlash(valueFromEnvironment);
             }
 
             if (_freshliWebApiBaseUrl != null)
@@ -71,7 +71,24 @@ public class Configuration : IConfiguration
 
         set
         {
-            _freshliWebApiBaseUrl = value;
+            if (value != null)
+            {
+                _freshliWebApiBaseUrl = RemoveTrailingSlash(value);
+            }
+            else
+            {
+                _freshliWebApiBaseUrl = value;
+            }
         }
+    }
+
+    private static string RemoveTrailingSlash(string value)
+    {
+        if (value.EndsWith("/"))
+        {
+            return value.Remove(value.Length - 1, 1);
+        }
+
+        return value;
     }
 }
