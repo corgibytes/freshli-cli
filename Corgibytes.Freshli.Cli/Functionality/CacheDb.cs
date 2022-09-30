@@ -13,9 +13,16 @@ public class CacheDb : ICacheDb, IDisposable
 
     public Guid SaveAnalysis(CachedAnalysis analysis)
     {
-        var savedEntity = Db.CachedAnalyses.Add(analysis);
+        if (analysis.Id == Guid.Empty)
+        {
+            var savedEntity = Db.CachedAnalyses.Add(analysis);
+            Db.SaveChanges();
+            return savedEntity.Entity.Id;
+        }
+
+        Db.CachedAnalyses.Update(analysis);
         Db.SaveChanges();
-        return savedEntity.Entity.Id;
+        return analysis.Id;
     }
 
     public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);

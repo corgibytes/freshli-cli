@@ -10,7 +10,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 {
     public CloneGitRepositoryActivity(Guid cachedAnalysisId) => AnalysisId = cachedAnalysisId;
 
-    public Guid AnalysisId { get; }
+    public Guid AnalysisId { get; set; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
