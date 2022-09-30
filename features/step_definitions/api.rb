@@ -1,18 +1,21 @@
-Pact.service_consumer "Freshli" do
-  has_pact_with "Web API" do
+# frozen_string_literal: true
+
+Pact.service_consumer 'Freshli' do
+  has_pact_with 'Web API' do
     mock_service :freshli_web_api do
-      port 52077
+      port 52_077
     end
   end
 end
 
+# rubocop:disable Metrics/BlockLength
 Given('the Freshli Web API is available') do
   ENV['FRESHLI_WEB_API_BASE_URL'] = 'http://localhost:52077'
 
-  freshli_web_api.
-    given('a valid database').
-    upon_receiving('a request to create a new analysis').
-    with(
+  freshli_web_api
+    .given('a valid database')
+    .upon_receiving('a request to create a new analysis')
+    .with(
       headers: {
         'Content-Type' => 'application/json'
       },
@@ -23,8 +26,8 @@ Given('the Freshli Web API is available') do
         email: 'info@freshli.io',
         url: 'https://github.com/this-repository-does-not-exist'
       }
-    ).
-    will_respond_with(
+    )
+    .will_respond_with(
       status: 201,
       headers: {
         'Content-Type' => 'application/json',
@@ -38,5 +41,5 @@ Given('the Freshli Web API is available') do
         url: 'https://github.com/this-repository-does-not-exist'
       }
     )
-
 end
+# rubocop:enable Metrics/BlockLength

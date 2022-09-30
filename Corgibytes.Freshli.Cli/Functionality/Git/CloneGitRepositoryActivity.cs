@@ -10,6 +10,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 {
     public CloneGitRepositoryActivity(Guid cachedAnalysisId) => AnalysisId = cachedAnalysisId;
 
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public Guid AnalysisId { get; set; }
 
     public void Handle(IApplicationEventEngine eventClient)
