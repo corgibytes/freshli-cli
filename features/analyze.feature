@@ -11,8 +11,8 @@ Feature: analyze
     NOTE: These scenarios are not complete nor properly tested because at the time of writing not everything is done. So the entire chain can't be tested yet.
 
     Scenario: Run the analysis with default options.
-        Then the output should contain:
         When I run `freshli analyze https://github.com/questdb/questdb`
+        Then it should pass with:
         """
         https://freshli.app/
         """
