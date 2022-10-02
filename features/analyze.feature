@@ -11,8 +11,8 @@ Feature: analyze
     NOTE: These scenarios are not complete nor properly tested because at the time of writing not everything is done. So the entire chain can't be tested yet.
 
     Scenario: Run the analysis with default options.
-        When I run `freshli analyze https://github.com/corgibytes/freshli-fixture-ruby-nokotest`
         Then the output should contain:
+        When I run `freshli analyze https://github.com/questdb/questdb`
         """
         https://freshli.app/
         """
