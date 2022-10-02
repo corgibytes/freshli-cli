@@ -37,6 +37,8 @@ flowchart TD;
     StartAnalysisActivityBase --> InvalidHistoryIntervalEvent
     UnableToRestartAnalysisEvent -.-> FailureEvent
     UnableToRestartAnalysisEvent
+    UnhandledExceptionEvent -.-> FailureEvent
+    UnhandledExceptionEvent
     BillOfMaterialsGeneratedEvent --> ComputeLibYearActivity
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
     CacheDestroyedEvent
