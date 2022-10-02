@@ -12,7 +12,7 @@ public class ApiHistoryStopCreatedEvent : IApplicationEvent
 
     public ApiHistoryStopCreatedEvent(Guid cachedAnalysisId, IHistoryStopData historyStopData)
     {
-        CachedAnalysisId = CachedAnalysisId;
+        CachedAnalysisId = cachedAnalysisId;
         HistoryStopData = historyStopData;
     }
 
