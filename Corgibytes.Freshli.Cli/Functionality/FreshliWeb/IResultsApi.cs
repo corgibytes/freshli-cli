@@ -6,4 +6,5 @@ public interface IResultsApi
 {
     public string GetResultsUrl(Guid analysisId);
     public Guid CreateAnalysis(string url);
+    public void CreateHistoryPoint(Guid apiAnalysisId, DateTimeOffset moment);
 }
