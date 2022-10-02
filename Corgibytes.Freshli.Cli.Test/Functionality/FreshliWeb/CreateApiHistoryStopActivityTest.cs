@@ -56,6 +56,7 @@ public class CreateApiHistoryStopActivtyTest
 
         eventClient.Verify(mock =>
             mock.Fire(It.Is<ApiHistoryStopCreatedEvent>(value =>
+                value.CachedAnalysisId == cachedAnalysisId &&
                 value.HistoryStopData == historyStopData)));
 
     }
