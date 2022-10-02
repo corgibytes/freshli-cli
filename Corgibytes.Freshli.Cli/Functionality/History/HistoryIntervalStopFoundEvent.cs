@@ -13,10 +13,10 @@ public class HistoryIntervalStopFoundEvent : IApplicationEvent
         HistoryStopData = historyStopData;
     }
 
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public Guid CachedAnalysisId { get; set; }
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public IHistoryStopData HistoryStopData { get; set; }
-
 
     public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new CreateApiHistoryStopActivity(CachedAnalysisId, HistoryStopData));
