@@ -7,7 +7,9 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class ApiHistoryStopCreatedEvent : IApplicationEvent
 {
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public Guid CachedAnalysisId { get; set; }
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public IHistoryStopData HistoryStopData { get; set; }
 
     public ApiHistoryStopCreatedEvent(Guid cachedAnalysisId, IHistoryStopData historyStopData)
