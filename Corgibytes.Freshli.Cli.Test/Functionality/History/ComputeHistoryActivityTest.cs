@@ -170,9 +170,10 @@ public class ComputeHistoryActivityTest
 
         serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
 
+        var cachedAnalysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         // Act
         new ComputeHistoryActivity(
-            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
+            cachedAnalysisId,
             historyStopData.Object
         ).Handle(_eventEngine.Object);
 
@@ -181,6 +182,7 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
+                        value.CachedAnalysisId == cachedAnalysisId &&
                         value.HistoryStopData.Moment == new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero) &&
                         value.HistoryStopData.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
