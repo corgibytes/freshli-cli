@@ -40,4 +40,6 @@ public class ResultsApi : IResultsApi
 
         throw new InvalidOperationException($"Failed to create analysis with url: {url}.");
     }
+
+    public void CreateHistoryPoint(Guid apiAnalysisId, DateTimeOffset moment) => throw new NotImplementedException();
 }
