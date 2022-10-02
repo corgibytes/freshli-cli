@@ -56,7 +56,7 @@ flowchart TD;
     GitRepositoryClonedEvent --> ComputeHistoryActivity
     CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
-    HistoryIntervalStopFoundEvent --> CheckoutHistoryActivity
+    HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
     LibYearComputedEvent
     LoadServiceProviderActivity
