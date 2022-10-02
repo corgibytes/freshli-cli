@@ -53,7 +53,7 @@ public class ComputeHistoryActivity : IApplicationActivity
                 new HistoryStopData(configuration, HistoryStopData.RepositoryId,
                     historyIntervalStop.GitCommitIdentifier, historyIntervalStop.CommittedAt);
 
-            eventClient.Fire(new HistoryIntervalStopFoundEvent(historyStopData));
+            eventClient.Fire(new HistoryIntervalStopFoundEvent(AnalysisId, historyStopData));
         }
     }
 }
