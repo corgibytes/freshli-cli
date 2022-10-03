@@ -18,6 +18,7 @@ end
 Then('the {string} contains history interval stop at {string} {string}') do |database, commit_date, commit_id|
   database = resolve_path database
   db = SQLite3::Database.open database
-  r = db.execute("SELECT GitCommitDate, GitCommitId FROM CachedHistoryIntervalStops WHERE GitCommitId='#{commit_id}' AND GitCommitDate='#{commit_date}'")
-  expect(r[0]).to match([commit_date, commit_id])
+  r = db.execute("SELECT GitCommitDate, GitCommitId FROM CachedHistoryIntervalStops WHERE GitCommitId='#{commit_id}' AND GitCommitDate LIKE '#{commit_date}%'")
+  expect(r[0][0]).to match(/#{commit_date}/)
+  expect(r[0][1]).to match(commit_id)
 end
