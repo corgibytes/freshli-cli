@@ -13,19 +13,30 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 
 public class ComputeHistoryActivityTest
 {
+    private readonly Mock<IAnalysisLocation> _analysisLocation = new();
     private readonly Mock<ICacheDb> _cacheDb = new();
+    private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IComputeHistory> _computeHistory = new();
     private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    private readonly Mock<IServiceProvider> _serviceProvider = new();
+
+    public ComputeHistoryActivityTest()
+    {
+        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
+
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+    }
 
     [Fact]
     public void FiresHistoryIntervalStopFoundEvents()
     {
-        // Arrange
-        // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval,
+        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval,
             RevisionHistoryMode.AllRevisions);
-        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
 
         // Have interval stops available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -44,24 +55,11 @@ public class ComputeHistoryActivityTest
             )
             .Returns(historyIntervalStops);
 
-        var analysisLocation = new Mock<IAnalysisLocation>();
-
-        var serviceProvider = new Mock<IServiceProvider>();
-        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
-
-        var cacheManager = new Mock<ICacheManager>();
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
-
-        serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
-
-        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
-
-        serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
-
         // Act
+        var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
-            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
-            analysisLocation.Object
+            analysisId,
+            _analysisLocation.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -69,6 +67,7 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
+                        value.AnalysisId == analysisId &&
                         value.AnalysisLocation != null &&
                         value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
@@ -88,11 +87,8 @@ public class ComputeHistoryActivityTest
     [Fact]
     public void FiresHistoryIntervalStopFoundEventsForComputeHistory()
     {
-        // Arrange
-        // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
+        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
             RevisionHistoryMode.AllRevisions);
-        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
 
         // Have interval stops available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -107,23 +103,11 @@ public class ComputeHistoryActivityTest
             )
             .Returns(historyIntervalStops);
 
-        var analysisLocation = new Mock<IAnalysisLocation>();
-
-        var serviceProvider = new Mock<IServiceProvider>();
-        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
-
-        serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
-
-        var cacheManager = new Mock<ICacheManager>();
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
-        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
-
-        serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
-
         // Act
+        var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
-            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
-            analysisLocation.Object
+            analysisId,
+            _analysisLocation.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -131,6 +115,7 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
+                        value.AnalysisId == analysisId &&
                         value.AnalysisLocation != null &&
                         value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
@@ -141,11 +126,8 @@ public class ComputeHistoryActivityTest
     [Fact]
     public void FiresHistoryIntervalStopFoundEventsForLatestOnly()
     {
-        // Arrange
-        // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
+        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
             RevisionHistoryMode.OnlyLatestRevision);
-        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
 
         // Have interval stop available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -160,23 +142,11 @@ public class ComputeHistoryActivityTest
             )
             .Returns(historyIntervalStops);
 
-        var analysisLocation = new Mock<IAnalysisLocation>();
-
-        var serviceProvider = new Mock<IServiceProvider>();
-        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
-
-        serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
-
-        var cacheManager = new Mock<ICacheManager>();
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
-        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
-
-        serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
-
         // Act
+        var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
-            new Guid("cbc83480-ae47-46de-91df-60747ca8fb09"),
-            analysisLocation.Object
+            analysisId,
+            _analysisLocation.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -184,10 +154,21 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
+                        value.AnalysisId == analysisId &&
                         value.AnalysisLocation != null &&
                         value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
             )
         );
+    }
+
+    private void SetupCachedAnalysis(string repositoryUrl, string repositoryBranch, string historyInterval,
+        CommitHistory useCommitHistory, RevisionHistoryMode revisionHistoryMode)
+    {
+        // Arrange
+        // Have an analysis available
+        var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval, useCommitHistory,
+            revisionHistoryMode);
+        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
     }
 }
