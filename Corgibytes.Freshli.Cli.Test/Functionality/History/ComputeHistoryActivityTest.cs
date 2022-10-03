@@ -13,13 +13,13 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 
 public class ComputeHistoryActivityTest
 {
+    private readonly Mock<IAnalysisLocation> _analysisLocation = new();
     private readonly Mock<ICacheDb> _cacheDb = new();
+    private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IComputeHistory> _computeHistory = new();
     private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
-    private readonly Mock<IAnalysisLocation> _analysisLocation = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
-    private readonly Mock<ICacheManager> _cacheManager = new();
 
     public ComputeHistoryActivityTest()
     {
