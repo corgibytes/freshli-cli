@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Corgibytes.Freshli.Cli.Functionality;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
+// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class CachedAnalysis
 {
     public CachedAnalysis(string repositoryUrl, string? repositoryBranch, string historyInterval,
@@ -32,4 +34,9 @@ public class CachedAnalysis
     [Required] public string HistoryInterval { get; set; }
 
     public Guid? ApiAnalysisId { get; set; }
+    // ReSharper disable once CollectionNeverQueried.Global
+    // ReSharper disable once MemberCanBePrivate.Global
+    // ReSharper disable once UnusedAutoPropertyAccessor.Global
+    // ReSharper disable once UnusedMember.Global
+    public virtual List<CachedHistoryIntervalStop> HistoryIntervalStops { get; set; } = null!;
 }

@@ -31,13 +31,17 @@ public class GenerateBillOfMaterialsActivityTest
         // Act
         var historyStopData = new Mock<IHistoryStopData>();
         historyStopData.Setup(mock => mock.Path).Returns("/working/directory");
+
+        var analysisId = Guid.NewGuid();
         var activity =
-            new GenerateBillOfMaterialsActivity(agentExecutablePath, historyStopData.Object, "/path/to/manifest");
+            new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopData.Object,
+                "/path/to/manifest");
         activity.Handle(eventEngine.Object);
 
         // Assert
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<BillOfMaterialsGeneratedEvent>(appEvent =>
+                appEvent.AnalysisId == analysisId &&
                 appEvent.HistoryStopData == historyStopData.Object &&
                 appEvent.PathToBillOfMaterials == "/path/to/bill-of-materials")));
     }

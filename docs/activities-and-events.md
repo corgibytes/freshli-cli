@@ -17,6 +17,8 @@ flowchart TD;
     DetectAgentsActivity --> AgentsDetectedEvent
     AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
     AnalysisFailureLoggedEvent
+    AnalysisIdNotFoundEvent -.-> FailureEvent
+    AnalysisIdNotFoundEvent
     AnalysisStartedEvent --> CreateAnalysisApiActivity
     CacheWasNotPreparedEvent -.-> ErrorEvent
     CacheWasNotPreparedEvent --> PrepareCacheActivity
@@ -51,12 +53,14 @@ flowchart TD;
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
+    CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
     CloneGitRepositoryFailedEvent -.-> FailureEvent
     CloneGitRepositoryFailedEvent
     GitRepositoryClonedEvent --> ComputeHistoryActivity
     CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
+    ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
     HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity

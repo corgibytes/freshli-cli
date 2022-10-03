@@ -18,7 +18,7 @@ public class GitRepositoryClonedEventTest
         var gitPath = "test";
         var cacheDir = "example";
         var gitRepositoryId = "example";
-        var analysisId = new Guid();
+        var analysisId = Guid.NewGuid();
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(mock => mock.GitPath).Returns(gitPath);
         configuration.Setup(mock => mock.CacheDir).Returns(cacheDir);

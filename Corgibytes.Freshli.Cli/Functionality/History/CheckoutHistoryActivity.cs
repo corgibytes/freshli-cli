@@ -8,7 +8,15 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class CheckoutHistoryActivity : IApplicationActivity
 {
-    public CheckoutHistoryActivity(IHistoryStopData historyStopData) => HistoryStopData = historyStopData;
+    public CheckoutHistoryActivity(Guid analysisId, IHistoryStopData historyStopData)
+    {
+        AnalysisId = analysisId;
+        HistoryStopData = historyStopData;
+    }
+
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+    // ReSharper disable once MemberCanBePrivate.Global
+    public Guid AnalysisId { get; set; }
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public IHistoryStopData HistoryStopData { get; set; }
 
@@ -26,6 +34,10 @@ public class CheckoutHistoryActivity : IApplicationActivity
             gitManager.ParseCommitId(HistoryStopData.CommitId)
         );
 
-        eventClient.Fire(new HistoryStopCheckedOutEvent { HistoryStopData = HistoryStopData });
+        eventClient.Fire(new HistoryStopCheckedOutEvent
+        {
+            AnalysisId = AnalysisId,
+            HistoryStopData = HistoryStopData
+        });
     }
 }
