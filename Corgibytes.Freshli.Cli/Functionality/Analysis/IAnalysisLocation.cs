@@ -7,4 +7,5 @@ public interface IAnalysisLocation
     public string RepositoryId { get; }
     public string? CommitId { get; }
     public string Path { get; }
+    public int HistoryIntervalStopId { get; }
 }

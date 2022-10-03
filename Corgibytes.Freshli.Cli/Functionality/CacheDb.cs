@@ -20,9 +20,16 @@ public class CacheDb : ICacheDb, IDisposable
 
     public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
 
-    public void AddHistoryIntervalStop(CachedHistoryIntervalStop historyIntervalStop)
+    public int AddHistoryIntervalStop(CachedHistoryIntervalStop historyIntervalStop)
     {
-        Db.CachedHistoryIntervalStops.Add(historyIntervalStop);
+        var savedEntity = Db.CachedHistoryIntervalStops.Add(historyIntervalStop);
+        Db.SaveChanges();
+        return savedEntity.Entity.Id;
+    }
+
+    public void AddLibYear(CachedLibYear libYear)
+    {
+        Db.CachedLibYears.Add(libYear);
         Db.SaveChanges();
     }
 
