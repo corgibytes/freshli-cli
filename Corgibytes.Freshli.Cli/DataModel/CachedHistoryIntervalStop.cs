@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,4 +24,6 @@ public class CachedHistoryIntervalStop
 
     // ReSharper disable once UnusedMember.Global
     public virtual CachedAnalysis CachedAnalysis { get; set; } = null!;
+
+    public virtual List<CachedLibYear> LibYears { get; set; } = null!;
 }

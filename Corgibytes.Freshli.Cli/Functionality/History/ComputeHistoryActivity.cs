@@ -52,7 +52,7 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
-            cacheDb.AddHistoryIntervalStop(
+            var historyIntervalStopId = cacheDb.AddHistoryIntervalStop(
                 new CachedHistoryIntervalStop
                 {
                     CachedAnalysisId = AnalysisId,
@@ -62,7 +62,7 @@ public class ComputeHistoryActivity : IApplicationActivity
 
             var historyStopLocation =
                 new AnalysisLocation(configuration, AnalysisLocation.RepositoryId,
-                    historyIntervalStop.GitCommitIdentifier);
+                    historyIntervalStop.GitCommitIdentifier, historyIntervalStopId);
 
             eventClient.Fire(new HistoryIntervalStopFoundEvent
             {
