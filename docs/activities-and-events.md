@@ -15,11 +15,14 @@ flowchart TD;
     PrepareCacheActivity --> CachePreparedEvent
     AgentsDetectedEvent
     DetectAgentsActivity --> AgentsDetectedEvent
+    NoAgentsDetectedFailureEvent -.-> FailureEvent
+    NoAgentsDetectedFailureEvent
     AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
     AnalysisFailureLoggedEvent
     AnalysisStartedEvent --> CloneGitRepositoryActivity
     CacheWasNotPreparedEvent -.-> ErrorEvent
     CacheWasNotPreparedEvent --> PrepareCacheActivity
+    DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
     ErrorEvent
