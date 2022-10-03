@@ -53,7 +53,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         foreach (var historyIntervalStop in historyIntervalStops)
         {
             cacheDb.AddHistoryIntervalStop(
-                new CachedHistoryIntervalStop()
+                new CachedHistoryIntervalStop
                 {
                     CachedAnalysisId = AnalysisId,
                     GitCommitId = historyIntervalStop.GitCommitIdentifier,

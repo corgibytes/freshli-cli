@@ -6,10 +6,7 @@ public class GitManager : IGitManager
 {
     [JsonProperty] private readonly GitArchive _gitArchive;
 
-    public GitManager(GitArchive gitArchive)
-    {
-        _gitArchive = gitArchive;
-    }
+    public GitManager(GitArchive gitArchive) => _gitArchive = gitArchive;
 
     public string CreateArchive(
         string repositoryId, GitCommitIdentifier gitCommitIdentifier) =>
