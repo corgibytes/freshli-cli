@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     [DbContext(typeof(CacheContext))]
-    [Migration("20221003155059_AddCachedHistoryIntervalStops")]
+    [Migration("20221003163153_AddCachedHistoryIntervalStops")]
     partial class AddCachedHistoryIntervalStops
     {
         /// <inheritdoc />
