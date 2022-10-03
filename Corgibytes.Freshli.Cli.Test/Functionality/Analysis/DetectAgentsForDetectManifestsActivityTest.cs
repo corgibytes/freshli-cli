@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Moq;
@@ -48,5 +49,21 @@ public class DetectAgentsForDetectManifestsActivityTest
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
                 appEvent.AnalysisLocation == _analysisLocation.Object &&
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet")));
+    }
+
+    [Fact]
+    public void VerifyItDispatchesNoAgentsDetectedFailureEvent()
+    {
+        var agentPaths = new List<string>();
+
+        _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
+
+        var activity = new DetectAgentsForDetectManifestsActivity(_analysisLocation.Object);
+
+        activity.Handle(_eventEngine.Object);
+
+        _eventEngine.Verify(mock => mock.Fire(It.Is<NoAgentsDetectedFailureEvent>(
+            failEvent => failEvent.ErrorMessage == "Could not locate any agents"
+        )));
     }
 }
