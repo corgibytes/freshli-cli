@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
-[Table("CachedHistoryIntervalStops")]
 public class CachedHistoryIntervalStop
 {
     [Required] public int Id { get; set; }

@@ -19,7 +19,6 @@ public class CachedAnalysis
         HistoryInterval = historyInterval;
         UseCommitHistory = useCommitHistory;
         RevisionHistoryMode = revisionHistoryMode;
-        HistoryIntervalStops = new List<CachedHistoryIntervalStop>();
     }
 
     [Required] public Guid Id { get; set; }
@@ -33,5 +32,5 @@ public class CachedAnalysis
     [Required] public string HistoryInterval { get; set; }
 
     // ReSharper disable once CollectionNeverQueried.Global
-    [Required] public List<CachedHistoryIntervalStop> HistoryIntervalStops { get; set; }
+    public virtual List<CachedHistoryIntervalStop> HistoryIntervalStops { get; set; } = null!;
 }
