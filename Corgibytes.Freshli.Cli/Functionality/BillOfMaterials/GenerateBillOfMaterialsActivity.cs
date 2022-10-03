@@ -9,8 +9,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class GenerateBillOfMaterialsActivity : IApplicationActivity
 {
-    public readonly Guid AnalysisId;
     public readonly string AgentExecutablePath;
+    public readonly Guid AnalysisId;
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string ManifestPath;
 
