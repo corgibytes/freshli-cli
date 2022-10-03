@@ -7,17 +7,17 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class HistoryIntervalStopFoundEvent : IApplicationEvent
 {
-    public HistoryIntervalStopFoundEvent(Guid cachedAnalysisId, IHistoryStopData historyStopData)
+    public HistoryIntervalStopFoundEvent(Guid analysisId, IHistoryStopData historyStopData)
     {
-        CachedAnalysisId = cachedAnalysisId;
+        AnalysisId = analysisId;
         HistoryStopData = historyStopData;
     }
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public Guid CachedAnalysisId { get; set; }
+    public Guid AnalysisId { get; set; }
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public IHistoryStopData HistoryStopData { get; set; }
 
     public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new CreateApiHistoryStopActivity(CachedAnalysisId, HistoryStopData));
+        eventClient.Dispatch(new CreateApiHistoryStopActivity(AnalysisId, HistoryStopData));
 }

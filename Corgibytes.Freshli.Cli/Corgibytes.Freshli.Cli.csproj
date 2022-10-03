@@ -2,20 +2,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>Freshli</Title>
     <Description>Freshli analyzes repositories for historical metrics about a project's dependencies.</Description>
-    <PackageProjectUrl>https://github.com/corgibytes/freshli-cli</PackageProjectUrl>
-    <PackageLicenseFile>LICENSE</PackageLicenseFile>
-    <PackageIconUrl>icon.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/corgibytes/freshli-cli</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <PackageTags>corgibytes freshli static-code-analysis metrics dependencies dependency-metrics</PackageTags>
     <Authors>Corgibytes</Authors>
-    <PackAsTool>false</PackAsTool>
-    <ToolCommandName>freshli</ToolCommandName>
     <LangVersion>latestmajor</LangVersion>
-    <PackageId>Corgibytes.Freshli.Cli</PackageId>
     <Company>Corgibytes</Company>
     <AssemblyName>freshli</AssemblyName>
     <Nullable>enable</Nullable>
@@ -30,7 +22,7 @@
     <PackageReference Include="CycloneDX.Core" Version="5.2.2" />
     <PackageReference Include="Hangfire.Core" Version="1.7.31" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
-    <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="MediatR" Version="11.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-rc.1.22426.7">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
