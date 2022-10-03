@@ -6,15 +6,17 @@ public class AnalysisLocation : IAnalysisLocation
 {
     [JsonProperty] private readonly IConfiguration _configuration;
 
-    public AnalysisLocation(IConfiguration configuration, string repositoryId, string? commitId = null)
+    public AnalysisLocation(IConfiguration configuration, string repositoryId, string? commitId = null, int historyIntervalStopId = default)
     {
         _configuration = configuration;
         RepositoryId = repositoryId;
+        HistoryIntervalStopId = historyIntervalStopId;
         CommitId = commitId;
     }
 
     public string RepositoryId { get; }
     public string? CommitId { get; }
+    public int HistoryIntervalStopId { get; }
 
     public string Path
     {
