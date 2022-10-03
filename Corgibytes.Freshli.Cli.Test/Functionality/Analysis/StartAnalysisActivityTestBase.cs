@@ -48,14 +48,14 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     [Fact]
     public void HandlerFiresAnalysisStartedEventWhenCacheIsPresent()
     {
-        var sampleGuid = new Guid();
+        var analysisId = Guid.NewGuid();
 
         _configuration.Setup(mock => mock.CacheDir).Returns("example");
         _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
 
         _cacheManager.Setup(mock => mock.ValidateCacheDirectory()).Returns(true);
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
-        _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).Returns(sampleGuid);
+        _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).Returns(analysisId);
 
         Activity.Handle(_eventEngine.Object);
 
@@ -64,7 +64,8 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
             value.RepositoryBranch == "main" &&
             value.HistoryInterval == "1m"
         )));
-        _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value => value.AnalysisId == sampleGuid)));
+        _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value =>
+            value.AnalysisId == analysisId)));
     }
 
     [Fact]

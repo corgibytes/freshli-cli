@@ -25,17 +25,17 @@ public class GitArchive
 
     public string CreateArchive(string repositoryId, GitCommitIdentifier gitCommitIdentifier)
     {
-        var gitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId);
+        var cachedGitSource = _cachedGitSourceRepository.FindOneByHash(repositoryId);
 
-        var gitSourceTarget = new DirectoryInfo(Path.Combine(_configuration.CacheDir, "histories", gitSource.Id,
+        var gitSourceTarget = new DirectoryInfo(Path.Combine(_configuration.CacheDir, "histories", cachedGitSource.Id,
             gitCommitIdentifier.ToString()));
 
         Task<string>? createArchiveTask = null;
         lock (s_gitIdsAndSourceTargetsLock)
         {
-            if (s_gitIdsAndSourceTargets.ContainsKey(gitSource.Id))
+            if (s_gitIdsAndSourceTargets.ContainsKey(gitCommitIdentifier.ToString()))
             {
-                createArchiveTask = s_gitIdsAndSourceTargets[gitSource.Id];
+                createArchiveTask = s_gitIdsAndSourceTargets[gitCommitIdentifier.ToString()];
             }
         }
 
@@ -51,10 +51,10 @@ public class GitArchive
                 return gitSourceTarget.FullName;
             }
 
-            s_gitIdsAndSourceTargets.Add(gitSource.Id, new Task<string>(() =>
-                CreateArchiveTask(gitCommitIdentifier, gitSourceTarget, gitSource)));
+            s_gitIdsAndSourceTargets.Add(gitCommitIdentifier.ToString(), new Task<string>(() =>
+                CreateArchiveTask(gitCommitIdentifier, gitSourceTarget, cachedGitSource)));
 
-            createArchiveTask = s_gitIdsAndSourceTargets[gitSource.Id];
+            createArchiveTask = s_gitIdsAndSourceTargets[gitCommitIdentifier.ToString()];
             createArchiveTask.Start();
         }
 
