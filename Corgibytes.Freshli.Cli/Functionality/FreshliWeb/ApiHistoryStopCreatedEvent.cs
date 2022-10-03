@@ -20,6 +20,6 @@ public class ApiHistoryStopCreatedEvent : IApplicationEvent
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
-        eventClient.Dispatch(new CheckoutHistoryActivity(HistoryStopData));
+        eventClient.Dispatch(new CheckoutHistoryActivity(CachedAnalysisId, HistoryStopData));
     }
 }

@@ -30,7 +30,8 @@ public class CheckoutHistoryActivityTest
 
         var gitManager = new Mock<IGitManager>();
 
-        var activity = new CheckoutHistoryActivity(historyStopData);
+        var analysisId = Guid.NewGuid();
+        var activity = new CheckoutHistoryActivity(analysisId, historyStopData);
 
         var serviceProvider = new Mock<IServiceProvider>();
         var eventEngine = new Mock<IApplicationEventEngine>();
@@ -46,10 +47,9 @@ public class CheckoutHistoryActivityTest
         activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(
-            mock => mock.Fire(It.Is<HistoryStopCheckedOutEvent>(
-                appEvent =>
-                    appEvent.HistoryStopData.CommitId == commitId &&
-                    appEvent.HistoryStopData.Moment == dateTimeOffset &&
-                    appEvent.HistoryStopData.Path == archiveLocation)));
+            mock => mock.Fire(It.Is<HistoryStopCheckedOutEvent>(appEvent =>
+                appEvent.AnalysisId == analysisId &&
+                appEvent.HistoryStopData.Moment == dateTimeOffset &&
+                appEvent.HistoryStopData.Path == archiveLocation)));
     }
 }
