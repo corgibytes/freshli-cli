@@ -40,6 +40,9 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.Property<int>("UseCommitHistory")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("RevisionHistoryMode")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Id")

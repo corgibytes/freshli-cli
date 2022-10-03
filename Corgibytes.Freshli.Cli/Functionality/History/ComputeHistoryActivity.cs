@@ -52,8 +52,13 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
-            cacheDb.AddHistoryIntervalStop(AnalysisId,
-                new CachedHistoryIntervalStop(historyIntervalStop.GitCommitIdentifier, historyIntervalStop.CommittedAt.ToString("s")));
+            cacheDb.AddHistoryIntervalStop(
+                new CachedHistoryIntervalStop()
+                {
+                    CachedAnalysisId = AnalysisId,
+                    GitCommitId = historyIntervalStop.GitCommitIdentifier,
+                    GitCommitDate = historyIntervalStop.CommittedAt
+                });
 
             var historyStopLocation =
                 new AnalysisLocation(configuration, AnalysisLocation.RepositoryId,

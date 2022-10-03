@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -12,18 +13,13 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 [Table("CachedHistoryIntervalStops")]
 public class CachedHistoryIntervalStop
 {
-    public CachedHistoryIntervalStop(string gitCommitId, string gitCommitDate)
-    {
-        GitCommitId = gitCommitId;
-        GitCommitDate = gitCommitDate;
-    }
-
     [Required] public int Id { get; set; }
 
-    [Required] public string GitCommitDate { get; set; }
+    [Required] public DateTimeOffset GitCommitDate { get; set; }
 
-    [Required] public string GitCommitId { get; set; }
+    [Required] public string GitCommitId { get; set; } = null!;
 
-    // ReSharper disable once UnusedMember.Global
-    [Required] public CachedAnalysis CachedAnalysis { get; set; }
+    [Required] public Guid CachedAnalysisId { get; set; }
+
+    public virtual CachedAnalysis CachedAnalysis { get; set; } = null!;
 }
