@@ -11,6 +11,8 @@ Feature: analyze
     NOTE: These scenarios are not complete the Web API is not implemented yet. So the results can't be verified yet.
 
     Scenario: Run the analysis with default options against a realistic project.
+        Given the Freshli Web API is available
+        And a directory named "~/.freshli" does not exist
         When I run `freshli analyze https://github.com/questdb/questdb`
         Then it should pass with:
         """
@@ -18,7 +20,8 @@ Feature: analyze
         """
 
     Scenario: Run the analysis with default options against a fixture project.
-        Given a directory named "~/.freshli" does not exist
+        Given the Freshli Web API is available
+        And a directory named "~/.freshli" does not exist
         When I run `freshli analyze https://github.com/corgibytes/freshli-fixture-java-test`
         Then the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -38,7 +41,8 @@ Feature: analyze
         """
 
     Scenario: Run the analysis with specific git installation.
-        Given a directory named "~/.freshli" does not exist
+        Given the Freshli Web API is available
+        And a directory named "~/.freshli" does not exist
         When I run `freshli analyze --git-path=git https://github.com/corgibytes/freshli-fixture-java-test`
         Then the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -53,7 +57,8 @@ Feature: analyze
         """
 
     Scenario: Run the analysis for a specific branch.
-        Given a directory named "~/.freshli" does not exist
+        Given the Freshli Web API is available
+        And a directory named "~/.freshli" does not exist
         When I run `freshli analyze --branch=test_branch https://github.com/corgibytes/freshli-fixture-java-test`
         Then the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -69,6 +74,8 @@ Feature: analyze
         """
 
     Scenario: Run the analysis for only the latest point changed.
+        Given the Freshli Web API is available
+        And a directory named "~/.freshli" does not exist
         When I run `freshli analyze --latest-only https://github.com/corgibytes/freshli-fixture-java-test`
         Then the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -84,7 +91,8 @@ Feature: analyze
         """
 
     Scenario: Run the analysis for every point in time when the files have changed.
-        Given a directory named "~/.freshli" does not exist
+        Given the Freshli Web API is available
+        And a directory named "~/.freshli" does not exist
         When I run `freshli analyze --commit-history https://github.com/corgibytes/freshli-fixture-java-test`
         Then the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -102,7 +110,8 @@ Feature: analyze
         """
 
     Scenario: Run the analysis at a specific interval. In the example: take the last point in time per three months that files have changed.
-        Given a directory named "~/.freshli" does not exist
+        Given the Freshli Web API is available
+        And a directory named "~/.freshli" does not exist
         When I run `freshli analyze --history-interval=1y https://github.com/corgibytes/freshli-fixture-java-test`
         Then the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -121,7 +130,8 @@ Feature: analyze
         """
 
     Scenario: Run the analysis, start with 6 workers.
-        Given a directory named "~/.freshli" does not exist
+        Given the Freshli Web API is available
+        And a directory named "~/.freshli" does not exist
         When I run `freshli analyze --workers=6 https://github.com/corgibytes/freshli-fixture-java-test`
         Then the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
