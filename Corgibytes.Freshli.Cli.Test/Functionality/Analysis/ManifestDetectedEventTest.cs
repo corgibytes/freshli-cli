@@ -1,3 +1,4 @@
+using System;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
@@ -21,10 +22,13 @@ public class ManifestDetectedEventTest
         var engine = new Mock<IApplicationActivityEngine>();
 
         const string agentExecutablePath = "/path/to/agent";
-        var manifestEvent = new ManifestDetectedEvent(analysisLocation, agentExecutablePath, manifestPath);
+        var analysisId = Guid.NewGuid();
+        var manifestEvent =
+            new ManifestDetectedEvent(analysisId, analysisLocation, agentExecutablePath, manifestPath);
         manifestEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<GenerateBillOfMaterialsActivity>(value =>
+            value.AnalysisId == analysisId &&
             value.AnalysisLocation == analysisLocation &&
             value.ManifestPath == manifestPath &&
             value.AgentExecutablePath == agentExecutablePath
