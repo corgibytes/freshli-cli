@@ -19,6 +19,11 @@
           "name": "Freshli CLI User",
           "email": "info@freshli.io",
           "url": "https://github.com/this-repository-does-not-exist"
+        },
+        "matchingRules": {
+          "$.body.url": {
+            "match": "type"
+          }
         }
       },
       "response": {
