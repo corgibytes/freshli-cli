@@ -24,7 +24,7 @@ Given('the Freshli Web API is available') do
       body: {
         name: 'Freshli CLI User',
         email: 'info@freshli.io',
-        url: 'https://github.com/this-repository-does-not-exist'
+        url: Pact.like('https://github.com/this-repository-does-not-exist')
       }
     )
     .will_respond_with(
