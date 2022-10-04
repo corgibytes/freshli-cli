@@ -17,9 +17,9 @@ flowchart TD;
     DetectAgentsActivity --> AgentsDetectedEvent
     AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
     AnalysisFailureLoggedEvent
-    AnalysisStartedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisIdNotFoundEvent -.-> FailureEvent
     AnalysisIdNotFoundEvent
+    AnalysisStartedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisStartedEvent --> CloneGitRepositoryActivity
     CacheWasNotPreparedEvent -.-> ErrorEvent
     CacheWasNotPreparedEvent --> PrepareCacheActivity
