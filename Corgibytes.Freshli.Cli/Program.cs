@@ -3,11 +3,13 @@ using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.IoC;
+using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -28,6 +30,8 @@ public class Program
         "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
 
     private static ILogger<Program>? Logger { get; set; }
+    private static IHostedService? HangfireBackgroundService { get; set; }
+    private static BackgroundJobServerOptions? HangfireOptions { get; set; }
     private static IConfiguration Configuration { get; } = new Configuration(new Environment());
 
     public static async Task<int> Main(params string[] args)
@@ -74,6 +78,8 @@ public class Program
             {
                 new FreshliServiceBuilder(services, Configuration).Register();
                 Logger = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
+                HangfireBackgroundService = services.BuildServiceProvider().GetRequiredService<IHostedService>();
+                HangfireOptions = services.BuildServiceProvider().GetRequiredService<BackgroundJobServerOptions>();
             });
 
 
@@ -91,6 +97,19 @@ public class Program
                 await next(context);
             })
             .AddMiddleware(async (context, next) => { await LogExecution(context, next); })
+            .AddMiddleware(async (context, next) =>
+            {
+                var workerCount = context.ParseResult.GetOptionValueByName<int>("workers");
+                HangfireBackgroundService?.StopAsync(CancellationToken.None);
+                if (HangfireOptions != null && workerCount > 0)
+                {
+                    HangfireOptions.WorkerCount = workerCount;
+                }
+
+                HangfireBackgroundService?.StartAsync(new CancellationToken());
+
+                await next(context);
+            })
             .UseExceptionHandler()
             .UseHelp();
 
