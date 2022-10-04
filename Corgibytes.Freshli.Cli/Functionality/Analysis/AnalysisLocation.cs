@@ -22,15 +22,13 @@ public class AnalysisLocation : IAnalysisLocation
     {
         get
         {
-            if (LocalDirectory != null)
-            {
-                return CommitId == null
-                    ? LocalDirectory
-                    : System.IO.Path.Combine(_configuration.CacheDir, "histories", RepositoryId, CommitId);
-            }
-
             if (CommitId == null)
             {
+                if (LocalDirectory != null)
+                {
+                    return LocalDirectory;
+                }
+
                 return System.IO.Path.Combine(_configuration.CacheDir, "repositories", RepositoryId);
             }
 
