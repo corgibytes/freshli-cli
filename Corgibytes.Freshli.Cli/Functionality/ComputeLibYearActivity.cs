@@ -1,3 +1,4 @@
+using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
@@ -7,11 +8,13 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class ComputeLibYearActivity : IApplicationActivity
 {
+    public readonly Guid AnalysisId;
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string PathToBoM;
 
-    public ComputeLibYearActivity(string pathToBoM, IAnalysisLocation analysisLocation)
+    public ComputeLibYearActivity(Guid analysisId, string pathToBoM, IAnalysisLocation analysisLocation)
     {
+        AnalysisId = analysisId;
         PathToBoM = pathToBoM;
         AnalysisLocation = analysisLocation;
     }

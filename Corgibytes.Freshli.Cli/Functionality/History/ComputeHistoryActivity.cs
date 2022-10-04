@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -25,22 +26,24 @@ public class ComputeHistoryActivity : IApplicationActivity
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
-        var analysis = cacheDb.RetrieveAnalysis(AnalysisId);
-        if (analysis == null)
+        var cachedAnalysis = cacheDb.RetrieveAnalysis(AnalysisId);
+
+        if (cachedAnalysis == null)
         {
+            eventClient.Fire(new AnalysisIdNotFoundEvent());
             return;
         }
 
         IEnumerable<HistoryIntervalStop> historyIntervalStops;
 
-        if (analysis.RevisionHistoryMode.Equals(RevisionHistoryMode.OnlyLatestRevision))
+        if (cachedAnalysis.RevisionHistoryMode.Equals(RevisionHistoryMode.OnlyLatestRevision))
         {
             historyIntervalStops = computeHistoryService.ComputeLatestOnly(AnalysisLocation);
         }
-        else if (analysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
+        else if (cachedAnalysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
         {
             historyIntervalStops = computeHistoryService
-                .ComputeWithHistoryInterval(AnalysisLocation, analysis.HistoryInterval, DateTimeOffset.Now);
+                .ComputeWithHistoryInterval(AnalysisLocation, cachedAnalysis.HistoryInterval, DateTimeOffset.Now);
         }
         else
         {
@@ -49,11 +52,23 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
+            cacheDb.AddHistoryIntervalStop(
+                new CachedHistoryIntervalStop
+                {
+                    CachedAnalysisId = AnalysisId,
+                    GitCommitId = historyIntervalStop.GitCommitIdentifier,
+                    GitCommitDate = historyIntervalStop.CommittedAt
+                });
+
             var historyStopLocation =
                 new AnalysisLocation(configuration, AnalysisLocation.RepositoryId,
                     historyIntervalStop.GitCommitIdentifier);
 
-            eventClient.Fire(new HistoryIntervalStopFoundEvent { AnalysisLocation = historyStopLocation });
+            eventClient.Fire(new HistoryIntervalStopFoundEvent
+            {
+                AnalysisId = AnalysisId,
+                AnalysisLocation = historyStopLocation
+            });
         }
     }
 }

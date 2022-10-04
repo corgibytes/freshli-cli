@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     [DbContext(typeof(CacheContext))]
-    [Migration("20220922144650_AddLatestOnlyOptionToCachedAnalysis")]
-    partial class AddLatestOnlyOptionToCachedAnalysis
+    [Migration("20221003163153_AddCachedHistoryIntervalStops")]
+    partial class AddCachedHistoryIntervalStops
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,10 +37,10 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("UseCommitHistory")
+                    b.Property<int>("RevisionHistoryMode")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("RevisionHistoryMode")
+                    b.Property<int>("UseCommitHistory")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -75,6 +75,32 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.ToTable("CachedGitSources");
                 });
 
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryIntervalStop", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("CachedAnalysisId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("GitCommitDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("GitCommitId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CachedAnalysisId");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.ToTable("CachedHistoryIntervalStops");
+                });
+
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedProperty", b =>
                 {
                     b.Property<int>("Id")
@@ -95,6 +121,22 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .IsUnique();
 
                     b.ToTable("CachedProperties");
+                });
+
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryIntervalStop", b =>
+                {
+                    b.HasOne("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", "CachedAnalysis")
+                        .WithMany("HistoryIntervalStops")
+                        .HasForeignKey("CachedAnalysisId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CachedAnalysis");
+                });
+
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", b =>
+                {
+                    b.Navigation("HistoryIntervalStops");
                 });
 #pragma warning restore 612, 618
         }
