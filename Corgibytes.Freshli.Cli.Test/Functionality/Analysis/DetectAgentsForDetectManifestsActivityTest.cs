@@ -36,17 +36,20 @@ public class DetectAgentsForDetectManifestsActivityTest
 
         _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
-        var activity = new DetectAgentsForDetectManifestsActivity(_analysisLocation.Object);
+        var analysisId = Guid.NewGuid();
+        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, _analysisLocation.Object);
 
         activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
+                appEvent.AnalysisId == analysisId &&
                 appEvent.AnalysisLocation == _analysisLocation.Object &&
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-java")));
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
+                appEvent.AnalysisId == analysisId &&
                 appEvent.AnalysisLocation == _analysisLocation.Object &&
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet")));
     }
@@ -58,7 +61,8 @@ public class DetectAgentsForDetectManifestsActivityTest
 
         _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
-        var activity = new DetectAgentsForDetectManifestsActivity(_analysisLocation.Object);
+        var analysisId = Guid.NewGuid();
+        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, _analysisLocation.Object);
 
         activity.Handle(_eventEngine.Object);
 
