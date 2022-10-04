@@ -13,7 +13,7 @@ public class GitManager : IGitManager
         string repositoryId, GitCommitIdentifier gitCommitIdentifier) =>
         _gitArchive.CreateArchive(repositoryId, gitCommitIdentifier);
 
-    public bool GitRepositoryInitialized(string repositoryLocation, IConfiguration configuration)
+    public bool IsGitRepositoryInitialized(string repositoryLocation, IConfiguration configuration)
     {
         try
         {
