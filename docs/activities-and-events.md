@@ -19,6 +19,8 @@ flowchart TD;
     NoAgentsDetectedFailureEvent
     AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
     AnalysisFailureLoggedEvent
+    AnalysisIdNotFoundEvent -.-> FailureEvent
+    AnalysisIdNotFoundEvent
     AnalysisStartedEvent --> CloneGitRepositoryActivity
     CacheWasNotPreparedEvent -.-> ErrorEvent
     CacheWasNotPreparedEvent --> PrepareCacheActivity
@@ -48,12 +50,14 @@ flowchart TD;
     DestroyCacheActivity --> CacheDestroyFailedEvent
     CachePreparedEvent --> RestartAnalysisActivity
     ComputeLibYearActivity --> LibYearComputedEvent
+    CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
     CloneGitRepositoryFailedEvent -.-> FailureEvent
     CloneGitRepositoryFailedEvent
     GitRepositoryClonedEvent --> ComputeHistoryActivity
     CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
+    ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
     HistoryIntervalStopFoundEvent --> CheckoutHistoryActivity
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
