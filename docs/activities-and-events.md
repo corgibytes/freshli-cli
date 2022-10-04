@@ -21,6 +21,7 @@ flowchart TD;
     AnalysisFailureLoggedEvent
     AnalysisIdNotFoundEvent -.-> FailureEvent
     AnalysisIdNotFoundEvent
+    AnalysisStartedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisStartedEvent --> CloneGitRepositoryActivity
     CacheWasNotPreparedEvent -.-> ErrorEvent
     CacheWasNotPreparedEvent --> PrepareCacheActivity
@@ -55,7 +56,15 @@ flowchart TD;
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
     CloneGitRepositoryFailedEvent -.-> FailureEvent
     CloneGitRepositoryFailedEvent
+    DirectoryDoesNotExistFailureEvent -.-> FailureEvent
+    DirectoryDoesNotExistFailureEvent
+    DirectoryIsNotGitInitializedFailureEvent -.-> FailureEvent
+    DirectoryIsNotGitInitializedFailureEvent
     GitRepositoryClonedEvent --> ComputeHistoryActivity
+    GitRepositoryInLocalDirectoryVerifiedEvent --> ComputeHistoryActivity
+    VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryDoesNotExistFailureEvent
+    VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryIsNotGitInitializedFailureEvent
+    VerifyGitRepositoryInLocalDirectoryActivity --> GitRepositoryInLocalDirectoryVerifiedEvent
     CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
     ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
