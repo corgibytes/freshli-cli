@@ -22,6 +22,14 @@ public class MainCommand : RootCommand
         var logFileOption = new Option<string>("--logfile", "file for logs instead of logging to console");
         AddOption(logFileOption);
 
+        var workers = new Option<int>("--workers",
+            "The number of worker processes that should be running at any given time. This defaults to twice the number of CPU cores.")
+        {
+            AllowMultipleArgumentsPerToken = false,
+            Arity = ArgumentArity.ZeroOrOne
+        };
+        AddOption(workers);
+
         // Add commands here!
         Add(new ScanCommand());
         Add(new CacheCommand());

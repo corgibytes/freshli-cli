@@ -58,14 +58,6 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
         });
         AddOption(historyInterval);
 
-        var workers = new Option<int>("--workers",
-            "The number of worker processes that should be running at any given time. This defaults to twice the number of CPU cores.")
-        {
-            AllowMultipleArgumentsPerToken = false,
-            Arity = ArgumentArity.ZeroOrOne
-        };
-        AddOption(workers);
-
         var latestOnly = new Option<bool>("--latest-only",
             "When this is set, analyze will not walk back in history, and overwrites the options --commit-history, --history-interval")
         {
