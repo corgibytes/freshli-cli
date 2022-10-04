@@ -29,14 +29,19 @@ public class ListCommits : IListCommits
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();
         var command = CliWrap.Cli.Wrap(_configuration.GitPath).WithArguments(
-                args => args
-                    .Add("log")
-                    // Commit hash, author date, strict ISO 8601 format
-                    // Lists commits as '583d813db3e28b9b44a29db352e2f0e1b4c6e420 2021-05-19T15:24:24-04:00'
-                    // Source: https://git-scm.com/docs/pretty-formats
-                    .Add("--pretty=format:%H %aI")
-                    .Add(latestOnly ? "--max-count=1" : "")
-            )
+                args =>
+                {
+                    args
+                        .Add("log")
+                        // Commit hash, author date, strict ISO 8601 format
+                        // Lists commits as '583d813db3e28b9b44a29db352e2f0e1b4c6e420 2021-05-19T15:24:24-04:00'
+                        // Source: https://git-scm.com/docs/pretty-formats
+                        .Add("--pretty=format:%H %aI");
+                    if (latestOnly)
+                    {
+                        args.Add("--max-count=1");
+                    }
+                })
             .WithValidation(CommandResultValidation.None)
             .WithWorkingDirectory(analysisLocation.Path)
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))

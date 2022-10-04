@@ -1,3 +1,4 @@
+using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Moq;
@@ -12,8 +13,10 @@ public class AgentDetectedForDetectManifestEventTest
     public void Handle()
     {
         const string agentExecutablePath = "/path/to/agent";
+        var analysisId = Guid.NewGuid();
         var analysisLocation = new Mock<IAnalysisLocation>();
-        var appEvent = new AgentDetectedForDetectManifestEvent(analysisLocation.Object, agentExecutablePath);
+        var appEvent =
+            new AgentDetectedForDetectManifestEvent(analysisId, analysisLocation.Object, agentExecutablePath);
 
         var activityEngine = new Mock<IApplicationActivityEngine>();
 
@@ -21,6 +24,7 @@ public class AgentDetectedForDetectManifestEventTest
 
         activityEngine.Verify(mock =>
             mock.Dispatch(It.Is<DetectManifestsUsingAgentActivity>(activity =>
+                activity.AnalysisId == analysisId &&
                 activity.AnalysisLocation == analysisLocation.Object &&
                 activity.AgentExecutablePath == agentExecutablePath)));
     }
