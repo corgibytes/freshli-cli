@@ -3,15 +3,14 @@ using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CloneGitRepositoryActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly Guid _cachedAnalysisId;
+    public readonly Guid CachedAnalysisId;
 
-    public CloneGitRepositoryActivity(Guid cachedAnalysisId) => _cachedAnalysisId = cachedAnalysisId;
+    public CloneGitRepositoryActivity(Guid cachedAnalysisId) => CachedAnalysisId = cachedAnalysisId;
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -22,7 +21,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb();
-            var cachedAnalysis = cacheDb.RetrieveAnalysis(_cachedAnalysisId);
+            var cachedAnalysis = cacheDb.RetrieveAnalysis(CachedAnalysisId);
 
             if (cachedAnalysis == null)
             {
@@ -38,7 +37,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
             eventClient.Fire(new GitRepositoryClonedEvent
             {
-                AnalysisId = _cachedAnalysisId,
+                AnalysisId = CachedAnalysisId,
                 AnalysisLocation = analysisLocation
             });
         }
