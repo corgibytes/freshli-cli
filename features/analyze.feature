@@ -143,10 +143,8 @@ Feature: analyze
         https://freshli.app/
         """
 
-    Scenario: Run the analysis, trigger error event.
-        When I run `freshli analyze https://github.com/this-repository-does-not-exist`
-        And the output should contain:
-        Scenario: Run the analysis for a local directory
+
+    Scenario: Run the analysis for a local directory
         Given a directory named "~/local"
         When I run `git clone https://github.com/corgibytes/freshli-agent-java ~/local`
         When I run `freshli analyze ~/.freshli/local/freshli-agent-java`
