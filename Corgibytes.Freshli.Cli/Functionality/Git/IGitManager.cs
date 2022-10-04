@@ -6,5 +6,5 @@ public interface IGitManager
 
     string CreateArchive(string repositoryId, GitCommitIdentifier gitCommitIdentifier);
 
-    public bool GitRepositoryInitialized(string repositoryLocation, IConfiguration configuration);
+    public bool IsGitRepositoryInitialized(string repositoryLocation, IConfiguration configuration);
 }
