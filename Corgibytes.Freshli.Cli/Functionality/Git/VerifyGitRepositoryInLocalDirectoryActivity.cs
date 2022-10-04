@@ -34,7 +34,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
             return;
         }
 
-        if (gitManager.IsGitRepositoryInitialized(analysis.RepositoryUrl, configuration) == false)
+        if (gitManager.IsGitRepositoryInitialized(analysis.RepositoryUrl) == false)
         {
             eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent
             {
