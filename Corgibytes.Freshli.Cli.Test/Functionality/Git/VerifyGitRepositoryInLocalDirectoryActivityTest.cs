@@ -48,7 +48,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         repositoryLocation.Create();
 
         _gitManager.Setup(mock =>
-            mock.GitRepositoryInitialized(_repositoryLocation, It.IsAny<IConfiguration>())).Returns(true);
+            mock.IsGitRepositoryInitialized(_repositoryLocation, It.IsAny<IConfiguration>())).Returns(true);
 
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
         activity.Handle(_eventEngine.Object);
@@ -90,7 +90,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         var repositoryLocation = new DirectoryInfo(_repositoryLocation);
         repositoryLocation.Create();
 
-        _gitManager.Setup(mock => mock.GitRepositoryInitialized(_repositoryLocation, _configuration.Object))
+        _gitManager.Setup(mock => mock.IsGitRepositoryInitialized(_repositoryLocation, _configuration.Object))
             .Returns(false);
 
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
