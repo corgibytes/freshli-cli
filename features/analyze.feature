@@ -145,10 +145,13 @@ Feature: analyze
 
 
     Scenario: Run the analysis for a local directory
-        Given a directory named "~/local"
-        When I run `git clone https://github.com/corgibytes/freshli-agent-java ~/local`
-        When I run `freshli analyze ~/.freshli/local/freshli-agent-java`
-        Then the output should contain:
+        When I run `git clone https://github.com/corgibytes/freshli-fixture-java-test freshli-fixture-java-test`
+        Then the directory named "~/freshli-fixture-java-test" should exist
+        When I run `freshli analyze --history-interval=1y freshli-fixture-java-test`
+        Then the "~/.freshli/freshli.db" contains history interval stop at "2022-01-01 00:00:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2021-01-01 00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history interval stop at "2020-01-01 00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
+        And the output should contain:
         """
         https://freshli.app/
         """
