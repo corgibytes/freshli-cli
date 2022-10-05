@@ -15,6 +15,8 @@ flowchart TD;
     PrepareCacheActivity --> CachePreparedEvent
     AgentsDetectedEvent
     DetectAgentsActivity --> AgentsDetectedEvent
+    NoAgentsDetectedFailureEvent -.-> FailureEvent
+    NoAgentsDetectedFailureEvent
     AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
     AnalysisFailureLoggedEvent
     AnalysisIdNotFoundEvent -.-> FailureEvent
@@ -22,6 +24,7 @@ flowchart TD;
     AnalysisStartedEvent --> CreateAnalysisApiActivity
     CacheWasNotPreparedEvent -.-> ErrorEvent
     CacheWasNotPreparedEvent --> PrepareCacheActivity
+    DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
     ErrorEvent
@@ -49,6 +52,7 @@ flowchart TD;
     DestroyCacheActivity --> CacheDestroyFailedEvent
     CachePreparedEvent --> RestartAnalysisActivity
     ComputeLibYearActivity --> LibYearComputedEvent
+    AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
@@ -58,7 +62,15 @@ flowchart TD;
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
     CloneGitRepositoryFailedEvent -.-> FailureEvent
     CloneGitRepositoryFailedEvent
+    DirectoryDoesNotExistFailureEvent -.-> FailureEvent
+    DirectoryDoesNotExistFailureEvent
+    DirectoryIsNotGitInitializedFailureEvent -.-> FailureEvent
+    DirectoryIsNotGitInitializedFailureEvent
     GitRepositoryClonedEvent --> ComputeHistoryActivity
+    GitRepositoryInLocalDirectoryVerifiedEvent --> ComputeHistoryActivity
+    VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryDoesNotExistFailureEvent
+    VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryIsNotGitInitializedFailureEvent
+    VerifyGitRepositoryInLocalDirectoryActivity --> GitRepositoryInLocalDirectoryVerifiedEvent
     CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
     ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent

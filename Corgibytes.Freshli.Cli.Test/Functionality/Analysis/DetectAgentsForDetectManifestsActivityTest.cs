@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Moq;
@@ -11,8 +12,21 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class DetectAgentsForDetectManifestsActivityTest
 {
+    private readonly Mock<IAgentsDetector> _agentsDetector = new();
+    private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    private readonly Mock<IHistoryStopData> _historyStopData = new();
+
+
+    public DetectAgentsForDetectManifestsActivityTest()
+    {
+
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IAgentsDetector))).Returns(_agentsDetector.Object);
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+    }
+
     [Fact]
-    public void Handle()
+    public void VerifyItDispatchesAgentDetectedForDetectManifestEvent()
     {
         var agentPaths = new List<string>
         {
@@ -20,32 +34,41 @@ public class DetectAgentsForDetectManifestsActivityTest
             "/usr/local/bin/freshli-agent-dotnet"
         };
 
-        var agentsDetector = new Mock<IAgentsDetector>();
-        agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
-
-        var serviceProvider = new Mock<IServiceProvider>();
-        serviceProvider.Setup(mock => mock.GetService(typeof(IAgentsDetector))).Returns(agentsDetector.Object);
-
-        var eventEngine = new Mock<IApplicationEventEngine>();
-        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+        _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
         var analysisId = Guid.NewGuid();
-        var historyStopData = new Mock<IHistoryStopData>();
         var activity =
-            new DetectAgentsForDetectManifestsActivity(analysisId, historyStopData.Object);
+            new DetectAgentsForDetectManifestsActivity(analysisId, _historyStopData.Object);
 
-        activity.Handle(eventEngine.Object);
+        activity.Handle(_eventEngine.Object);
 
-        eventEngine.Verify(mock =>
+        _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
                 appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopData == historyStopData.Object &&
+                appEvent.HistoryStopData == _historyStopData.Object &&
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-java")));
 
-        eventEngine.Verify(mock =>
+        _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
                 appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopData == historyStopData.Object &&
+                appEvent.HistoryStopData == _historyStopData.Object &&
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet")));
+    }
+
+    [Fact]
+    public void VerifyItDispatchesNoAgentsDetectedFailureEvent()
+    {
+        var agentPaths = new List<string>();
+
+        _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
+
+        var analysisId = Guid.NewGuid();
+        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, _historyStopData.Object);
+
+        activity.Handle(_eventEngine.Object);
+
+        _eventEngine.Verify(mock => mock.Fire(It.Is<NoAgentsDetectedFailureEvent>(
+            failEvent => failEvent.ErrorMessage == "Could not locate any agents"
+        )));
     }
 }

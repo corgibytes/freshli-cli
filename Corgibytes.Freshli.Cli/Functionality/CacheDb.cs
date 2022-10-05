@@ -1,5 +1,6 @@
 using System;
 using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality.Git;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -26,6 +27,7 @@ public class CacheDb : ICacheDb, IDisposable
     }
 
     public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
+    public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id) => Db.CachedGitSources.Find(id.Id);
 
     public void AddHistoryIntervalStop(CachedHistoryIntervalStop historyIntervalStop)
     {
