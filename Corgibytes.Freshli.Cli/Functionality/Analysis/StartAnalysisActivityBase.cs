@@ -1,41 +1,40 @@
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActivity
     where TErrorEvent : ErrorEvent, new()
 {
-    protected StartAnalysisActivityBase(ICacheManager cacheManager, IHistoryIntervalParser historyIntervalParser)
-    {
-        CacheManager = cacheManager;
-        HistoryIntervalParser = historyIntervalParser;
-    }
-
-    public string GitPath { get; init; } = null!;
-    public string CacheDirectory { get; init; } = null!;
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
     public string HistoryInterval { get; init; } = null!;
     public CommitHistory UseCommitHistory { get; init; }
+    public RevisionHistoryMode RevisionHistoryMode { get; init; }
 
-    public ICacheManager CacheManager { get; }
-    public IHistoryIntervalParser HistoryIntervalParser { get; }
+    protected IConfiguration Configuration { get; private set; } = null!;
+    private ICacheManager CacheManager { get; set; } = null!;
+    private IHistoryIntervalParser HistoryIntervalParser { get; set; } = null!;
 
-    public void Handle(IApplicationEventEngine eventClient) => HandleWithCacheFailure(eventClient);
+    public void Handle(IApplicationEventEngine eventClient)
+    {
+        Configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
+        CacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+        HistoryIntervalParser = eventClient.ServiceProvider.GetRequiredService<IHistoryIntervalParser>();
+
+        HandleWithCacheFailure(eventClient);
+    }
 
     private void FireAnalysisStartedEvent(IApplicationEventEngine eventClient)
     {
-        var cacheDb = CacheManager.GetCacheDb(CacheDirectory);
+        var cacheDb = CacheManager.GetCacheDb();
         var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
-            UseCommitHistory));
+            UseCommitHistory, RevisionHistoryMode));
         eventClient.Fire(new AnalysisStartedEvent
         {
             AnalysisId = id,
-            CacheDir = CacheDirectory,
-            GitPath = GitPath,
-            RepositoryUrl = RepositoryUrl,
-            Branch = RepositoryBranch
+            RepositoryUrl = RepositoryUrl
         });
     }
 
@@ -56,7 +55,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
 
     private bool FireCacheNotFoundEventIfNeeded(IApplicationEventEngine eventClient)
     {
-        if (!CacheManager.ValidateDirIsCache(CacheDirectory))
+        if (!CacheManager.ValidateCacheDirectory())
         {
             eventClient.Fire(CreateErrorEvent());
             return true;
@@ -67,7 +66,11 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
 
     protected virtual TErrorEvent CreateErrorEvent() =>
         // ReSharper disable once UseStringInterpolation
-        new() { ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.", CacheDirectory) };
+        new()
+        {
+            ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.",
+                Configuration.CacheDir)
+        };
 
     private void HandleWithCacheFailure(IApplicationEventEngine eventClient)
     {

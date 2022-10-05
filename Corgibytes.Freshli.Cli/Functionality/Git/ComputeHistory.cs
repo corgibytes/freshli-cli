@@ -18,14 +18,13 @@ public class ComputeHistory : IComputeHistory
 
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
         IAnalysisLocation analysisLocation,
-        string gitPath,
         string historyInterval,
         DateTimeOffset startAtDate
     )
     {
         _historyIntervalParser.Parse(historyInterval, out var interval, out var quantifier);
 
-        var commitHistory = _listCommits.ForRepository(analysisLocation, gitPath);
+        var commitHistory = _listCommits.ForRepository(analysisLocation);
 
         // Prevent multiple enumeration
         var gitCommits = commitHistory.OrderByDescending(commit => commit.CommittedAt).ToList();
@@ -85,11 +84,17 @@ public class ComputeHistory : IComputeHistory
             .ToList();
     }
 
-    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation, string gitPath)
+    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation)
     {
-        var commitHistory = _listCommits.ForRepository(analysisLocation, gitPath);
+        var commitHistory = _listCommits.ForRepository(analysisLocation);
         return commitHistory
             .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt)).ToList();
+    }
+
+    public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IAnalysisLocation analysisLocation)
+    {
+        var gitCommit = _listCommits.MostRecentCommit(analysisLocation);
+        return new List<HistoryIntervalStop> { new(gitCommit.ShaIdentifier, gitCommit.CommittedAt) };
     }
 
     private static DateTimeOffset DetermineRangeStartDate(DateTimeOffset startAtDate, string? quantifier)

@@ -5,6 +5,7 @@ using System.Linq;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using PackageUrl;
+using ServiceStack;
 
 namespace Corgibytes.Freshli.Cli.Services;
 
@@ -47,13 +48,13 @@ public class AgentReader : IAgentReader
     {
         var manifests = Invoke.Command(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
 
-        return manifests.TrimEnd('\n', '\r').Split("\n").ToList();
+        return manifests.IsEmpty() ? new List<string>() : manifests.TrimEnd('\n', '\r').Split("\n").ToList();
     }
 
     public string ProcessManifest(string manifestPath, DateTime asOfDate)
     {
         var billOfMaterialsPath =
-            Invoke.Command(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDate:s}", ".");
+            Invoke.Command(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDate:o}", ".");
 
         return billOfMaterialsPath.TrimEnd('\n', '\n');
     }

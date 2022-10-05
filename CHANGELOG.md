@@ -11,9 +11,9 @@ __Dependencies__
 
 
 ## v0.5.0
+Associated Docker image: [corgibytes/freshli-cli:0.5.0-alpha.1164-Branch.main.Sha.36db4c884455cd4eb9c314bb410bed4ea2cd3762](https://hub.docker.com/r/corgibytes/freshli-cli/tags?page=1name=0.5.0-alpha.1164-Branch.main.Sha.36db4c884455cd4eb9c314bb410bed4ea2cd3762)
 
-
-As part of this release we had [3 issues](https://github.com/corgibytes/freshli-cli/milestone/3?closed=1) closed.
+As part of this release we had [4 issues](https://github.com/corgibytes/freshli-cli/milestone/3?closed=1) closed.
 
 Goals for this milestone:
 
@@ -24,9 +24,10 @@ __DevOps__
 - [__#33__](https://github.com/corgibytes/freshli-cli/issues/33) Warning when adding assets to GitHub release in CI
 - [__#41__](https://github.com/corgibytes/freshli-cli/pull/41) Fixes #33, removes warning for GitReleaseManager on Add Asset
 
-__Enhancement__
+__Enhancements__
 
 - [__#25__](https://github.com/corgibytes/freshli-cli/issues/25) Add Scan and Help commands
+- [__#45__](https://github.com/corgibytes/freshli-cli/issues/45) Specify level of debug information
 
 ## v0.4.0
 
@@ -80,6 +81,42 @@ __Enhancements__
 - [__#8__](https://github.com/corgibytes/freshli-cli/issues/8) Auto generate the release notes
 - [__#7__](https://github.com/corgibytes/freshli-cli/issues/7) Create automated build for the executable
 - [__#6__](https://github.com/corgibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
 - [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
 
 

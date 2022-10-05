@@ -3,54 +3,41 @@ using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CloneGitRepositoryActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly Guid _analysisId;
+    public readonly Guid CachedAnalysisId;
 
-    [JsonProperty] private readonly string _cacheDir;
-    [JsonProperty] private readonly string _gitPath;
-
-    public CloneGitRepositoryActivity(string repoUrl, string? branch, string cacheDir, string gitPath,
-        Guid analysisId = new())
-    {
-        RepoUrl = repoUrl;
-        Branch = branch;
-        _cacheDir = cacheDir;
-        _gitPath = gitPath;
-        _analysisId = analysisId;
-    }
-
-    [JsonProperty] private string? Branch { get; set; }
-    [JsonProperty] private string RepoUrl { get; set; }
+    public CloneGitRepositoryActivity(Guid cachedAnalysisId) => CachedAnalysisId = cachedAnalysisId;
 
     public void Handle(IApplicationEventEngine eventClient)
     {
+        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
+
         // Clone or pull the given repository and branch.
         try
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb(_cacheDir);
-            var cachedAnalysis = cacheDb.RetrieveAnalysis(_analysisId);
-            if (cachedAnalysis != null)
+            var cacheDb = cacheManager.GetCacheDb();
+            var cachedAnalysis = cacheDb.RetrieveAnalysis(CachedAnalysisId);
+
+            if (cachedAnalysis == null)
             {
-                RepoUrl = cachedAnalysis.RepositoryUrl;
-                Branch = cachedAnalysis.RepositoryBranch;
+                eventClient.Fire(new AnalysisIdNotFoundEvent());
+                return;
             }
 
             var gitRepository =
                 eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>()
-                    .CloneOrPull(RepoUrl, Branch, _cacheDir, _gitPath);
+                    .CloneOrPull(cachedAnalysis.RepositoryUrl, cachedAnalysis.RepositoryBranch);
 
-            var analysisLocation = new AnalysisLocation(_cacheDir, gitRepository.Id);
+            var analysisLocation = new AnalysisLocation(configuration, gitRepository.Id);
 
             eventClient.Fire(new GitRepositoryClonedEvent
             {
-                AnalysisId = _analysisId,
-                GitPath = _gitPath,
+                AnalysisId = CachedAnalysisId,
                 AnalysisLocation = analysisLocation
             });
         }

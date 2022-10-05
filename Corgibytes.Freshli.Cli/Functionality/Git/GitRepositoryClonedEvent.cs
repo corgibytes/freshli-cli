@@ -9,10 +9,8 @@ public class GitRepositoryClonedEvent : IApplicationEvent
 {
     public Guid AnalysisId { get; init; }
 
-    public string GitPath { get; init; } = null!;
-
     public AnalysisLocation AnalysisLocation { get; init; } = null!;
 
     public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new ComputeHistoryActivity(GitPath, AnalysisId, AnalysisLocation));
+        eventClient.Dispatch(new ComputeHistoryActivity(AnalysisId, AnalysisLocation));
 }

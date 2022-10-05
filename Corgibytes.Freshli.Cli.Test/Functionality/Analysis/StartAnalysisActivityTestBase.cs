@@ -12,9 +12,20 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     where TErrorEvent : ErrorEvent
 {
     private readonly Mock<ICacheDb> _cacheDb = new();
+    private readonly Mock<ICacheManager> _cacheManager = new();
+    private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
-    protected readonly Mock<ICacheManager> CacheManager = new();
-    protected readonly Mock<IHistoryIntervalParser> IntervalParser = new();
+    private readonly Mock<IHistoryIntervalParser> _intervalParser = new();
+    private readonly Mock<IServiceProvider> _serviceProvider = new();
+
+    protected StartAnalysisActivityTestBase()
+    {
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IHistoryIntervalParser))).Returns(_intervalParser.Object);
+    }
+
     protected abstract TActivity Activity { get; }
 
     protected virtual Func<TErrorEvent, bool> EventValidator => _ => true;
@@ -22,8 +33,9 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     [Fact]
     public void HandlerFiresCacheWasNotPreparedEventWhenCacheIsMissing()
     {
-        IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
-        CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(false);
+        _configuration.Setup(mock => mock.CacheDir).Returns("example");
+        _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
+        _cacheManager.Setup(mock => mock.ValidateCacheDirectory()).Returns(false);
 
         Activity.Handle(_eventEngine.Object);
 
@@ -36,13 +48,14 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     [Fact]
     public void HandlerFiresAnalysisStartedEventWhenCacheIsPresent()
     {
-        var sampleGuid = new Guid();
+        var analysisId = Guid.NewGuid();
 
-        IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
+        _configuration.Setup(mock => mock.CacheDir).Returns("example");
+        _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
 
-        CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
-        CacheManager.Setup(mock => mock.GetCacheDb("example")).Returns(_cacheDb.Object);
-        _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).Returns(sampleGuid);
+        _cacheManager.Setup(mock => mock.ValidateCacheDirectory()).Returns(true);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).Returns(analysisId);
 
         Activity.Handle(_eventEngine.Object);
 
@@ -51,14 +64,17 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
             value.RepositoryBranch == "main" &&
             value.HistoryInterval == "1m"
         )));
-        _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value => value.AnalysisId == sampleGuid)));
+        _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value =>
+            value.AnalysisId == analysisId &&
+            value.RepositoryUrl == "http://git.example.com")));
     }
 
     [Fact]
     public void HandlerFiresInvalidHistoryIntervalEventWhenHistoryIntervalValueIsInvalid()
     {
-        IntervalParser.Setup(mock => mock.IsValid("1m")).Returns(false);
-        CacheManager.Setup(mock => mock.ValidateDirIsCache("example")).Returns(true);
+        _configuration.Setup(mock => mock.CacheDir).Returns("example");
+        _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(false);
+        _cacheManager.Setup(mock => mock.ValidateCacheDirectory()).Returns(true);
 
         Activity.Handle(_eventEngine.Object);
 

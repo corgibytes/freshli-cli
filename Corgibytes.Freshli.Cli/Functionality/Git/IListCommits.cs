@@ -5,5 +5,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public interface IListCommits
 {
-    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation, string gitPath);
+    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation);
+
+    public GitCommit MostRecentCommit(IAnalysisLocation analysisLocation);
 }

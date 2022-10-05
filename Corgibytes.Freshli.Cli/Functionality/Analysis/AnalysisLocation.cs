@@ -1,15 +1,20 @@
+using Newtonsoft.Json;
+
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AnalysisLocation : IAnalysisLocation
 {
-    public AnalysisLocation(string cacheDirectory, string repositoryId, string? commitId = null)
+    [JsonProperty] private readonly IConfiguration _configuration;
+
+    public AnalysisLocation(IConfiguration configuration, string repositoryId, string? commitId = null)
     {
-        CacheDirectory = cacheDirectory;
+        _configuration = configuration;
         RepositoryId = repositoryId;
         CommitId = commitId;
     }
 
-    public string CacheDirectory { get; }
+    public string? LocalDirectory { get; init; }
+
     public string RepositoryId { get; }
     public string? CommitId { get; }
 
@@ -19,10 +24,15 @@ public class AnalysisLocation : IAnalysisLocation
         {
             if (CommitId == null)
             {
-                return System.IO.Path.Combine(CacheDirectory, "repositories", RepositoryId);
+                if (LocalDirectory != null)
+                {
+                    return LocalDirectory;
+                }
+
+                return System.IO.Path.Combine(_configuration.CacheDir, "repositories", RepositoryId);
             }
 
-            return System.IO.Path.Combine(CacheDirectory, "histories", RepositoryId, CommitId);
+            return System.IO.Path.Combine(_configuration.CacheDir, "histories", RepositoryId, CommitId);
         }
     }
 }

@@ -15,20 +15,38 @@ public class GenerateBillOfMaterialsActivityTest
     {
         // Arrange
         var javaAgentReader = new Mock<IAgentReader>();
-        var eventEngine = new Mock<IApplicationEventEngine>();
-        var analysisLocation = new Mock<IAnalysisLocation>();
-
         javaAgentReader.Setup(mock => mock.ProcessManifest("/path/to/manifest", It.IsAny<DateTime>()))
             .Returns("/path/to/bill-of-materials");
 
+        const string agentExecutablePath = "/path/to/agent";
+        var agentManager = new Mock<IAgentManager>();
+        agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(javaAgentReader.Object);
+
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+
+        var eventEngine = new Mock<IApplicationEventEngine>();
+        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+
         // Act
+<<<<<<< HEAD
         var activity =
             new GenerateBillOfMaterialsActivity(javaAgentReader.Object, analysisLocation.Object, "/path/to/manifest");
+=======
+        var analysisLocation = new Mock<IAnalysisLocation>();
+        analysisLocation.Setup(mock => mock.Path).Returns("/working/directory");
+
+        var analysisId = Guid.NewGuid();
+        var activity =
+            new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, analysisLocation.Object,
+                "/path/to/manifest");
+>>>>>>> 17d03008d745c9ae27235640a7d65e25e5fdf50f
         activity.Handle(eventEngine.Object);
 
         // Assert
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<BillOfMaterialsGeneratedEvent>(appEvent =>
+                appEvent.AnalysisId == analysisId &&
                 appEvent.AnalysisLocation == analysisLocation.Object &&
                 appEvent.PathToBillOfMaterials == "/path/to/bill-of-materials")));
     }

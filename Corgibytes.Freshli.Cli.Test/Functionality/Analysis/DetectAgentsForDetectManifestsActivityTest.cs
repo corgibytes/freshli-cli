@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Services;
 using Moq;
 using Xunit;
 
@@ -11,8 +12,21 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class DetectAgentsForDetectManifestsActivityTest
 {
+    private readonly Mock<IAgentsDetector> _agentsDetector = new();
+    private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    private readonly Mock<IAnalysisLocation> _analysisLocation = new();
+
+
+    public DetectAgentsForDetectManifestsActivityTest()
+    {
+
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IAgentsDetector))).Returns(_agentsDetector.Object);
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+    }
+
     [Fact]
-    public void Handle()
+    public void VerifyItDispatchesAgentDetectedForDetectManifestEvent()
     {
         var agentPaths = new List<string>
         {
@@ -20,36 +34,40 @@ public class DetectAgentsForDetectManifestsActivityTest
             "/usr/local/bin/freshli-agent-dotnet"
         };
 
-        var agentsDetector = new Mock<IAgentsDetector>();
-        agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
+        _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
-        var agentManager = new Mock<IAgentManager>();
+        var analysisId = Guid.NewGuid();
+        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, _analysisLocation.Object);
 
-        var javaAgentReader = new Mock<IAgentReader>();
-        var dotnetAgentReader = new Mock<IAgentReader>();
+        activity.Handle(_eventEngine.Object);
 
-        agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-java")).Returns(javaAgentReader.Object);
-        agentManager.Setup(mock => mock.GetReader("/usr/local/bin/freshli-agent-dotnet"))
-            .Returns(dotnetAgentReader.Object);
-
-        var eventEngine = new Mock<IApplicationEventEngine>();
-
-        var analysisLocation = new Mock<IAnalysisLocation>();
-
-        var activity =
-            new DetectAgentsForDetectManifestsActivity(agentsDetector.Object, agentManager.Object,
-                analysisLocation.Object);
-
-        activity.Handle(eventEngine.Object);
-
-        eventEngine.Verify(mock =>
+        _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
-                appEvent.AnalysisLocation == analysisLocation.Object &&
-                appEvent.AgentReader == javaAgentReader.Object)));
+                appEvent.AnalysisId == analysisId &&
+                appEvent.AnalysisLocation == _analysisLocation.Object &&
+                appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-java")));
 
-        eventEngine.Verify(mock =>
+        _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
-                appEvent.AnalysisLocation == analysisLocation.Object &&
-                appEvent.AgentReader == dotnetAgentReader.Object)));
+                appEvent.AnalysisId == analysisId &&
+                appEvent.AnalysisLocation == _analysisLocation.Object &&
+                appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet")));
+    }
+
+    [Fact]
+    public void VerifyItDispatchesNoAgentsDetectedFailureEvent()
+    {
+        var agentPaths = new List<string>();
+
+        _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
+
+        var analysisId = Guid.NewGuid();
+        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, _analysisLocation.Object);
+
+        activity.Handle(_eventEngine.Object);
+
+        _eventEngine.Verify(mock => mock.Fire(It.Is<NoAgentsDetectedFailureEvent>(
+            failEvent => failEvent.ErrorMessage == "Could not locate any agents"
+        )));
     }
 }

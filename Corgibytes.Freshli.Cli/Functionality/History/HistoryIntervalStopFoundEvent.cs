@@ -1,24 +1,23 @@
+using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Functionality.Git;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class HistoryIntervalStopFoundEvent : IApplicationEvent
 {
+<<<<<<< HEAD
     public string? GitCommitIdentifier { get; init; }
+=======
+    public Guid AnalysisId { get; init; }
+>>>>>>> 17d03008d745c9ae27235640a7d65e25e5fdf50f
     public IAnalysisLocation? AnalysisLocation { get; init; }
-    public string? GitExecutablePath { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
-        if (AnalysisLocation != null && GitExecutablePath != null
-                                     && AnalysisLocation.CommitId != null)
+        if (AnalysisLocation is { CommitId: { } })
         {
-            eventClient.Dispatch(new CheckoutHistoryActivity(
-                eventClient.ServiceProvider.GetRequiredService<IGitManager>(), GitExecutablePath,
-                AnalysisLocation));
+            eventClient.Dispatch(new CheckoutHistoryActivity(AnalysisId, AnalysisLocation));
         }
     }
 }
