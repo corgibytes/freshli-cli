@@ -21,6 +21,6 @@ public class CreateAnalysisApiActivity : IApplicationActivity
 
         cacheDb.SaveAnalysis(cachedAnalysis);
 
-        eventClient.Fire(new AnalysisApiCreatedEvent { CachedAnalysisId = CachedAnalysisId });
+        eventClient.Fire(new AnalysisApiCreatedEvent { AnalysisId = CachedAnalysisId });
     }
 }

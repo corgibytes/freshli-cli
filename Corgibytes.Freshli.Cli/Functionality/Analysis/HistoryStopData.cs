@@ -16,6 +16,8 @@ public class HistoryStopData : IHistoryStopData
         Moment = moment;
     }
 
+    public string? LocalDirectory { get; init; }
+
     public string RepositoryId { get; }
     public string? CommitId { get; }
     public DateTimeOffset? Moment { get; }
@@ -26,6 +28,11 @@ public class HistoryStopData : IHistoryStopData
         {
             if (CommitId == null)
             {
+                if (LocalDirectory != null)
+                {
+                    return LocalDirectory;
+                }
+
                 return System.IO.Path.Combine(_configuration.CacheDir, "repositories", RepositoryId);
             }
 

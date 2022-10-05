@@ -8,10 +8,9 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CloneGitRepositoryActivity : IApplicationActivity
 {
-    public CloneGitRepositoryActivity(Guid cachedAnalysisId) => AnalysisId = cachedAnalysisId;
+    public readonly Guid CachedAnalysisId;
 
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public Guid AnalysisId { get; set; }
+    public CloneGitRepositoryActivity(Guid cachedAnalysisId) => CachedAnalysisId = cachedAnalysisId;
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -22,7 +21,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb();
-            var cachedAnalysis = cacheDb.RetrieveAnalysis(AnalysisId);
+            var cachedAnalysis = cacheDb.RetrieveAnalysis(CachedAnalysisId);
 
             if (cachedAnalysis == null)
             {
@@ -38,7 +37,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
             eventClient.Fire(new GitRepositoryClonedEvent
             {
-                AnalysisId = AnalysisId,
+                AnalysisId = CachedAnalysisId,
                 HistoryStopData = historyStopData
             });
         }
