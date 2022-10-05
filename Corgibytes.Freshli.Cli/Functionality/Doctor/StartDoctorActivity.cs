@@ -7,16 +7,17 @@ namespace Corgibytes.Freshli.Cli.Functionality.Doctor;
 
 public class StartDoctorActivity : IApplicationActivity
 {
-    public List<Tuple<string, int>> errorCode;
+    public readonly List<Tuple<string, int>> ErrorCode;
 
-    public StartDoctorActivity(string gitPath, string cacheDirectory)
+    public StartDoctorActivity(string gitPath, string cacheDirectory, List<Tuple<string, int>> errorCode)
     {
         GitPath = gitPath;
         CacheDirectory = cacheDirectory;
+        ErrorCode = errorCode;
     }
 
-    public string GitPath { get; } = null!;
-    public string CacheDirectory { get; } = null!;
+    private string GitPath { get; }
+    private string CacheDirectory { get; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -31,34 +32,34 @@ public class StartDoctorActivity : IApplicationActivity
 
             File.WriteAllText(CacheDirectory + Path.DirectorySeparatorChar + "TextFile.txt",
                 "Writing inside the file.");
-            Console.WriteLine("Wrote inside of the cache directory file successfully");
+            Console.WriteLine(@"Wrote inside of the cache directory file successfully");
 
             // It's possible to create sub-directories in the cache directory
             Directory.CreateDirectory(CacheDirectory + Path.DirectorySeparatorChar + "SubDirectory");
-            Console.WriteLine("Sub directory created");
+            Console.WriteLine(@"Sub directory created");
 
             // It's possible to create and write to files in sub-directories in the cache directory
             File.WriteAllText(
                 CacheDirectory + Path.DirectorySeparatorChar + "SubDirectory" + Path.DirectorySeparatorChar +
                 "SubDirectoryTextFile.txt", "Writing inside the sub directory file.");
-            Console.WriteLine("Wrote inside the sub directory file successfully");
+            Console.WriteLine(@"Wrote inside the sub directory file successfully");
         }
         catch (Exception e)
         {
             Console.Error.WriteLine("Failed to create or write in the directory" + e);
-            errorCode.Add(new Tuple<string, int>("Failed to create or write in the directory " + e, 1));
+            ErrorCode.Add(new Tuple<string, int>("Failed to create or write in the directory " + e, 1));
         }
 
         try
         {
             // The git executable can be run -- tested by running git version and checking/displaying output
-            var version = Invoke.Command("git", "version", ".");
-            Console.WriteLine("Git version found: " + version);
+            var version = Invoke.Command("git", "version", GitPath);
+            Console.WriteLine(@"Git version found: " + version);
         }
         catch (Exception e)
         {
             Console.Error.WriteLine("Could not find git executable " + e);
-            errorCode.Add(new Tuple<string, int>("Could not find git executable " + e, 1));
+            ErrorCode.Add(new Tuple<string, int>("Could not find git executable " + e, 1));
         }
     }
 }

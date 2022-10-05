@@ -64,8 +64,12 @@ public class FreshliServiceBuilder
     private void RegisterFailCommand() =>
         Services.AddScoped<ICommandRunner<FailCommand, EmptyCommandOptions>, FailCommandRunner>();
 
-    private void RegisterDoctorCommand() =>
+    private void RegisterDoctorCommand()
+    {
         Services.AddScoped<ICommandRunner<DoctorCommand, DoctorCommandOptions>, DoctorRunner>();
+        Services.AddOptions<DoctorCommandOptions>();
+    }
+
 
     private void RegisterAnalyzeCommand()
     {
