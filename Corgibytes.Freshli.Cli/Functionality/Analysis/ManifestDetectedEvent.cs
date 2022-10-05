@@ -17,9 +17,10 @@ public class ManifestDetectedEvent : IApplicationEvent
     public IAgentReader AgentReader { get; }
     public string ManifestPath { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(new GenerateBillOfMaterialsActivity(
-        AgentReader,
-        AnalysisLocation,
-        ManifestPath
-    ));
+    public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
+        new GenerateBillOfMaterialsActivity(
+            AgentReader,
+            AnalysisLocation,
+            ManifestPath
+        ));
 }

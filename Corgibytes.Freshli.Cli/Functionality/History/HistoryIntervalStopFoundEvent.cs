@@ -7,7 +7,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class HistoryIntervalStopFoundEvent : IApplicationEvent
 {
-
     public string? GitCommitIdentifier { get; init; }
     public IAnalysisLocation? AnalysisLocation { get; init; }
     public string? GitExecutablePath { get; init; }

@@ -22,7 +22,8 @@ public class GenerateBillOfMaterialsActivityTest
             .Returns("/path/to/bill-of-materials");
 
         // Act
-        var activity = new GenerateBillOfMaterialsActivity(javaAgentReader.Object, analysisLocation.Object, "/path/to/manifest");
+        var activity =
+            new GenerateBillOfMaterialsActivity(javaAgentReader.Object, analysisLocation.Object, "/path/to/manifest");
         activity.Handle(eventEngine.Object);
 
         // Assert

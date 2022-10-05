@@ -1,11 +1,14 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality.Engine;
+using System.Collections.Generic;
 using System.IO;
+using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Doctor;
 
 public class StartDoctorActivity : IApplicationActivity
 {
+    public List<Tuple<string, int>> errorCode;
+
     public StartDoctorActivity(string gitPath, string cacheDirectory)
     {
         GitPath = gitPath;
@@ -42,20 +45,20 @@ public class StartDoctorActivity : IApplicationActivity
         }
         catch (Exception e)
         {
-            Console.WriteLine("Failed to create or write in the directory" + e);
+            Console.Error.WriteLine("Failed to create or write in the directory" + e);
+            errorCode.Add(new Tuple<string, int>("Failed to create or write in the directory " + e, 1));
         }
 
         try
         {
             // The git executable can be run -- tested by running git version and checking/displaying output
-             string version = Invoke.Command("git", "version", ".");
+            var version = Invoke.Command("git", "version", ".");
             Console.WriteLine("Git version found: " + version);
         }
         catch (Exception e)
         {
-            Console.WriteLine("Could not find git executable " + e);
+            Console.Error.WriteLine("Could not find git executable " + e);
+            errorCode.Add(new Tuple<string, int>("Could not find git executable " + e, 1));
         }
-
     }
-
 }

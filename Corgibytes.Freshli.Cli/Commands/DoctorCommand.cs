@@ -1,6 +1,5 @@
 using System.CommandLine;
 using Corgibytes.Freshli.Cli.CommandOptions;
-using Corgibytes.Freshli.Cli.Functionality;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 

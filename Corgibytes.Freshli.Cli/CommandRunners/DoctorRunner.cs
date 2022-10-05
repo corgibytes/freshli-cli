@@ -1,7 +1,5 @@
 using System;
 using System.CommandLine.Invocation;
-using System.CommandLine.IO;
-using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Doctor;
@@ -24,7 +22,8 @@ public class DoctorRunner : CommandRunner<DoctorCommand, DoctorCommandOptions>
 
     public override int Run(DoctorCommandOptions options, InvocationContext context)
     {
-        _activityEngine.Dispatch(new StartDoctorActivity(options.GitPath, options.CacheDir));
-        return 0;
+        var startDoctorActivity = new StartDoctorActivity(options.GitPath, options.CacheDir);
+        _activityEngine.Dispatch(startDoctorActivity);
+        return startDoctorActivity.errorCode.Count != 0 ? 1 : 0;
     }
 }

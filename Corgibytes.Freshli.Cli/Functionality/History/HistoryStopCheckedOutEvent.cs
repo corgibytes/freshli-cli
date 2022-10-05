@@ -11,10 +11,9 @@ public class HistoryStopCheckedOutEvent : IApplicationEvent
     public HistoryStopCheckedOutEvent(IAnalysisLocation analysisLocation) => AnalysisLocation = analysisLocation;
     public IAnalysisLocation AnalysisLocation { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
+    public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new DetectAgentsForDetectManifestsActivity(
-            eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>(),  eventClient.ServiceProvider.GetRequiredService<IAgentManager>(),
+            eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>(),
+            eventClient.ServiceProvider.GetRequiredService<IAgentManager>(),
             AnalysisLocation));
-    }
 }

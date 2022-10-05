@@ -11,7 +11,8 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string ManifestPath;
 
-    public GenerateBillOfMaterialsActivity(IAgentReader agentReader, IAnalysisLocation analysisLocation, string manifestPath)
+    public GenerateBillOfMaterialsActivity(IAgentReader agentReader, IAnalysisLocation analysisLocation,
+        string manifestPath)
     {
         AgentReader = agentReader;
         AnalysisLocation = analysisLocation;

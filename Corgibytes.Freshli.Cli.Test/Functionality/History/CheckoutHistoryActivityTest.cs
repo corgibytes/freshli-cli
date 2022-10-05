@@ -20,7 +20,7 @@ public class CheckoutHistoryActivityTest
         var cacheDirectory = "/path/to/cache/dir";
         var archiveLocation = $"{cacheDirectory}/histories/{repositoryId}/{commitId}";
 
-        var analysisLocation = new AnalysisLocation(cacheDirectory,repositoryId,commitId);
+        var analysisLocation = new AnalysisLocation(cacheDirectory, repositoryId, commitId);
 
         var gitManager = new Mock<IGitManager>();
 

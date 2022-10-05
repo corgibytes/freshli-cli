@@ -21,7 +21,8 @@ public class ManifestDetectedEventTest
 
         var javaAgentReader = new Mock<IAgentReader>();
 
-        javaAgentReader.Setup(mock => mock.ProcessManifest(manifestPath, It.IsAny<DateTime>())).Returns(billOfMaterialsPath);
+        javaAgentReader.Setup(mock => mock.ProcessManifest(manifestPath, It.IsAny<DateTime>()))
+            .Returns(billOfMaterialsPath);
 
         var engine = new Mock<IApplicationActivityEngine>();
 
