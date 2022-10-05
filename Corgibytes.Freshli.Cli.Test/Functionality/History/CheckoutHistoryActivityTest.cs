@@ -21,14 +21,10 @@ public class CheckoutHistoryActivityTest
         var cacheDirectory = "/path/to/cache/dir";
         var archiveLocation = $"{cacheDirectory}/histories/{repositoryId}/{commitId}";
 
-<<<<<<< HEAD
-        var analysisLocation = new AnalysisLocation(cacheDirectory, repositoryId, commitId);
-=======
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(mock => mock.GitPath).Returns(gitExecutablePath);
         configuration.Setup(mock => mock.CacheDir).Returns(cacheDirectory);
         var analysisLocation = new AnalysisLocation(configuration.Object, repositoryId, commitId);
->>>>>>> 17d03008d745c9ae27235640a7d65e25e5fdf50f
 
         var gitManager = new Mock<IGitManager>();
 

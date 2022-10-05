@@ -22,12 +22,8 @@ public class ManifestDetectedEvent : IApplicationEvent
 
     public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
         new GenerateBillOfMaterialsActivity(
-<<<<<<< HEAD
-            AgentReader,
-=======
             AnalysisId,
             AgentExecutablePath,
->>>>>>> 17d03008d745c9ae27235640a7d65e25e5fdf50f
             AnalysisLocation,
             ManifestPath
         ));

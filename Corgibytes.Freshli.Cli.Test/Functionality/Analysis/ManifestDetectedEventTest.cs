@@ -19,14 +19,6 @@ public class ManifestDetectedEventTest
         var analysisLocation = new AnalysisLocation(configuration.Object, "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d",
             "da39a3ee5e6b4b0d3255bfef95601890afd80709");
 
-<<<<<<< HEAD
-        var javaAgentReader = new Mock<IAgentReader>();
-
-        javaAgentReader.Setup(mock => mock.ProcessManifest(manifestPath, It.IsAny<DateTime>()))
-            .Returns(billOfMaterialsPath);
-
-=======
->>>>>>> 17d03008d745c9ae27235640a7d65e25e5fdf50f
         var engine = new Mock<IApplicationActivityEngine>();
 
         const string agentExecutablePath = "/path/to/agent";

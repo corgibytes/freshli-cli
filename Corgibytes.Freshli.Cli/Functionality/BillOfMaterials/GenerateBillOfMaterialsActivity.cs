@@ -14,12 +14,8 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
     public readonly IAnalysisLocation AnalysisLocation;
     public readonly string ManifestPath;
 
-<<<<<<< HEAD
-    public GenerateBillOfMaterialsActivity(IAgentReader agentReader, IAnalysisLocation analysisLocation,
-=======
     public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
         IAnalysisLocation analysisLocation,
->>>>>>> 17d03008d745c9ae27235640a7d65e25e5fdf50f
         string manifestPath)
     {
         AnalysisId = analysisId;

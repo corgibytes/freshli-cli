@@ -15,11 +15,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class ComputeHistoryTest : FreshliTest
 {
-<<<<<<< HEAD
-    private readonly Mock<IAnalysisLocation> _analysisLocation;
-=======
     private readonly Mock<IAnalysisLocation> _analysisLocation = new();
->>>>>>> 17d03008d745c9ae27235640a7d65e25e5fdf50f
     private readonly ComputeHistory _computeHistory;
     private readonly Mock<IConfiguration> _configuration = new();
     private readonly MockListCommits _listCommits;
@@ -37,9 +33,6 @@ public class ComputeHistoryTest : FreshliTest
         _listCommits.HasCommitsAvailable(new List<GitCommit>());
         var expectedStops = new List<HistoryIntervalStop>();
         Assert.Equivalent(expectedStops,
-<<<<<<< HEAD
-            _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "git", "1d", DateTimeOffset.Now));
-=======
             _computeHistory.ComputeWithHistoryInterval(_analysisLocation.Object, "1d", DateTimeOffset.Now));
     }
 
@@ -79,7 +72,6 @@ public class ComputeHistoryTest : FreshliTest
 
         Assert.NotStrictEqual(expectedStops, actualStops);
         Assert.Equal(expectedStops.Count, actualStops.Count);
->>>>>>> 17d03008d745c9ae27235640a7d65e25e5fdf50f
     }
 
     [Theory]

@@ -29,10 +29,6 @@ public class GenerateBillOfMaterialsActivityTest
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         // Act
-<<<<<<< HEAD
-        var activity =
-            new GenerateBillOfMaterialsActivity(javaAgentReader.Object, analysisLocation.Object, "/path/to/manifest");
-=======
         var analysisLocation = new Mock<IAnalysisLocation>();
         analysisLocation.Setup(mock => mock.Path).Returns("/working/directory");
 
@@ -40,7 +36,6 @@ public class GenerateBillOfMaterialsActivityTest
         var activity =
             new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, analysisLocation.Object,
                 "/path/to/manifest");
->>>>>>> 17d03008d745c9ae27235640a7d65e25e5fdf50f
         activity.Handle(eventEngine.Object);
 
         // Assert
