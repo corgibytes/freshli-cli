@@ -51,6 +51,7 @@ flowchart TD;
     DestroyCacheActivity --> CacheDestroyFailedEvent
     CachePreparedEvent --> RestartAnalysisActivity
     ComputeLibYearActivity --> LibYearComputedEvent
+    StartDoctorActivity
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
