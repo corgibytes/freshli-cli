@@ -6,6 +6,7 @@ public interface IResultsApi
 {
     public string GetResultsUrl(Guid analysisId);
     public Guid CreateAnalysis(string url);
+
     public void CreateHistoryPoint(
         // ReSharper disable once UnusedParameter.Global
         Guid apiAnalysisId,

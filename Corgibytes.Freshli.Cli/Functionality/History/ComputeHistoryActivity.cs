@@ -49,7 +49,7 @@ public class ComputeHistoryActivity : IApplicationActivity
             }
             catch (InvalidHistoryIntervalException exception)
             {
-                eventClient.Fire(new InvalidHistoryIntervalEvent{ErrorMessage = exception.Message});
+                eventClient.Fire(new InvalidHistoryIntervalEvent { ErrorMessage = exception.Message });
                 return;
             }
         }

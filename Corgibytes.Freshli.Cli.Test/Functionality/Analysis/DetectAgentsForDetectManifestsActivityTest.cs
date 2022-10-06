@@ -13,14 +13,13 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class DetectAgentsForDetectManifestsActivityTest
 {
     private readonly Mock<IAgentsDetector> _agentsDetector = new();
-    private readonly Mock<IServiceProvider> _serviceProvider = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IHistoryStopData> _historyStopData = new();
+    private readonly Mock<IServiceProvider> _serviceProvider = new();
 
 
     public DetectAgentsForDetectManifestsActivityTest()
     {
-
         _serviceProvider.Setup(mock => mock.GetService(typeof(IAgentsDetector))).Returns(_agentsDetector.Object);
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
     }

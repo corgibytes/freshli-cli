@@ -25,6 +25,5 @@ public class ApiHistoryStopCreatedEventTest
         eventClient.Verify(mock => mock.Dispatch(
             It.Is<CheckoutHistoryActivity>(
                 value => value.HistoryStopData == historyStopData.Object)));
-
     }
 }

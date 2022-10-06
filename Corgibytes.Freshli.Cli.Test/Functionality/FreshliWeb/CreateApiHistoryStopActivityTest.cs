@@ -28,10 +28,10 @@ public class CreateApiHistoryStopActivtyTest
 
         var historyStopData = new HistoryStopData(configuration.Object, repositoryId, commitId, moment);
 
-        var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, "1m", CommitHistory.AtInterval, RevisionHistoryMode.AllRevisions)
-        {
-            ApiAnalysisId = apiAnalysisId
-        };
+        var cachedAnalysis =
+            new CachedAnalysis(repositoryUrl, repositoryBranch, "1m", CommitHistory.AtInterval,
+                RevisionHistoryMode.AllRevisions)
+            { ApiAnalysisId = apiAnalysisId };
 
         var cacheDb = new Mock<ICacheDb>();
         cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).Returns(cachedAnalysis);
@@ -58,6 +58,5 @@ public class CreateApiHistoryStopActivtyTest
             mock.Fire(It.Is<ApiHistoryStopCreatedEvent>(value =>
                 value.CachedAnalysisId == cachedAnalysisId &&
                 value.HistoryStopData == historyStopData)));
-
     }
 }
