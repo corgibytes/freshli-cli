@@ -41,7 +41,8 @@ public class HistoryStopDataTest
         var expectedPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         var repositoryId = Guid.NewGuid().ToString();
 
-        var historyStopData = new HistoryStopData(_configuration.Object, repositoryId) { LocalDirectory = expectedPath };
+        var historyStopData =
+            new HistoryStopData(_configuration.Object, repositoryId) { LocalDirectory = expectedPath };
 
         Assert.Equal(expectedPath, historyStopData.Path);
     }

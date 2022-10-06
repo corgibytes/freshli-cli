@@ -14,12 +14,12 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 
 public class ComputeHistoryActivityTest
 {
-    private readonly Mock<IHistoryStopData> _historyStopData = new();
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IComputeHistory> _computeHistory = new();
     private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    private readonly Mock<IHistoryStopData> _historyStopData = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
 
     public ComputeHistoryActivityTest()
@@ -168,7 +168,8 @@ public class ComputeHistoryActivityTest
         // If we want to analyse it, we have to be wary of the interval not being bigger than the age of the first commit.
         // e.g. if it's less than a year old, running the analysis with a 1y interval breaks.
 
-        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1y", CommitHistory.AtInterval, RevisionHistoryMode.AllRevisions);
+        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1y", CommitHistory.AtInterval,
+            RevisionHistoryMode.AllRevisions);
 
         var listCommits = new MockListCommits();
         listCommits.HasCommitsAvailable(new List<GitCommit>
@@ -188,7 +189,8 @@ public class ComputeHistoryActivityTest
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<InvalidHistoryIntervalEvent>(value =>
-                value.ErrorMessage == "Given range (1y) results in an invalid start date as it occurs before date of oldest commit")
+                value.ErrorMessage ==
+                "Given range (1y) results in an invalid start date as it occurs before date of oldest commit")
             ));
     }
 

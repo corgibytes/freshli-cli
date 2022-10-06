@@ -15,6 +15,7 @@ public class HistoryIntervalStopFoundEvent : IApplicationEvent
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public Guid AnalysisId { get; set; }
+
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public IHistoryStopData HistoryStopData { get; set; }
 

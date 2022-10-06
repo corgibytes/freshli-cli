@@ -7,7 +7,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class DetectManifestsUsingAgentActivity : IApplicationActivity
 {
-    public DetectManifestsUsingAgentActivity(Guid analysisId, IHistoryStopData historyStopData, string agentExecutablePath)
+    public DetectManifestsUsingAgentActivity(Guid analysisId, IHistoryStopData historyStopData,
+        string agentExecutablePath)
     {
         AnalysisId = analysisId;
         HistoryStopData = historyStopData;
