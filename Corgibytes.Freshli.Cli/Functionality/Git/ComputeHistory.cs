@@ -76,6 +76,11 @@ public class ComputeHistory : IComputeHistory
             rangeStartDate = dateTimeOffset;
         }
 
+        if (rangeStartDate < oldestCommit.CommittedAt)
+        {
+            throw new InvalidHistoryIntervalException($"Given range ({historyInterval}) results in an invalid start date as it occurs before date of oldest commit");
+        }
+
         // Foreach offset in range, select the youngest commit, as long as it's not younger than the offset.
         return (
                 from offset in range
