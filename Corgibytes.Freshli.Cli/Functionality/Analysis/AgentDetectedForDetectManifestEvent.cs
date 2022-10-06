@@ -5,7 +5,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AgentDetectedForDetectManifestEvent : IApplicationEvent
 {
-    public AgentDetectedForDetectManifestEvent(Guid analysisId, IHistoryStopData historyStopData, string agentExecutablePath)
+    public AgentDetectedForDetectManifestEvent(Guid analysisId, IHistoryStopData historyStopData,
+        string agentExecutablePath)
     {
         AnalysisId = analysisId;
         HistoryStopData = historyStopData;

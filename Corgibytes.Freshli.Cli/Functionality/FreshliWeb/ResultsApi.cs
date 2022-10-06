@@ -48,19 +48,17 @@ public class ResultsApi : IResultsApi
         var client = new HttpClient();
 
         var response = client.PostAsync(
-            _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId.ToString(),
+            _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId,
             JsonContent.Create(
-                new
-                {
-                    date = moment.ToString("o")
-                },
+                new { date = moment.ToString("o") },
                 new MediaTypeHeaderValue("application/json")
             )
         ).Result;
 
         if (response.StatusCode != HttpStatusCode.Created)
         {
-            throw new InvalidOperationException($"Failed to create history point for analysis '{apiAnalysisId}' with '{moment}'.");
+            throw new InvalidOperationException(
+                $"Failed to create history point for analysis '{apiAnalysisId}' with '{moment}'.");
         }
     }
 }

@@ -17,6 +17,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     // ReSharper disable once MemberCanBePrivate.Global
     public Guid AnalysisId { get; set; }
+
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public IHistoryStopData HistoryStopData { get; set; }
 

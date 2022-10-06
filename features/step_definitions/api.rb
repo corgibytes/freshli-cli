@@ -51,7 +51,10 @@ Given('the Freshli Web API is available') do
       method: :post,
       path: '/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8',
       body: {
-        date: Pact::Term.new(generate: '2022-12-23T12:34:56.0000000Z', matcher: /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d{7}([+-][0-2]\d:[0-5]\d|Z)$/)
+        date: Pact::Term.new(
+          generate: '2022-12-23T12:34:56.0000000Z',
+          matcher: /^\d{4}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d{7}([+-][0-2]\d:[0-5]\d|Z)$/
+        )
       }
     )
     .will_respond_with(

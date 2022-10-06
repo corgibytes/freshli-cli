@@ -34,6 +34,7 @@ public class CachedAnalysis
     [Required] public string HistoryInterval { get; set; }
 
     public Guid? ApiAnalysisId { get; set; }
+
     // ReSharper disable once CollectionNeverQueried.Global
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
