@@ -42,8 +42,16 @@ public class ComputeHistoryActivity : IApplicationActivity
         }
         else if (cachedAnalysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
         {
-            historyIntervalStops = computeHistoryService
-                .ComputeWithHistoryInterval(AnalysisLocation, cachedAnalysis.HistoryInterval, DateTimeOffset.Now);
+            try
+            {
+                historyIntervalStops = computeHistoryService
+                    .ComputeWithHistoryInterval(AnalysisLocation, cachedAnalysis.HistoryInterval, DateTimeOffset.Now);
+            }
+            catch (InvalidHistoryIntervalException exception)
+            {
+                eventClient.Fire(new InvalidHistoryIntervalEvent{ErrorMessage = exception.Message});
+                return;
+            }
         }
         else
         {
