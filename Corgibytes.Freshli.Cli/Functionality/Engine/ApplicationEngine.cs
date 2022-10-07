@@ -54,7 +54,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         var shouldWait = true;
         while (shouldWait)
         {
-            Thread.Sleep(10);
+            Thread.Sleep(500);
 
             var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
             var length = statistics.Processing + statistics.Enqueued;
