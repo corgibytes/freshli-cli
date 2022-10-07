@@ -100,7 +100,11 @@ public class Program
             .AddMiddleware(async (context, next) =>
             {
                 var workerCount = context.ParseResult.GetOptionValueByName<int>("workers");
-                HangfireBackgroundService?.StopAsync(CancellationToken.None);
+                await Task.Run(() =>
+                {
+                    HangfireBackgroundService?.StopAsync(CancellationToken.None);
+                });
+
                 if (HangfireOptions != null && workerCount > 0)
                 {
                     HangfireOptions.WorkerCount = workerCount;
