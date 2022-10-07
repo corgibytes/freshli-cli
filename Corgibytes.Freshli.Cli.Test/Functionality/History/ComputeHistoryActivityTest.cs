@@ -6,6 +6,7 @@ using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
+using Corgibytes.Freshli.Cli.Test.Functionality.Git;
 using Moq;
 using Xunit;
 
@@ -160,6 +161,37 @@ public class ComputeHistoryActivityTest
                 )
             )
         );
+    }
+
+    [Fact]
+    public void FiresInvalidHistoryIntervalStopEvent()
+    {
+        // This could happen when we run the analysis on a codebase that barely has any commits.
+        // If we want to analyse it, we have to be wary of the interval not being bigger than the age of the first commit.
+        // e.g. if it's less than a year old, running the analysis with a 1y interval breaks.
+
+        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1y", CommitHistory.AtInterval, RevisionHistoryMode.AllRevisions);
+
+        var listCommits = new MockListCommits();
+        listCommits.HasCommitsAvailable(new List<GitCommit>
+        {
+            new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+                new DateTimeOffset(2022, 1, 29, 00, 00, 00, TimeSpan.Zero)),
+            new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
+                new DateTimeOffset(2022, 1, 30, 00, 00, 00, TimeSpan.Zero))
+        });
+
+        var computeHistory = new ComputeHistory(listCommits, new HistoryIntervalParser());
+
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(computeHistory);
+
+        var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
+        new ComputeHistoryActivity(analysisId, _analysisLocation.Object).Handle(_eventEngine.Object);
+
+        _eventEngine.Verify(mock =>
+            mock.Fire(It.Is<InvalidHistoryIntervalEvent>(value =>
+                value.ErrorMessage == "Given range (1y) results in an invalid start date as it occurs before date of oldest commit")
+            ));
     }
 
     private void SetupCachedAnalysis(string repositoryUrl, string repositoryBranch, string historyInterval,
