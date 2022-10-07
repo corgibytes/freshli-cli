@@ -26,7 +26,7 @@ public class MainCommand : RootCommand
             "The number of worker processes that should be running at any given time. This defaults to twice the number of CPU cores.")
         {
             AllowMultipleArgumentsPerToken = false,
-            Arity = ArgumentArity.ZeroOrOne
+            Arity = ArgumentArity.ExactlyOne
         };
         AddOption(workers);
 

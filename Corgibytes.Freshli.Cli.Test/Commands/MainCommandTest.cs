@@ -39,7 +39,7 @@ public class MainCommandTest : FreshliTest
         {
             new object?[]
             {
-                "--workers", ArgumentArity.ZeroOrOne
+                "--workers", ArgumentArity.ExactlyOne
             },
             new object?[]
             {
