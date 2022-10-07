@@ -113,9 +113,9 @@ Feature: analyze
         https://freshli.app/
         """
 
-    Scenario: Run the analysis, start with 6 workers.
+    Scenario: Run the analysis, start with 12 workers.
         Given a directory named "~/.freshli" does not exist
-        When I run `freshli --workers=6 analyze https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel=Debug --workers=12 analyze https://github.com/corgibytes/freshli-fixture-java-test`
         Then the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
         And we can open a SQLite connection to "~/.freshli/freshli.db"
@@ -126,6 +126,10 @@ Feature: analyze
         Then the output should contain:
         """
         https://freshli.app/
+        """
+        And the output should contain:
+        """
+        Worker count: 12
         """
 
     Scenario: Run the analysis with specific cache-dir location.
