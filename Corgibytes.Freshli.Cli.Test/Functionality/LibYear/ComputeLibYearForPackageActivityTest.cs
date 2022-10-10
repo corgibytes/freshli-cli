@@ -1,6 +1,6 @@
 using System;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.Services;
@@ -17,20 +17,16 @@ public class ComputeLibYearForPackageActivityTest
     public void HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
     {
         var analysisId = Guid.NewGuid();
-        var asOfDate = new DateTimeOffset(2021, 1, 29, 12, 30, 45, 0, TimeSpan.Zero);
-        var configuration = new Mock<IConfiguration>();
-        var repositoryId = "abcef123";
-        var commitId = "becfec231";
-        var historyStopData = new HistoryStopData(configuration.Object, repositoryId, commitId, asOfDate);
+        var asOfDateTime = new DateTimeOffset(2021, 1, 29, 12, 30, 45, 0, TimeSpan.Zero);
         var agentExecutablePath = "/path/to/agent/smith";
         var package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
         var packageLibYear = new PackageLibYear(
-            asOfDate,
+            asOfDateTime,
             package,
-            asOfDate,
+            asOfDateTime,
             package,
             6.2,
-            asOfDate
+            asOfDateTime
         );
 
         var historyStopPointId = 29;
@@ -47,13 +43,19 @@ public class ComputeLibYearForPackageActivityTest
         var calculator = new Mock<IPackageLibYearCalculator>();
         var agentManager = new Mock<IAgentManager>();
         var agentReader = new Mock<IAgentReader>();
+        var cacheManager = new Mock<ICacheManager>();
+        var cacheDb = new Mock<ICacheDb>();
+        var historyStopPoint = new CachedHistoryStopPoint { AsOfDateTime = asOfDateTime };
 
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(agentReader.Object);
-        calculator.Setup(mock => mock.ComputeLibYear(agentReader.Object, package, asOfDate)).Returns(packageLibYear);
+        calculator.Setup(mock => mock.ComputeLibYear(agentReader.Object, package, asOfDateTime)).Returns(packageLibYear);
+        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
 
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IPackageLibYearCalculator))).Returns(calculator.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
         activity.Handle(eventClient.Object);
 

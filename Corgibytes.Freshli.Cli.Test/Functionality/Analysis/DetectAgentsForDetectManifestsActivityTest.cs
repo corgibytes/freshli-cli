@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -14,12 +16,19 @@ public class DetectAgentsForDetectManifestsActivityTest
 {
     private readonly Mock<IAgentsDetector> _agentsDetector = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
-    private readonly Mock<IHistoryStopData> _historyStopData = new();
+    private readonly Mock<CachedHistoryStopPoint> _historyStopPoint = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly Mock<ICacheManager> _cacheManager = new();
+    private readonly Mock<ICacheDb> _cacheDb = new();
 
+    private const int HistoryStopPointId = 29;
 
     public DetectAgentsForDetectManifestsActivityTest()
     {
+        _cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(HistoryStopPointId)).Returns(_historyStopPoint.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IAgentsDetector))).Returns(_agentsDetector.Object);
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
     }
@@ -63,8 +72,7 @@ public class DetectAgentsForDetectManifestsActivityTest
         _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
         var analysisId = Guid.NewGuid();
-        var historyStopPointId = 29;
-        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, historyStopPointId);
+        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, HistoryStopPointId);
 
         activity.Handle(_eventEngine.Object);
 
