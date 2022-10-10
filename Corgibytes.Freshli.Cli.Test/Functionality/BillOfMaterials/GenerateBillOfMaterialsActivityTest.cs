@@ -41,6 +41,7 @@ public class GenerateBillOfMaterialsActivityTest
         // Assert
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<BillOfMaterialsGeneratedEvent>(appEvent =>
+                appEvent.AgentExecutablePath == agentExecutablePath &&
                 appEvent.AnalysisId == analysisId &&
                 appEvent.HistoryStopData == historyStopData.Object &&
                 appEvent.PathToBillOfMaterials == "/path/to/bill-of-materials")));

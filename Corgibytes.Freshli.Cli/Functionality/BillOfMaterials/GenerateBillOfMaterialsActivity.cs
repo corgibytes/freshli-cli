@@ -33,6 +33,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
         var pathToBillOfMaterials =
             agentReader.ProcessManifest(Path.Combine(HistoryStopData.Path, ManifestPath), asOfDate);
 
-        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisId, HistoryStopData, pathToBillOfMaterials));
+        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisId, HistoryStopData, pathToBillOfMaterials,
+            AgentExecutablePath));
     }
 }
