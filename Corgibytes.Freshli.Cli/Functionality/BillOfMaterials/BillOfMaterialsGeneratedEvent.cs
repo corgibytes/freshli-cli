@@ -8,11 +8,12 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 public class BillOfMaterialsGeneratedEvent : IApplicationEvent
 {
     public BillOfMaterialsGeneratedEvent(Guid analysisId, IHistoryStopData historyStopData,
-        string pathToBillOfMaterials)
+        string pathToBillOfMaterials, string agentExecutablePath)
     {
         AnalysisId = analysisId;
         HistoryStopData = historyStopData;
         PathToBillOfMaterials = pathToBillOfMaterials;
+        AgentExecutablePath = agentExecutablePath;
     }
 
     public Guid AnalysisId { get; }
