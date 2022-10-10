@@ -44,7 +44,7 @@ flowchart TD;
     UnableToRestartAnalysisEvent
     UnhandledExceptionEvent -.-> FailureEvent
     UnhandledExceptionEvent
-    BillOfMaterialsGeneratedEvent --> ComputeLibYearActivity
+    BillOfMaterialsGeneratedEvent --> ComputeLibYearForBomActivity
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
     CacheDestroyedEvent
     CacheDestroyFailedEvent
