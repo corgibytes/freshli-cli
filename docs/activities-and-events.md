@@ -51,7 +51,6 @@ flowchart TD;
     DestroyCacheActivity --> CacheDestroyedEvent
     DestroyCacheActivity --> CacheDestroyFailedEvent
     CachePreparedEvent --> RestartAnalysisActivity
-    ComputeLibYearActivity --> LibYearComputedEvent
     AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
