@@ -24,11 +24,12 @@ public class PackageFoundEventTest
         var agentExecutablePath = "/path/to/agent";
         var activityEngine = new Mock<IApplicationActivityEngine>();
 
+        var historyStopPointId = 29;
         var package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
         var packageEvent = new PackageFoundEvent
         {
             AnalysisId = analysisId,
-            HistoryStopData = historyStopData,
+            HistoryStopPointId = historyStopPointId,
             AgentExecutablePath = agentExecutablePath,
             Package = package
         };
@@ -37,7 +38,7 @@ public class PackageFoundEventTest
 
         activityEngine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearForPackageActivity>(value =>
             value.AnalysisId == analysisId &&
-            value.HistoryStopData == historyStopData &&
+            value.HistoryStopPointId == historyStopPointId &&
             value.AgentExecutablePath == agentExecutablePath &&
             value.Package == package)));
     }

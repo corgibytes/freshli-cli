@@ -36,20 +36,21 @@ public class DetectManifestsUsingAgentActivityTest
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         var analysisId = Guid.NewGuid();
+        var historyStopPointId = 29;
         var activity =
-            new DetectManifestsUsingAgentActivity(analysisId, historyStopData.Object, agentExecutablePath);
+            new DetectManifestsUsingAgentActivity(analysisId, historyStopPointId, agentExecutablePath);
 
         activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
             appEvent.AnalysisId == analysisId &&
-            appEvent.HistoryStopData == historyStopData.Object &&
+            appEvent.HistoryStopPointId == historyStopPointId &&
             appEvent.AgentExecutablePath == agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/first/manifest")));
 
         eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
             appEvent.AnalysisId == analysisId &&
-            appEvent.HistoryStopData == historyStopData.Object &&
+            appEvent.HistoryStopPointId == historyStopPointId &&
             appEvent.AgentExecutablePath == agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/second/manifest")));
     }

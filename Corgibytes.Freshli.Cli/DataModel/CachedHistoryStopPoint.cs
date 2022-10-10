@@ -16,6 +16,9 @@ public class CachedHistoryStopPoint
 
     [Required] public DateTimeOffset AsOfDateTime { get; set; }
 
+    [Required] public string RepositoryId { get; set; } = null!;
+    [Required] public string LocalPath { get; set; } = null!;
+
     // ReSharper disable once PropertyCanBeMadeInitOnly.Global
     [Required] public string GitCommitId { get; set; } = null!;
 

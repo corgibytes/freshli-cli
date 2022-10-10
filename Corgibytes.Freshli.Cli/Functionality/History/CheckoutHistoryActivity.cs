@@ -8,10 +8,10 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class CheckoutHistoryActivity : IApplicationActivity
 {
-    public CheckoutHistoryActivity(Guid analysisId, IHistoryStopData historyStopData)
+    public CheckoutHistoryActivity(Guid analysisId, int historyStopPointId)
     {
         AnalysisId = analysisId;
-        HistoryStopData = historyStopData;
+        HistoryStopPointId = historyStopPointId;
     }
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
@@ -19,11 +19,14 @@ public class CheckoutHistoryActivity : IApplicationActivity
     public Guid AnalysisId { get; set; }
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public IHistoryStopData HistoryStopData { get; set; }
+    public int HistoryStopPointId { get; set; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        if (HistoryStopData.CommitId == null)
+        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+        var cacheDb = cacheManager.GetCacheDb();
+        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        if (historyStopPoint?.GitCommitId == null)
         {
             throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
         }
@@ -31,14 +34,14 @@ public class CheckoutHistoryActivity : IApplicationActivity
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
         gitManager.CreateArchive(
-            HistoryStopData.RepositoryId,
-            gitManager.ParseCommitId(HistoryStopData.CommitId)
+            historyStopPoint.RepositoryId,
+            gitManager.ParseCommitId(historyStopPoint.GitCommitId)
         );
 
         eventClient.Fire(new HistoryStopCheckedOutEvent
         {
             AnalysisId = AnalysisId,
-            HistoryStopData = HistoryStopData
+            HistoryStopPointId = HistoryStopPointId
         });
     }
 }

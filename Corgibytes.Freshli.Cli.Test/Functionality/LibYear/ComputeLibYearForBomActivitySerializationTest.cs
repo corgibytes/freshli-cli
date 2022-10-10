@@ -11,7 +11,7 @@ public class ComputeLibYearForBomActivitySerializationTest : SerializationTest<C
     protected override ComputeLibYearForBomActivity BuildIncoming() =>
         new(
             Guid.NewGuid(),
-            this.BuildHistoryStopData(),
+            29,
             "/path/to/bom",
             "/path/to/agent"
         );
@@ -19,7 +19,7 @@ public class ComputeLibYearForBomActivitySerializationTest : SerializationTest<C
     protected override void AssertEqual(ComputeLibYearForBomActivity incoming, ComputeLibYearForBomActivity outgoing)
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
-        this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
+        Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);
         Assert.Equal(incoming.PathToBom, outgoing.PathToBom);
         Assert.Equal(incoming.AgentExecutablePath, outgoing.AgentExecutablePath);
     }

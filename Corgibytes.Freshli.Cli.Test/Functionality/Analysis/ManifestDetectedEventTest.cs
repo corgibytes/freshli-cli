@@ -23,13 +23,14 @@ public class ManifestDetectedEventTest
 
         const string agentExecutablePath = "/path/to/agent";
         var analysisId = Guid.NewGuid();
+        var historyStopPointId = 29;
         var manifestEvent =
-            new ManifestDetectedEvent(analysisId, historyStopData, agentExecutablePath, manifestPath);
+            new ManifestDetectedEvent(analysisId, historyStopPointId, agentExecutablePath, manifestPath);
         manifestEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<GenerateBillOfMaterialsActivity>(value =>
             value.AnalysisId == analysisId &&
-            value.HistoryStopData == historyStopData &&
+            value.HistoryStopPointId == historyStopPointId &&
             value.ManifestPath == manifestPath &&
             value.AgentExecutablePath == agentExecutablePath
         )));

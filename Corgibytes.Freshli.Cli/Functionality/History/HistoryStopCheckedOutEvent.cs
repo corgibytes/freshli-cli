@@ -7,8 +7,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 public class HistoryStopCheckedOutEvent : IApplicationEvent
 {
     public Guid AnalysisId { get; init; }
-    public IHistoryStopData HistoryStopData { get; init; } = null!;
+    public int HistoryStopPointId { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new DetectAgentsForDetectManifestsActivity(AnalysisId, HistoryStopData));
+        eventClient.Dispatch(new DetectAgentsForDetectManifestsActivity(AnalysisId, HistoryStopPointId));
 }

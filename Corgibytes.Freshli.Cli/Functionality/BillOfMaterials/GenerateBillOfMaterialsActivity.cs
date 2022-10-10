@@ -11,16 +11,15 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
 {
     public readonly string AgentExecutablePath;
     public readonly Guid AnalysisId;
-    public readonly IHistoryStopData HistoryStopData;
+    public readonly int HistoryStopPointId;
     public readonly string ManifestPath;
 
     public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
-        IHistoryStopData historyStopData,
-        string manifestPath)
+        int historyStopPointId, string manifestPath)
     {
         AnalysisId = analysisId;
         AgentExecutablePath = agentExecutablePath;
-        HistoryStopData = historyStopData;
+        HistoryStopPointId = historyStopPointId;
         ManifestPath = manifestPath;
     }
 
@@ -29,11 +28,15 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
         var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
         var agentReader = agentManager.GetReader(AgentExecutablePath);
 
+        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+        var cacheDb = cacheManager.GetCacheDb();
+        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+
         var asOfDate = DateTime.Now;
         var pathToBillOfMaterials =
-            agentReader.ProcessManifest(Path.Combine(HistoryStopData.Path, ManifestPath), asOfDate);
+            agentReader.ProcessManifest(Path.Combine(historyStopPoint?.LocalPath!, ManifestPath), asOfDate);
 
-        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisId, HistoryStopData, pathToBillOfMaterials,
+        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisId, HistoryStopPointId, pathToBillOfMaterials,
             AgentExecutablePath));
     }
 }

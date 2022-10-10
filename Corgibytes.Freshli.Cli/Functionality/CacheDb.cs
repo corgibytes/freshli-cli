@@ -29,6 +29,9 @@ public class CacheDb : ICacheDb, IDisposable
     public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
     public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id) => Db.CachedGitSources.Find(id.Id);
 
+    public CachedHistoryStopPoint? RetrieveHistoryStopPoint(int historyStopPointId) =>
+        Db.CachedHistoryStopPoints.Find(historyStopPointId);
+
     public int AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint)
     {
         var savedEntity = Db.CachedHistoryStopPoints.Add(historyStopPoint);

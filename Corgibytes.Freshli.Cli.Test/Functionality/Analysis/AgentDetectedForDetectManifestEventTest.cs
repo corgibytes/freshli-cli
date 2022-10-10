@@ -14,9 +14,9 @@ public class AgentDetectedForDetectManifestEventTest
     {
         const string agentExecutablePath = "/path/to/agent";
         var analysisId = Guid.NewGuid();
-        var historyStopData = new Mock<IHistoryStopData>();
+        var historyStopPointId = 29;
         var appEvent =
-            new AgentDetectedForDetectManifestEvent(analysisId, historyStopData.Object, agentExecutablePath);
+            new AgentDetectedForDetectManifestEvent(analysisId, historyStopPointId, agentExecutablePath);
 
         var activityEngine = new Mock<IApplicationActivityEngine>();
 
@@ -25,7 +25,7 @@ public class AgentDetectedForDetectManifestEventTest
         activityEngine.Verify(mock =>
             mock.Dispatch(It.Is<DetectManifestsUsingAgentActivity>(activity =>
                 activity.AnalysisId == analysisId &&
-                activity.HistoryStopData == historyStopData.Object &&
+                activity.HistoryStopPointId == historyStopPointId &&
                 activity.AgentExecutablePath == agentExecutablePath)));
     }
 }

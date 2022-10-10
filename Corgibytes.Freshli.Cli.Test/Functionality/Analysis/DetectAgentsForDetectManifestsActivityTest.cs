@@ -36,21 +36,22 @@ public class DetectAgentsForDetectManifestsActivityTest
         _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
         var analysisId = Guid.NewGuid();
+        var historyStopPointId = 29;
         var activity =
-            new DetectAgentsForDetectManifestsActivity(analysisId, _historyStopData.Object);
+            new DetectAgentsForDetectManifestsActivity(analysisId, historyStopPointId);
 
         activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
                 appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopData == _historyStopData.Object &&
+                appEvent.HistoryStopPointId == historyStopPointId &&
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-java")));
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
                 appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopData == _historyStopData.Object &&
+                appEvent.HistoryStopPointId == historyStopPointId &&
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet")));
     }
 
@@ -62,7 +63,8 @@ public class DetectAgentsForDetectManifestsActivityTest
         _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
         var analysisId = Guid.NewGuid();
-        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, _historyStopData.Object);
+        var historyStopPointId = 29;
+        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, historyStopPointId);
 
         activity.Handle(_eventEngine.Object);
 

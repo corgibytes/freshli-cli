@@ -8,7 +8,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 public class PackageFoundEvent : IApplicationEvent
 {
     public Guid AnalysisId { get; init; }
-    public IHistoryStopData HistoryStopData { get; init; } = null!;
+    public int HistoryStopPointId { get; init; }
     public string AgentExecutablePath { get; init; } = null!;
     public PackageURL Package { get; init; } = null!;
 
@@ -16,7 +16,7 @@ public class PackageFoundEvent : IApplicationEvent
         eventClient.Dispatch(new ComputeLibYearForPackageActivity
         {
             AnalysisId = AnalysisId,
-            HistoryStopData = HistoryStopData,
+            HistoryStopPointId = HistoryStopPointId,
             AgentExecutablePath = AgentExecutablePath,
             Package = Package
         });

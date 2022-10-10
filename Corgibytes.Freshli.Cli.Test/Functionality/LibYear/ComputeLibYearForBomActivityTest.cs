@@ -28,7 +28,8 @@ public class ComputeLibYearForBomActivityTest
 
         var eventClient = new Mock<IApplicationEventEngine>();
 
-        var activity = new ComputeLibYearForBomActivity(analysisId, historyStopData, pathToBom, pathToAgentExecutable);
+        var historyStopPointId = 29;
+        var activity = new ComputeLibYearForBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
 
         var serviceProvider = new Mock<IServiceProvider>();
 
@@ -53,14 +54,14 @@ public class ComputeLibYearForBomActivityTest
 
         eventClient.Verify(mock => mock.Fire(It.Is<PackageFoundEvent>(value =>
             value.AnalysisId == analysisId &&
-            value.HistoryStopData == historyStopData &&
+            value.HistoryStopPointId == historyStopPointId &&
             value.AgentExecutablePath == pathToAgentExecutable &&
             value.Package == packageAlpha
         )));
 
         eventClient.Verify(mock => mock.Fire(It.Is<PackageFoundEvent>(value =>
             value.AnalysisId == analysisId &&
-            value.HistoryStopData == historyStopData &&
+            value.HistoryStopPointId == historyStopPointId &&
             value.AgentExecutablePath == pathToAgentExecutable &&
             value.Package == packageBeta
         )));

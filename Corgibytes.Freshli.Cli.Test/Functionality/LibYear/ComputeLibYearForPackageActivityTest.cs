@@ -33,10 +33,11 @@ public class ComputeLibYearForPackageActivityTest
             asOfDate
         );
 
+        var historyStopPointId = 29;
         var activity = new ComputeLibYearForPackageActivity
         {
             AnalysisId = analysisId,
-            HistoryStopData = historyStopData,
+            HistoryStopPointId = historyStopPointId,
             AgentExecutablePath = agentExecutablePath,
             Package = package
         };
@@ -58,7 +59,7 @@ public class ComputeLibYearForPackageActivityTest
 
         eventClient.Verify(mock => mock.Fire(It.Is<LibYearComputedForPackageEvent>(value =>
             value.AnalysisId == analysisId &&
-            value.HistoryStopData == historyStopData &&
+            value.HistoryStopPointId == historyStopPointId &&
             value.AgentExecutablePath == agentExecutablePath &&
             value.PackageLibYear == packageLibYear)));
     }
