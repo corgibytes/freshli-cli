@@ -44,7 +44,7 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
                     latestVersion,
                     LibYear2.GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable)
                         .AsDecimalNumber(precision),
-                    asOfDate: DateTimeOffset.MinValue // todo: this should be the date that is being analyzed
+                    DateTimeOffset.MinValue // todo: this should be the date that is being analyzed
                 ));
             }
             catch (Exception exception)

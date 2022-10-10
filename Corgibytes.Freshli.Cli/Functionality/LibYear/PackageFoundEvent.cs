@@ -12,8 +12,7 @@ public class PackageFoundEvent : IApplicationEvent
     public string AgentExecutablePath { get; init; }
     public PackageURL Package { get; init; }
 
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
+    public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new ComputeLibYearForPackageActivity
         {
             AnalysisId = AnalysisId,
@@ -21,5 +20,4 @@ public class PackageFoundEvent : IApplicationEvent
             AgentExecutablePath = AgentExecutablePath,
             Package = Package
         });
-    }
 }
