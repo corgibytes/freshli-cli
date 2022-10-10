@@ -1,6 +1,7 @@
 using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
@@ -19,9 +20,9 @@ public class BillOfMaterialsGeneratedEvent : IApplicationEvent
     public string PathToBillOfMaterials { get; }
 
     public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
-        new ComputeLibYearActivity(
+        new ComputeLibYearForBomActivity(
             AnalysisId,
-            PathToBillOfMaterials,
-            HistoryStopData
+            HistoryStopData,
+            PathToBillOfMaterials
         ));
 }

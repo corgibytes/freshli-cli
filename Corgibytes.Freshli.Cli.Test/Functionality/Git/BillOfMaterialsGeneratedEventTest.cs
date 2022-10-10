@@ -3,6 +3,7 @@ using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.Services;
 using Moq;
 using Xunit;
@@ -20,11 +21,11 @@ public class BillOfMaterialsGeneratedEventTest
         configuration.Setup(mock => mock.CacheDir).Returns("/cache/directory");
         var historyStopData = new HistoryStopData(configuration.Object, "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d",
             "da39a3ee5e6b4b0d3255bfef95601890afd80709");
-        var pathToBoM = "/path/to/bom";
+        var pathToBom = "/path/to/bom";
 
         var analysisId = Guid.NewGuid();
         var billOfMaterialsGeneratedEvent =
-            new BillOfMaterialsGeneratedEvent(analysisId, historyStopData, pathToBoM);
+            new BillOfMaterialsGeneratedEvent(analysisId, historyStopData, pathToBom);
 
         serviceProvider.Setup(mock => mock.GetService(typeof(ICalculateLibYearFromFile)))
             .Returns(calculateLibYearFromFile.Object);
@@ -34,10 +35,10 @@ public class BillOfMaterialsGeneratedEventTest
 
         billOfMaterialsGeneratedEvent.Handle(engine.Object);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearActivity>(value =>
+        engine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearForBomActivity>(value =>
             value.AnalysisId == analysisId &&
             value.HistoryStopData == historyStopData &&
-            value.PathToBoM == pathToBoM
+            value.PathToBom == pathToBom
         )));
     }
 }
