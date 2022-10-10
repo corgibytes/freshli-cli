@@ -2,12 +2,12 @@ using System;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
-public class LibYear
+public class LibYear2
 {
     private readonly DateTimeOffset _releaseDateCurrentVersion;
     private readonly DateTimeOffset _releaseDateLatestVersion;
 
-    private LibYear(DateTimeOffset releaseDateCurrentVersion, DateTimeOffset releaseDateLatestVersion)
+    private LibYear2(DateTimeOffset releaseDateCurrentVersion, DateTimeOffset releaseDateLatestVersion)
     {
         _releaseDateCurrentVersion = releaseDateCurrentVersion;
         _releaseDateLatestVersion = releaseDateLatestVersion;
@@ -15,12 +15,12 @@ public class LibYear
 
     private TimeSpan TimeSpan { get; init; }
 
-    public static LibYear GivenReleaseDates(DateTimeOffset releaseDateCurrentVersion,
+    public static LibYear2 GivenReleaseDates(DateTimeOffset releaseDateCurrentVersion,
         DateTimeOffset releaseDateLatestVersion)
     {
         // .Duration() will always return an absolute value.
         // So even if the latest version was released before the current version you'll end up with a positive number.
-        var libYear = new LibYear(releaseDateCurrentVersion, releaseDateLatestVersion)
+        var libYear = new LibYear2(releaseDateCurrentVersion, releaseDateLatestVersion)
         {
             TimeSpan = releaseDateLatestVersion.Subtract(releaseDateCurrentVersion).Duration()
         };

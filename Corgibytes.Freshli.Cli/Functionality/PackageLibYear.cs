@@ -11,9 +11,13 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class PackageLibYear
 {
+    public readonly DateTimeOffset _asOfDate;
+
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
-        DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear)
+        DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
+        DateTimeOffset asOfDate)
     {
+        _asOfDate = asOfDate;
         ReleaseDateCurrentVersion = releaseDateCurrentVersion;
         CurrentVersion = currentVersion;
         ReleaseDateLatestVersion = releaseDateLatestVersion;
