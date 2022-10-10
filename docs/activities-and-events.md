@@ -80,6 +80,7 @@ flowchart TD;
     ComputeLibYearForBomActivity --> PackageFoundEvent
     ComputeLibYearForPackageActivity
     LibYearComputationForBomStartedEvent
+    LibYearComputedForPackageEvent
     PackageFoundEvent --> ComputeLibYearForPackageActivity
     LibYearComputedEvent
     LoadServiceProviderActivity
