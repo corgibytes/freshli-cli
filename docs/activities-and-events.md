@@ -81,7 +81,6 @@ flowchart TD;
     LibYearComputationForBomStartedEvent
     LibYearComputedForPackageEvent
     PackageFoundEvent --> ComputeLibYearForPackageActivity
-    LibYearComputedEvent
     LoadServiceProviderActivity
     ThrowExceptionActivity
 
