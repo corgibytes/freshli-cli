@@ -8,19 +8,19 @@ public class HistoryStopData : IHistoryStopData
     [JsonProperty] private readonly IConfiguration _configuration;
 
     public HistoryStopData(IConfiguration configuration, string repositoryId, string? commitId = null,
-        DateTimeOffset? asOfDate = null)
+        DateTimeOffset asOfDateTime = default)
     {
         _configuration = configuration;
         RepositoryId = repositoryId;
         CommitId = commitId;
-        AsOfDate = asOfDate;
+        AsOfDateTime = asOfDateTime;
     }
 
     public string? LocalDirectory { get; init; }
 
     public string RepositoryId { get; }
     public string? CommitId { get; }
-    public DateTimeOffset? AsOfDate { get; }
+    public DateTimeOffset AsOfDateTime { get; }
 
     public string Path
     {
