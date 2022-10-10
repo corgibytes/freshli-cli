@@ -29,10 +29,11 @@ public class CacheDb : ICacheDb, IDisposable
     public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
     public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id) => Db.CachedGitSources.Find(id.Id);
 
-    public void AddHistoryIntervalStop(CachedHistoryIntervalStop historyIntervalStop)
+    public int AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint)
     {
-        Db.CachedHistoryIntervalStops.Add(historyIntervalStop);
+        var savedEntity = Db.CachedHistoryStopPoints.Add(historyStopPoint);
         Db.SaveChanges();
+        return savedEntity.Entity.Id;
     }
 
     public void Dispose()

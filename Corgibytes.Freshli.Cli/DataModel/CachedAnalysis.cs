@@ -39,5 +39,5 @@ public class CachedAnalysis
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     // ReSharper disable once UnusedMember.Global
-    public virtual List<CachedHistoryIntervalStop> HistoryIntervalStops { get; set; } = null!;
+    public virtual List<CachedHistoryStopPoint> HistoryStopPoints { get; set; } = null!;
 }
