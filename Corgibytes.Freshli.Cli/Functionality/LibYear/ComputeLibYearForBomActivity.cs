@@ -7,18 +7,19 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class ComputeLibYearForBomActivity : IApplicationActivity
 {
-    public Guid AnalysisId { get; init; }
-    public IHistoryStopData HistoryStopData { get; init; }
-    public string PathToBom { get; init; }
-    public string AgentExecutablePath { get; init; }
-
-    public ComputeLibYearForBomActivity(Guid analysisId, IHistoryStopData historyStopData, string pathToBom, string agentExecutablePath)
+    public ComputeLibYearForBomActivity(Guid analysisId, IHistoryStopData historyStopData, string pathToBom,
+        string agentExecutablePath)
     {
         AnalysisId = analysisId;
         HistoryStopData = historyStopData;
         PathToBom = pathToBom;
         AgentExecutablePath = agentExecutablePath;
     }
+
+    public Guid AnalysisId { get; init; }
+    public IHistoryStopData HistoryStopData { get; init; }
+    public string PathToBom { get; init; }
+    public string AgentExecutablePath { get; init; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
