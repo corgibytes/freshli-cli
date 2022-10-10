@@ -17,11 +17,11 @@ public class MockAgentManager : IAgentManager
 
         public string AgentExecutablePath { get; }
 
-        public List<Package> RetrieveReleaseHistory(PackageURL packageUrl) => AgentExecutablePath switch
+        public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl) => AgentExecutablePath switch
         {
             "/usr/local/bin/freshli-agent-csharp" => packageUrl.Name switch
             {
-                "flyswatter" => new List<Package>
+                "flyswatter" => new List<CachedPackage>
                 {
                     new(new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
                         new DateTimeOffset(1990, 1, 29, 0, 0, 0, TimeSpan.Zero)),
@@ -30,20 +30,20 @@ public class MockAgentManager : IAgentManager
                     new(new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.3.0"),
                         new DateTimeOffset(2020, 8, 21, 0, 0, 0, TimeSpan.Zero))
                 },
-                _ => new List<Package>()
+                _ => new List<CachedPackage>()
             },
-            "/usr/local/bin/freshli-agent-javascript" => new List<Package>(),
-            "/usr/local/agents/bin/freshli-agent-csharp" => new List<Package>(),
+            "/usr/local/bin/freshli-agent-javascript" => new List<CachedPackage>(),
+            "/usr/local/agents/bin/freshli-agent-csharp" => new List<CachedPackage>(),
             "/home/freshli-user/bin/agents/freshli-agent-ruby" => packageUrl.Name switch
             {
-                "no_release_date" => new List<Package>
+                "no_release_date" => new List<CachedPackage>
                 {
                     new(new PackageURL("pkg:ruby/org.corgibytes.no_release_date/no_release_date@2.3.0"),
                         new DateTimeOffset(1990, 1, 29, 0, 0, 0, TimeSpan.Zero))
                 },
-                _ => new List<Package>()
+                _ => new List<CachedPackage>()
             },
-            _ => new List<Package>()
+            _ => new List<CachedPackage>()
         };
 
         public List<string> DetectManifests(string projectPath) => throw new NotImplementedException();

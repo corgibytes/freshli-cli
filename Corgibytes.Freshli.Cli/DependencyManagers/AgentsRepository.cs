@@ -60,7 +60,7 @@ public class AgentsRepository : IDependencyManagerRepository
         throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList();
     }
 
-    private static DateTimeOffset GetReleaseDateForList(List<Package> releaseHistory, PackageURL packageUrl)
+    private static DateTimeOffset GetReleaseDateForList(List<CachedPackage> releaseHistory, PackageURL packageUrl)
     {
         foreach (var package in releaseHistory.Where(package => package.PackageUrl.PackageUrlEquals(packageUrl)))
         {

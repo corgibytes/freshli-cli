@@ -16,9 +16,9 @@ public class AgentReader : IAgentReader
 
     public string AgentExecutablePath { get; }
 
-    public List<Package> RetrieveReleaseHistory(PackageURL packageUrl)
+    public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl)
     {
-        var packages = new List<Package>();
+        var packages = new List<CachedPackage>();
         string packageUrlsWithDate;
         try
         {
@@ -35,7 +35,7 @@ public class AgentReader : IAgentReader
             var separated = packageUrlAndDate.Split("\t");
 
             packages.Add(
-                new Package(
+                new CachedPackage(
                     new PackageURL(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null, null),
                     DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
                 )

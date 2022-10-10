@@ -3,9 +3,9 @@ using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.DataModel;
 
-public class Package
+public class CachedPackage
 {
-    public Package(PackageURL packageUrl, DateTimeOffset releasedAt)
+    public CachedPackage(PackageURL packageUrl, DateTimeOffset releasedAt)
     {
         PackageUrl = packageUrl;
         ReleasedAt = releasedAt;
