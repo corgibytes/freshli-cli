@@ -41,6 +41,7 @@ public class FreshliServiceBuilder
 
     public void Register()
     {
+        // todo: register an implementation of IPackageLibYearCalculator
         Services.AddSingleton(Configuration);
         Services.AddScoped<IEnvironment, Environment>();
         Services.AddScoped<ICacheManager, CacheManager>();
