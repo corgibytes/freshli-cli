@@ -16,10 +16,10 @@ public class ComputeLibYearForBomActivity : IApplicationActivity
         AgentExecutablePath = agentExecutablePath;
     }
 
-    public Guid AnalysisId { get; init; }
-    public IHistoryStopData HistoryStopData { get; init; }
-    public string PathToBom { get; init; }
-    public string AgentExecutablePath { get; init; }
+    public Guid AnalysisId { get; }
+    public IHistoryStopData HistoryStopData { get; }
+    public string PathToBom { get; }
+    public string AgentExecutablePath { get; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {

@@ -10,9 +10,9 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 public class ComputeLibYearForPackageActivity : IApplicationActivity
 {
     public Guid AnalysisId { get; init; }
-    public IHistoryStopData HistoryStopData { get; init; }
-    public PackageURL Package { get; init; }
-    public string AgentExecutablePath { get; init; }
+    public IHistoryStopData HistoryStopData { get; init; } = null!;
+    public PackageURL Package { get; init; } = null!;
+    public string AgentExecutablePath { get; init; } = null!;
 
     public void Handle(IApplicationEventEngine eventClient)
     {
