@@ -10,11 +10,11 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-public class CachedHistoryIntervalStop
+public class CachedHistoryStopPoint
 {
     [Required] public int Id { get; set; }
 
-    [Required] public DateTimeOffset AsOfDate { get; set; }
+    [Required] public DateTimeOffset AsOfDateTime { get; set; }
 
     // ReSharper disable once PropertyCanBeMadeInitOnly.Global
     [Required] public string GitCommitId { get; set; } = null!;
