@@ -14,6 +14,8 @@ public class AnalysisLocation : IAnalysisLocation
         CommitId = commitId;
     }
 
+    public string? LocalDirectory { get; init; }
+
     public string RepositoryId { get; }
     public string? CommitId { get; }
     public int HistoryIntervalStopId { get; }
@@ -24,6 +26,11 @@ public class AnalysisLocation : IAnalysisLocation
         {
             if (CommitId == null)
             {
+                if (LocalDirectory != null)
+                {
+                    return LocalDirectory;
+                }
+
                 return System.IO.Path.Combine(_configuration.CacheDir, "repositories", RepositoryId);
             }
 
