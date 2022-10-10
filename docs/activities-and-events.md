@@ -78,7 +78,7 @@ flowchart TD;
     HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
     ComputeLibYearForBomActivity --> PackageFoundEvent
-    ComputeLibYearForPackageActivity
+    ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
     LibYearComputationForBomStartedEvent
     LibYearComputedForPackageEvent
     PackageFoundEvent --> ComputeLibYearForPackageActivity
