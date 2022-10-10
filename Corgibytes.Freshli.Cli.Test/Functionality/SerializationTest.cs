@@ -1,6 +1,3 @@
-using System;
-using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Hangfire.Common;
 using Xunit;
 
