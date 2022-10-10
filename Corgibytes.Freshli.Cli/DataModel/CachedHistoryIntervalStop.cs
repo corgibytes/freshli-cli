@@ -25,5 +25,6 @@ public class CachedHistoryIntervalStop
     // ReSharper disable once UnusedMember.Global
     public virtual CachedAnalysis CachedAnalysis { get; set; } = null!;
 
+    // ReSharper disable once UnusedMember.Global
     public virtual List<CachedLibYear> LibYears { get; set; } = null!;
 }

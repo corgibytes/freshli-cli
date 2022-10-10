@@ -1,10 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 
 namespace Corgibytes.Freshli.Cli.DataModel;
 
@@ -22,5 +22,6 @@ public class CachedLibYear
     [Required] public double LibYear { get; set; }
 
     [Required] public int HistoryIntervalStopId { get; set; }
+    // ReSharper disable once UnusedMember.Global
     public virtual CachedHistoryIntervalStop HistoryIntervalStop { get; set; } = null!;
 }
