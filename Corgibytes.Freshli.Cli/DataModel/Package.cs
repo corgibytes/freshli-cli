@@ -1,7 +1,7 @@
 using System;
 using PackageUrl;
 
-namespace Corgibytes.Freshli.Cli.Functionality;
+namespace Corgibytes.Freshli.Cli.DataModel;
 
 public class Package
 {

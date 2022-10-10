@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
