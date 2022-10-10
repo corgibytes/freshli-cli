@@ -1,8 +1,10 @@
 using System;
 using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Exceptions;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Test.Commands;
 using Corgibytes.Freshli.Cli.Test.Common;
+using Moq;
 using PackageUrl;
 using Xunit;
 using Xunit.Abstractions;
@@ -15,7 +17,7 @@ public class AgentsRepositoryTest : FreshliTest
     private readonly AgentsRepository _repository;
 
     public AgentsRepositoryTest(ITestOutputHelper output) : base(output) =>
-        _repository = new AgentsRepository(new MockAgentsDetector(), new MockAgentManager());
+        _repository = new AgentsRepository(new MockAgentsDetector(), new MockAgentManager(), new Mock<ICacheManager>().Object);
 
     [Fact]
     public void It_is_able_to_fetch_a_release_date_from_a_list()

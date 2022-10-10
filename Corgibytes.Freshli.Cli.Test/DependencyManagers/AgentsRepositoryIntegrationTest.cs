@@ -1,6 +1,7 @@
 using System;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.DependencyManagers;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
 using PackageUrl;
 using Xunit;
@@ -14,7 +15,8 @@ public class AgentsRepositoryIntegrationTest
     [Fact]
     public void GetReleaseDate()
     {
-        var repository = new AgentsRepository(new AgentsDetector(new Environment()), new AgentManager());
+        var repository = new AgentsRepository(
+            new AgentsDetector(new Environment()), new AgentManager(), new CacheManager(new Configuration(new Environment())));
 
         var actualReleaseDate =
             repository.GetReleaseDate(new PackageURL("pkg:maven/org.apache.maven/apache-maven@2.2.1"));
@@ -27,7 +29,8 @@ public class AgentsRepositoryIntegrationTest
     [Fact]
     public void GetLatestVersion()
     {
-        var repository = new AgentsRepository(new AgentsDetector(new Environment()), new AgentManager());
+        var repository = new AgentsRepository(
+            new AgentsDetector(new Environment()), new AgentManager(), new CacheManager(new Configuration(new Environment())));
         var latestVersion =
             repository.GetLatestVersion(new PackageURL("pkg:maven/org.apache.maven/apache-maven@2.2.1"));
 
