@@ -49,7 +49,7 @@ public class CheckoutHistoryActivityTest
         eventEngine.Verify(
             mock => mock.Fire(It.Is<HistoryStopCheckedOutEvent>(appEvent =>
                 appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopData.Moment == dateTimeOffset &&
+                appEvent.HistoryStopData.AsOfDate == dateTimeOffset &&
                 appEvent.HistoryStopData.Path == archiveLocation)));
     }
 }

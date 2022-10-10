@@ -154,7 +154,7 @@ public class ComputeHistoryActivityTest
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
                         value.AnalysisId == analysisId &&
-                        value.HistoryStopData.Moment == new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero) &&
+                        value.HistoryStopData.AsOfDate == new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero) &&
                         value.HistoryStopData.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
                 )
             )
