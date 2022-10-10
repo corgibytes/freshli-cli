@@ -22,12 +22,13 @@ public class ComputeLibYearForBomActivityTest
         var commitId = "fecdef987";
         var asOf = new DateTimeOffset(2022, 10, 07, 22, 02, 54, 0, TimeSpan.Zero);
         var pathToBom = "/path/to/bom";
+        var pathToAgentExecutable = "/path/to/agent";
 
         var historyStopData = new HistoryStopData(configuration.Object, repositoryId, commitId, asOf);
 
         var eventClient = new Mock<IApplicationEventEngine>();
 
-        var activity = new ComputeLibYearForBomActivity(analysisId, historyStopData, pathToBom);
+        var activity = new ComputeLibYearForBomActivity(analysisId, historyStopData, pathToBom, pathToAgentExecutable);
 
         var serviceProvider = new Mock<IServiceProvider>();
 
@@ -53,12 +54,14 @@ public class ComputeLibYearForBomActivityTest
         eventClient.Verify(mock => mock.Fire(It.Is<PackageFoundEvent>(value =>
             value.AnalysisId == analysisId &&
             value.HistoryStopData == historyStopData &&
+            value.AgentExecutablePath == pathToAgentExecutable &&
             value.Package == packageAlpha
         )));
 
         eventClient.Verify(mock => mock.Fire(It.Is<PackageFoundEvent>(value =>
             value.AnalysisId == analysisId &&
             value.HistoryStopData == historyStopData &&
+            value.AgentExecutablePath == pathToAgentExecutable &&
             value.Package == packageBeta
         )));
     }

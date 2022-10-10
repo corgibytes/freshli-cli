@@ -1,4 +1,5 @@
 using System;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,8 +9,9 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class ComputeLibYearForPackageActivity : IApplicationActivity
 {
+    public Guid AnalysisId { get; init; }
+    public IHistoryStopData HistoryStopData { get; init; }
     public PackageURL Package { get; init; }
-    public DateTimeOffset AsOfDate { get; init; }
     public string AgentExecutablePath { get; init; }
 
     public void Handle(IApplicationEventEngine eventClient)
@@ -18,8 +20,14 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
         var agentReader = agentManager.GetReader(AgentExecutablePath);
 
         var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
-        var packageLibYear = calculator.ComputeLibYear(agentReader, Package, AsOfDate);
+        var packageLibYear = calculator.ComputeLibYear(agentReader, Package, HistoryStopData.AsOfDate.Value);
 
-        eventClient.Fire(new LibYearComputedForPackageEvent { PackageLibYear = packageLibYear });
+        eventClient.Fire(new LibYearComputedForPackageEvent
+        {
+            AnalysisId = AnalysisId,
+            HistoryStopData = HistoryStopData,
+            AgentExecutablePath = AgentExecutablePath,
+            PackageLibYear = packageLibYear
+        });
     }
 }
