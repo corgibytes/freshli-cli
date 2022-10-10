@@ -16,9 +16,15 @@ public class AgentReader : IAgentReader
 
     public string AgentExecutablePath { get; }
 
-    public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl)
+    public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl, ICacheManager cacheManager)
     {
-        var packages = new List<CachedPackage>();
+        var packages = cacheManager.GetCacheDb().RetrieveReleaseHistory(packageUrl);
+        if (packages.Count > 0)
+        {
+            return packages;
+        }
+
+        packages = new List<CachedPackage>();
         string packageUrlsWithDate;
         try
         {
@@ -33,14 +39,20 @@ public class AgentReader : IAgentReader
         foreach (var packageUrlAndDate in packageUrlsWithDate.TrimEnd('\n', '\r').Split("\n"))
         {
             var separated = packageUrlAndDate.Split("\t");
+            var cachedPackageUrl =
+                new PackageURL(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null, null);
 
             packages.Add(
-                new CachedPackage(
-                    new PackageURL(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null, null),
-                    DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
-                )
+                new CachedPackage
+                {
+                    PackageName = cachedPackageUrl.FormatWithoutVersion(),
+                    PackageUrl = cachedPackageUrl,
+                    ReleasedAt = DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
+                }
             );
         }
+
+        cacheManager.GetCacheDb().AddReleaseHistory(packages);
 
         return packages;
     }
