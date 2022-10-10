@@ -6,17 +6,17 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class ManifestDetectedEvent : IApplicationEvent
 {
-    public ManifestDetectedEvent(Guid analysisId, IHistoryStopData historyStopData, string agentExecutablePath,
+    public ManifestDetectedEvent(Guid analysisId, int historyStopPointId, string agentExecutablePath,
         string manifestPath)
     {
         AnalysisId = analysisId;
-        HistoryStopData = historyStopData;
+        HistoryStopPointId = historyStopPointId;
         AgentExecutablePath = agentExecutablePath;
         ManifestPath = manifestPath;
     }
 
     public Guid AnalysisId { get; }
-    public IHistoryStopData HistoryStopData { get; }
+    public int HistoryStopPointId { get; }
     public string AgentExecutablePath { get; }
     public string ManifestPath { get; }
 
@@ -24,7 +24,7 @@ public class ManifestDetectedEvent : IApplicationEvent
         new GenerateBillOfMaterialsActivity(
             AnalysisId,
             AgentExecutablePath,
-            HistoryStopData,
+            HistoryStopPointId,
             ManifestPath
         ));
 }
