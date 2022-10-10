@@ -19,7 +19,7 @@ public class LibYearTest : FreshliTest
     public void Validate_expected_libyears(DateTimeOffset releaseDateCurrentVersion,
         DateTimeOffset releaseDateLatestVersion, double expectedLibYear,
         int precision) => Assert.Equal(expectedLibYear,
-        LibYear.GivenReleaseDates(releaseDateCurrentVersion, releaseDateLatestVersion).AsDecimalNumber(precision));
+        LibYear2.GivenReleaseDates(releaseDateCurrentVersion, releaseDateLatestVersion).AsDecimalNumber(precision));
 
     private static TheoryData<DateTimeOffset, DateTimeOffset, double, int> ExpectedLibYears() =>
         new()

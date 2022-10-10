@@ -14,7 +14,7 @@ public class CachedHistoryIntervalStop
 {
     [Required] public int Id { get; set; }
 
-    [Required] public DateTimeOffset GitCommitDate { get; set; }
+    [Required] public DateTimeOffset AsOfDate { get; set; }
 
     // ReSharper disable once PropertyCanBeMadeInitOnly.Global
     [Required] public string GitCommitId { get; set; } = null!;
