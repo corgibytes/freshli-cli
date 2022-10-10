@@ -11,13 +11,25 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class PackageLibYear
 {
-    public readonly DateTimeOffset _asOfDate;
+
+    // todo: remove this constructor - it's being kept to support existing tests
+    public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
+        DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear)
+    {
+        AsOfDate = default;
+        ReleaseDateCurrentVersion = releaseDateCurrentVersion;
+        CurrentVersion = currentVersion;
+        ReleaseDateLatestVersion = releaseDateLatestVersion;
+        LatestVersion = latestVersion;
+        LibYear = libYear;
+    }
+
 
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
         DateTimeOffset asOfDate)
     {
-        _asOfDate = asOfDate;
+        AsOfDate = asOfDate;
         ReleaseDateCurrentVersion = releaseDateCurrentVersion;
         CurrentVersion = currentVersion;
         ReleaseDateLatestVersion = releaseDateLatestVersion;
@@ -34,7 +46,7 @@ public class PackageLibYear
     [JsonConstructor]
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
-        PackageURL packageUrl, string exceptionMessage)
+        PackageURL packageUrl, DateTimeOffset asOfDate, string exceptionMessage)
     {
         ReleaseDateCurrentVersion = releaseDateCurrentVersion;
         CurrentVersion = currentVersion;
@@ -42,6 +54,7 @@ public class PackageLibYear
         LatestVersion = latestVersion;
         LibYear = libYear;
         PackageUrl = packageUrl;
+        AsOfDate = asOfDate;
         ExceptionMessage = exceptionMessage;
     }
 
@@ -52,4 +65,5 @@ public class PackageLibYear
     public PackageURL? PackageUrl { get; }
     public DateTimeOffset ReleaseDateCurrentVersion { get; }
     public DateTimeOffset ReleaseDateLatestVersion { get; }
+    public DateTimeOffset AsOfDate { get; }
 }
