@@ -15,8 +15,8 @@ namespace Corgibytes.Freshli.Cli.DependencyManagers;
 public class AgentsRepository : IDependencyManagerRepository
 {
     [JsonProperty] private readonly IAgentManager _agentManager;
-    [JsonProperty] private readonly ICacheManager _cacheManager;
     [JsonProperty] private readonly IAgentsDetector _agentsDetector;
+    [JsonProperty] private readonly ICacheManager _cacheManager;
 
     public AgentsRepository(IAgentsDetector agentsDetector, IAgentManager agentManager, ICacheManager cacheManager)
     {
@@ -29,7 +29,8 @@ public class AgentsRepository : IDependencyManagerRepository
     {
         foreach (var agentExecutable in _agentsDetector.Detect())
         {
-            var releaseHistory = _agentManager.GetReader(agentExecutable).RetrieveReleaseHistory(packageUrl, _cacheManager);
+            var releaseHistory = _agentManager.GetReader(agentExecutable)
+                .RetrieveReleaseHistory(packageUrl, _cacheManager);
             if (releaseHistory.Count == 0)
             {
                 continue;

@@ -25,7 +25,7 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
 
         if (agents.Count == 0)
         {
-            eventClient.Fire(new NoAgentsDetectedFailureEvent() { ErrorMessage = "Could not locate any agents"});
+            eventClient.Fire(new NoAgentsDetectedFailureEvent { ErrorMessage = "Could not locate any agents" });
             return;
         }
 

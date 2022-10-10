@@ -54,7 +54,8 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         activity.Handle(_eventEngine.Object);
 
         var expectedCachedGitSource = new CachedGitSource(
-            new CachedGitSourceId(repositoryLocation.FullName).Id, _repositoryLocation, null, repositoryLocation.FullName
+            new CachedGitSourceId(repositoryLocation.FullName).Id, _repositoryLocation, null,
+            repositoryLocation.FullName
         );
 
         _repository.Verify(mock => mock.Save(It.Is<CachedGitSource>(value =>

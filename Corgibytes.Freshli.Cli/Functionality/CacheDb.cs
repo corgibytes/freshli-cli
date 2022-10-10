@@ -26,12 +26,10 @@ public class CacheDb : ICacheDb, IDisposable
     public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
     public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id) => Db.CachedGitSources.Find(id.Id);
 
-    public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl)
-    {
-        return (from packages in Db.CachedPackages
-            where packages.PackageName == packageUrl.FormatWithoutVersion()
-            select packages).ToList();
-    }
+    public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl) =>
+        (from packages in Db.CachedPackages
+         where packages.PackageName == packageUrl.FormatWithoutVersion()
+         select packages).ToList();
 
     public void AddReleaseHistory(List<CachedPackage> cachedPackages)
     {

@@ -18,54 +18,64 @@ public class MockAgentManager : IAgentManager
 
         public string AgentExecutablePath { get; }
 
-        public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl, ICacheManager cacheManager) => AgentExecutablePath switch
-        {
-            "/usr/local/bin/freshli-agent-csharp" => packageUrl.Name switch
+        public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl, ICacheManager cacheManager) =>
+            AgentExecutablePath switch
             {
-                "flyswatter" => new List<CachedPackage>
+                "/usr/local/bin/freshli-agent-csharp" => packageUrl.Name switch
                 {
-                    new()
+                    "flyswatter" => new List<CachedPackage>
                     {
-                        Id = 1,
-                        PackageName = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0").FormatWithoutVersion(),
-                        PackageUrl = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
-                        ReleasedAt = new DateTimeOffset(1990, 1, 29, 0, 0, 0, TimeSpan.Zero)
+                        new()
+                        {
+                            Id = 1,
+                            PackageName =
+                                new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0")
+                                    .FormatWithoutVersion(),
+                            PackageUrl = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.1.0"),
+                            ReleasedAt = new DateTimeOffset(1990, 1, 29, 0, 0, 0, TimeSpan.Zero)
+                        },
+                        new()
+                        {
+                            Id = 1,
+                            PackageName =
+                                new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.2.0")
+                                    .FormatWithoutVersion(),
+                            PackageUrl = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.2.0"),
+                            ReleasedAt = new DateTimeOffset(2001, 3, 14, 0, 0, 0, TimeSpan.Zero)
+                        },
+                        new()
+                        {
+                            Id = 1,
+                            PackageName =
+                                new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.3.0")
+                                    .FormatWithoutVersion(),
+                            PackageUrl = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.3.0"),
+                            ReleasedAt = new DateTimeOffset(2020, 8, 21, 0, 0, 0, TimeSpan.Zero)
+                        }
                     },
-                    new()
+                    _ => new List<CachedPackage>()
+                },
+                "/usr/local/bin/freshli-agent-javascript" => new List<CachedPackage>(),
+                "/usr/local/agents/bin/freshli-agent-csharp" => new List<CachedPackage>(),
+                "/home/freshli-user/bin/agents/freshli-agent-ruby" => packageUrl.Name switch
+                {
+                    "no_release_date" => new List<CachedPackage>
                     {
-                        Id = 1,
-                        PackageName = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.2.0").FormatWithoutVersion(),
-                        PackageUrl = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.2.0"),
-                        ReleasedAt = new DateTimeOffset(2001, 3, 14, 0, 0, 0, TimeSpan.Zero)
+                        new()
+                        {
+                            Id = 1,
+                            PackageName =
+                                new PackageURL("pkg:ruby/org.corgibytes.no_release_date/no_release_date@2.3.0")
+                                    .FormatWithoutVersion(),
+                            PackageUrl =
+                                new PackageURL("pkg:ruby/org.corgibytes.no_release_date/no_release_date@2.3.0"),
+                            ReleasedAt = new DateTimeOffset(1990, 1, 29, 0, 0, 0, TimeSpan.Zero)
+                        }
                     },
-                    new()
-                    {
-                        Id = 1,
-                        PackageName = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.3.0").FormatWithoutVersion(),
-                        PackageUrl = new PackageURL("pkg:nuget/org.corgibytes.flyswatter/flyswatter@1.3.0"),
-                        ReleasedAt = new DateTimeOffset(2020, 8, 21, 0, 0, 0, TimeSpan.Zero)
-                    }
+                    _ => new List<CachedPackage>()
                 },
                 _ => new List<CachedPackage>()
-            },
-            "/usr/local/bin/freshli-agent-javascript" => new List<CachedPackage>(),
-            "/usr/local/agents/bin/freshli-agent-csharp" => new List<CachedPackage>(),
-            "/home/freshli-user/bin/agents/freshli-agent-ruby" => packageUrl.Name switch
-            {
-                "no_release_date" => new List<CachedPackage>
-                {
-                    new()
-                    {
-                        Id = 1,
-                        PackageName = new PackageURL("pkg:ruby/org.corgibytes.no_release_date/no_release_date@2.3.0").FormatWithoutVersion(),
-                        PackageUrl = new PackageURL("pkg:ruby/org.corgibytes.no_release_date/no_release_date@2.3.0"),
-                        ReleasedAt = new DateTimeOffset(1990, 1, 29, 0, 0, 0, TimeSpan.Zero)
-                    }
-                },
-                _ => new List<CachedPackage>()
-            },
-            _ => new List<CachedPackage>()
-        };
+            };
 
         public List<string> DetectManifests(string projectPath) => throw new NotImplementedException();
 
