@@ -62,17 +62,6 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             );
         });
 
-        _eventEngine.On<LibYearComputedEvent>(computedEvent =>
-        {
-            var libYearSummed = 0.0;
-            if (computedEvent.LibYearPackages != null)
-            {
-                libYearSummed = computedEvent.LibYearPackages.Sum(libYear => libYear.LibYear);
-            }
-
-            context.Console.Out.WriteLine($"Libyear at {computedEvent.HistoryStopData?.CommitId} is {libYearSummed}");
-        });
-
         _activityEngine.Wait();
 
         return exitStatus;
