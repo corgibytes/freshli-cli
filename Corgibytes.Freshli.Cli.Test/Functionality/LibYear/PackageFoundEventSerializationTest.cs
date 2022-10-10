@@ -6,10 +6,11 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 
 [IntegrationTest]
+// ReSharper disable once UnusedType.Global
 public class PackageFoundEventSerializationTest : SerializationTest<PackageFoundEvent>
 {
     protected override PackageFoundEvent BuildIncoming() =>
-        new PackageFoundEvent
+        new()
         {
             AgentExecutablePath = "/path/to/agent",
             AnalysisId = Guid.NewGuid(),

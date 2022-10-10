@@ -6,10 +6,11 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 
 [IntegrationTest]
+// ReSharper disable once UnusedType.Global
 public class ComputeLibYearForPackageActivitySerializationTest : SerializationTest<ComputeLibYearForPackageActivity>
 {
     protected override ComputeLibYearForPackageActivity BuildIncoming() =>
-        new ComputeLibYearForPackageActivity
+        new()
         {
             AgentExecutablePath = "/path/to/agent",
             AnalysisId = Guid.NewGuid(),
