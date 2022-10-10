@@ -9,10 +9,17 @@ public class PackageFoundEvent : IApplicationEvent
 {
     public Guid AnalysisId { get; init; }
     public IHistoryStopData HistoryStopData { get; init; }
+    public string AgentExecutablePath { get; init; }
     public PackageURL Package { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
-        eventClient.Dispatch(new ComputeLibYearForPackageActivity {Package = Package});
+        eventClient.Dispatch(new ComputeLibYearForPackageActivity
+        {
+            AnalysisId = AnalysisId,
+            HistoryStopData = HistoryStopData,
+            AgentExecutablePath = AgentExecutablePath,
+            Package = Package
+        });
     }
 }

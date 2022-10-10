@@ -18,11 +18,13 @@ public class BillOfMaterialsGeneratedEvent : IApplicationEvent
     public Guid AnalysisId { get; }
     public IHistoryStopData HistoryStopData { get; }
     public string PathToBillOfMaterials { get; }
+    public string AgentExecutablePath { get; init; }
 
     public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
         new ComputeLibYearForBomActivity(
             AnalysisId,
             HistoryStopData,
-            PathToBillOfMaterials
+            PathToBillOfMaterials,
+            AgentExecutablePath
         ));
 }

@@ -1,5 +1,6 @@
 using System;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.Services;
@@ -15,7 +16,12 @@ public class ComputeLibYearForPackageActivityTest
     [Fact]
     public void HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
     {
+        var analysisId = Guid.NewGuid();
         var asOfDate = new DateTimeOffset(2021, 1, 29, 12, 30, 45, 0, TimeSpan.Zero);
+        var configuration = new Mock<IConfiguration>();
+        var repositoryId = "abcef123";
+        var commitId = "becfec231";
+        var historyStopData = new HistoryStopData(configuration.Object, repositoryId, commitId, asOfDate);
         var agentExecutablePath = "/path/to/agent/smith";
         var package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
         var packageLibYear = new PackageLibYear(
@@ -29,7 +35,10 @@ public class ComputeLibYearForPackageActivityTest
 
         var activity = new ComputeLibYearForPackageActivity
         {
-            Package = package, AsOfDate = asOfDate, AgentExecutablePath = agentExecutablePath
+            AnalysisId = analysisId,
+            HistoryStopData = historyStopData,
+            AgentExecutablePath = agentExecutablePath,
+            Package = package
         };
 
         var eventClient = new Mock<IApplicationEventEngine>();
@@ -48,6 +57,9 @@ public class ComputeLibYearForPackageActivityTest
         activity.Handle(eventClient.Object);
 
         eventClient.Verify(mock => mock.Fire(It.Is<LibYearComputedForPackageEvent>(value =>
+            value.AnalysisId == analysisId &&
+            value.HistoryStopData == historyStopData &&
+            value.AgentExecutablePath == agentExecutablePath &&
             value.PackageLibYear == packageLibYear)));
     }
 }

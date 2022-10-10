@@ -10,12 +10,14 @@ public class ComputeLibYearForBomActivity : IApplicationActivity
     public Guid AnalysisId { get; init; }
     public IHistoryStopData HistoryStopData { get; init; }
     public string PathToBom { get; init; }
+    public string AgentExecutablePath { get; init; }
 
-    public ComputeLibYearForBomActivity(Guid analysisId, IHistoryStopData historyStopData, string pathToBom)
+    public ComputeLibYearForBomActivity(Guid analysisId, IHistoryStopData historyStopData, string pathToBom, string agentExecutablePath)
     {
         AnalysisId = analysisId;
         HistoryStopData = historyStopData;
         PathToBom = pathToBom;
+        AgentExecutablePath = agentExecutablePath;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
@@ -28,6 +30,7 @@ public class ComputeLibYearForBomActivity : IApplicationActivity
             {
                 AnalysisId = AnalysisId,
                 HistoryStopData = HistoryStopData,
+                AgentExecutablePath = AgentExecutablePath,
                 Package = packageUrl
             });
         }
