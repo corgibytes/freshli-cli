@@ -22,6 +22,8 @@ public class ComputeHistoryActivityTest
     private readonly Mock<IHistoryStopData> _historyStopData = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
 
+    private const int HistoryStopPointId = 29;
+
     public ComputeHistoryActivityTest()
     {
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
@@ -69,7 +71,7 @@ public class ComputeHistoryActivityTest
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
                         value.AnalysisId == analysisId &&
-                        value.HistoryStopPointId != default
+                        value.HistoryStopPointId == HistoryStopPointId
                 )
             )
         );
@@ -78,7 +80,7 @@ public class ComputeHistoryActivityTest
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
                         value.AnalysisId == analysisId &&
-                        value.HistoryStopPointId != default
+                        value.HistoryStopPointId == HistoryStopPointId
                 )
             )
         );
@@ -116,7 +118,7 @@ public class ComputeHistoryActivityTest
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
                         value.AnalysisId == analysisId &&
-                        value.HistoryStopPointId != default
+                        value.HistoryStopPointId == HistoryStopPointId
                 )
             )
         );
@@ -154,7 +156,7 @@ public class ComputeHistoryActivityTest
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
                         value.AnalysisId == analysisId &&
-                        value.HistoryStopPointId != default
+                        value.HistoryStopPointId == HistoryStopPointId
                 )
             )
         );
@@ -201,5 +203,7 @@ public class ComputeHistoryActivityTest
         var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval, useCommitHistory,
             revisionHistoryMode);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
+        _cacheDb.Setup(mock => mock.AddHistoryStopPoint(It.IsAny<CachedHistoryStopPoint>()))
+            .Returns(HistoryStopPointId);
     }
 }
