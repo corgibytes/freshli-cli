@@ -1,5 +1,6 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
+using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
@@ -22,18 +23,23 @@ public class GenerateBillOfMaterialsActivityTest
         var agentManager = new Mock<IAgentManager>();
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(javaAgentReader.Object);
 
+        var cacheManager = new Mock<ICacheManager>();
+        var cacheDb = new Mock<ICacheDb>();
+        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = "/path/to/repository" };
+
+        var historyStopPointId = 29;
+        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         // Act
-        var historyStopData = new Mock<IHistoryStopData>();
-        historyStopData.Setup(mock => mock.Path).Returns("/working/directory");
-
         var analysisId = Guid.NewGuid();
-        var historyStopPointId = 29;
         var activity =
             new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopPointId,
                 "/path/to/manifest");

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
@@ -14,11 +16,9 @@ public class DetectManifestsUsingAgentActivityTest
     [Fact]
     public void Handle()
     {
-        var historyStopData = new Mock<IHistoryStopData>();
-        historyStopData.SetupGet(mock => mock.Path).Returns("/path/to/repository");
-
+        var localPath = "/path/to/repository";
         var agentReader = new Mock<IAgentReader>();
-        agentReader.Setup(mock => mock.DetectManifests("/path/to/repository")).Returns(
+        agentReader.Setup(mock => mock.DetectManifests(localPath)).Returns(
             new List<string>
             {
                 "/path/to/first/manifest",
@@ -29,14 +29,22 @@ public class DetectManifestsUsingAgentActivityTest
         var agentManager = new Mock<IAgentManager>();
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(agentReader.Object);
 
+        var cacheManager = new Mock<ICacheManager>();
+        var cacheDb = new Mock<ICacheDb>();
+        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
+
+        var historyStopPointId = 29;
+        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         var analysisId = Guid.NewGuid();
-        var historyStopPointId = 29;
         var activity =
             new DetectManifestsUsingAgentActivity(analysisId, historyStopPointId, agentExecutablePath);
 
