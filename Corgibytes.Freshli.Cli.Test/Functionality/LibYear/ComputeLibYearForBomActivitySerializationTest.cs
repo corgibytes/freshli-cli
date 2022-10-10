@@ -5,10 +5,11 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 
 [IntegrationTest]
+// ReSharper disable once UnusedType.Global
 public class ComputeLibYearForBomActivitySerializationTest : SerializationTest<ComputeLibYearForBomActivity>
 {
     protected override ComputeLibYearForBomActivity BuildIncoming() =>
-        new ComputeLibYearForBomActivity(
+        new(
             Guid.NewGuid(),
             this.BuildHistoryStopData(),
             "/path/to/bom",

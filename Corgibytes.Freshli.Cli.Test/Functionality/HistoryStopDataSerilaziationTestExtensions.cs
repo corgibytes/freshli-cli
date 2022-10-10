@@ -8,15 +8,17 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
 public static class HistoryStopDataSerilaziationTestExtensions
 {
-    public static HistoryStopData BuildHistoryStopData(this SerializationTest test) =>
-        new HistoryStopData(
+    // ReSharper disable once UnusedParameter.Global
+    public static HistoryStopData BuildHistoryStopData(this SerializationTest _) =>
+        new(
             new Configuration(new Environment()),
             "abcfed123",
             "bdeedb31",
             new DateTimeOffset(2021, 12, 22, 11, 15, 32, 0, TimeSpan.Zero)
         );
 
-    public static void AssertHistoryStopDataEqual(this SerializationTest test, IHistoryStopData incoming,
+    // ReSharper disable once UnusedParameter.Global
+    public static void AssertHistoryStopDataEqual(this SerializationTest _, IHistoryStopData incoming,
         IHistoryStopData outgoing)
     {
         Assert.Equal(incoming.RepositoryId, outgoing.RepositoryId);
