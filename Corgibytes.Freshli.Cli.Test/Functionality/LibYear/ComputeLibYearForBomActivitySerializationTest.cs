@@ -4,6 +4,7 @@ using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 
+[IntegrationTest]
 public class ComputeLibYearForBomActivitySerializationTest : SerializationTest<ComputeLibYearForBomActivity>
 {
     protected override ComputeLibYearForBomActivity BuildIncoming()
