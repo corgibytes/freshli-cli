@@ -1,7 +1,5 @@
 using System.IO;
 using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Resources;
@@ -32,21 +30,20 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         return entry;
     }
 
+    public void Save(CachedGitSource cachedGitSource)
+    {
+        using var db = new CacheContext(Configuration.CacheDir);
+        db.CachedGitSources.Add(cachedGitSource);
+        db.SaveChanges();
+    }
+
     public CachedGitSource CloneOrPull(string url, string? branch)
     {
         // Ensure the cache directory is ready for use.
         CacheManager.Prepare();
 
         // Generate a unique hash for the repository based on its URL and branch.
-        using var sha256 = SHA256.Create();
-        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(url + branch));
-        var stringBuilder = new StringBuilder();
-        foreach (var hashByte in hashBytes)
-        {
-            stringBuilder.Append(hashByte.ToString("x2"));
-        }
-
-        var hash = stringBuilder.ToString();
+        var hash = new CachedGitSourceId(url, branch).Id;
 
         using var db = new CacheContext(Configuration.CacheDir);
         var existingCachedGitSource = db.CachedGitSources.Find(hash);
