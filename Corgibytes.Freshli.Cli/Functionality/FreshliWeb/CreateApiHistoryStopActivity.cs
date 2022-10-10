@@ -7,17 +7,17 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class CreateApiHistoryStopActivity : IApplicationActivity
 {
-    public CreateApiHistoryStopActivity(Guid cachedAnalysisId, IHistoryStopData historyStopData)
+    public CreateApiHistoryStopActivity(Guid cachedAnalysisId, int historyStopPointId)
     {
         CachedAnalysisId = cachedAnalysisId;
-        HistoryStopData = historyStopData;
+        HistoryStopPointId = historyStopPointId;
     }
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public Guid CachedAnalysisId { get; set; }
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public IHistoryStopData HistoryStopData { get; set; }
+    public int HistoryStopPointId { get; set; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
@@ -25,9 +25,10 @@ public class CreateApiHistoryStopActivity : IApplicationActivity
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
 
+        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
         var cachedAnalysis = cacheDb.RetrieveAnalysis(CachedAnalysisId);
-        resultsApi.CreateHistoryPoint(cachedAnalysis!.ApiAnalysisId!.Value, HistoryStopData.AsOfDateTime);
+        resultsApi.CreateHistoryPoint(cachedAnalysis!.ApiAnalysisId!.Value, historyStopPoint!.AsOfDateTime);
 
-        eventClient.Fire(new ApiHistoryStopCreatedEvent(CachedAnalysisId, HistoryStopData));
+        eventClient.Fire(new ApiHistoryStopCreatedEvent(CachedAnalysisId, HistoryStopPointId));
     }
 }

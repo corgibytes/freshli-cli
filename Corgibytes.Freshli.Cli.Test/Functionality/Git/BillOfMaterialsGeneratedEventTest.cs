@@ -25,8 +25,9 @@ public class BillOfMaterialsGeneratedEventTest
         var agentExecutablePath = "/path/to/agent";
 
         var analysisId = Guid.NewGuid();
+        var historyStopPointId = 29;
         var billOfMaterialsGeneratedEvent =
-            new BillOfMaterialsGeneratedEvent(analysisId, historyStopData, pathToBom, agentExecutablePath);
+            new BillOfMaterialsGeneratedEvent(analysisId, historyStopPointId, pathToBom, agentExecutablePath);
 
         serviceProvider.Setup(mock => mock.GetService(typeof(ICalculateLibYearFromFile)))
             .Returns(calculateLibYearFromFile.Object);
@@ -38,7 +39,7 @@ public class BillOfMaterialsGeneratedEventTest
 
         engine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearForBomActivity>(value =>
             value.AnalysisId == analysisId &&
-            value.HistoryStopData == historyStopData &&
+            value.HistoryStopPointId == historyStopPointId &&
             value.PathToBom == pathToBom &&
             value.AgentExecutablePath == agentExecutablePath
         )));

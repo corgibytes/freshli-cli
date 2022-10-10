@@ -33,8 +33,9 @@ public class GenerateBillOfMaterialsActivityTest
         historyStopData.Setup(mock => mock.Path).Returns("/working/directory");
 
         var analysisId = Guid.NewGuid();
+        var historyStopPointId = 29;
         var activity =
-            new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopData.Object,
+            new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopPointId,
                 "/path/to/manifest");
         activity.Handle(eventEngine.Object);
 
@@ -43,7 +44,7 @@ public class GenerateBillOfMaterialsActivityTest
             mock.Fire(It.Is<BillOfMaterialsGeneratedEvent>(appEvent =>
                 appEvent.AgentExecutablePath == agentExecutablePath &&
                 appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopData == historyStopData.Object &&
+                appEvent.HistoryStopPointId == historyStopPointId &&
                 appEvent.PathToBillOfMaterials == "/path/to/bill-of-materials")));
     }
 }

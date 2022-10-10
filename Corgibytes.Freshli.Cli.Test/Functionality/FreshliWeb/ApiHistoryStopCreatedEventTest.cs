@@ -15,8 +15,8 @@ public class ApiHistoryStopCreatedEventTest
     public void HandleDispatchesCheckoutHistoryActivity()
     {
         var cachedAnalysisId = Guid.NewGuid();
-        var historyStopData = new Mock<IHistoryStopData>();
-        var appEvent = new ApiHistoryStopCreatedEvent(cachedAnalysisId, historyStopData.Object);
+        var historyStopPointId = 29;
+        var appEvent = new ApiHistoryStopCreatedEvent(cachedAnalysisId, historyStopPointId);
 
         var eventClient = new Mock<IApplicationActivityEngine>();
 
@@ -24,6 +24,6 @@ public class ApiHistoryStopCreatedEventTest
 
         eventClient.Verify(mock => mock.Dispatch(
             It.Is<CheckoutHistoryActivity>(
-                value => value.HistoryStopData == historyStopData.Object)));
+                value => value.HistoryStopPointId == historyStopPointId)));
     }
 }

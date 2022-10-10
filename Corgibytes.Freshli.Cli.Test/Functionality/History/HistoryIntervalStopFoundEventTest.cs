@@ -15,8 +15,9 @@ public class HistoryIntervalStopFoundEventTest
     public void HandleFiresCreateApiHistoryIntervalStop()
     {
         var cachedAnalysisId = Guid.NewGuid();
+        var historyStopPointId = 29;
         var historyStopData = new Mock<IHistoryStopData>();
-        var appEvent = new HistoryIntervalStopFoundEvent(cachedAnalysisId, historyStopData.Object);
+        var appEvent = new HistoryIntervalStopFoundEvent(cachedAnalysisId, historyStopPointId);
 
         var eventClient = new Mock<IApplicationActivityEngine>();
 
@@ -25,6 +26,6 @@ public class HistoryIntervalStopFoundEventTest
         eventClient.Verify(mock => mock.Dispatch(
             It.Is<CreateApiHistoryStopActivity>(value =>
                 value.CachedAnalysisId == cachedAnalysisId &&
-                value.HistoryStopData == historyStopData.Object)));
+                value.HistoryStopPointId == historyStopPointId)));
     }
 }

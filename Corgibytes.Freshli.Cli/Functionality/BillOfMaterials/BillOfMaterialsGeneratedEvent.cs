@@ -7,24 +7,24 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class BillOfMaterialsGeneratedEvent : IApplicationEvent
 {
-    public BillOfMaterialsGeneratedEvent(Guid analysisId, IHistoryStopData historyStopData,
+    public BillOfMaterialsGeneratedEvent(Guid analysisId, int historyStopPointId,
         string pathToBillOfMaterials, string agentExecutablePath)
     {
         AnalysisId = analysisId;
-        HistoryStopData = historyStopData;
+        HistoryStopPointId = historyStopPointId;
         PathToBillOfMaterials = pathToBillOfMaterials;
         AgentExecutablePath = agentExecutablePath;
     }
 
     public Guid AnalysisId { get; }
-    public IHistoryStopData HistoryStopData { get; }
+    public int HistoryStopPointId { get; }
     public string PathToBillOfMaterials { get; }
     public string AgentExecutablePath { get; }
 
     public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
         new ComputeLibYearForBomActivity(
             AnalysisId,
-            HistoryStopData,
+            HistoryStopPointId,
             PathToBillOfMaterials,
             AgentExecutablePath
         ));

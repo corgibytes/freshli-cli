@@ -10,4 +10,5 @@ public interface ICacheDb
     public CachedAnalysis? RetrieveAnalysis(Guid id);
     public int AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint);
     public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id);
+    public CachedHistoryStopPoint? RetrieveHistoryStopPoint(int historyStopPointId);
 }

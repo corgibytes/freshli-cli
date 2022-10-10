@@ -7,17 +7,17 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class ComputeLibYearForBomActivity : IApplicationActivity
 {
-    public ComputeLibYearForBomActivity(Guid analysisId, IHistoryStopData historyStopData, string pathToBom,
+    public ComputeLibYearForBomActivity(Guid analysisId, int historyStopPointId, string pathToBom,
         string agentExecutablePath)
     {
         AnalysisId = analysisId;
-        HistoryStopData = historyStopData;
+        HistoryStopPointId = historyStopPointId;
         PathToBom = pathToBom;
         AgentExecutablePath = agentExecutablePath;
     }
 
     public Guid AnalysisId { get; }
-    public IHistoryStopData HistoryStopData { get; }
+    public int HistoryStopPointId { get; }
     public string PathToBom { get; }
     public string AgentExecutablePath { get; }
 
@@ -30,7 +30,7 @@ public class ComputeLibYearForBomActivity : IApplicationActivity
             eventClient.Fire(new PackageFoundEvent
             {
                 AnalysisId = AnalysisId,
-                HistoryStopData = HistoryStopData,
+                HistoryStopPointId = HistoryStopPointId,
                 AgentExecutablePath = AgentExecutablePath,
                 Package = packageUrl
             });

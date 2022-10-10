@@ -14,7 +14,7 @@ public class PackageFoundEventSerializationTest : SerializationTest<PackageFound
         {
             AgentExecutablePath = "/path/to/agent",
             AnalysisId = Guid.NewGuid(),
-            HistoryStopData = this.BuildHistoryStopData(),
+            HistoryStopPointId = 29,
             Package = new PackageURL(
                 "pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?repository_url=repo.spring.io%2Frelease")
         };
@@ -23,7 +23,7 @@ public class PackageFoundEventSerializationTest : SerializationTest<PackageFound
     {
         Assert.Equal(incoming.AgentExecutablePath, outgoing.AgentExecutablePath);
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
-        this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
+        Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);
         Assert.Equal(incoming.Package.ToString(), outgoing.Package.ToString());
     }
 }

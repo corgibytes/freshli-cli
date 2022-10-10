@@ -60,20 +60,16 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         foreach (var historyIntervalStop in historyIntervalStops)
         {
-            cacheDb.AddHistoryStopPoint(
-                new CachedHistoryStopPoint()
-                {
+            var historyStopPointId = cacheDb.AddHistoryStopPoint(
+                new CachedHistoryStopPoint {
                     CachedAnalysisId = AnalysisId,
+                    RepositoryId = HistoryStopData.RepositoryId,
+                    LocalPath = HistoryStopData.Path,
                     GitCommitId = historyIntervalStop.GitCommitIdentifier,
                     AsOfDateTime = historyIntervalStop.AsOfDateTime
-                }
-            );
+                });
 
-            var historyStopData =
-                new HistoryStopData(configuration, HistoryStopData.RepositoryId,
-                    historyIntervalStop.GitCommitIdentifier, historyIntervalStop.AsOfDateTime);
-
-            eventClient.Fire(new HistoryIntervalStopFoundEvent(AnalysisId, historyStopData));
+            eventClient.Fire(new HistoryIntervalStopFoundEvent(AnalysisId, historyStopPointId));
         }
     }
 }
