@@ -42,7 +42,7 @@ public class CalculateLibYearFromCycloneDxFile : ICalculateLibYearFromFile
                     currentlyInstalled,
                     releaseDatePackageLatestAvailable,
                     latestVersion,
-                    LibYear.GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable)
+                    LibYear2.GivenReleaseDates(releaseDatePackageCurrentlyInstalled, releaseDatePackageLatestAvailable)
                         .AsDecimalNumber(precision)
                 ));
             }

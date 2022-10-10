@@ -65,7 +65,7 @@ public class ComputeHistoryActivity : IApplicationActivity
                 {
                     CachedAnalysisId = AnalysisId,
                     GitCommitId = historyIntervalStop.GitCommitIdentifier,
-                    GitCommitDate = historyIntervalStop.CommittedAt
+                    AsOfDate = historyIntervalStop.CommittedAt
                 }
             );
 

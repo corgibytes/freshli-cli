@@ -6,7 +6,7 @@ using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
-public class ReadCycloneDxFile
+public class ReadCycloneDxFile : IBomReader
 {
     [JsonProperty] private readonly IFileReader _fileReader;
 
