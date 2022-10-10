@@ -51,10 +51,14 @@ public class ComputeLibYearForBomActivityTest
         activity.Handle(eventClient.Object);
 
         eventClient.Verify(mock => mock.Fire(It.Is<PackageFoundEvent>(value =>
+            value.AnalysisId == analysisId &&
+            value.HistoryStopData == historyStopData &&
             value.Package == packageAlpha
         )));
 
         eventClient.Verify(mock => mock.Fire(It.Is<PackageFoundEvent>(value =>
+            value.AnalysisId == analysisId &&
+            value.HistoryStopData == historyStopData &&
             value.Package == packageBeta
         )));
     }

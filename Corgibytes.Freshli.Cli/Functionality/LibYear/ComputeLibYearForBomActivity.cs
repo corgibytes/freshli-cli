@@ -24,7 +24,12 @@ public class ComputeLibYearForBomActivity : IApplicationActivity
         var packageUrls = bomReader.AsPackageUrls(PathToBom);
         foreach (var packageUrl in packageUrls)
         {
-            eventClient.Fire(new PackageFoundEvent { Package = packageUrl });
+            eventClient.Fire(new PackageFoundEvent
+            {
+                AnalysisId = AnalysisId,
+                HistoryStopData = HistoryStopData,
+                Package = packageUrl
+            });
         }
     }
 }
