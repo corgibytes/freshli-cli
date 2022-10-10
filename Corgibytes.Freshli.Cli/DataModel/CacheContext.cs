@@ -2,6 +2,7 @@ using System.IO;
 using Corgibytes.Freshli.Cli.Functionality;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
+using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.DataModel;
 
@@ -28,6 +29,18 @@ public class CacheContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlite($"Data Source={DbPath}");
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder
+            .Entity<CachedPackage>()
+            .Property(package => package.PackageUrl)
+            .HasConversion(
+                package => package.ToString(),
+                package => new PackageURL(package));
+    }
 }
 
 // ReSharper disable once UnusedType.Global
