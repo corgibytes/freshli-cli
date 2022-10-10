@@ -21,11 +21,15 @@ public class PackageFoundEventTest
         var asOfDate = new DateTimeOffset(2021, 12, 12, 10, 15, 25, 0, TimeSpan.Zero);
         var configuration = new Mock<IConfiguration>();
         var historyStopData = new HistoryStopData(configuration.Object, repositoryId, commitId, asOfDate);
+        var agentExecutablePath = "/path/to/agent";
         var activityEngine = new Mock<IApplicationActivityEngine>();
 
         var package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
         var packageEvent = new PackageFoundEvent
         {
+            AnalysisId = analysisId,
+            HistoryStopData = historyStopData,
+            AgentExecutablePath = agentExecutablePath,
             Package = package
         };
 
@@ -34,6 +38,7 @@ public class PackageFoundEventTest
         activityEngine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearForPackageActivity>(value =>
             value.AnalysisId == analysisId &&
             value.HistoryStopData == historyStopData &&
+            value.AgentExecutablePath == agentExecutablePath &&
             value.Package == package)));
     }
 }
