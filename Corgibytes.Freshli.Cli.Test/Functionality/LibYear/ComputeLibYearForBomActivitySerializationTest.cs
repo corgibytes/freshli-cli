@@ -7,15 +7,13 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 [IntegrationTest]
 public class ComputeLibYearForBomActivitySerializationTest : SerializationTest<ComputeLibYearForBomActivity>
 {
-    protected override ComputeLibYearForBomActivity BuildIncoming()
-    {
-        return new ComputeLibYearForBomActivity(
+    protected override ComputeLibYearForBomActivity BuildIncoming() =>
+        new ComputeLibYearForBomActivity(
             Guid.NewGuid(),
             this.BuildHistoryStopData(),
             "/path/to/bom",
             "/path/to/agent"
         );
-    }
 
     protected override void AssertEqual(ComputeLibYearForBomActivity incoming, ComputeLibYearForBomActivity outgoing)
     {

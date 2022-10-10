@@ -1,7 +1,6 @@
 using System;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
-using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
