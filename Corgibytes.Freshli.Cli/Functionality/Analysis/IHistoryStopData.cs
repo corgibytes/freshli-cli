@@ -9,5 +9,5 @@ public interface IHistoryStopData
     public string RepositoryId { get; }
     public string? CommitId { get; }
     public string Path { get; }
-    public DateTimeOffset? Moment { get; }
+    public DateTimeOffset? AsOfDate { get; }
 }
