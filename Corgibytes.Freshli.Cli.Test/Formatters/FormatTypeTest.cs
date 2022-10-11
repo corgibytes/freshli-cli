@@ -6,7 +6,6 @@ using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Formatters;
 
