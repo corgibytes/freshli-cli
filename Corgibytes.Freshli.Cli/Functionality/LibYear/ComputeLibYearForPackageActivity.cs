@@ -20,6 +20,11 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
         var agentReader = agentManager.GetReader(AgentExecutablePath);
 
         var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
+        if (HistoryStopData.AsOfDate == null)
+        {
+            return;
+        }
+
         var packageLibYear = calculator.ComputeLibYear(agentReader, Package, HistoryStopData.AsOfDate.Value);
 
         eventClient.Fire(new LibYearComputedForPackageEvent
