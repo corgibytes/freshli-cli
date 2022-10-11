@@ -3,7 +3,6 @@ using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
@@ -15,13 +14,13 @@ public class LibYearTest : FreshliTest
     }
 
     [Theory]
-    [MethodData(nameof(ExpectedLibYears))]
+    [MemberData(nameof(ExpectedLibYears))]
     public void Validate_expected_libyears(DateTimeOffset releaseDateCurrentVersion,
         DateTimeOffset releaseDateLatestVersion, double expectedLibYear,
         int precision) => Assert.Equal(expectedLibYear,
         LibYear2.GivenReleaseDates(releaseDateCurrentVersion, releaseDateLatestVersion).AsDecimalNumber(precision));
 
-    private static TheoryData<DateTimeOffset, DateTimeOffset, double, int> ExpectedLibYears() =>
+    public static TheoryData<DateTimeOffset, DateTimeOffset, double, int> ExpectedLibYears() =>
         new()
         {
             {
