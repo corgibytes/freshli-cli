@@ -48,7 +48,8 @@ public class ComputeLibYearForPackageActivityTest
         var historyStopPoint = new CachedHistoryStopPoint { AsOfDateTime = asOfDateTime };
 
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(agentReader.Object);
-        calculator.Setup(mock => mock.ComputeLibYear(agentReader.Object, package, asOfDateTime)).Returns(packageLibYear);
+        calculator.Setup(mock => mock.ComputeLibYear(agentReader.Object, package, asOfDateTime))
+            .Returns(packageLibYear);
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
 

@@ -22,7 +22,8 @@ public class ComputeLibYearForBomActivityTest
         var eventClient = new Mock<IApplicationEventEngine>();
 
         var historyStopPointId = 29;
-        var activity = new ComputeLibYearForBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
+        var activity =
+            new ComputeLibYearForBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
 
         var serviceProvider = new Mock<IServiceProvider>();
 

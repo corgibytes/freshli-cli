@@ -14,14 +14,13 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class DetectAgentsForDetectManifestsActivityTest
 {
+    private const int HistoryStopPointId = 29;
     private readonly Mock<IAgentsDetector> _agentsDetector = new();
+    private readonly Mock<ICacheDb> _cacheDb = new();
+    private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<CachedHistoryStopPoint> _historyStopPoint = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
-    private readonly Mock<ICacheManager> _cacheManager = new();
-    private readonly Mock<ICacheDb> _cacheDb = new();
-
-    private const int HistoryStopPointId = 29;
 
     public DetectAgentsForDetectManifestsActivityTest()
     {

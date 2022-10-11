@@ -6,7 +6,8 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
 [IntegrationTest]
 // ReSharper disable once UnusedType.Global
-public class VerifyGitRepositoryInLocalDirectoryActivitySerializationTest : SerializationTest<VerifyGitRepositoryInLocalDirectoryActivity>
+public class VerifyGitRepositoryInLocalDirectoryActivitySerializationTest :
+    SerializationTest<VerifyGitRepositoryInLocalDirectoryActivity>
 {
     protected override VerifyGitRepositoryInLocalDirectoryActivity BuildIncoming() =>
         new() { AnalysisId = Guid.NewGuid() };
