@@ -11,7 +11,7 @@ public class DetectManifestsUsingAgentActivitySerializationTest : SerializationT
     protected override DetectManifestsUsingAgentActivity BuildIncoming() =>
         new(
             Guid.NewGuid(),
-            this.BuildHistoryStopData(),
+            29,
             "/agent/jones"
         );
 
@@ -19,7 +19,7 @@ public class DetectManifestsUsingAgentActivitySerializationTest : SerializationT
         DetectManifestsUsingAgentActivity outgoing)
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
-        this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
+        Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);
         Assert.Equal(incoming.AgentExecutablePath, outgoing.AgentExecutablePath);
     }
 }

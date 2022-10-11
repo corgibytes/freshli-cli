@@ -11,12 +11,12 @@ public class CreateApiHistoryStopActivitySerializationTest : SerializationTest<C
     protected override CreateApiHistoryStopActivity BuildIncoming() =>
         new(
             Guid.NewGuid(),
-            this.BuildHistoryStopData()
+            29
         );
 
     protected override void AssertEqual(CreateApiHistoryStopActivity incoming, CreateApiHistoryStopActivity outgoing)
     {
         Assert.Equal(incoming.CachedAnalysisId, outgoing.CachedAnalysisId);
-        this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
+        Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);
     }
 }
