@@ -6,8 +6,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
 [IntegrationTest]
 // ReSharper disable once UnusedType.Global
-public class
-    DetectAgentsForDetectManifestsActivitySerializationTest : SerializationTest<DetectAgentsForDetectManifestsActivity>
+public class DetectAgentsForDetectManifestsActivitySerializationTest : SerializationTest<DetectAgentsForDetectManifestsActivity>
 {
     protected override DetectAgentsForDetectManifestsActivity BuildIncoming() =>
         new(
