@@ -16,7 +16,8 @@ public class GenerateBillOfMaterialsActivitySerializationTest : SerializationTes
             "/it/manifests"
         );
 
-    protected override void AssertEqual(GenerateBillOfMaterialsActivity incoming, GenerateBillOfMaterialsActivity outgoing)
+    protected override void AssertEqual(GenerateBillOfMaterialsActivity incoming,
+        GenerateBillOfMaterialsActivity outgoing)
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
         Assert.Equal(incoming.AgentExecutablePath, outgoing.AgentExecutablePath);
@@ -24,4 +25,3 @@ public class GenerateBillOfMaterialsActivitySerializationTest : SerializationTes
         Assert.Equal(incoming.ManifestPath, outgoing.ManifestPath);
     }
 }
-

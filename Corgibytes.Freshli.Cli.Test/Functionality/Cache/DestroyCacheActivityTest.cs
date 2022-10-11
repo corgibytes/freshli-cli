@@ -1,5 +1,4 @@
 using System;
-using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -27,7 +26,7 @@ public class DestroyCacheActivityTest
 
         eventClient.Verify(mock => mock.Fire(It.Is<CacheDestroyedEvent>(
             value =>
-            value.ExitCode == 0
+                value.ExitCode == 0
         )));
     }
 
@@ -48,4 +47,3 @@ public class DestroyCacheActivityTest
         eventClient.Verify(mock => mock.Fire(It.IsAny<CacheDestroyFailedEvent>()));
     }
 }
-
