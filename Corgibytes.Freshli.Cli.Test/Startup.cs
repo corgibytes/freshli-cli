@@ -9,8 +9,12 @@ public class Startup
 {
     // ReSharper disable once UnusedMember.Global
     public void ConfigureHost(IHostBuilder hostBuilder) =>
-        hostBuilder.ConfigureServices((_, services) =>
-        {
-            new FreshliServiceBuilder(services, new Configuration(new Environment())).Register();
-        });
+        hostBuilder
+            .UseDefaultServiceProvider((context, options) =>
+            {
+                options.ValidateScopes = true;
+                options.ValidateOnBuild = true;
+            })
+            .ConfigureServices((context, services) =>
+                new FreshliServiceBuilder(services, new Configuration(new Environment())).Register());
 }
