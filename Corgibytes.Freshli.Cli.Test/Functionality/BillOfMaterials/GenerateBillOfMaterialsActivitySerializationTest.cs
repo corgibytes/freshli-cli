@@ -12,7 +12,7 @@ public class GenerateBillOfMaterialsActivitySerializationTest : SerializationTes
         new(
             Guid.NewGuid(),
             "/agent/brown",
-            this.BuildHistoryStopData(),
+            29,
             "/it/manifests"
         );
 
@@ -21,7 +21,7 @@ public class GenerateBillOfMaterialsActivitySerializationTest : SerializationTes
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
         Assert.Equal(incoming.AgentExecutablePath, outgoing.AgentExecutablePath);
-        this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
+        Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);
         Assert.Equal(incoming.ManifestPath, outgoing.ManifestPath);
     }
 }
