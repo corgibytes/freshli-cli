@@ -10,6 +10,7 @@ using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test;
 
+[IntegrationTest]
 public class ProgramTest : FreshliTest
 {
     private readonly StringWriter _consoleOutput = new();
