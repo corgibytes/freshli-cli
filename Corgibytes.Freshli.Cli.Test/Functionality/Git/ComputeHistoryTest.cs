@@ -8,7 +8,6 @@ using Corgibytes.Freshli.Cli.Test.Common;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
@@ -75,11 +74,11 @@ public class ComputeHistoryTest : FreshliTest
     }
 
     [Theory]
-    [MethodData(nameof(DataForTwoWeekInterval))]
-    [MethodData(nameof(DataForOneDayInterval))]
-    [MethodData(nameof(DataForOneWeekInterval))]
-    [MethodData(nameof(DataForOneMonthInterval))]
-    [MethodData(nameof(DataForOneYearInterval))]
+    [MemberData(nameof(DataForTwoWeekInterval))]
+    [MemberData(nameof(DataForOneDayInterval))]
+    [MemberData(nameof(DataForOneWeekInterval))]
+    [MemberData(nameof(DataForOneMonthInterval))]
+    [MemberData(nameof(DataForOneYearInterval))]
     public void Verify_it_can_find_sha_identifiers_and_dates_for_interval(string interval, DateTimeOffset startAtDate,
         List<GitCommit> availableCommits, List<HistoryIntervalStop> expectedStops)
     {
