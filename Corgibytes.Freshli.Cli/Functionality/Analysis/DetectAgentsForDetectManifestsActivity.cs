@@ -9,13 +9,13 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly Guid _analysisId;
-    [JsonProperty] private readonly IHistoryStopData _historyStopData;
+    public readonly Guid AnalysisId;
+    public readonly IHistoryStopData HistoryStopData;
 
     public DetectAgentsForDetectManifestsActivity(Guid analysisId, IHistoryStopData historyStopData)
     {
-        _analysisId = analysisId;
-        _historyStopData = historyStopData;
+        AnalysisId = analysisId;
+        HistoryStopData = historyStopData;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
@@ -31,7 +31,7 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
 
         foreach (var agentPath in agentsDetector.Detect())
         {
-            eventClient.Fire(new AgentDetectedForDetectManifestEvent(_analysisId, _historyStopData, agentPath));
+            eventClient.Fire(new AgentDetectedForDetectManifestEvent(AnalysisId, HistoryStopData, agentPath));
         }
     }
 }

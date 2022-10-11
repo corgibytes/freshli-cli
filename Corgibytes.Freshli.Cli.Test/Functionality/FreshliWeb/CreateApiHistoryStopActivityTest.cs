@@ -10,7 +10,7 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 
 [UnitTest]
-public class CreateApiHistoryStopActivtyTest
+public class CreateApiHistoryStopActivityTest
 {
     [Fact]
     public void Handle()

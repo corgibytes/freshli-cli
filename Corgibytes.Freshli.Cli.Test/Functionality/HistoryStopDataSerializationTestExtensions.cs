@@ -6,7 +6,7 @@ using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
-public static class HistoryStopDataSerilaziationTestExtensions
+public static class HistoryStopDataSerializationTestExtensions
 {
     // ReSharper disable once UnusedParameter.Global
     public static HistoryStopData BuildHistoryStopData(this SerializationTest _) =>
