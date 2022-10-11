@@ -18,5 +18,6 @@ public class AgentDetectedForDetectManifestEvent : IApplicationEvent
     public string AgentExecutablePath { get; }
 
     public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new DetectManifestsUsingAgentActivity(AnalysisId, HistoryStopPointId, AgentExecutablePath));
+        eventClient.Dispatch(
+            new DetectManifestsUsingAgentActivity(AnalysisId, HistoryStopPointId, AgentExecutablePath));
 }

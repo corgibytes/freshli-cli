@@ -60,7 +60,8 @@ public class ComputeHistoryActivity : IApplicationActivity
         foreach (var historyIntervalStop in historyIntervalStops)
         {
             var historyStopPointId = cacheDb.AddHistoryStopPoint(
-                new CachedHistoryStopPoint {
+                new CachedHistoryStopPoint
+                {
                     CachedAnalysisId = AnalysisId,
                     RepositoryId = HistoryStopData.RepositoryId,
                     LocalPath = HistoryStopData.Path,
