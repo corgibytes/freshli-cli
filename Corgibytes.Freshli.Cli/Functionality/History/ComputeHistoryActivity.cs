@@ -22,7 +22,6 @@ public class ComputeHistoryActivity : IApplicationActivity
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();

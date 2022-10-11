@@ -1,6 +1,4 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
@@ -17,10 +15,6 @@ public class BillOfMaterialsGeneratedEventTest
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var calculateLibYearFromFile = new Mock<ICalculateLibYearFromFile>();
-        var configuration = new Mock<IConfiguration>();
-        configuration.Setup(mock => mock.CacheDir).Returns("/cache/directory");
-        var historyStopData = new HistoryStopData(configuration.Object, "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d",
-            "da39a3ee5e6b4b0d3255bfef95601890afd80709");
         var pathToBom = "/path/to/bom";
         var agentExecutablePath = "/path/to/agent";
 

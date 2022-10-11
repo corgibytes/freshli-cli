@@ -1,6 +1,4 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Moq;
@@ -16,11 +14,6 @@ public class PackageFoundEventTest
     public void HandleCorrectlyDispatchesComputeLibYearForPackageActivity()
     {
         var analysisId = Guid.NewGuid();
-        var repositoryId = "abcfe123";
-        var commitId = "fecbec321";
-        var asOfDate = new DateTimeOffset(2021, 12, 12, 10, 15, 25, 0, TimeSpan.Zero);
-        var configuration = new Mock<IConfiguration>();
-        var historyStopData = new HistoryStopData(configuration.Object, repositoryId, commitId, asOfDate);
         var agentExecutablePath = "/path/to/agent";
         var activityEngine = new Mock<IApplicationActivityEngine>();
 
