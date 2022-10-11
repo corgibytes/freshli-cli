@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Moq;
@@ -17,14 +16,8 @@ public class ComputeLibYearForBomActivityTest
     public void HandleCorrectlyFiresLibYearComputatitonForBomStartedEvent()
     {
         var analysisId = Guid.NewGuid();
-        var configuration = new Mock<IConfiguration>();
-        var repositoryId = "abcdef123";
-        var commitId = "fecdef987";
-        var asOf = new DateTimeOffset(2022, 10, 07, 22, 02, 54, 0, TimeSpan.Zero);
         var pathToBom = "/path/to/bom";
         var pathToAgentExecutable = "/path/to/agent";
-
-        var historyStopData = new HistoryStopData(configuration.Object, repositoryId, commitId, asOf);
 
         var eventClient = new Mock<IApplicationEventEngine>();
 
