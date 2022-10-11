@@ -5,6 +5,7 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.BillOfMaterials;
 
 [IntegrationTest]
+// ReSharper disable once UnusedType.Global
 public class BillOfMaterialsGeneratedEventSerializationTest : SerializationTest<BillOfMaterialsGeneratedEvent>
 {
     protected override BillOfMaterialsGeneratedEvent BuildIncoming() =>
