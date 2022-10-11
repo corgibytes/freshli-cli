@@ -31,9 +31,9 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
         var cacheDb = cacheManager.GetCacheDb();
         var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
 
-        var asOfDate = DateTime.Now;
+        var asOfDateTime = DateTime.Now;
         var pathToBillOfMaterials =
-            agentReader.ProcessManifest(Path.Combine(historyStopPoint?.LocalPath!, ManifestPath), asOfDate);
+            agentReader.ProcessManifest(Path.Combine(historyStopPoint?.LocalPath!, ManifestPath), asOfDateTime);
 
         eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisId, HistoryStopPointId, pathToBillOfMaterials,
             AgentExecutablePath));

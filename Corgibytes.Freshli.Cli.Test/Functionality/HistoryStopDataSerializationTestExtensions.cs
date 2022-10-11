@@ -23,6 +23,6 @@ public static class HistoryStopDataSerializationTestExtensions
     {
         Assert.Equal(incoming.RepositoryId, outgoing.RepositoryId);
         Assert.Equal(incoming.CommitId, outgoing.CommitId);
-        Assert.Equal(incoming.AsOfDate, outgoing.AsOfDate);
+        Assert.Equal(incoming.AsOfDateTime, outgoing.AsOfDateTime);
     }
 }

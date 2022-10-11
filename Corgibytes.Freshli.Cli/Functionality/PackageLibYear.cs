@@ -15,7 +15,7 @@ public class PackageLibYear
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear)
     {
-        AsOfDate = default;
+        AsOfDateTime = default;
         ReleaseDateCurrentVersion = releaseDateCurrentVersion;
         CurrentVersion = currentVersion;
         ReleaseDateLatestVersion = releaseDateLatestVersion;
@@ -26,9 +26,9 @@ public class PackageLibYear
 
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
-        DateTimeOffset asOfDate)
+        DateTimeOffset asOfDateTime)
     {
-        AsOfDate = asOfDate;
+        AsOfDateTime = asOfDateTime;
         ReleaseDateCurrentVersion = releaseDateCurrentVersion;
         CurrentVersion = currentVersion;
         ReleaseDateLatestVersion = releaseDateLatestVersion;
@@ -45,7 +45,7 @@ public class PackageLibYear
     [JsonConstructor]
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
-        PackageURL packageUrl, DateTimeOffset asOfDate, string exceptionMessage)
+        PackageURL packageUrl, DateTimeOffset asOfDateTime, string exceptionMessage)
     {
         ReleaseDateCurrentVersion = releaseDateCurrentVersion;
         CurrentVersion = currentVersion;
@@ -53,7 +53,7 @@ public class PackageLibYear
         LatestVersion = latestVersion;
         LibYear = libYear;
         PackageUrl = packageUrl;
-        AsOfDate = asOfDate;
+        AsOfDateTime = asOfDateTime;
         ExceptionMessage = exceptionMessage;
     }
 
@@ -64,5 +64,5 @@ public class PackageLibYear
     public PackageURL? PackageUrl { get; }
     public DateTimeOffset ReleaseDateCurrentVersion { get; }
     public DateTimeOffset ReleaseDateLatestVersion { get; }
-    public DateTimeOffset AsOfDate { get; }
+    public DateTimeOffset AsOfDateTime { get; }
 }

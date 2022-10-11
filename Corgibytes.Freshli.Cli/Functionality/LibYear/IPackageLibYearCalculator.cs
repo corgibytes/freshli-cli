@@ -6,5 +6,5 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public interface IPackageLibYearCalculator
 {
-    public PackageLibYear ComputeLibYear(IAgentReader agentReader, PackageURL packageUrl, DateTimeOffset asOfDate);
+    public PackageLibYear ComputeLibYear(IAgentReader agentReader, PackageURL packageUrl, DateTimeOffset asOfDateTime);
 }
