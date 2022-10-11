@@ -43,7 +43,7 @@ public class FreshliServiceBuilder
     {
         // todo: register an implementation of IPackageLibYearCalculator
         Services.AddSingleton(Configuration);
-        Services.AddScoped<IEnvironment, Environment>();
+        Services.AddSingleton<IEnvironment, Environment>();
         Services.AddScoped<ICacheManager, CacheManager>();
         Services.AddScoped<IAgentManager, AgentManager>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
@@ -119,9 +119,9 @@ public class FreshliServiceBuilder
         Services.AddScoped<IComputeHistory, ComputeHistory>();
         Services.AddScoped<IListCommits, ListCommits>();
 
-        Services.AddSingleton<IGitManager, GitManager>();
-        Services.AddSingleton<GitArchive>();
-        Services.AddSingleton<ICachedGitSourceRepository, CachedGitSourceRepository>();
+        Services.AddScoped<IGitManager, GitManager>();
+        Services.AddScoped<GitArchive>();
+        Services.AddScoped<ICachedGitSourceRepository, CachedGitSourceRepository>();
     }
 
     private void RegisterComputeLibYearCommand()
