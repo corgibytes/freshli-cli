@@ -1,5 +1,4 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -16,7 +15,6 @@ public class HistoryIntervalStopFoundEventTest
     {
         var cachedAnalysisId = Guid.NewGuid();
         var historyStopPointId = 29;
-        var historyStopData = new Mock<IHistoryStopData>();
         var appEvent = new HistoryIntervalStopFoundEvent(cachedAnalysisId, historyStopPointId);
 
         var eventClient = new Mock<IApplicationActivityEngine>();
