@@ -164,7 +164,10 @@ public class FreshliServiceBuilder
     {
         JobStorage.Current = new MemoryStorage();
 
-        Services.AddSingleton<IContractResolver, JsonContractResolver>();
+        // This class is set to transient, because it is given a reference to IServiceScopeFactory when it's created.
+        // There can be problems if it's registered with a lifetime that exceeds the lifetime of that factory. This can
+        // lead to situations when it attempts to interact with the factory after it has been disposed.
+        Services.AddTransient<IContractResolver, JsonContractResolver>();
 
         Services.TryAddSingletonChecked(_ => JobStorage.Current);
         Services.TryAddSingletonChecked(_ => JobActivator.Current);
