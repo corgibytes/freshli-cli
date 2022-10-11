@@ -14,6 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 
 public class ComputeHistoryActivityTest
 {
+    private const int HistoryStopPointId = 29;
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IComputeHistory> _computeHistory = new();
@@ -21,8 +22,6 @@ public class ComputeHistoryActivityTest
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IHistoryStopData> _historyStopData = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
-
-    private const int HistoryStopPointId = 29;
 
     public ComputeHistoryActivityTest()
     {
