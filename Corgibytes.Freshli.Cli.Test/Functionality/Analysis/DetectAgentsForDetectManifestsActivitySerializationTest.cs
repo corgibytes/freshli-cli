@@ -11,13 +11,13 @@ public class DetectAgentsForDetectManifestsActivitySerializationTest : Serializa
     protected override DetectAgentsForDetectManifestsActivity BuildIncoming() =>
         new(
             Guid.NewGuid(),
-            this.BuildHistoryStopData()
+            29
         );
 
     protected override void AssertEqual(DetectAgentsForDetectManifestsActivity incoming,
         DetectAgentsForDetectManifestsActivity outgoing)
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
-        this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
+        Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);
     }
 }
