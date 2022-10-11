@@ -164,10 +164,7 @@ public class FreshliServiceBuilder
     {
         JobStorage.Current = new MemoryStorage();
 
-        // This class is set to transient, because it is given a reference to IServiceScopeFactory when it's created.
-        // There can be problems if it's registered with a lifetime that exceeds the lifetime of that factory. This can
-        // lead to situations when it attempts to interact with the factory after it has been disposed.
-        Services.AddTransient<IContractResolver, JsonContractResolver>();
+        Services.AddSingleton<IContractResolver, JsonContractResolver>();
 
         Services.TryAddSingletonChecked(_ => JobStorage.Current);
         Services.TryAddSingletonChecked(_ => JobActivator.Current);
@@ -191,7 +188,7 @@ public class FreshliServiceBuilder
 
     // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L76
     private void RegisterHangfireConfiguration() =>
-        Services.AddTransient(serviceProvider =>
+        Services.AddSingleton(serviceProvider =>
         {
             var configurationInstance = GlobalConfiguration.Configuration;
 
