@@ -19,7 +19,7 @@ public class DetectAgentsActivityTest
 
         var pathToAgent = "/agent/smith";
 
-        agentsDetector.Setup(mock => mock.Detect()).Returns(new List<string>{ pathToAgent });
+        agentsDetector.Setup(mock => mock.Detect()).Returns(new List<string> { pathToAgent });
 
         activity.Handle(eventClient.Object);
 
@@ -30,4 +30,3 @@ public class DetectAgentsActivityTest
         );
     }
 }
-

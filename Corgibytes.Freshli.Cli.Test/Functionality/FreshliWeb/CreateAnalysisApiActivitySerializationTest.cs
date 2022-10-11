@@ -10,8 +10,6 @@ public class CreateAnalysisApiActivitySerializationTest : SerializationTest<Crea
 {
     protected override CreateAnalysisApiActivity BuildIncoming() => new(Guid.NewGuid());
 
-    protected override void AssertEqual(CreateAnalysisApiActivity incoming, CreateAnalysisApiActivity outgoing)
-    {
+    protected override void AssertEqual(CreateAnalysisApiActivity incoming, CreateAnalysisApiActivity outgoing) =>
         Assert.Equal(incoming.CachedAnalysisId, outgoing.CachedAnalysisId);
-    }
 }

@@ -20,4 +20,3 @@ public class CreateApiHistoryStopActivitySerializationTest : SerializationTest<C
         this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
     }
 }
-

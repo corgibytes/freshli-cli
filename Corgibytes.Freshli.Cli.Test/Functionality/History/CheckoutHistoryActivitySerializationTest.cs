@@ -9,10 +9,10 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 public class CheckoutHistoryActivitySerializationTest : SerializationTest<CheckoutHistoryActivity>
 {
     protected override CheckoutHistoryActivity BuildIncoming() =>
-    new(
-        Guid.NewGuid(),
-        this.BuildHistoryStopData()
-    );
+        new(
+            Guid.NewGuid(),
+            this.BuildHistoryStopData()
+        );
 
     protected override void AssertEqual(CheckoutHistoryActivity incoming, CheckoutHistoryActivity outgoing)
     {
@@ -20,4 +20,3 @@ public class CheckoutHistoryActivitySerializationTest : SerializationTest<Checko
         this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
     }
 }
-

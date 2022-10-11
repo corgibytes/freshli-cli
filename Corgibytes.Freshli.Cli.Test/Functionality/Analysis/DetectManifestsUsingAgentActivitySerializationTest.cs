@@ -15,11 +15,11 @@ public class DetectManifestsUsingAgentActivitySerializationTest : SerializationT
             "/agent/jones"
         );
 
-    protected override void AssertEqual(DetectManifestsUsingAgentActivity incoming, DetectManifestsUsingAgentActivity outgoing)
+    protected override void AssertEqual(DetectManifestsUsingAgentActivity incoming,
+        DetectManifestsUsingAgentActivity outgoing)
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
         this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
         Assert.Equal(incoming.AgentExecutablePath, outgoing.AgentExecutablePath);
     }
 }
-

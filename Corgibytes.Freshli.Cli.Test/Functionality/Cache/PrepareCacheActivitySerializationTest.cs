@@ -25,4 +25,3 @@ public class PrepareCacheActivitySerializationTest : SerializationTest<PrepareCa
         Assert.Equal(incoming.RevisionHistoryMode, outgoing.RevisionHistoryMode);
     }
 }
-

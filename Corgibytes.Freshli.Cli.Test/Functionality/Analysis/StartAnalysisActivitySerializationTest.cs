@@ -27,4 +27,3 @@ public class StartAnalysisActivitySerializationTest : SerializationTest<StartAna
         Assert.Equal(incoming.UseCommitHistory, outgoing.UseCommitHistory);
     }
 }
-
