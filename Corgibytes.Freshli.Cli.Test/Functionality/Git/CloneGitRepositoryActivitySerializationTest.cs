@@ -13,9 +13,6 @@ public class CloneGitRepositoryActivitySerializationTest : SerializationTest<Clo
             Guid.NewGuid()
         );
 
-    protected override void AssertEqual(CloneGitRepositoryActivity incoming, CloneGitRepositoryActivity outgoing)
-    {
+    protected override void AssertEqual(CloneGitRepositoryActivity incoming, CloneGitRepositoryActivity outgoing) =>
         Assert.Equal(incoming.CachedAnalysisId, outgoing.CachedAnalysisId);
-    }
 }
-

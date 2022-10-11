@@ -20,4 +20,3 @@ public class ComputeHistoryActivitySerializationTest : SerializationTest<Compute
         this.AssertHistoryStopDataEqual(incoming.HistoryStopData, outgoing.HistoryStopData);
     }
 }
-

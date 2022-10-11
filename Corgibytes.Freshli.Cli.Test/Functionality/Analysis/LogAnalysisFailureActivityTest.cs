@@ -1,9 +1,9 @@
 using System;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
-using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
@@ -31,4 +31,3 @@ public class LogAnalysisFailureActivityTest
         )));
     }
 }
-
