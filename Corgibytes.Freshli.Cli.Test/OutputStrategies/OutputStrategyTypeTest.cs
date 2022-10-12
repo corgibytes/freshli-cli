@@ -2,12 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Corgibytes.Freshli.Cli.OutputStrategies;
-using Corgibytes.Freshli.Cli.Test.Common;
-using Corgibytes.Freshli.Cli.Test.Functionality;
-using CycloneDX.Models;
 using FluentAssertions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.OutputStrategies;
 
