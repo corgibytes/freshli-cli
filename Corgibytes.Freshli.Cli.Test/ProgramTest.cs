@@ -3,8 +3,6 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.Test.Common;
-using Corgibytes.Freshli.Cli.Test.Functionality;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
