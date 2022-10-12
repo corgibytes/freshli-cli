@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
+using Corgibytes.Freshli.Cli.Test.Functionality;
+using CycloneDX.Models;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -10,14 +12,8 @@ using Xunit.Abstractions;
 namespace Corgibytes.Freshli.Cli.Test.OutputStrategies;
 
 [UnitTest]
-public class OutputStrategyTypeTest : FreshliTest
+public class OutputStrategyTypeTest : HostedServicesTest
 {
-    private readonly IServiceProvider _services;
-
-    public OutputStrategyTypeTest(ITestOutputHelper output, IServiceProvider services) : base(output) =>
-        _services = services;
-
-
     [Fact]
     public void Validate_FormatterType_ToFormatter_conversion_exist()
     {
@@ -25,7 +21,7 @@ public class OutputStrategyTypeTest : FreshliTest
             .Cast<OutputStrategyType>()
             .ToList();
 
-        types.ToOutputStrategies(_services).Should()
+        types.ToOutputStrategies(ServiceScope.ServiceProvider).Should()
             .NotBeNull()
             .And
             .HaveCount(types.Count());
