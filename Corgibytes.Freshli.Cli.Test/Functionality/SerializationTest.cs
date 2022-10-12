@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
-public abstract class SerializationTest
+public abstract class SerializationTest : SerializationDependentTest
 {
 }
 
@@ -14,10 +14,13 @@ public abstract class SerializationTest<T> : SerializationTest
     {
         var incoming = BuildIncoming();
 
-        var data = SerializationHelper.Serialize(incoming);
-        var outgoing = SerializationHelper.Deserialize<T>(data);
+        WithExclusiveSerializationConfiguration(() =>
+        {
+            var data = SerializationHelper.Serialize(incoming);
+            var outgoing = SerializationHelper.Deserialize<T>(data);
 
-        AssertEqual(incoming, outgoing);
+            AssertEqual(incoming, outgoing);
+        });
     }
 
     protected abstract T BuildIncoming();

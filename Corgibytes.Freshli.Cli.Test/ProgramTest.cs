@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Test.Common;
+using Corgibytes.Freshli.Cli.Test.Functionality;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
@@ -11,17 +12,20 @@ using Xunit.Abstractions;
 namespace Corgibytes.Freshli.Cli.Test;
 
 [IntegrationTest]
-public class ProgramTest : FreshliTest
+public class ProgramTest : SerializationDependentTest
 {
     private readonly StringWriter _consoleOutput = new();
 
-    public ProgramTest(ITestOutputHelper output) : base(output) => Console.SetOut(_consoleOutput);
+    public ProgramTest(ITestOutputHelper output) => Console.SetOut(_consoleOutput);
 
     [Fact]
     public void Validate_Main_loglevel_debug()
     {
-        var task = Task.Run(() => Program.Main("--loglevel", "Debug"));
-        task.Wait();
+        WithExclusiveSerializationConfiguration(() =>
+        {
+            var task = Task.Run(() => Program.Main("--loglevel", "Debug"));
+            task.Wait();
+        });
 
         _consoleOutput.ToString().Should()
             .Contain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
@@ -30,8 +34,11 @@ public class ProgramTest : FreshliTest
     [Fact]
     public void Validate_Main_loglevel_info()
     {
-        var task = Task.Run(() => Program.Main("--loglevel", "Info"));
-        task.Wait();
+        WithExclusiveSerializationConfiguration(() =>
+        {
+            var task = Task.Run(() => Program.Main("--loglevel", "Info"));
+            task.Wait();
+        });
 
         _consoleOutput.ToString().Should()
             .NotContain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
@@ -41,8 +48,11 @@ public class ProgramTest : FreshliTest
     [Fact]
     public void Validate_Main_loglevel_default()
     {
-        var task = Task.Run(() => Program.Main());
-        task.Wait();
+        WithExclusiveSerializationConfiguration(() =>
+        {
+            var task = Task.Run(() => Program.Main());
+            task.Wait();
+        });
 
         _consoleOutput.ToString().Should()
             .NotContain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
@@ -55,8 +65,11 @@ public class ProgramTest : FreshliTest
     {
         var testfile = "testlog.log";
 
-        var task = Task.Run(() => Program.Main("--loglevel", "Info", "--logfile", testfile));
-        task.Wait();
+        WithExclusiveSerializationConfiguration(() =>
+        {
+            var task = Task.Run(() => Program.Main("--loglevel", "Info", "--logfile", testfile));
+            task.Wait();
+        });
 
         var logFileContent = File.ReadAllText(testfile);
         _consoleOutput.ToString().Should()
@@ -69,8 +82,11 @@ public class ProgramTest : FreshliTest
     {
         MainCommand.ShouldIncludeFailCommand = true;
 
-        var task = Task.Run(() => Program.Main("fail"));
-        task.Wait();
+        WithExclusiveSerializationConfiguration(() =>
+        {
+            var task = Task.Run(() => Program.Main("fail"));
+            task.Wait();
+        });
 
         _consoleOutput.ToString().Should().MatchRegex(new Regex(
             "^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
@@ -81,8 +97,12 @@ public class ProgramTest : FreshliTest
     public void ValidateServiceProviderIsLoaded()
     {
         MainCommand.ShouldIncludeLoadServiceCommand = true;
-        var task = Task.Run(() => Program.Main("load-service"));
-        task.Wait();
+
+        WithExclusiveSerializationConfiguration(() =>
+        {
+            var task = Task.Run(() => Program.Main("load-service"));
+            task.Wait();
+        });
 
         _consoleOutput.ToString().Should().Contain("All good! Service provider is not null.");
         _consoleOutput.ToString().Should()
