@@ -9,9 +9,6 @@ namespace Corgibytes.Freshli.Cli.Test;
 
 public abstract class HostedServicesTest : IDisposable
 {
-    protected IHost Host { get; }
-    protected IServiceScope ServiceScope { get; }
-
     protected HostedServicesTest()
     {
         Host = new HostBuilder()
@@ -21,11 +18,13 @@ public abstract class HostedServicesTest : IDisposable
                 options.ValidateOnBuild = true;
             })
             .ConfigureServices((_, services) =>
-                new FreshliServiceBuilder(services, new Configuration(new Environment())).Register()).
-            Build();
+                new FreshliServiceBuilder(services, new Configuration(new Environment())).Register()).Build();
 
         ServiceScope = Host.Services.CreateScope();
     }
+
+    protected IHost Host { get; }
+    protected IServiceScope ServiceScope { get; }
 
     public void Dispose() => Host.Dispose();
 }

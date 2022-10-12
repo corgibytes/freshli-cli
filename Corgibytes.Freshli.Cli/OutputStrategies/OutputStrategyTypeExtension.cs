@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.OutputStrategies;
