@@ -8,7 +8,6 @@ public static class FormatTypeExtensions
 {
     public static IOutputFormatter ToFormatter(this FormatType formatType, IServiceProvider services)
     {
-        using var scope = services.CreateScope();
-        return scope.ServiceProvider.GetRequiredNamedService<IOutputFormatter>(formatType);
+        return services.GetRequiredNamedService<IOutputFormatter>(formatType);
     }
 }
