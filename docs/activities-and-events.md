@@ -56,6 +56,7 @@ flowchart TD;
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
+    CreateApiPackageLibYearActivity
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
@@ -79,7 +80,7 @@ flowchart TD;
     ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
     DeterminePackagesFromBomActivity --> PackageFoundEvent
     LibYearComputationForBomStartedEvent
-    LibYearComputedForPackageEvent
+    LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
     PackageFoundEvent --> ComputeLibYearForPackageActivity
     LoadServiceProviderActivity
     ThrowExceptionActivity
