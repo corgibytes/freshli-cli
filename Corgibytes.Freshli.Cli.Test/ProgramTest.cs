@@ -3,8 +3,11 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
+using Corgibytes.Freshli.Cli.Test.Common;
+using Corgibytes.Freshli.Cli.Test.Functionality;
 using FluentAssertions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test;
 
@@ -18,11 +21,8 @@ public class ProgramTest : SerializationDependentTest
     [Fact]
     public void Validate_Main_loglevel_debug()
     {
-        WithExclusiveSerializationConfiguration(() =>
-        {
-            var task = Task.Run(() => Program.Main("--loglevel", "Debug"));
-            task.Wait();
-        });
+        var task = Task.Run(() => Program.Main("--loglevel", "Debug"));
+        task.Wait();
 
         _consoleOutput.ToString().Should()
             .Contain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
@@ -31,11 +31,8 @@ public class ProgramTest : SerializationDependentTest
     [Fact]
     public void Validate_Main_loglevel_info()
     {
-        WithExclusiveSerializationConfiguration(() =>
-        {
-            var task = Task.Run(() => Program.Main("--loglevel", "Info"));
-            task.Wait();
-        });
+        var task = Task.Run(() => Program.Main("--loglevel", "Info"));
+        task.Wait();
 
         _consoleOutput.ToString().Should()
             .NotContain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
@@ -45,11 +42,8 @@ public class ProgramTest : SerializationDependentTest
     [Fact]
     public void Validate_Main_loglevel_default()
     {
-        WithExclusiveSerializationConfiguration(() =>
-        {
-            var task = Task.Run(() => Program.Main());
-            task.Wait();
-        });
+        var task = Task.Run(() => Program.Main());
+        task.Wait();
 
         _consoleOutput.ToString().Should()
             .NotContain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
@@ -62,11 +56,8 @@ public class ProgramTest : SerializationDependentTest
     {
         var testfile = "testlog.log";
 
-        WithExclusiveSerializationConfiguration(() =>
-        {
-            var task = Task.Run(() => Program.Main("--loglevel", "Info", "--logfile", testfile));
-            task.Wait();
-        });
+        var task = Task.Run(() => Program.Main("--loglevel", "Info", "--logfile", testfile));
+        task.Wait();
 
         var logFileContent = File.ReadAllText(testfile);
         _consoleOutput.ToString().Should()
@@ -79,11 +70,8 @@ public class ProgramTest : SerializationDependentTest
     {
         MainCommand.ShouldIncludeFailCommand = true;
 
-        WithExclusiveSerializationConfiguration(() =>
-        {
-            var task = Task.Run(() => Program.Main("fail"));
-            task.Wait();
-        });
+        var task = Task.Run(() => Program.Main("fail"));
+        task.Wait();
 
         _consoleOutput.ToString().Should().MatchRegex(new Regex(
             "^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
@@ -94,12 +82,8 @@ public class ProgramTest : SerializationDependentTest
     public void ValidateServiceProviderIsLoaded()
     {
         MainCommand.ShouldIncludeLoadServiceCommand = true;
-
-        WithExclusiveSerializationConfiguration(() =>
-        {
-            var task = Task.Run(() => Program.Main("load-service"));
-            task.Wait();
-        });
+        var task = Task.Run(() => Program.Main("load-service"));
+        task.Wait();
 
         _consoleOutput.ToString().Should().Contain("All good! Service provider is not null.");
         _consoleOutput.ToString().Should()
