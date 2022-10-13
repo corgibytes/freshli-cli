@@ -14,7 +14,6 @@ public class BillOfMaterialsGeneratedEventTest
     public void CorrectlyDispatchesComputeLibYearActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
-        var calculateLibYearFromFile = new Mock<ICalculateLibYearFromFile>();
         var pathToBom = "/path/to/bom";
         var agentExecutablePath = "/path/to/agent";
 
@@ -23,15 +22,12 @@ public class BillOfMaterialsGeneratedEventTest
         var billOfMaterialsGeneratedEvent =
             new BillOfMaterialsGeneratedEvent(analysisId, historyStopPointId, pathToBom, agentExecutablePath);
 
-        serviceProvider.Setup(mock => mock.GetService(typeof(ICalculateLibYearFromFile)))
-            .Returns(calculateLibYearFromFile.Object);
-
         var engine = new Mock<IApplicationActivityEngine>();
         engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         billOfMaterialsGeneratedEvent.Handle(engine.Object);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearForBomActivity>(value =>
+        engine.Verify(mock => mock.Dispatch(It.Is<DeterminePackagesFromBomActivity>(value =>
             value.AnalysisId == analysisId &&
             value.HistoryStopPointId == historyStopPointId &&
             value.PathToBom == pathToBom &&

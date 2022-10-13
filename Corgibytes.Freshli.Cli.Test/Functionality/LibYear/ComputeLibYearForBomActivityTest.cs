@@ -23,7 +23,7 @@ public class ComputeLibYearForBomActivityTest
 
         var historyStopPointId = 29;
         var activity =
-            new ComputeLibYearForBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
+            new DeterminePackagesFromBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
 
         var serviceProvider = new Mock<IServiceProvider>();
 
