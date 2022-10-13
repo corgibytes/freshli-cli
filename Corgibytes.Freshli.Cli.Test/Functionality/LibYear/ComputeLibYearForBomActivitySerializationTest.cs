@@ -6,9 +6,9 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 
 [IntegrationTest]
 // ReSharper disable once UnusedType.Global
-public class ComputeLibYearForBomActivitySerializationTest : SerializationTest<ComputeLibYearForBomActivity>
+public class ComputeLibYearForBomActivitySerializationTest : SerializationTest<DeterminePackagesFromBomActivity>
 {
-    protected override ComputeLibYearForBomActivity BuildIncoming() =>
+    protected override DeterminePackagesFromBomActivity BuildIncoming() =>
         new(
             Guid.NewGuid(),
             29,
@@ -16,7 +16,7 @@ public class ComputeLibYearForBomActivitySerializationTest : SerializationTest<C
             "/path/to/agent"
         );
 
-    protected override void AssertEqual(ComputeLibYearForBomActivity incoming, ComputeLibYearForBomActivity outgoing)
+    protected override void AssertEqual(DeterminePackagesFromBomActivity incoming, DeterminePackagesFromBomActivity outgoing)
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
         Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);
