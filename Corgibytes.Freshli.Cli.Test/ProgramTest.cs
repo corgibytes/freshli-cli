@@ -14,7 +14,7 @@ public class ProgramTest : SerializationDependentTest
 {
     private readonly StringWriter _consoleOutput = new();
 
-    public ProgramTest(ITestOutputHelper output) => Console.SetOut(_consoleOutput);
+    public ProgramTest() => Console.SetOut(_consoleOutput);
 
     [Fact]
     public void Validate_Main_loglevel_debug()
