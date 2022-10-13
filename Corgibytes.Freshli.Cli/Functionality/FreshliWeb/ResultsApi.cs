@@ -61,4 +61,9 @@ public class ResultsApi : IResultsApi
                 $"Failed to create history point for analysis '{apiAnalysisId}' with '{moment}'.");
         }
     }
+
+    public void CreatePackageLibYear(Guid apiAnalysisId, DateTimeOffset asOfDateTime, PackageLibYear packageLibYear)
+    {
+        // TODO: add implementation
+    }
 }

@@ -12,4 +12,12 @@ public interface IResultsApi
         Guid apiAnalysisId,
         // ReSharper disable once UnusedParameter.Global
         DateTimeOffset moment);
+
+    void CreatePackageLibYear(
+        // ReSharper disable once UnusedParameter.Global
+        Guid apiAnalysisId,
+        // ReSharper disable once UnusedParameter.Global
+        DateTimeOffset asOfDateTime,
+        // ReSharper disable once UnusedParameter.Global
+        PackageLibYear packageLibYear);
 }
