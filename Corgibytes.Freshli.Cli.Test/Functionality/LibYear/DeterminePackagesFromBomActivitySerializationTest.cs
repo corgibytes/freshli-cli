@@ -6,7 +6,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 
 [IntegrationTest]
 // ReSharper disable once UnusedType.Global
-public class ComputeLibYearForBomActivitySerializationTest : SerializationTest<DeterminePackagesFromBomActivity>
+public class DeterminePackagesFromBomActivitySerializationTest : SerializationTest<DeterminePackagesFromBomActivity>
 {
     protected override DeterminePackagesFromBomActivity BuildIncoming() =>
         new(
