@@ -1,5 +1,4 @@
 using System;
-using System.Threading.Tasks;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
