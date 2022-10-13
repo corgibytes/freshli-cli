@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using FluentAssertions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test;
 
