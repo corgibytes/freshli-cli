@@ -1,9 +1,7 @@
-using System;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.IoC;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
 namespace Corgibytes.Freshli.Cli.Test;
 
