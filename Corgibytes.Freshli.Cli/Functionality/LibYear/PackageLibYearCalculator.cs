@@ -47,7 +47,7 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
 
         if (releaseDateCurrentVersion.Year == releaseDateLatestVersion.Year || numberOfLeapYearsBetween == 0)
         {
-            return Math.Round((double) timeSpan.Days / 365, precision);
+            return Math.Round((double)timeSpan.Days / 365, precision);
         }
 
         // An example:
