@@ -2,7 +2,6 @@ using System;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
-using Corgibytes.Freshli.Cli.Services;
 using Moq;
 using Xunit;
 
