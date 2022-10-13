@@ -10,5 +10,7 @@ public class LibYearComputedForPackageEvent : IApplicationEvent
     public string AgentExecutablePath { get; init; } = null!;
     public PackageLibYear PackageLibYear { get; init; } = null!;
 
-    public void Handle(IApplicationActivityEngine eventClient) => throw new NotImplementedException();
+    public void Handle(IApplicationActivityEngine eventClient)
+    {
+    }
 }
