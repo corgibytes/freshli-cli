@@ -20,6 +20,11 @@ public class PackageLibYearCalculatorTest
         var givenReleaseHistory = new List<Package>
         {
             new(
+                // This version was released _after_ the asOfDateTime so it should not count
+                new PackageURL(packageName + "@2.3.1"),
+                new DateTimeOffset(2022, 1, 29, 12, 30, 45, TimeSpan.Zero)
+            ),
+            new(
                 new PackageURL(packageName + "@2.2.1"),
                 new DateTimeOffset(2021, 1, 29, 12, 30, 45, TimeSpan.Zero)
             ),
