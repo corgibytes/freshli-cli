@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
-public class ComputeLibYearForBomActivity : IApplicationActivity
+public class DeterminePackagesFromBomActivity : IApplicationActivity
 {
-    public ComputeLibYearForBomActivity(Guid analysisId, int historyStopPointId, string pathToBom,
+    public DeterminePackagesFromBomActivity(Guid analysisId, int historyStopPointId, string pathToBom,
         string agentExecutablePath)
     {
         AnalysisId = analysisId;

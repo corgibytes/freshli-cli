@@ -21,7 +21,7 @@ public class BillOfMaterialsGeneratedEvent : IApplicationEvent
     public string AgentExecutablePath { get; }
 
     public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
-        new ComputeLibYearForBomActivity(
+        new DeterminePackagesFromBomActivity(
             AnalysisId,
             HistoryStopPointId,
             PathToBillOfMaterials,
