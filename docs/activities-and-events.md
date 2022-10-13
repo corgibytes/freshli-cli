@@ -44,7 +44,7 @@ flowchart TD;
     UnableToRestartAnalysisEvent
     UnhandledExceptionEvent -.-> FailureEvent
     UnhandledExceptionEvent
-    BillOfMaterialsGeneratedEvent --> ComputeLibYearForBomActivity
+    BillOfMaterialsGeneratedEvent --> DeterminePackagesFromBomActivity
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
     CacheDestroyedEvent
     CacheDestroyFailedEvent
@@ -76,8 +76,8 @@ flowchart TD;
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
     HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
-    ComputeLibYearForBomActivity --> PackageFoundEvent
     ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
+    DeterminePackagesFromBomActivity --> PackageFoundEvent
     LibYearComputationForBomStartedEvent
     LibYearComputedForPackageEvent
     PackageFoundEvent --> ComputeLibYearForPackageActivity
