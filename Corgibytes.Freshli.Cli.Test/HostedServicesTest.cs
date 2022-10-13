@@ -26,5 +26,9 @@ public abstract class HostedServicesTest : IDisposable
     protected IHost Host { get; }
     protected IServiceScope ServiceScope { get; }
 
-    public void Dispose() => Host.Dispose();
+    public void Dispose()
+    {
+        Host.Dispose();
+        GC.SuppressFinalize(this);
+    }
 }
