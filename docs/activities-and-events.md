@@ -54,9 +54,10 @@ flowchart TD;
     AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
+    ApiPackageLibYearCreatedEvent
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
-    CreateApiPackageLibYearActivity
+    CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
