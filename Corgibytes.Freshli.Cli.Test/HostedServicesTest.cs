@@ -7,28 +7,27 @@ using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
 namespace Corgibytes.Freshli.Cli.Test;
 
-public abstract class HostedServicesTest : IDisposable
+public abstract class HostedServicesTest
 {
     protected HostedServicesTest()
     {
-        Host = new HostBuilder()
-            .UseDefaultServiceProvider((_, options) =>
-            {
-                options.ValidateScopes = true;
-                options.ValidateOnBuild = true;
-            })
-            .ConfigureServices((_, services) =>
-                new FreshliServiceBuilder(services, new Configuration(new Environment())).Register()).Build();
-
         ServiceScope = Host.Services.CreateScope();
     }
 
-    protected IHost Host { get; }
-    protected IServiceScope ServiceScope { get; }
-
-    public void Dispose()
+    private static IHost? s_host;
+    protected static IHost Host
     {
-        Host.Dispose();
-        GC.SuppressFinalize(this);
+        get
+        {
+            return s_host ??= new HostBuilder()
+                .UseDefaultServiceProvider((_, options) =>
+                {
+                    options.ValidateScopes = true;
+                    options.ValidateOnBuild = true;
+                })
+                .ConfigureServices((_, services) =>
+                    new FreshliServiceBuilder(services, new Configuration(new Environment())).Register()).Build();
+        }
     }
+    protected IServiceScope ServiceScope { get; }
 }
