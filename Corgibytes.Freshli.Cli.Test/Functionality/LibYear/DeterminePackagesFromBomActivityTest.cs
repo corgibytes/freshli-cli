@@ -10,7 +10,7 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 
 [UnitTest]
-public class ComputeLibYearForBomActivityTest
+public class DeterminePackagesFromBomActivityTest
 {
     [Fact]
     public void HandleCorrectlyFiresLibYearComputatitonForBomStartedEvent()
