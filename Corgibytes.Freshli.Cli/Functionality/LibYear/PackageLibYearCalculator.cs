@@ -15,7 +15,7 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
         try
         {
             var releaseHistory = agentReader.RetrieveReleaseHistory(packageUrl);
-            var latestVersionPackageUrl = GetLatestVersion(releaseHistory);
+            var latestVersionPackageUrl = GetLatestVersion(releaseHistory, asOfDateTime);
             var releaseDateCurrentVersion = GetReleaseDate(releaseHistory, packageUrl);
             var releaseDateLatestVersion = GetReleaseDate(releaseHistory, latestVersionPackageUrl);
 
@@ -74,9 +74,12 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
         throw ReleaseDateNotFoundException.BecauseReturnedListDidNotContainReleaseDate();
     }
 
-    private static PackageURL GetLatestVersion(IEnumerable<Package> releaseHistory)
+    private static PackageURL GetLatestVersion(IEnumerable<Package> releaseHistory, DateTimeOffset asOfDate)
     {
-        var latestPackage = releaseHistory.MaxBy(package => package.ReleasedAt);
+        var latestPackage = releaseHistory
+            .OrderByDescending(package => package.ReleasedAt)
+            .FirstOrDefault(package => package.ReleasedAt < asOfDate);
+
         if (latestPackage != null)
         {
             return latestPackage.PackageUrl;
