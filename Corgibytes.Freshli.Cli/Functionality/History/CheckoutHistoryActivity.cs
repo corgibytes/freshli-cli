@@ -1,39 +1,46 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class CheckoutHistoryActivity : IApplicationActivity
 {
-    [JsonProperty] private readonly Guid _analysisId;
-    [JsonProperty] private readonly IAnalysisLocation _analysisLocation;
-
-    public CheckoutHistoryActivity(Guid analysisId, IAnalysisLocation analysisLocation)
+    public CheckoutHistoryActivity(Guid analysisId, int historyStopPointId)
     {
-        _analysisId = analysisId;
-        _analysisLocation = analysisLocation;
+        AnalysisId = analysisId;
+        HistoryStopPointId = historyStopPointId;
     }
+
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+    // ReSharper disable once MemberCanBePrivate.Global
+    public Guid AnalysisId { get; set; }
+
+    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
+    public int HistoryStopPointId { get; set; }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
+        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+        var cacheDb = cacheManager.GetCacheDb();
+        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        if (historyStopPoint?.GitCommitId == null)
+        {
+            throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
+        }
+
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
-        if (_analysisLocation.CommitId != null)
-        {
-            gitManager.CreateArchive(
-                _analysisLocation.RepositoryId,
-                gitManager.ParseCommitId(_analysisLocation.CommitId)
-            );
+        gitManager.CreateArchive(
+            historyStopPoint.RepositoryId,
+            gitManager.ParseCommitId(historyStopPoint.GitCommitId)
+        );
 
-            eventClient.Fire(new HistoryStopCheckedOutEvent
-            {
-                AnalysisId = _analysisId,
-                AnalysisLocation = _analysisLocation
-            });
-        }
+        eventClient.Fire(new HistoryStopCheckedOutEvent
+        {
+            AnalysisId = AnalysisId,
+            HistoryStopPointId = HistoryStopPointId
+        });
     }
 }

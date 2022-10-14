@@ -15,16 +15,16 @@ public class ListCommits : IListCommits
 
     public ListCommits(IConfiguration configuration) => _configuration = configuration;
 
-    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation) => GitLog(analysisLocation);
+    public IEnumerable<GitCommit> ForRepository(IHistoryStopData historyStopData) => GitLog(historyStopData);
 
-    public GitCommit MostRecentCommit(IAnalysisLocation analysisLocation)
+    public GitCommit MostRecentCommit(IHistoryStopData historyStopData)
     {
         // Fetch only the latest as this returns a list (for re-usability) we have to return the first item of that list
-        var commit = GitLog(analysisLocation, true);
+        var commit = GitLog(historyStopData, true);
         return commit.First();
     }
 
-    private IEnumerable<GitCommit> GitLog(IAnalysisLocation analysisLocation, bool latestOnly = false)
+    private IEnumerable<GitCommit> GitLog(IHistoryStopData historyStopData, bool latestOnly = false)
     {
         var stdErrBuffer = new StringBuilder();
         var stdOutBuffer = new StringBuilder();
@@ -43,7 +43,7 @@ public class ListCommits : IListCommits
                     }
                 })
             .WithValidation(CommandResultValidation.None)
-            .WithWorkingDirectory(analysisLocation.Path)
+            .WithWorkingDirectory(historyStopData.Path)
             .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
             .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer));
 

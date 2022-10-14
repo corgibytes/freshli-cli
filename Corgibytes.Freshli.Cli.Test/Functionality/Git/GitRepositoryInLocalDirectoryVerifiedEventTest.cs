@@ -23,7 +23,7 @@ public class GitRepositoryInLocalDirectoryVerifiedEventTest
 
         engine.Setup(mock => mock.Dispatch(It.Is<ComputeHistoryActivity>(value =>
             value.AnalysisId == analysisId &&
-            value.AnalysisLocation.Path == localDirectory
+            value.HistoryStopData.Path == localDirectory
         )));
     }
 }

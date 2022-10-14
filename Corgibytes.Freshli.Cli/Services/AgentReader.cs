@@ -51,10 +51,10 @@ public class AgentReader : IAgentReader
         return manifests.IsEmpty() ? new List<string>() : manifests.TrimEnd('\n', '\r').Split("\n").ToList();
     }
 
-    public string ProcessManifest(string manifestPath, DateTime asOfDate)
+    public string ProcessManifest(string manifestPath, DateTime asOfDateTime)
     {
         var billOfMaterialsPath =
-            Invoke.Command(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDate:o}", ".");
+            Invoke.Command(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDateTime:o}", ".");
 
         return billOfMaterialsPath.TrimEnd('\n', '\n');
     }
