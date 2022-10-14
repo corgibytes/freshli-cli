@@ -5,4 +5,3 @@ namespace Corgibytes.Freshli.Cli.Functionality.Agents;
 public class NoAgentsDetectedFailureEvent : FailureEvent
 {
 }
-

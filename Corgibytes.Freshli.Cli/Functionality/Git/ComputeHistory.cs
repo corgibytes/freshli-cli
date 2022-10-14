@@ -17,14 +17,14 @@ public class ComputeHistory : IComputeHistory
     }
 
     public IEnumerable<HistoryIntervalStop> ComputeWithHistoryInterval(
-        IAnalysisLocation analysisLocation,
+        IHistoryStopData historyStopData,
         string historyInterval,
         DateTimeOffset startAtDate
     )
     {
         _historyIntervalParser.Parse(historyInterval, out var interval, out var quantifier);
 
-        var commitHistory = _listCommits.ForRepository(analysisLocation);
+        var commitHistory = _listCommits.ForRepository(historyStopData);
 
         // Prevent multiple enumeration
         var gitCommits = commitHistory.OrderByDescending(commit => commit.CommittedAt).ToList();
@@ -78,7 +78,8 @@ public class ComputeHistory : IComputeHistory
 
         if (rangeStartDate < oldestCommit.CommittedAt)
         {
-            throw new InvalidHistoryIntervalException($"Given range ({historyInterval}) results in an invalid start date as it occurs before date of oldest commit");
+            throw new InvalidHistoryIntervalException(
+                $"Given range ({historyInterval}) results in an invalid start date as it occurs before date of oldest commit");
         }
 
         // Foreach offset in range, select the youngest commit, as long as it's not younger than the offset.
@@ -89,16 +90,16 @@ public class ComputeHistory : IComputeHistory
             .ToList();
     }
 
-    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IAnalysisLocation analysisLocation)
+    public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IHistoryStopData historyStopData)
     {
-        var commitHistory = _listCommits.ForRepository(analysisLocation);
+        var commitHistory = _listCommits.ForRepository(historyStopData);
         return commitHistory
             .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt)).ToList();
     }
 
-    public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IAnalysisLocation analysisLocation)
+    public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IHistoryStopData historyStopData)
     {
-        var gitCommit = _listCommits.MostRecentCommit(analysisLocation);
+        var gitCommit = _listCommits.MostRecentCommit(historyStopData);
         return new List<HistoryIntervalStop> { new(gitCommit.ShaIdentifier, gitCommit.CommittedAt) };
     }
 

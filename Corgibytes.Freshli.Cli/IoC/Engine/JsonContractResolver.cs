@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using NuGet.Packaging;
 using PackageUrl;
@@ -11,10 +10,10 @@ namespace Corgibytes.Freshli.Cli.IoC.Engine;
 // Inspired by and based on: https://www.newtonsoft.com/json/help/html/DeserializeWithDependencyInjection.htm
 public class JsonContractResolver : DefaultContractResolver
 {
-    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly IServiceProvider _serviceProvider;
 
-    public JsonContractResolver(IServiceScopeFactory serviceScopeFactory) => _serviceScopeFactory =
-        serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+    public JsonContractResolver(IServiceProvider serviceProvider) => _serviceProvider =
+        serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
     protected override JsonObjectContract CreateObjectContract(Type objectType)
     {
@@ -35,7 +34,7 @@ public class JsonContractResolver : DefaultContractResolver
         }
         else
         {
-            var serviceInstance = _serviceScopeFactory.CreateScope().ServiceProvider.GetService(objectType);
+            var serviceInstance = _serviceProvider.GetService(objectType);
 
             if (serviceInstance != null)
             {

@@ -23,6 +23,9 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT");
 
+                    b.Property<Guid?>("ApiAnalysisId")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("HistoryInterval")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -72,19 +75,27 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.ToTable("CachedGitSources");
                 });
 
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryIntervalStop", b =>
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryStopPoint", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTimeOffset>("AsOfDateTime")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("CachedAnalysisId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("GitCommitDate")
+                    b.Property<string>("GitCommitId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("GitCommitId")
+                    b.Property<string>("LocalPath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RepositoryId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -95,7 +106,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("CachedHistoryIntervalStops");
+                    b.ToTable("CachedHistoryStopPoints");
                 });
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedProperty", b =>
@@ -120,10 +131,10 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.ToTable("CachedProperties");
                 });
 
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryIntervalStop", b =>
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryStopPoint", b =>
                 {
                     b.HasOne("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", "CachedAnalysis")
-                        .WithMany("HistoryIntervalStops")
+                        .WithMany("HistoryStopPoints")
                         .HasForeignKey("CachedAnalysisId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -133,7 +144,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", b =>
                 {
-                    b.Navigation("HistoryIntervalStops");
+                    b.Navigation("HistoryStopPoints");
                 });
 #pragma warning restore 612, 618
         }

@@ -4,12 +4,12 @@ using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.DependencyManagers;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
+using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.IoC.Engine;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Services;
@@ -41,8 +41,9 @@ public class FreshliServiceBuilder
 
     public void Register()
     {
+        // todo: register an implementation of IPackageLibYearCalculator
         Services.AddSingleton(Configuration);
-        Services.AddScoped<IEnvironment, Environment>();
+        Services.AddSingleton<IEnvironment, Environment>();
         Services.AddScoped<ICacheManager, CacheManager>();
         Services.AddScoped<IAgentManager, AgentManager>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
@@ -68,6 +69,8 @@ public class FreshliServiceBuilder
         Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
         Services.AddScoped<IResultsApi, ResultsApi>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
+        Services.AddScoped<IBomReader, ReadCycloneDxFile>();
+        Services.AddScoped<IPackageLibYearCalculator, PackageLibYearCalculator>();
     }
 
     private void RegisterLoadServiceCommand() =>
@@ -118,18 +121,15 @@ public class FreshliServiceBuilder
         Services.AddScoped<IComputeHistory, ComputeHistory>();
         Services.AddScoped<IListCommits, ListCommits>();
 
-        Services.AddSingleton<IGitManager, GitManager>();
-        Services.AddSingleton<GitArchive>();
-        Services.AddSingleton<ICachedGitSourceRepository, CachedGitSourceRepository>();
+        Services.AddScoped<IGitManager, GitManager>();
+        Services.AddScoped<GitArchive>();
+        Services.AddScoped<ICachedGitSourceRepository, CachedGitSourceRepository>();
     }
 
     private void RegisterComputeLibYearCommand()
     {
-        Services.AddScoped<ICalculateLibYearFromFile, CalculateLibYearFromCycloneDxFile>();
         Services.AddTransient<ReadCycloneDxFile>();
         Services.AddScoped<IFileReader, CycloneDxFileReaderFromFileReaderSystem>();
-
-        Services.AddTransient<IDependencyManagerRepository, AgentsRepository>();
     }
 
     // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L43
