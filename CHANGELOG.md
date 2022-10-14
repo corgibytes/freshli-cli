@@ -11,7 +11,7 @@ __Dependencies__
 
 
 ## v0.5.0
-Associated Docker image: [corgibytes/freshli-cli:0.5.0-alpha.1181-Branch.main.Sha.0b0197405a5310cf55a0d21695b94f8b00b6ae02](https://hub.docker.com/r/corgibytes/freshli-cli/tags?page=1name=0.5.0-alpha.1181-Branch.main.Sha.0b0197405a5310cf55a0d21695b94f8b00b6ae02)
+Associated Docker image: [corgibytes/freshli-cli:0.5.0-alpha.1184-Branch.main.Sha.82dd1e9599a6e9655e7111db353a4c00d75aa46a](https://hub.docker.com/r/corgibytes/freshli-cli/tags?page=1name=0.5.0-alpha.1184-Branch.main.Sha.82dd1e9599a6e9655e7111db353a4c00d75aa46a)
 
 As part of this release we had [4 issues](https://github.com/corgibytes/freshli-cli/milestone/3?closed=1) closed.
 
@@ -81,6 +81,10 @@ __Enhancements__
 - [__#8__](https://github.com/corgibytes/freshli-cli/issues/8) Auto generate the release notes
 - [__#7__](https://github.com/corgibytes/freshli-cli/issues/7) Create automated build for the executable
 - [__#6__](https://github.com/corgibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
+- [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+gibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
 - [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
 
 
