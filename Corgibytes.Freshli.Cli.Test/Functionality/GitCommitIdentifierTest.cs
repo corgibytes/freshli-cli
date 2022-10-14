@@ -3,7 +3,6 @@ using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
@@ -15,14 +14,14 @@ public class GitCommitIdentifierTest : FreshliTest
     }
 
     [Theory]
-    [MethodData(nameof(LengthVerifications))]
+    [MemberData(nameof(LengthVerifications))]
     public void Verify_length_requirements(string commitId, string expectedErrorMessage)
     {
         var caughtException = Assert.Throws<GitException>(() => new GitCommitIdentifier(commitId));
         Assert.Equal(expectedErrorMessage, caughtException.Message);
     }
 
-    private static TheoryData<string, string> LengthVerifications() =>
+    public static TheoryData<string, string> LengthVerifications() =>
         new()
         {
             {

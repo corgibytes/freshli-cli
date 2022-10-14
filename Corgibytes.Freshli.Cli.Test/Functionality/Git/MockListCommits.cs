@@ -11,10 +11,10 @@ public class MockListCommits : IListCommits
 
     public MockListCommits() => _availableCommits = new List<GitCommit>();
 
-    public IEnumerable<GitCommit> ForRepository(IAnalysisLocation analysisLocation) =>
+    public IEnumerable<GitCommit> ForRepository(IHistoryStopData historyStopData) =>
         _availableCommits;
 
-    public GitCommit MostRecentCommit(IAnalysisLocation analysisLocation) =>
+    public GitCommit MostRecentCommit(IHistoryStopData historyStopData) =>
         // Assuming _availableCommits is sorted with most recent first
         _availableCommits.First();
 

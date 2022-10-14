@@ -9,4 +9,6 @@ public interface IEnvironment
     public string HomeDirectory { get; }
 
     public IList<string?> GetListOfFiles(string directory);
+
+    public string? GetVariable(string variableName);
 }
