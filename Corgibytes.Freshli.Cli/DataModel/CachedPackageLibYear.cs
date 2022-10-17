@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
-public class CachedLibYear
+public class CachedPackageLibYear
 {
     [Required] public int Id { get; set; }
 
@@ -21,7 +21,7 @@ public class CachedLibYear
 
     [Required] public double LibYear { get; set; }
 
-    [Required] public int HistoryIntervalStopId { get; set; }
+    [Required] public int HistoryStopPointId { get; set; }
     // ReSharper disable once UnusedMember.Global
     public virtual CachedHistoryStopPoint HistoryStopPoint { get; set; } = null!;
 }
