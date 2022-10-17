@@ -2,21 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using Corgibytes.Freshli.Cli.Formatters;
-using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test.Formatters;
 
-[UnitTest]
-public class FormatTypeTest : FreshliTest
+[IntegrationTest]
+public class FormatTypeTest : HostedServicesTest
 {
-    private readonly IServiceProvider _services;
-
-    public FormatTypeTest(ITestOutputHelper output, IServiceProvider services) : base(output) => _services = services;
-
-
     [Fact]
     public void Validate_FormatterType_ToFormatter_conversion_exist()
     {
@@ -26,8 +19,7 @@ public class FormatTypeTest : FreshliTest
 
         foreach (var type in formatTypes)
         {
-            type.ToFormatter(_services).Should()
-                .NotBeNull();
+            type.ToFormatter(ServiceScope.ServiceProvider).Should().NotBeNull();
         }
     }
 }

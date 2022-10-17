@@ -26,13 +26,13 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: "[Setup] - Install GitVersion"
-        uses: gittools/actions/gitversion/setup@v0.9.13
+        uses: gittools/actions/gitversion/setup@v0.9.14
         with:
           versionSpec: '5.10.3'
 
       - name: "[Setup] - Install GitReleaseManager"
         if: ${{ github.event_name == 'push' }}
-        uses: gittools/actions/gitreleasemanager/setup@v0.9.13
+        uses: gittools/actions/gitreleasemanager/setup@v0.9.14
         with:
           versionSpec: '0.13.0'
 
@@ -49,19 +49,19 @@ jobs:
           java-version: '17'
 
       - name: "[Versioning] - GitVersion Config"
-        uses: gittools/actions/gitversion/execute@v0.9.13
+        uses: gittools/actions/gitversion/execute@v0.9.14
         with:
           useConfigFile: true
           additionalArguments: '/showConfig'
 
       - name: "[Versioning] - Determine Version"
-        uses: gittools/actions/gitversion/execute@v0.9.13
+        uses: gittools/actions/gitversion/execute@v0.9.14
         id: gitversion
         with:
           useConfigFile: true
 
       - name: "[Versioning] - Update csproj Files"
-        uses: gittools/actions/gitversion/execute@v0.9.13
+        uses: gittools/actions/gitversion/execute@v0.9.14
         with:
           useConfigFile: true
           additionalArguments: '/updateprojectfiles'
@@ -173,7 +173,7 @@ jobs:
           dotnet build -o exe && dotnet coverlet ./exe --target "bundle" --targetargs "exec cucumber" --output ./coverage-acceptance.info --format lcov
 
       - name: "[Test] - Send Code Coverage Data to Code Climate"
-        uses: paambaati/codeclimate-action@v3.0.0
+        uses: paambaati/codeclimate-action@v3.1.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.TEST_REPORTER_ID }}
         with:

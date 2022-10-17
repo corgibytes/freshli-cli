@@ -14,6 +14,11 @@ public class CacheException : Exception
     {
     }
 
+    // This constructor is needed to mock it in the test
+    public CacheException() : base("")
+    {
+    }
+
     protected CacheException(SerializationInfo info, StreamingContext context) : base(info, context) =>
         IsWarning = info.GetBoolean("IsWarning");
 

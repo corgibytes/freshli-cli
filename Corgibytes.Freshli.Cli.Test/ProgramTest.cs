@@ -3,18 +3,17 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace Corgibytes.Freshli.Cli.Test;
 
-public class ProgramTest : FreshliTest
+[IntegrationTest]
+public class ProgramTest : SerializationDependentTest
 {
     private readonly StringWriter _consoleOutput = new();
 
-    public ProgramTest(ITestOutputHelper output) : base(output) => Console.SetOut(_consoleOutput);
+    public ProgramTest() => Console.SetOut(_consoleOutput);
 
     [Fact]
     public void Validate_Main_loglevel_debug()

@@ -5,7 +5,6 @@ using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Test.Commands;
 
@@ -30,11 +29,11 @@ public class ScanCommandTest : FreshliTest
     }
 
     [Theory]
-    [MethodData(nameof(DataForVerifyOptionConfigurations))]
+    [MemberData(nameof(DataForVerifyOptionConfigurations))]
     public void VerifyOptionConfigurations(string alias, ArgumentArity arity, bool allowsMultiples) =>
         TestHelpers.VerifyAlias<ScanCommand>(alias, arity, allowsMultiples);
 
-    private static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations() =>
+    public static TheoryData<string, ArgumentArity, bool> DataForVerifyOptionConfigurations() =>
         new()
         {
             { "--format", ArgumentArity.ExactlyOne, false },

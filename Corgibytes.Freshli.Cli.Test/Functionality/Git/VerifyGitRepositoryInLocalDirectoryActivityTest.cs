@@ -54,7 +54,8 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         activity.Handle(_eventEngine.Object);
 
         var expectedCachedGitSource = new CachedGitSource(
-            new CachedGitSourceId(repositoryLocation.FullName).Id, _repositoryLocation, null, repositoryLocation.FullName
+            new CachedGitSourceId(repositoryLocation.FullName).Id, _repositoryLocation, null,
+            repositoryLocation.FullName
         );
 
         _repository.Verify(mock => mock.Save(It.Is<CachedGitSource>(value =>
@@ -66,8 +67,8 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<GitRepositoryInLocalDirectoryVerifiedEvent>(value =>
             value.AnalysisId == _analysisId &&
-            value.AnalysisLocation.Path == _repositoryLocation &&
-            value.AnalysisLocation.RepositoryId.IsEmpty() == false
+            value.HistoryStopData.Path == _repositoryLocation &&
+            value.HistoryStopData.RepositoryId.IsEmpty() == false
         )));
 
         repositoryLocation.Delete();

@@ -23,5 +23,5 @@ public class CachedLibYear
 
     [Required] public int HistoryIntervalStopId { get; set; }
     // ReSharper disable once UnusedMember.Global
-    public virtual CachedHistoryIntervalStop HistoryIntervalStop { get; set; } = null!;
+    public virtual CachedHistoryStopPoint HistoryStopPoint { get; set; } = null!;
 }
