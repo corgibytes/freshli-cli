@@ -11,19 +11,22 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     [DbContext(typeof(CacheContext))]
-    [Migration("20221003205111_AddCachedLibYears")]
-    partial class AddCachedLibYears
+    [Migration("20221017183038_AddCachedPackageLibYears")]
+    partial class AddCachedPackageLibYears
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "7.0.0-rc.1.22426.7");
+            modelBuilder.HasAnnotation("ProductVersion", "7.0.0-rc.2.22472.11");
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid?>("ApiAnalysisId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("HistoryInterval")
@@ -75,19 +78,27 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.ToTable("CachedGitSources");
                 });
 
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryIntervalStop", b =>
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryStopPoint", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<DateTimeOffset>("AsOfDateTime")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("CachedAnalysisId")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("GitCommitDate")
+                    b.Property<string>("GitCommitId")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("GitCommitId")
+                    b.Property<string>("LocalPath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("RepositoryId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
@@ -98,10 +109,10 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("CachedHistoryIntervalStops");
+                    b.ToTable("CachedHistoryStopPoints");
                 });
 
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedLibYear", b =>
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedPackageLibYear", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -110,7 +121,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.Property<string>("CurrentVersion")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("HistoryIntervalStopId")
+                    b.Property<int>("HistoryStopPointId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("LatestVersion")
@@ -130,12 +141,12 @@ namespace Corgibytes.Freshli.Cli.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HistoryIntervalStopId");
+                    b.HasIndex("HistoryStopPointId");
 
                     b.HasIndex("Id")
                         .IsUnique();
 
-                    b.ToTable("CachedLibYears");
+                    b.ToTable("CachedPackageLibYears");
                 });
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedProperty", b =>
@@ -160,10 +171,10 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.ToTable("CachedProperties");
                 });
 
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryIntervalStop", b =>
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryStopPoint", b =>
                 {
                     b.HasOne("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", "CachedAnalysis")
-                        .WithMany("HistoryIntervalStops")
+                        .WithMany("HistoryStopPoints")
                         .HasForeignKey("CachedAnalysisId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -171,25 +182,25 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.Navigation("CachedAnalysis");
                 });
 
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedLibYear", b =>
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedPackageLibYear", b =>
                 {
-                    b.HasOne("Corgibytes.Freshli.Cli.DataModel.CachedHistoryIntervalStop", "HistoryIntervalStop")
-                        .WithMany("LibYears")
-                        .HasForeignKey("HistoryIntervalStopId")
+                    b.HasOne("Corgibytes.Freshli.Cli.DataModel.CachedHistoryStopPoint", "HistoryStopPoint")
+                        .WithMany("PackageLibYears")
+                        .HasForeignKey("HistoryStopPointId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("HistoryIntervalStop");
+                    b.Navigation("HistoryStopPoint");
                 });
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", b =>
                 {
-                    b.Navigation("HistoryIntervalStops");
+                    b.Navigation("HistoryStopPoints");
                 });
 
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryIntervalStop", b =>
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryStopPoint", b =>
                 {
-                    b.Navigation("LibYears");
+                    b.Navigation("PackageLibYears");
                 });
 #pragma warning restore 612, 618
         }
