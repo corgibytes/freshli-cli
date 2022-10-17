@@ -26,7 +26,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
         var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
         var packageLibYear = calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
 
-        cacheDb.AddLibYear(new CachedLibYear
+        var packageLibYearId = cacheDb.AddPackageLibYear(new CachedPackageLibYear
         {
             PackageName = Package.Name,
             CurrentVersion = packageLibYear.CurrentVersion?.ToString(),
@@ -41,8 +41,8 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
         {
             AnalysisId = AnalysisId,
             HistoryStopPointId = HistoryStopPointId,
-            AgentExecutablePath = AgentExecutablePath,
-            PackageLibYear = packageLibYear
+            PackageLibYearId = packageLibYearId,
+            AgentExecutablePath = AgentExecutablePath
         });
     }
 }

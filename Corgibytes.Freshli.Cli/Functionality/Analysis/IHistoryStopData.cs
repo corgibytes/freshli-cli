@@ -10,5 +10,4 @@ public interface IHistoryStopData
     public string? CommitId { get; }
     public string Path { get; }
     public DateTimeOffset AsOfDateTime { get; }
-    public int HistoryStopPointId { get; }
 }
