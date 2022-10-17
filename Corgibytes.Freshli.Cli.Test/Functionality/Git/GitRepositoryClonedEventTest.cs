@@ -22,12 +22,12 @@ public class GitRepositoryClonedEventTest
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(mock => mock.GitPath).Returns(gitPath);
         configuration.Setup(mock => mock.CacheDir).Returns(cacheDir);
-        var analysisLocation = new AnalysisLocation(configuration.Object, gitRepositoryId);
+        var historyStopData = new HistoryStopData(configuration.Object, gitRepositoryId);
 
         var clonedEvent = new GitRepositoryClonedEvent
         {
             AnalysisId = analysisId,
-            AnalysisLocation = analysisLocation
+            HistoryStopData = historyStopData
         };
 
         var engine = new Mock<IApplicationActivityEngine>();
@@ -37,6 +37,6 @@ public class GitRepositoryClonedEventTest
         // Verify that it dispatches ComputeHistoryActivity
         engine.Verify(mock => mock.Dispatch(It.Is<ComputeHistoryActivity>(value =>
             value.AnalysisId == analysisId &&
-            value.AnalysisLocation == analysisLocation)));
+            value.HistoryStopData == historyStopData)));
     }
 }

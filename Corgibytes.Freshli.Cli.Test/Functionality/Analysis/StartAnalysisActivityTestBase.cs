@@ -65,8 +65,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
             value.HistoryInterval == "1m"
         )));
         _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value =>
-            value.AnalysisId == analysisId &&
-            value.RepositoryUrl == "http://git.example.com")));
+            value.AnalysisId == analysisId)));
     }
 
     [Fact]
