@@ -43,10 +43,13 @@ public class ResultsApi : IResultsApi
         throw new InvalidOperationException($"Failed to create analysis with url: {url}.");
     }
 
-    public void CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, DateTimeOffset asOfDateTime)
+    public void CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, int historyStopPointId)
     {
         var cachedAnalysis = cacheDb.RetrieveAnalysis(analysisId);
         var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
+
+        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
+        var asOfDateTime = historyStopPoint!.AsOfDateTime;
 
         var client = new HttpClient();
 
