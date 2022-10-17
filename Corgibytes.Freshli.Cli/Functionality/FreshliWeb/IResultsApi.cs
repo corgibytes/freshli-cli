@@ -7,17 +7,8 @@ public interface IResultsApi
     public string GetResultsUrl(Guid analysisId);
     public Guid CreateAnalysis(string url);
 
-    public void CreateHistoryPoint(
-        // ReSharper disable once UnusedParameter.Global
-        Guid apiAnalysisId,
-        // ReSharper disable once UnusedParameter.Global
-        DateTimeOffset moment);
+    public void CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, DateTimeOffset moment);
 
-    void CreatePackageLibYear(
-        // ReSharper disable once UnusedParameter.Global
-        Guid apiAnalysisId,
-        // ReSharper disable once UnusedParameter.Global
-        DateTimeOffset asOfDateTime,
-        // ReSharper disable once UnusedParameter.Global
-        PackageLibYear packageLibYear);
+    void CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, int packageLibYearId
+    );
 }

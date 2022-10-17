@@ -4,7 +4,6 @@ using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Moq;
-using PackageUrl;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
@@ -20,19 +19,6 @@ public class CreateApiPackageLibYearActivityTest
         const int packageLibYearId = 9;
         const string agentExecutablePath = "/path/to/agent";
         var apiAnalysisId = Guid.NewGuid();
-
-        // note: these dates are completely fabricated
-        var releaseDateCurrentVersion = new DateTimeOffset(2021, 12, 23, 11, 22, 33, 44, TimeSpan.Zero);
-        var currentVersion =
-            new PackageURL("pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?repository_url=repo.spring.io%2Frelease");
-        var releaseDateLatestVersion = new DateTimeOffset(2021, 12, 24, 11, 22, 33, 44, TimeSpan.Zero);
-        var latestVersion =
-            new PackageURL("pkg:maven/org.apache.xmlgraphics/batik-anim@1.10?repository_url=repo.spring.io%2Frelease");
-        const double libYear = 1.2;
-        var asOfDateTime = new DateTimeOffset(2021, 12, 25, 11, 22, 33, 44, TimeSpan.Zero);
-
-        var packageLibYear = new PackageLibYear(releaseDateCurrentVersion, currentVersion, releaseDateLatestVersion,
-            latestVersion, libYear, asOfDateTime);
 
         const string repositoryUrl = "https://url/for/repository";
         const string repositoryBranch = "main";
@@ -60,7 +46,7 @@ public class CreateApiPackageLibYearActivityTest
 
         cacheDb.Setup(mock => mock.RetrieveAnalysis(analysisId)).Returns(cachedAnalysis);
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        resultsApi.Setup(mock => mock.CreatePackageLibYear(apiAnalysisId, asOfDateTime, packageLibYear));
+        resultsApi.Setup(mock => mock.CreatePackageLibYear(cacheDb.Object, analysisId, packageLibYearId));
         serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(resultsApi.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);

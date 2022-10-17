@@ -48,7 +48,7 @@ public class CreateApiHistoryStopActivityTest
 
         activity.Handle(eventClient.Object);
 
-        resultsApi.Verify(mock => mock.CreateHistoryPoint(apiAnalysisId, asOfDateTime));
+        resultsApi.Verify(mock => mock.CreateHistoryPoint(cacheDb.Object, apiAnalysisId, asOfDateTime));
 
         eventClient.Verify(mock =>
             mock.Fire(It.Is<ApiHistoryStopCreatedEvent>(value =>
