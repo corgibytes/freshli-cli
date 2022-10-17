@@ -34,7 +34,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
             LatestVersion = packageLibYear.LatestVersion?.ToString(),
             ReleaseDateLatestVersion = packageLibYear.ReleaseDateLatestVersion,
             LibYear = packageLibYear.LibYear,
-            HistoryIntervalStopId = HistoryStopPointId
+            HistoryStopPointId = HistoryStopPointId
         });
 
         eventClient.Fire(new LibYearComputedForPackageEvent

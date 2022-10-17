@@ -6,13 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     /// <inheritdoc />
-    public partial class AddCachedLibYears : Migration
+    public partial class AddCachedPackageLibYears : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "CachedLibYears",
+                name: "CachedPackageLibYears",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
@@ -23,27 +23,27 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     LatestVersion = table.Column<string>(type: "TEXT", nullable: true),
                     ReleaseDateLatestVersion = table.Column<DateTimeOffset>(type: "TEXT", nullable: false),
                     LibYear = table.Column<double>(type: "REAL", nullable: false),
-                    HistoryIntervalStopId = table.Column<int>(type: "INTEGER", nullable: false)
+                    HistoryStopPointId = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CachedLibYears", x => x.Id);
+                    table.PrimaryKey("PK_CachedPackageLibYears", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CachedLibYears_CachedHistoryIntervalStops_HistoryIntervalStopId",
-                        column: x => x.HistoryIntervalStopId,
-                        principalTable: "CachedHistoryIntervalStops",
+                        name: "FK_CachedPackageLibYears_CachedHistoryStopPoints_HistoryStopPointId",
+                        column: x => x.HistoryStopPointId,
+                        principalTable: "CachedHistoryStopPoints",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_CachedLibYears_HistoryIntervalStopId",
-                table: "CachedLibYears",
-                column: "HistoryIntervalStopId");
+                name: "IX_CachedPackageLibYears_HistoryStopPointId",
+                table: "CachedPackageLibYears",
+                column: "HistoryStopPointId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CachedLibYears_Id",
-                table: "CachedLibYears",
+                name: "IX_CachedPackageLibYears_Id",
+                table: "CachedPackageLibYears",
                 column: "Id",
                 unique: true);
         }
@@ -52,7 +52,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CachedLibYears");
+                name: "CachedPackageLibYears");
         }
     }
 }
