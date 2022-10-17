@@ -24,8 +24,7 @@ public class CreateApiHistoryStopActivity : IApplicationActivity
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
 
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
-        resultsApi.CreateHistoryPoint(cacheDb, CachedAnalysisId, historyStopPoint!.AsOfDateTime);
+        resultsApi.CreateHistoryPoint(cacheDb, CachedAnalysisId, HistoryStopPointId);
 
         eventClient.Fire(new ApiHistoryStopCreatedEvent(CachedAnalysisId, HistoryStopPointId));
     }
