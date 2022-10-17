@@ -14,7 +14,6 @@ public static class HistoryStopDataSerializationTestExtensions
             new Configuration(new Environment()),
             "abcfed123",
             "bdeedb31",
-            29,
             new DateTimeOffset(2021, 12, 22, 11, 15, 32, 0, TimeSpan.Zero)
         );
 
