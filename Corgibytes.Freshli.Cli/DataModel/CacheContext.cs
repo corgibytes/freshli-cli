@@ -24,7 +24,7 @@ public class CacheContext : DbContext
     public DbSet<CachedProperty> CachedProperties => Set<CachedProperty>();
     public DbSet<CachedGitSource> CachedGitSources => Set<CachedGitSource>();
     public DbSet<CachedAnalysis> CachedAnalyses => Set<CachedAnalysis>();
-    public DbSet<CachedHistoryIntervalStop> CachedHistoryIntervalStops => Set<CachedHistoryIntervalStop>();
+    public DbSet<CachedHistoryStopPoint> CachedHistoryStopPoints => Set<CachedHistoryStopPoint>();
     public DbSet<CachedPackage> CachedPackages => Set<CachedPackage>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

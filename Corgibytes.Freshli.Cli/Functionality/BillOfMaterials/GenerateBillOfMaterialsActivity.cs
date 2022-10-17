@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,16 +10,15 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
 {
     public readonly string AgentExecutablePath;
     public readonly Guid AnalysisId;
-    public readonly IAnalysisLocation AnalysisLocation;
+    public readonly int HistoryStopPointId;
     public readonly string ManifestPath;
 
     public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
-        IAnalysisLocation analysisLocation,
-        string manifestPath)
+        int historyStopPointId, string manifestPath)
     {
         AnalysisId = analysisId;
         AgentExecutablePath = agentExecutablePath;
-        AnalysisLocation = analysisLocation;
+        HistoryStopPointId = historyStopPointId;
         ManifestPath = manifestPath;
     }
 
@@ -29,10 +27,15 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
         var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
         var agentReader = agentManager.GetReader(AgentExecutablePath);
 
-        var asOfDate = DateTime.Now;
-        var pathToBillOfMaterials =
-            agentReader.ProcessManifest(Path.Combine(AnalysisLocation.Path, ManifestPath), asOfDate);
+        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+        var cacheDb = cacheManager.GetCacheDb();
+        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
 
-        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisId, AnalysisLocation, pathToBillOfMaterials));
+        var asOfDateTime = DateTime.Now;
+        var pathToBillOfMaterials =
+            agentReader.ProcessManifest(Path.Combine(historyStopPoint?.LocalPath!, ManifestPath), asOfDateTime);
+
+        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisId, HistoryStopPointId, pathToBillOfMaterials,
+            AgentExecutablePath));
     }
 }

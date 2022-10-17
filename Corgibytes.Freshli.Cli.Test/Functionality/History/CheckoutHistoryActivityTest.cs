@@ -1,6 +1,6 @@
 using System;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -24,17 +24,29 @@ public class CheckoutHistoryActivityTest
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(mock => mock.GitPath).Returns(gitExecutablePath);
         configuration.Setup(mock => mock.CacheDir).Returns(cacheDirectory);
-        var analysisLocation = new AnalysisLocation(configuration.Object, repositoryId, commitId);
+
+        var cacheManager = new Mock<ICacheManager>();
+        var cacheDb = new Mock<ICacheDb>();
+        var historyStopPoint = new CachedHistoryStopPoint
+        {
+            RepositoryId = repositoryId,
+            GitCommitId = commitId
+        };
+
+        var historyStopPointId = 29;
+        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
 
         var gitManager = new Mock<IGitManager>();
 
         var analysisId = Guid.NewGuid();
-        var activity = new CheckoutHistoryActivity(analysisId, analysisLocation);
+        var activity = new CheckoutHistoryActivity(analysisId, historyStopPointId);
 
         var serviceProvider = new Mock<IServiceProvider>();
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IGitManager))).Returns(gitManager.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
         var parsedCommitId = new GitCommitIdentifier(commitId);
         gitManager.Setup(mock => mock.ParseCommitId(commitId)).Returns(parsedCommitId);
@@ -47,6 +59,6 @@ public class CheckoutHistoryActivityTest
         eventEngine.Verify(
             mock => mock.Fire(It.Is<HistoryStopCheckedOutEvent>(appEvent =>
                 appEvent.AnalysisId == analysisId &&
-                appEvent.AnalysisLocation.Path == archiveLocation)));
+                appEvent.HistoryStopPointId == historyStopPointId)));
     }
 }

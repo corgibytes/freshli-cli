@@ -14,12 +14,13 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 
 public class ComputeHistoryActivityTest
 {
-    private readonly Mock<IAnalysisLocation> _analysisLocation = new();
+    private const int HistoryStopPointId = 29;
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IComputeHistory> _computeHistory = new();
     private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
+    private readonly Mock<IHistoryStopData> _historyStopData = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
 
     public ComputeHistoryActivityTest()
@@ -52,7 +53,7 @@ public class ComputeHistoryActivityTest
             )
         };
         _computeHistory.Setup(mock => mock.ComputeWithHistoryInterval(
-                It.IsAny<IAnalysisLocation>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>())
+                It.IsAny<IHistoryStopData>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>())
             )
             .Returns(historyIntervalStops);
 
@@ -60,7 +61,7 @@ public class ComputeHistoryActivityTest
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
             analysisId,
-            _analysisLocation.Object
+            _historyStopData.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -69,8 +70,7 @@ public class ComputeHistoryActivityTest
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
                         value.AnalysisId == analysisId &&
-                        value.AnalysisLocation != null &&
-                        value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                        value.HistoryStopPointId == HistoryStopPointId
                 )
             )
         );
@@ -78,8 +78,8 @@ public class ComputeHistoryActivityTest
             mock => mock.Fire(
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
-                        value.AnalysisLocation != null &&
-                        value.AnalysisLocation.CommitId == "583d813db3e28b9b44a29db352e2f0e1b4c6e420"
+                        value.AnalysisId == analysisId &&
+                        value.HistoryStopPointId == HistoryStopPointId
                 )
             )
         );
@@ -100,7 +100,7 @@ public class ComputeHistoryActivityTest
             )
         };
         _computeHistory.Setup(mock => mock.ComputeCommitHistory(
-                It.IsAny<IAnalysisLocation>())
+                It.IsAny<IHistoryStopData>())
             )
             .Returns(historyIntervalStops);
 
@@ -108,7 +108,7 @@ public class ComputeHistoryActivityTest
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
             analysisId,
-            _analysisLocation.Object
+            _historyStopData.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -117,8 +117,7 @@ public class ComputeHistoryActivityTest
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
                         value.AnalysisId == analysisId &&
-                        value.AnalysisLocation != null &&
-                        value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                        value.HistoryStopPointId == HistoryStopPointId
                 )
             )
         );
@@ -139,7 +138,7 @@ public class ComputeHistoryActivityTest
             )
         };
         _computeHistory.Setup(mock => mock.ComputeLatestOnly(
-                It.IsAny<IAnalysisLocation>())
+                It.IsAny<IHistoryStopData>())
             )
             .Returns(historyIntervalStops);
 
@@ -147,7 +146,7 @@ public class ComputeHistoryActivityTest
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
             analysisId,
-            _analysisLocation.Object
+            _historyStopData.Object
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -156,8 +155,7 @@ public class ComputeHistoryActivityTest
                 It.Is<HistoryIntervalStopFoundEvent>(
                     value =>
                         value.AnalysisId == analysisId &&
-                        value.AnalysisLocation != null &&
-                        value.AnalysisLocation.CommitId == "75c7fcc7336ee718050c4a5c8dfb5598622787b2"
+                        value.HistoryStopPointId == HistoryStopPointId
                 )
             )
         );
@@ -187,7 +185,7 @@ public class ComputeHistoryActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(computeHistory);
 
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        new ComputeHistoryActivity(analysisId, _analysisLocation.Object).Handle(_eventEngine.Object);
+        new ComputeHistoryActivity(analysisId, _historyStopData.Object).Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<InvalidHistoryIntervalEvent>(value =>
@@ -204,5 +202,7 @@ public class ComputeHistoryActivityTest
         var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval, useCommitHistory,
             revisionHistoryMode);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
+        _cacheDb.Setup(mock => mock.AddHistoryStopPoint(It.IsAny<CachedHistoryStopPoint>()))
+            .Returns(HistoryStopPointId);
     }
 }

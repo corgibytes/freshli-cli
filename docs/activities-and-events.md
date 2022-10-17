@@ -21,8 +21,7 @@ flowchart TD;
     AnalysisFailureLoggedEvent
     AnalysisIdNotFoundEvent -.-> FailureEvent
     AnalysisIdNotFoundEvent
-    AnalysisStartedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
-    AnalysisStartedEvent --> CloneGitRepositoryActivity
+    AnalysisStartedEvent --> CreateAnalysisApiActivity
     CacheWasNotPreparedEvent -.-> ErrorEvent
     CacheWasNotPreparedEvent --> PrepareCacheActivity
     DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
@@ -43,14 +42,22 @@ flowchart TD;
     StartAnalysisActivityBase --> InvalidHistoryIntervalEvent
     UnableToRestartAnalysisEvent -.-> FailureEvent
     UnableToRestartAnalysisEvent
-    BillOfMaterialsGeneratedEvent --> ComputeLibYearActivity
+    UnhandledExceptionEvent -.-> FailureEvent
+    UnhandledExceptionEvent
+    BillOfMaterialsGeneratedEvent --> DeterminePackagesFromBomActivity
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
     CacheDestroyedEvent
     CacheDestroyFailedEvent
     DestroyCacheActivity --> CacheDestroyedEvent
     DestroyCacheActivity --> CacheDestroyFailedEvent
     CachePreparedEvent --> RestartAnalysisActivity
-    ComputeLibYearActivity --> LibYearComputedEvent
+    AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
+    AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
+    ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
+    ApiPackageLibYearCreatedEvent
+    CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
+    CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
+    CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
@@ -69,9 +76,13 @@ flowchart TD;
     ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> InvalidHistoryIntervalEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
-    HistoryIntervalStopFoundEvent --> CheckoutHistoryActivity
+    HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
-    LibYearComputedEvent
+    ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
+    DeterminePackagesFromBomActivity --> PackageFoundEvent
+    LibYearComputationForBomStartedEvent
+    LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
+    PackageFoundEvent --> ComputeLibYearForPackageActivity
     LoadServiceProviderActivity
     ThrowExceptionActivity
 

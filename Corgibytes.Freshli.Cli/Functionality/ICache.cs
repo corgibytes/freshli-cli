@@ -10,8 +10,9 @@ public interface ICacheDb
 {
     public Guid SaveAnalysis(CachedAnalysis analysis);
     public CachedAnalysis? RetrieveAnalysis(Guid id);
-    void AddHistoryIntervalStop(CachedHistoryIntervalStop cachedHistoryIntervalStop);
+    public int AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint);
     public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id);
+    public CachedHistoryStopPoint? RetrieveHistoryStopPoint(int historyStopPointId);
     public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl);
     public void AddReleaseHistory(List<CachedPackage> cachedPackages);
 }

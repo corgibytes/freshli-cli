@@ -67,8 +67,8 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<GitRepositoryInLocalDirectoryVerifiedEvent>(value =>
             value.AnalysisId == _analysisId &&
-            value.AnalysisLocation.Path == _repositoryLocation &&
-            value.AnalysisLocation.RepositoryId.IsEmpty() == false
+            value.HistoryStopData.Path == _repositoryLocation &&
+            value.HistoryStopData.RepositoryId.IsEmpty() == false
         )));
 
         repositoryLocation.Delete();

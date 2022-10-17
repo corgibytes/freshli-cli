@@ -11,5 +11,5 @@ public interface IAgentReader
     public string AgentExecutablePath { get; }
     public List<CachedPackage> RetrieveReleaseHistory(PackageURL packageUrl, ICacheManager cacheManager);
     public List<string> DetectManifests(string projectPath);
-    public string ProcessManifest(string manifestPath, DateTime asOfDate);
+    public string ProcessManifest(string manifestPath, DateTime asOfDateTime);
 }
