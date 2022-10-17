@@ -53,6 +53,7 @@ public class ComputeLibYearForPackageActivityTest
             .Returns(packageLibYear);
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+        cacheDb.Setup(mock => mock.AddPackageLibYear(It.IsAny<CachedPackageLibYear>())).Returns(packageLibYearId);
 
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IPackageLibYearCalculator))).Returns(calculator.Object);
