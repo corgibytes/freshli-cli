@@ -1,9 +1,7 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Services;
+using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Moq;
 using Xunit;
 
@@ -15,29 +13,24 @@ public class BillOfMaterialsGeneratedEventTest
     public void CorrectlyDispatchesComputeLibYearActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
-        var calculateLibYearFromFile = new Mock<ICalculateLibYearFromFile>();
-        var configuration = new Mock<IConfiguration>();
-        configuration.Setup(mock => mock.CacheDir).Returns("/cache/directory");
-        var analysisLocation = new AnalysisLocation(configuration.Object, "2dbc2fd2358e1ea1b7a6bc08ea647b9a337ac92d",
-            "da39a3ee5e6b4b0d3255bfef95601890afd80709");
-        var pathToBoM = "/path/to/bom";
+        var pathToBom = "/path/to/bom";
+        var agentExecutablePath = "/path/to/agent";
 
         var analysisId = Guid.NewGuid();
+        var historyStopPointId = 29;
         var billOfMaterialsGeneratedEvent =
-            new BillOfMaterialsGeneratedEvent(analysisId, analysisLocation, pathToBoM);
-
-        serviceProvider.Setup(mock => mock.GetService(typeof(ICalculateLibYearFromFile)))
-            .Returns(calculateLibYearFromFile.Object);
+            new BillOfMaterialsGeneratedEvent(analysisId, historyStopPointId, pathToBom, agentExecutablePath);
 
         var engine = new Mock<IApplicationActivityEngine>();
         engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         billOfMaterialsGeneratedEvent.Handle(engine.Object);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearActivity>(value =>
+        engine.Verify(mock => mock.Dispatch(It.Is<DeterminePackagesFromBomActivity>(value =>
             value.AnalysisId == analysisId &&
-            value.AnalysisLocation == analysisLocation &&
-            value.PathToBoM == pathToBoM
+            value.HistoryStopPointId == historyStopPointId &&
+            value.PathToBom == pathToBom &&
+            value.AgentExecutablePath == agentExecutablePath
         )));
     }
 }
