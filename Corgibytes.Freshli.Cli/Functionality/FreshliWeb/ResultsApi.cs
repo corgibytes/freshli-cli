@@ -43,14 +43,17 @@ public class ResultsApi : IResultsApi
         throw new InvalidOperationException($"Failed to create analysis with url: {url}.");
     }
 
-    public void CreateHistoryPoint(Guid apiAnalysisId, DateTimeOffset moment)
+    public void CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, DateTimeOffset asOfDateTime)
     {
+        var cachedAnalysis = cacheDb.RetrieveAnalysis(analysisId);
+        var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
+
         var client = new HttpClient();
 
         var response = client.PostAsync(
             _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId,
             JsonContent.Create(
-                new { date = moment.ToString("o") },
+                new { date = asOfDateTime.ToString("o") },
                 new MediaTypeHeaderValue("application/json")
             )
         ).Result;
@@ -58,12 +61,22 @@ public class ResultsApi : IResultsApi
         if (response.StatusCode != HttpStatusCode.Created)
         {
             throw new InvalidOperationException(
-                $"Failed to create history point for analysis '{apiAnalysisId}' with '{moment}'.");
+                $"Failed to create history point for analysis '{apiAnalysisId}' with '{asOfDateTime}'.");
         }
     }
 
-    public void CreatePackageLibYear(Guid apiAnalysisId, DateTimeOffset asOfDateTime, PackageLibYear packageLibYear)
+    public void CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, int packageLibYearId)
     {
+        var cachedAnalysis = cacheDb.RetrieveAnalysis(analysisId);
+        var packageLibYear = cacheDb.RetrievePackageLibYear(packageLibYearId);
+
         // TODO: add implementation
+        // ReSharper disable once UnusedVariable
+        var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
+
+        var historyStopPointId = packageLibYear!.HistoryStopPointId;
+        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
+        // ReSharper disable once UnusedVariable
+        var asOfDateTime = historyStopPoint!.AsOfDateTime;
     }
 }
