@@ -13,7 +13,7 @@ Feature: analyze
     Scenario: Run the analysis with default options against a realistic project.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
-        When I run `freshli analyze https://github.com/questdb/questdb`
+        When I run `freshli --loglevel Debug analyze https://github.com/questdb/questdb`
         Then it should pass with:
         """
         https://freshli.app/
@@ -22,7 +22,7 @@ Feature: analyze
     Scenario: Run the analysis with default options against a fixture project.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
-        When I run `freshli analyze https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel Debug analyze https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
         https://freshli.app/
@@ -43,7 +43,7 @@ Feature: analyze
     Scenario: Run the analysis with specific git installation.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
-        When I run `freshli analyze --git-path=git https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel Debug analyze --git-path=git https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
         https://freshli.app/
@@ -59,7 +59,7 @@ Feature: analyze
     Scenario: Run the analysis for a specific branch.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
-        When I run `freshli analyze --branch=test_branch https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel Debug analyze --branch=test_branch https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
         https://freshli.app/
@@ -76,7 +76,7 @@ Feature: analyze
     Scenario: Run the analysis for only the latest point changed.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
-        When I run `freshli analyze --latest-only https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel Debug analyze --latest-only https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
         https://freshli.app/
@@ -93,7 +93,7 @@ Feature: analyze
     Scenario: Run the analysis for every point in time when the files have changed.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
-        When I run `freshli analyze --commit-history https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel Debug analyze --commit-history https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
         https://freshli.app/
@@ -112,7 +112,7 @@ Feature: analyze
     Scenario: Run the analysis at a specific interval. In the example: take the last point in time per three months that files have changed.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
-        When I run `freshli analyze --history-interval=1y https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel Debug analyze --history-interval=1y https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
         https://freshli.app/
@@ -132,7 +132,7 @@ Feature: analyze
     Scenario: Run the analysis, start with 6 workers.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
-        When I run `freshli analyze --workers=6 https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel Debug analyze --workers=6 https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
         https://freshli.app/
@@ -148,7 +148,7 @@ Feature: analyze
     Scenario: Run the analysis with specific cache-dir location.
         Given the Freshli Web API is available
         And a directory named "somewhere_else" does not exist
-        When I run `freshli analyze --cache-dir somewhere_else https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel Debug analyze --cache-dir somewhere_else https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
         https://freshli.app/
@@ -165,7 +165,7 @@ Feature: analyze
     Scenario: Run the analysis for a local directory
         When I run `git clone https://github.com/corgibytes/freshli-fixture-java-test freshli-fixture-java-test`
         Then the directory named "~/freshli-fixture-java-test" should exist
-        When I run `freshli analyze --history-interval=1y freshli-fixture-java-test`
+        When I run `--loglevel Debug  --history-interval=1y freshli-fixture-java-test`
         Then the "~/.freshli/freshli.db" contains history stop point at "2022-01-01 00:00:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
         And the "~/.freshli/freshli.db" contains history stop point at "2021-01-01 00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
         And the "~/.freshli/freshli.db" contains history stop point at "2020-01-01 00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
@@ -175,7 +175,7 @@ Feature: analyze
         """
 
     Scenario: Run the analysis, trigger error event.
-        When I run `freshli analyze https://github.com/this-repository-does-not-exist`
+        When I run `freshli --loglevel Debug analyze https://github.com/this-repository-does-not-exist`
         Then the output should contain:
         """
         Analysis failed because: Git encountered an error:
