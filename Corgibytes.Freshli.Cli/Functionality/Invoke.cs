@@ -20,7 +20,7 @@ public class Invoke : IInvoke
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
 
-        _logger?.LogDebug("Command: " + executable + "; Args: " + arguments);
+        _logger?.LogDebug("Command: " + executable + "; Args: " + arguments + "; WorkingDir: " + workingDirectory);
 
         var command = CliWrap.Cli.Wrap(executable).WithArguments(
                 args => args
@@ -38,6 +38,12 @@ public class Invoke : IInvoke
         catch (AggregateException error)
         {
             _logger?.LogError(error.ToString());
+            foreach (var innerError in error.InnerExceptions)
+            {
+                _logger?.LogError(innerError.ToString());
+            }
+            _logger?.LogError(stdOutBuffer.ToString());
+            _logger?.LogError(stdErrBuffer.ToString());
 
             throw new IOException(stdErrBuffer.ToString());
         }
