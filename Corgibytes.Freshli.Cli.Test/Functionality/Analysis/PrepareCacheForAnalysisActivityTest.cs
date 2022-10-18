@@ -1,7 +1,6 @@
 using System;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
-using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Moq;
 using Xunit;
