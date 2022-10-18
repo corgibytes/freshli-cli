@@ -18,7 +18,7 @@ public class CacheWasNotPreparedEventTest
         var cacheManager = new Mock<ICacheManager>();
         var historyIntervalParser = new Mock<IHistoryIntervalParser>();
 
-        var cacheEvent = new CacheWasNotPreparedEvent
+        var cacheEvent = new CacheDoesNotExistEvent
         {
             RepositoryUrl = "https://git.example.com",
             RepositoryBranch = "main",
@@ -35,7 +35,7 @@ public class CacheWasNotPreparedEventTest
 
         cacheEvent.Handle(engine.Object);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<PrepareCacheActivity>(value =>
+        engine.Verify(mock => mock.Dispatch(It.Is<PrepareCacheForAnalysisActivity>(value =>
             value.RepositoryUrl == cacheEvent.RepositoryUrl &&
             value.RepositoryBranch == cacheEvent.RepositoryBranch &&
             value.HistoryInterval == cacheEvent.HistoryInterval &&
