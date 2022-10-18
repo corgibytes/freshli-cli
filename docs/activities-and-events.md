@@ -12,7 +12,6 @@ Here are some things to keep in mind when viewing the graph:
 
 ```mermaid
 flowchart TD;
-    PrepareCacheActivity --> CachePreparedEvent
     AgentsDetectedEvent
     DetectAgentsActivity --> AgentsDetectedEvent
     NoAgentsDetectedFailureEvent -.-> FailureEvent
@@ -22,8 +21,9 @@ flowchart TD;
     AnalysisIdNotFoundEvent -.-> FailureEvent
     AnalysisIdNotFoundEvent
     AnalysisStartedEvent --> CreateAnalysisApiActivity
-    CacheWasNotPreparedEvent -.-> ErrorEvent
-    CacheWasNotPreparedEvent --> PrepareCacheActivity
+    CacheDoesNotExistEvent -.-> ErrorEvent
+    CacheDoesNotExistEvent --> PrepareCacheForAnalysisActivity
+    CachePreparedForAnalysisEvent --> RestartAnalysisActivity
     DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
@@ -34,10 +34,11 @@ flowchart TD;
     InvalidHistoryIntervalEvent
     LogAnalysisFailureActivity --> AnalysisFailureLoggedEvent
     ManifestDetectedEvent --> GenerateBillOfMaterialsActivity
+    PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
     RestartAnalysisActivity -.-> StartAnalysisActivityBase
     RestartAnalysisActivity --> UnableToRestartAnalysisEvent
     StartAnalysisActivity -.-> StartAnalysisActivityBase
-    StartAnalysisActivity --> CacheWasNotPreparedEvent
+    StartAnalysisActivity --> CacheDoesNotExistEvent
     StartAnalysisActivityBase --> AnalysisStartedEvent
     StartAnalysisActivityBase --> InvalidHistoryIntervalEvent
     UnableToRestartAnalysisEvent -.-> FailureEvent
@@ -48,9 +49,10 @@ flowchart TD;
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
     CacheDestroyedEvent
     CacheDestroyFailedEvent
+    CachePreparedEvent
     DestroyCacheActivity --> CacheDestroyedEvent
     DestroyCacheActivity --> CacheDestroyFailedEvent
-    CachePreparedEvent --> RestartAnalysisActivity
+    PrepareCacheActivity --> CachePreparedEvent
     AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
