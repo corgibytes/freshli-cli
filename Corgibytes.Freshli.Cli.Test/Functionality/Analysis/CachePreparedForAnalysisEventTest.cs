@@ -8,7 +8,7 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
 [UnitTest]
-public class CacheWasPreparedEventTest
+public class CachePreparedForAnalysisEventTest
 {
     [Fact]
     public void CorrectlyDispatchesRestartAnalysisActivity()
@@ -18,7 +18,7 @@ public class CacheWasPreparedEventTest
         var cacheManager = new Mock<ICacheManager>();
         var historyIntervalParser = new Mock<IHistoryIntervalParser>();
 
-        var cacheEvent = new CachePreparedEvent
+        var cacheEvent = new CachePreparedForAnalysisEvent
         {
             RepositoryUrl = "https://git.example.com",
             RepositoryBranch = "main",

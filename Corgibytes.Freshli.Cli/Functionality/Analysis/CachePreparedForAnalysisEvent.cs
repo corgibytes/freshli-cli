@@ -1,9 +1,8 @@
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
-namespace Corgibytes.Freshli.Cli.Functionality;
+namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class CachePreparedEvent : IApplicationEvent
+public class CachePreparedForAnalysisEvent : IApplicationEvent
 {
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }

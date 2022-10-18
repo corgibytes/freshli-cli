@@ -2,7 +2,7 @@ using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
+namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 
 public class DestroyCacheActivity : IApplicationActivity
 {
