@@ -3,6 +3,7 @@ using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Lib;
 
@@ -25,7 +26,7 @@ public class CachePrepareCommandRunner : CommandRunner<CacheCommand, CachePrepar
     {
         Configuration.CacheDir = options.CacheDir;
 
-        ActivityEngine.Dispatch(new PrepareCacheActivity(options.CacheDir));
+        ActivityEngine.Dispatch(new PrepareCacheActivity());
         ActivityEngine.Wait();
         return 0;
     }
