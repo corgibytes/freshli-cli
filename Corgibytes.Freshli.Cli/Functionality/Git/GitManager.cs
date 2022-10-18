@@ -6,10 +6,12 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 public class GitManager : IGitManager
 {
     [JsonProperty] private readonly IConfiguration _configuration;
+    [JsonProperty] private readonly IInvoke _invoke;
     [JsonProperty] private readonly GitArchive _gitArchive;
 
-    public GitManager(GitArchive gitArchive, IConfiguration configuration)
+    public GitManager(IInvoke invoke, GitArchive gitArchive, IConfiguration configuration)
     {
+        _invoke = invoke;
         _gitArchive = gitArchive;
         _configuration = configuration;
     }
@@ -22,7 +24,7 @@ public class GitManager : IGitManager
     {
         try
         {
-            Invoke.Command(_configuration.GitPath, "status", repositoryLocation);
+            _invoke.Command(_configuration.GitPath, "status", repositoryLocation);
             return true;
         }
         catch (Exception)
