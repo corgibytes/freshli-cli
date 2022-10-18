@@ -18,20 +18,27 @@ public class ComputeHistoryActivityTest
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IComputeHistory> _computeHistory = new();
-    private readonly Mock<IConfiguration> _configuration = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
-    private readonly Mock<IHistoryStopData> _historyStopData = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
+
+    private HistoryStopData HistoryStopData { get; }
+    private Configuration Configuration { get; }
 
     public ComputeHistoryActivityTest()
     {
+        Configuration = new Configuration(new MockEnvironment());
+
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
 
-        _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(Configuration);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
 
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+
+        HistoryStopData =
+            new HistoryStopData(Configuration, "test", "abcde1234",
+                new DateTimeOffset(2022, 9, 1, 1, 0, 0, TimeSpan.Zero));
     }
 
     [Fact]
@@ -61,7 +68,7 @@ public class ComputeHistoryActivityTest
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
             analysisId,
-            _historyStopData.Object
+            HistoryStopData
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -108,7 +115,7 @@ public class ComputeHistoryActivityTest
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
             analysisId,
-            _historyStopData.Object
+            HistoryStopData
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -146,7 +153,7 @@ public class ComputeHistoryActivityTest
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
         new ComputeHistoryActivity(
             analysisId,
-            _historyStopData.Object
+            HistoryStopData
         ).Handle(_eventEngine.Object);
 
         // Assert
@@ -185,7 +192,7 @@ public class ComputeHistoryActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(computeHistory);
 
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        new ComputeHistoryActivity(analysisId, _historyStopData.Object).Handle(_eventEngine.Object);
+        new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<InvalidHistoryIntervalEvent>(value =>
