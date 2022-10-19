@@ -39,6 +39,15 @@ public class CacheDb : ICacheDb, IDisposable
         return savedEntity.Entity.Id;
     }
 
+    public CachedPackageLibYear? RetrievePackageLibYear(int packageLibYearId) => Db.CachedPackageLibYears.Find(packageLibYearId);
+
+    public int AddPackageLibYear(CachedPackageLibYear packageLibYear)
+    {
+        var savedEntity = Db.CachedPackageLibYears.Add(packageLibYear);
+        Db.SaveChanges();
+        return savedEntity.Entity.Id;
+    }
+
     public void Dispose()
     {
         if (_disposed)

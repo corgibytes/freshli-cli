@@ -9,6 +9,8 @@ public interface ICacheDb
     public Guid SaveAnalysis(CachedAnalysis analysis);
     public CachedAnalysis? RetrieveAnalysis(Guid id);
     public int AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint);
+    public int AddPackageLibYear(CachedPackageLibYear packageLibYear);
     public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id);
     public CachedHistoryStopPoint? RetrieveHistoryStopPoint(int historyStopPointId);
+    public CachedPackageLibYear? RetrievePackageLibYear(int packageLibYearId);
 }

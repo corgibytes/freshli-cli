@@ -8,7 +8,7 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity
 {
     public Guid AnalysisId { get; init; }
     public int HistoryStopPointId { get; init; }
-    public PackageLibYear PackageLibYear { get; init; } = null!;
+    public int PackageLibYearId { get; init; }
     public string AgentExecutablePath { get; init; } = null!;
 
     public void Handle(IApplicationEventEngine eventClient)
@@ -16,18 +16,15 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
 
-        var cachedAnalysis = cacheDb.RetrieveAnalysis(AnalysisId);
-
         var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
-        resultsApi.CreatePackageLibYear(cachedAnalysis!.ApiAnalysisId!.Value, PackageLibYear.AsOfDateTime,
-            PackageLibYear);
+        resultsApi.CreatePackageLibYear(cacheDb, AnalysisId, PackageLibYearId);
 
         eventClient.Fire(new ApiPackageLibYearCreatedEvent
         {
             AnalysisId = AnalysisId,
             HistoryStopPointId = HistoryStopPointId,
-            AgentExecutablePath = AgentExecutablePath,
-            PackageLibYear = PackageLibYear
+            PackageLibYearId = PackageLibYearId,
+            AgentExecutablePath = AgentExecutablePath
         });
     }
 }
