@@ -5,7 +5,7 @@ using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
+using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Resources;
 using Corgibytes.Freshli.Lib;

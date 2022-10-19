@@ -1,6 +1,6 @@
 using System;
-using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Moq;
 using Xunit;
@@ -24,27 +24,10 @@ public class PrepareCacheActivityTest
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(configuration.Object);
 
-        var historyInterval = "2y";
-        var repositoryBranch = "trunk";
-        var repositoryUrl = "https://repository.com";
-
-        var activity = new PrepareCacheActivity
-        {
-            HistoryInterval = historyInterval,
-            RepositoryBranch = repositoryBranch,
-            RepositoryUrl = repositoryUrl,
-            RevisionHistoryMode = RevisionHistoryMode.OnlyLatestRevision,
-            UseCommitHistory = CommitHistory.AtInterval
-        };
+        var activity = new PrepareCacheActivity();
 
         activity.Handle(eventClient.Object);
 
-        eventClient.Verify(mock => mock.Fire(It.Is<CachePreparedEvent>(value =>
-            value.HistoryInterval == historyInterval &&
-            value.RepositoryBranch == repositoryBranch &&
-            value.RepositoryUrl == repositoryUrl &&
-            value.RevisionHistoryMode == RevisionHistoryMode.OnlyLatestRevision &&
-            value.UseCommitHistory == CommitHistory.AtInterval
-        )));
+        eventClient.Verify(mock => mock.Fire(It.IsAny<CachePreparedEvent>()));
     }
 }

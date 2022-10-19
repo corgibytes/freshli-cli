@@ -8,8 +8,8 @@ public class LibYearComputedForPackageEvent : IApplicationEvent
 {
     public Guid AnalysisId { get; init; }
     public int HistoryStopPointId { get; init; }
+    public int PackageLibYearId { get; init; }
     public string AgentExecutablePath { get; init; } = null!;
-    public PackageLibYear PackageLibYear { get; init; } = null!;
 
     public void Handle(IApplicationActivityEngine eventClient)
     {
@@ -17,8 +17,8 @@ public class LibYearComputedForPackageEvent : IApplicationEvent
         {
             AnalysisId = AnalysisId,
             HistoryStopPointId = HistoryStopPointId,
-            AgentExecutablePath = AgentExecutablePath,
-            PackageLibYear = PackageLibYear
+            PackageLibYearId = PackageLibYearId,
+            AgentExecutablePath = AgentExecutablePath
         });
     }
 }

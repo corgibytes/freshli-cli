@@ -57,16 +57,20 @@ public class ComputeHistoryActivity : IApplicationActivity
             historyIntervalStops = computeHistoryService.ComputeCommitHistory(HistoryStopData);
         }
 
+        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         foreach (var historyIntervalStop in historyIntervalStops)
         {
+            var historyStop = new HistoryStopData(configuration, HistoryStopData.RepositoryId,
+                historyIntervalStop.GitCommitIdentifier, historyIntervalStop.AsOfDateTime);
+            
             var historyStopPointId = cacheDb.AddHistoryStopPoint(
                 new CachedHistoryStopPoint
                 {
                     CachedAnalysisId = AnalysisId,
-                    RepositoryId = HistoryStopData.RepositoryId,
-                    LocalPath = HistoryStopData.Path,
-                    GitCommitId = historyIntervalStop.GitCommitIdentifier,
-                    AsOfDateTime = historyIntervalStop.AsOfDateTime
+                    RepositoryId = historyStop.RepositoryId,
+                    LocalPath = historyStop.Path,
+                    GitCommitId = historyStop.CommitId!,
+                    AsOfDateTime = historyStop.AsOfDateTime
                 });
 
             eventClient.Fire(new HistoryIntervalStopFoundEvent(AnalysisId, historyStopPointId));

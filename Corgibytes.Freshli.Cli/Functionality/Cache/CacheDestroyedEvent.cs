@@ -1,6 +1,6 @@
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
-namespace Corgibytes.Freshli.Cli.Functionality.CacheDestroy;
+namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 
 public class CacheDestroyedEvent : IApplicationEvent
 {
