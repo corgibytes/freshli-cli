@@ -1,16 +1,15 @@
 using System;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Extensions;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
+namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class PrepareCacheActivity : IApplicationActivity
+public class PrepareCacheForAnalysisActivity : IApplicationActivity
 {
-    public PrepareCacheActivity(string repositoryUrl = "", string? repositoryBranch = null,
+    public PrepareCacheForAnalysisActivity(string repositoryUrl = "", string? repositoryBranch = null,
         string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval,
         RevisionHistoryMode revisionHistoryMode = RevisionHistoryMode.AllRevisions)
     {
@@ -40,7 +39,7 @@ public class PrepareCacheActivity : IApplicationActivity
             var cacheDb = cacheManager.GetCacheDb();
             cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
                 UseCommitHistory, RevisionHistoryMode));
-            eventClient.Fire(new CachePreparedEvent
+            eventClient.Fire(new CachePreparedForAnalysisEvent
             {
                 RepositoryUrl = RepositoryUrl,
                 RepositoryBranch = RepositoryBranch,

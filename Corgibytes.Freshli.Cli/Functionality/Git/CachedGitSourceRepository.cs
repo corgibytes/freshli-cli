@@ -9,8 +9,11 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CachedGitSourceRepository : ICachedGitSourceRepository
 {
-    public CachedGitSourceRepository(IConfiguration configuration, ICacheManager cacheManager)
+    [JsonProperty] private readonly IInvoke _invoke;
+
+    public CachedGitSourceRepository(IInvoke invoke, IConfiguration configuration, ICacheManager cacheManager)
     {
+        _invoke = invoke;
         Configuration = configuration;
         CacheManager = cacheManager;
     }
@@ -88,7 +91,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
         try
         {
-            commandOutput = Invoke.Command(Configuration.GitPath, $"pull origin {branch ?? ""}",
+            commandOutput = _invoke.Command(Configuration.GitPath, $"pull origin {branch ?? ""}",
                     cachedGitSource.LocalPath)
                 .Replace("\n", " ");
         }
@@ -105,7 +108,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         try
         {
-            Invoke.Command(Configuration.GitPath, $"checkout {cachedGitSource.Branch ?? ""}",
+            _invoke.Command(Configuration.GitPath, $"checkout {cachedGitSource.Branch ?? ""}",
                 cachedGitSource.LocalPath);
         }
         catch (IOException e)
@@ -129,7 +132,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         try
         {
-            Invoke.Command(Configuration.GitPath, $"clone {cachedGitSource.Url} .", cachedGitSource.LocalPath);
+            _invoke.Command(Configuration.GitPath, $"clone {cachedGitSource.Url} .", cachedGitSource.LocalPath);
         }
         catch (IOException e)
         {
@@ -139,5 +142,5 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     }
 
     private string FetchCurrentBranch(CachedGitSource cachedGitSource) =>
-        Invoke.Command(Configuration.GitPath, "branch --show-current", cachedGitSource.LocalPath).Replace("\n", "");
+        _invoke.Command(Configuration.GitPath, "branch --show-current", cachedGitSource.LocalPath).Replace("\n", "");
 }

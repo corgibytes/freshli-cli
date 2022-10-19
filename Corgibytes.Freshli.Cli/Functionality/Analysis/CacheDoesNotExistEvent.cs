@@ -1,9 +1,8 @@
-using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class CacheWasNotPreparedEvent : ErrorEvent
+public class CacheDoesNotExistEvent : ErrorEvent
 {
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
@@ -13,7 +12,7 @@ public class CacheWasNotPreparedEvent : ErrorEvent
 
     public override void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(
-            new PrepareCacheActivity(RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory)
+            new PrepareCacheForAnalysisActivity(RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory)
             {
                 RepositoryUrl = RepositoryUrl,
                 RepositoryBranch = RepositoryBranch,

@@ -102,7 +102,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private void LogWaitingStatus(StatisticsDto statistics, long length, bool localIsEventFiring,
         bool localIsActivityDispatching) =>
-        _logger.LogDebug(
+        _logger.LogTrace(
             "Queue length: {QueueLength} (" +
             "Processing: {JobsProcessing}, " +
             "Enqueued: {JobsEnqueued}, " +

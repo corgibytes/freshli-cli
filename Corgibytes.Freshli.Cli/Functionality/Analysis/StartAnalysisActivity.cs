@@ -1,8 +1,8 @@
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class StartAnalysisActivity : StartAnalysisActivityBase<CacheWasNotPreparedEvent>
+public class StartAnalysisActivity : StartAnalysisActivityBase<CacheDoesNotExistEvent>
 {
-    protected override CacheWasNotPreparedEvent CreateErrorEvent() =>
+    protected override CacheDoesNotExistEvent CreateErrorEvent() =>
         new()
         {
             // TODO: Translate this string
