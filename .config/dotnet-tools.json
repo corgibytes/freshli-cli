@@ -21,7 +21,7 @@
       ]
     },
     "dotnet-ef": {
-      "version": "7.0.0-preview.6.22329.4",
+      "version": "7.0.0-rc.1.22426.7",
       "commands": [
         "dotnet-ef"
       ]

@@ -11,9 +11,24 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class PackageLibYear
 {
+    // todo: remove this constructor - it's being kept to support existing tests
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear)
     {
+        AsOfDateTime = default;
+        ReleaseDateCurrentVersion = releaseDateCurrentVersion;
+        CurrentVersion = currentVersion;
+        ReleaseDateLatestVersion = releaseDateLatestVersion;
+        LatestVersion = latestVersion;
+        LibYear = libYear;
+    }
+
+
+    public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
+        DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
+        DateTimeOffset asOfDateTime)
+    {
+        AsOfDateTime = asOfDateTime;
         ReleaseDateCurrentVersion = releaseDateCurrentVersion;
         CurrentVersion = currentVersion;
         ReleaseDateLatestVersion = releaseDateLatestVersion;
@@ -30,7 +45,7 @@ public class PackageLibYear
     [JsonConstructor]
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
-        PackageURL packageUrl, string exceptionMessage)
+        PackageURL packageUrl, DateTimeOffset asOfDateTime, string exceptionMessage)
     {
         ReleaseDateCurrentVersion = releaseDateCurrentVersion;
         CurrentVersion = currentVersion;
@@ -38,6 +53,7 @@ public class PackageLibYear
         LatestVersion = latestVersion;
         LibYear = libYear;
         PackageUrl = packageUrl;
+        AsOfDateTime = asOfDateTime;
         ExceptionMessage = exceptionMessage;
     }
 
@@ -48,4 +64,5 @@ public class PackageLibYear
     public PackageURL? PackageUrl { get; }
     public DateTimeOffset ReleaseDateCurrentVersion { get; }
     public DateTimeOffset ReleaseDateLatestVersion { get; }
+    public DateTimeOffset AsOfDateTime { get; }
 }

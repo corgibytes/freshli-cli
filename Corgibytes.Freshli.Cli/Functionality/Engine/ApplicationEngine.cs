@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Hangfire;
 using Hangfire.Storage.Monitoring;
 using Microsoft.Extensions.Logging;
@@ -101,7 +102,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private void LogWaitingStatus(StatisticsDto statistics, long length, bool localIsEventFiring,
         bool localIsActivityDispatching) =>
-        _logger.LogDebug(
+        _logger.LogTrace(
             "Queue length: {QueueLength} (" +
             "Processing: {JobsProcessing}, " +
             "Enqueued: {JobsEnqueued}, " +
@@ -132,10 +133,30 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleActivity(IApplicationActivity activity) => activity.Handle(this);
+    public void HandleActivity(IApplicationActivity activity)
+    {
+        try
+        {
+            activity.Handle(this);
+        }
+        catch (Exception error)
+        {
+            Fire(new UnhandledExceptionEvent(error));
+        }
+    }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleEvent(IApplicationEvent appEvent) => appEvent.Handle(this);
+    public void HandleEvent(IApplicationEvent appEvent)
+    {
+        try
+        {
+            appEvent.Handle(this);
+        }
+        catch (Exception error)
+        {
+            Fire(new UnhandledExceptionEvent(error));
+        }
+    }
 
     // ReSharper disable once MemberCanBePrivate.Global
     public void TriggerHandler(IApplicationEvent applicationEvent)

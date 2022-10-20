@@ -1,0 +1,80 @@
+{
+  "consumer": {
+    "name": "Freshli"
+  },
+  "provider": {
+    "name": "Web API"
+  },
+  "interactions": [
+    {
+      "description": "a request to create a new analysis",
+      "providerState": "a valid database",
+      "request": {
+        "method": "post",
+        "path": "/api/v0/analysis-request",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "name": "Freshli CLI User",
+          "email": "info@freshli.io",
+          "url": "https://github.com/this-repository-does-not-exist"
+        },
+        "matchingRules": {
+          "$.body.url": {
+            "match": "type"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8"
+        },
+        "body": {
+          "id": "eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+          "name": "Freshli CLI User",
+          "email": "info@freshli.io",
+          "url": "https://github.com/this-repository-does-not-exist"
+        }
+      }
+    },
+    {
+      "description": "a request to create a history point",
+      "providerState": "an analysis request with id eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+      "request": {
+        "method": "post",
+        "path": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "date": "2022-12-23T12:34:56.0000000Z"
+        },
+        "matchingRules": {
+          "$.body.date": {
+            "match": "regex",
+            "regex": "^\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{7}([+-][0-2]\\d:[0-5]\\d|Z)$"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8/2022-12-23T12:34:56.0000000Z"
+        },
+        "body": {
+          "requestId": "eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+          "date": "2022-12-23T12:34:56.0000000Z"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
