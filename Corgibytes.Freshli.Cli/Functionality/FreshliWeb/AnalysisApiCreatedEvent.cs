@@ -8,6 +8,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 public class AnalysisApiCreatedEvent : IApplicationEvent
 {
     public Guid AnalysisId { get; init; }
+    public Guid ApiAnalysisId { get; init; }
     public string RepositoryUrl { get; init; } = null!;
 
     public void Handle(IApplicationActivityEngine eventClient)
