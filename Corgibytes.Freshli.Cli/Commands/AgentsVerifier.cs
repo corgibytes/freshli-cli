@@ -12,10 +12,7 @@ public class AgentsVerifier
 {
     private readonly IInvoke _invoke;
 
-    public AgentsVerifier(IInvoke invoke)
-    {
-        _invoke = invoke;
-    }
+    public AgentsVerifier(IInvoke invoke) => _invoke = invoke;
 
     public void RunAgentsVerify(string agentFileAndPath, string argument, string cacheDir, string languageName)
     {

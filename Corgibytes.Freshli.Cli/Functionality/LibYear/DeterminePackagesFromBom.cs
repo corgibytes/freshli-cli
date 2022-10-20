@@ -30,6 +30,7 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity
             {
                 throw new Exception($"Null package URL detected for in {PathToBom}");
             }
+
             eventClient.Fire(new PackageFoundEvent
             {
                 AnalysisId = AnalysisId,
