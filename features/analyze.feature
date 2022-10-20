@@ -129,13 +129,17 @@ Feature: analyze
         And the "~/.freshli/freshli.db" contains history stop point at "2020-01-01 00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
         And the "~/.freshli/freshli.db" contains history stop point at "2019-03-11 14:27:53" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
 
-    Scenario: Run the analysis, start with 6 workers.
+    Scenario: Run the analysis, start with 12 workers.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
-        When I run `freshli --loglevel Debug analyze --workers=12 https://github.com/corgibytes/freshli-fixture-java-test`
+        When I run `freshli --loglevel Debug --workers=12 analyze https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
         https://freshli.app/
+        """
+        And the output should contain:
+        """
+        Worker count: 12
         """
         And the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -144,10 +148,7 @@ Feature: analyze
         And a directory named "~/.freshli/histories" exists
         And a directory named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5" is not empty
         And a file named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5/f58c3f8773da4ea4f01d819b842e384b3a343d40/archive.zip" does not exist
-        And the output should contain:
-        """
-        Worker count: 12
-        """
+
 
     Scenario: Run the analysis with specific cache-dir location.
         Given the Freshli Web API is available
