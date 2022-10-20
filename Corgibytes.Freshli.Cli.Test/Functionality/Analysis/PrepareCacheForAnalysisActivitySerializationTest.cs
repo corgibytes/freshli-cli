@@ -1,14 +1,14 @@
-using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Xunit;
 
-namespace Corgibytes.Freshli.Cli.Test.Functionality.Cache;
+namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
 [IntegrationTest]
 // ReSharper disable once UnusedType.Global
-public class PrepareCacheActivitySerializationTest : SerializationTest<PrepareCacheActivity>
+public class PrepareCacheForAnalysisActivitySerializationTest : SerializationTest<PrepareCacheForAnalysisActivity>
 {
-    protected override PrepareCacheActivity BuildIncoming() => new(
+    protected override PrepareCacheForAnalysisActivity BuildIncoming() => new(
         "https://actual-repository-url.com",
         "trunk",
         "1m",
@@ -16,7 +16,7 @@ public class PrepareCacheActivitySerializationTest : SerializationTest<PrepareCa
         RevisionHistoryMode.OnlyLatestRevision
     );
 
-    protected override void AssertEqual(PrepareCacheActivity incoming, PrepareCacheActivity outgoing)
+    protected override void AssertEqual(PrepareCacheForAnalysisActivity incoming, PrepareCacheForAnalysisActivity outgoing)
     {
         Assert.Equal(incoming.RepositoryUrl, outgoing.RepositoryUrl);
         Assert.Equal(incoming.RepositoryBranch, outgoing.RepositoryBranch);

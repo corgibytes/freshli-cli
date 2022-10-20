@@ -18,7 +18,7 @@ public class ComputeLibYearForPackageActivityTest
     {
         var analysisId = Guid.NewGuid();
         var asOfDateTime = new DateTimeOffset(2021, 1, 29, 12, 30, 45, 0, TimeSpan.Zero);
-        var agentExecutablePath = "/path/to/agent/smith";
+        const string agentExecutablePath = "/path/to/agent/smith";
         var package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
         var packageLibYear = new PackageLibYear(
             asOfDateTime,
@@ -29,7 +29,8 @@ public class ComputeLibYearForPackageActivityTest
             asOfDateTime
         );
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
+        const int packageLibYearId = 9;
         var activity = new ComputeLibYearForPackageActivity
         {
             AnalysisId = analysisId,
@@ -52,6 +53,7 @@ public class ComputeLibYearForPackageActivityTest
             .Returns(packageLibYear);
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+        cacheDb.Setup(mock => mock.AddPackageLibYear(It.IsAny<CachedPackageLibYear>())).Returns(packageLibYearId);
 
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IPackageLibYearCalculator))).Returns(calculator.Object);
@@ -63,7 +65,7 @@ public class ComputeLibYearForPackageActivityTest
         eventClient.Verify(mock => mock.Fire(It.Is<LibYearComputedForPackageEvent>(value =>
             value.AnalysisId == analysisId &&
             value.HistoryStopPointId == historyStopPointId &&
-            value.AgentExecutablePath == agentExecutablePath &&
-            value.PackageLibYear == packageLibYear)));
+            value.PackageLibYearId == packageLibYearId &&
+            value.AgentExecutablePath == agentExecutablePath)));
     }
 }

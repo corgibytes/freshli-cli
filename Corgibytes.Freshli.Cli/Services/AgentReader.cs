@@ -12,7 +12,13 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentReader : IAgentReader
 {
-    public AgentReader(string agentExecutable) => AgentExecutablePath = agentExecutable;
+    private readonly IInvoke _invoke;
+
+    public AgentReader(IInvoke invoke, string agentExecutable)
+    {
+        _invoke = invoke;
+        AgentExecutablePath = agentExecutable;
+    }
 
     public string AgentExecutablePath { get; }
 
@@ -28,7 +34,7 @@ public class AgentReader : IAgentReader
         string packageUrlsWithDate;
         try
         {
-            packageUrlsWithDate = Invoke.Command(AgentExecutablePath,
+            packageUrlsWithDate = _invoke.Command(AgentExecutablePath,
                 $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".");
         }
         catch (IOException)
@@ -59,7 +65,7 @@ public class AgentReader : IAgentReader
 
     public List<string> DetectManifests(string projectPath)
     {
-        var manifests = Invoke.Command(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
+        var manifests = _invoke.Command(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
 
         return manifests.IsEmpty() ? new List<string>() : manifests.TrimEnd('\n', '\r').Split("\n").ToList();
     }
@@ -67,7 +73,7 @@ public class AgentReader : IAgentReader
     public string ProcessManifest(string manifestPath, DateTime asOfDateTime)
     {
         var billOfMaterialsPath =
-            Invoke.Command(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDateTime:o}", ".");
+            _invoke.Command(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDateTime:o}", ".");
 
         return billOfMaterialsPath.TrimEnd('\n', '\n');
     }

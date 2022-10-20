@@ -12,15 +12,15 @@ public class CreateApiPackageLibYearActivitySerializationTest : SerializationTes
     {
         AnalysisId = Guid.NewGuid(),
         HistoryStopPointId = 12,
-        AgentExecutablePath = "/path/to/agent",
-        PackageLibYear = this.BuildPackageLibYear()
+        PackageLibYearId = 9,
+        AgentExecutablePath = "/path/to/agent"
     };
 
     protected override void AssertEqual(CreateApiPackageLibYearActivity incoming, CreateApiPackageLibYearActivity outgoing)
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
         Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);
+        Assert.Equal(incoming.PackageLibYearId, outgoing.PackageLibYearId);
         Assert.Equal(incoming.AgentExecutablePath, outgoing.AgentExecutablePath);
-        this.AssertPackageLibYearEqual(incoming.PackageLibYear, outgoing.PackageLibYear);
     }
 }
