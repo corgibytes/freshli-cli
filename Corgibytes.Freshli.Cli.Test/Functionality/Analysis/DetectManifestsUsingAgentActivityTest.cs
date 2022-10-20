@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
@@ -14,11 +16,9 @@ public class DetectManifestsUsingAgentActivityTest
     [Fact]
     public void Handle()
     {
-        var analysisLocation = new Mock<IAnalysisLocation>();
-        analysisLocation.SetupGet(mock => mock.Path).Returns("/path/to/repository");
-
+        var localPath = "/path/to/repository";
         var agentReader = new Mock<IAgentReader>();
-        agentReader.Setup(mock => mock.DetectManifests("/path/to/repository")).Returns(
+        agentReader.Setup(mock => mock.DetectManifests(localPath)).Returns(
             new List<string>
             {
                 "/path/to/first/manifest",
@@ -29,27 +29,36 @@ public class DetectManifestsUsingAgentActivityTest
         var agentManager = new Mock<IAgentManager>();
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(agentReader.Object);
 
+        var cacheManager = new Mock<ICacheManager>();
+        var cacheDb = new Mock<ICacheDb>();
+        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
+
+        var historyStopPointId = 29;
+        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         var analysisId = Guid.NewGuid();
         var activity =
-            new DetectManifestsUsingAgentActivity(analysisId, analysisLocation.Object, agentExecutablePath);
+            new DetectManifestsUsingAgentActivity(analysisId, historyStopPointId, agentExecutablePath);
 
         activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
             appEvent.AnalysisId == analysisId &&
-            appEvent.AnalysisLocation == analysisLocation.Object &&
+            appEvent.HistoryStopPointId == historyStopPointId &&
             appEvent.AgentExecutablePath == agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/first/manifest")));
 
         eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
             appEvent.AnalysisId == analysisId &&
-            appEvent.AnalysisLocation == analysisLocation.Object &&
+            appEvent.HistoryStopPointId == historyStopPointId &&
             appEvent.AgentExecutablePath == agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/second/manifest")));
     }
