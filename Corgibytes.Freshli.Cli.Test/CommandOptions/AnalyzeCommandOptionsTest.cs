@@ -12,7 +12,6 @@ namespace Corgibytes.Freshli.Cli.Test.CommandOptions;
 public class AnalyzeCommandOptionsTest : FreshliTest
 {
     private const string DefaultGitPath = "git";
-    private const int DefaultWorkerCount = 0;
     private const string DefaultHistoryInterval = "1m";
     private const bool DefaultCommitHistory = false;
     private const bool DefaultLatestOnly = false;
@@ -27,44 +26,34 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             // If passing no arguments, the default git path should be 'git'
             new object?[]
             {
-                new[] { "analyze" }, "git", null, DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount,
-                DefaultLatestOnly
+                new[] { "analyze" }, "git", null, DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly
             },
             // Specific git path expected
             new object?[]
             {
                 new[] { "analyze", "--git-path", "/usr/bin/local/git" }, "/usr/bin/local/git", null,
-                DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount, DefaultLatestOnly
+                DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly
             },
             // Specific branch expected
             new object?[]
             {
                 new[] { "analyze", "--branch", "feature-fix-final.2.0" }, DefaultGitPath, "feature-fix-final.2.0",
-                DefaultCommitHistory, DefaultHistoryInterval, DefaultWorkerCount, DefaultLatestOnly
+                DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly
             },
             // Entire commit history expected
             new object?[]
             {
-                new[] { "analyze", "--commit-history" }, DefaultGitPath, null, true, DefaultHistoryInterval,
-                DefaultWorkerCount, DefaultLatestOnly
+                new[] { "analyze", "--commit-history" }, DefaultGitPath, null, true, DefaultHistoryInterval, DefaultLatestOnly
             },
             // Three yearly history interval expected
             new object?[]
             {
-                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, null, DefaultCommitHistory, "3y",
-                DefaultWorkerCount, DefaultLatestOnly
-            },
-            // 24 workers expected
-            new object?[]
-            {
-                new[] { "analyze", "--workers", "24" }, DefaultGitPath, null, DefaultCommitHistory,
-                DefaultHistoryInterval, 24, DefaultLatestOnly
+                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, null, DefaultCommitHistory, "3y", DefaultLatestOnly
             },
             // Latest only
             new object?[]
             {
-                new[] { "analyze", "--latest-only" }, DefaultGitPath, null, DefaultCommitHistory,
-                DefaultHistoryInterval, DefaultWorkerCount, true
+                new[] { "analyze", "--latest-only" }, DefaultGitPath, null, DefaultCommitHistory, DefaultHistoryInterval, true
             }
         };
 
@@ -72,7 +61,7 @@ public class AnalyzeCommandOptionsTest : FreshliTest
     [MemberData(nameof(AnalyzeOptionsArgs))]
     public void Send_Args_ReturnsAnalyzeOptions(
         string[] args, string expectedGitPath, string? expectedBranch, bool expectedCommitHistory,
-        string expectedHistoryInterval, int expectedWorkers, bool expectedLatestOnly
+        string expectedHistoryInterval, bool expectedLatestOnly
     )
     {
         var builder = Program.CreateCommandLineBuilder();
@@ -94,9 +83,6 @@ public class AnalyzeCommandOptionsTest : FreshliTest
 
         var historyInterval = result.GetOptionValueByName<string>("history-interval");
         historyInterval.Should().NotBeEmpty().And.Be(expectedHistoryInterval);
-
-        var workers = result.GetOptionValueByName<int>("workers");
-        workers.Should().Be(expectedWorkers);
 
         var latestOnly = result.GetOptionValueByName<bool>("latest-only");
         latestOnly.Should().Be(expectedLatestOnly);
