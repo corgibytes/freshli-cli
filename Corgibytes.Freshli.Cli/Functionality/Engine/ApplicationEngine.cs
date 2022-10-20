@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Hangfire;
+using Hangfire.Common;
 using Hangfire.Storage.Monitoring;
 using Microsoft.Extensions.Logging;
 
@@ -137,6 +138,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     {
         try
         {
+            _logger.LogDebug(
+                "Handling activity {ActivityType}: {Activity}",
+                activity.GetType(),
+                SerializationHelper.Serialize(activity)
+            );
             activity.Handle(this);
         }
         catch (Exception error)
@@ -150,6 +156,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     {
         try
         {
+            _logger.LogDebug(
+                "Handling activity {AppEventType}: {AppEvent}",
+                appEvent.GetType(),
+                SerializationHelper.Serialize(appEvent)
+            );
             appEvent.Handle(this);
         }
         catch (Exception error)
