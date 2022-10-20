@@ -13,9 +13,7 @@ public class ResultsApi : IResultsApi
 
     public ResultsApi(IConfiguration configuration) => _configuration = configuration;
 
-    public string GetResultsUrl(Guid analysisId) =>
-        // Not the final implementation
-        "https://freshli.app/" + analysisId;
+    public string GetResultsUrl(Guid analysisId) => "https://freshli.io/AnalysisRequests/" + analysisId;
 
     public Guid CreateAnalysis(string url)
     {
