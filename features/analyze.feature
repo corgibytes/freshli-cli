@@ -16,7 +16,7 @@ Feature: analyze
         When I run `freshli --loglevel Debug analyze https://github.com/questdb/questdb`
         Then it should pass with:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
 
     Scenario: Run the analysis with default options against a fixture project.
@@ -25,7 +25,7 @@ Feature: analyze
         When I run `freshli --loglevel Debug analyze https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
         And the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -46,7 +46,7 @@ Feature: analyze
         When I run `freshli --loglevel Debug analyze --git-path=git https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
         And the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -62,7 +62,7 @@ Feature: analyze
         When I run `freshli --loglevel Debug analyze --branch=test_branch https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
         And the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -79,7 +79,7 @@ Feature: analyze
         When I run `freshli --loglevel Debug analyze --latest-only https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
         And the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -96,7 +96,7 @@ Feature: analyze
         When I run `freshli --loglevel Debug analyze --commit-history https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
         And the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -115,7 +115,7 @@ Feature: analyze
         When I run `freshli --loglevel Debug analyze --history-interval=1y https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
         And the directory named "~/.freshli" should exist
         And a file named "~/.freshli/freshli.db" should exist
@@ -135,7 +135,7 @@ Feature: analyze
         When I run `freshli --loglevel Debug --workers=12 analyze https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
         And the output should contain:
         """
@@ -156,7 +156,7 @@ Feature: analyze
         When I run `freshli --loglevel Debug analyze --cache-dir somewhere_else https://github.com/corgibytes/freshli-fixture-java-test`
         Then it should pass with:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
         And the directory named "somewhere_else" should exist
         And a file named "somewhere_else/freshli.db" should exist
@@ -176,7 +176,7 @@ Feature: analyze
         And the "~/.freshli/freshli.db" contains history stop point at "2020-01-01 00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
         And the output should contain:
         """
-        https://freshli.app/
+        https://freshli.io/AnalysisRequests/
         """
 
     Scenario: Run the analysis, trigger error event.

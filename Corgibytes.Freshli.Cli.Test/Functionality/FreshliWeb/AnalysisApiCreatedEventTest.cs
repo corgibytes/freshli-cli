@@ -17,6 +17,7 @@ public class AnalysisApiCreatedEventTest
         var startedEvent = new AnalysisApiCreatedEvent
         {
             AnalysisId = new Guid(),
+            ApiAnalysisId = new Guid(),
             RepositoryUrl = "https://github.com/corgibytes/freshli-fixture-java-test"
         };
 
