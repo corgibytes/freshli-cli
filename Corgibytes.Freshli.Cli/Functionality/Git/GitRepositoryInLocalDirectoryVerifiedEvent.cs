@@ -8,8 +8,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 public class GitRepositoryInLocalDirectoryVerifiedEvent : IApplicationEvent
 {
     public Guid AnalysisId { get; init; }
-    public IAnalysisLocation AnalysisLocation { get; init; } = null!;
+    public IHistoryStopData HistoryStopData { get; init; } = null!;
 
     public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new ComputeHistoryActivity(AnalysisId, AnalysisLocation));
+        eventClient.Dispatch(new ComputeHistoryActivity(AnalysisId, HistoryStopData));
 }

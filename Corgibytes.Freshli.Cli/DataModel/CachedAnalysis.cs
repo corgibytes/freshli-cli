@@ -22,6 +22,7 @@ public class CachedAnalysis
         RevisionHistoryMode = revisionHistoryMode;
     }
 
+    // ReSharper disable once PropertyCanBeMadeInitOnly.Global
     [Required] public Guid Id { get; set; }
     [Required] public string RepositoryUrl { get; set; }
 
@@ -32,9 +33,11 @@ public class CachedAnalysis
     // TODO: Research how to use a value class here instead of a string
     [Required] public string HistoryInterval { get; set; }
 
+    public Guid? ApiAnalysisId { get; set; }
+
     // ReSharper disable once CollectionNeverQueried.Global
     // ReSharper disable once MemberCanBePrivate.Global
     // ReSharper disable once UnusedAutoPropertyAccessor.Global
     // ReSharper disable once UnusedMember.Global
-    public virtual List<CachedHistoryIntervalStop> HistoryIntervalStops { get; set; } = null!;
+    public virtual List<CachedHistoryStopPoint> HistoryStopPoints { get; set; } = null!;
 }
