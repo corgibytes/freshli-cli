@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.CommandLine;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -25,11 +26,24 @@ public class MainCommandTest : FreshliTest
     }
 
     [Theory]
-    [InlineData("--cache-dir")]
-    public void Verify_cache_dir_option_configuration(string alias)
+    [MemberData(nameof(OptionsData))]
+    public void VerifyOptions(string alias, ArgumentArity arity)
     {
         var configuration = new Mock<IConfiguration>();
         var mainCommand = new MainCommand(configuration.Object);
-        mainCommand.VerifyAlias(alias, ArgumentArity.ExactlyOne, false);
+        mainCommand.VerifyAlias(alias, arity, false);
     }
+
+    public static IEnumerable<object?[]> OptionsData() =>
+        new List<object?[]>
+        {
+            new object?[]
+            {
+                "--workers", ArgumentArity.ExactlyOne
+            },
+            new object?[]
+            {
+                "--cache-dir", ArgumentArity.ExactlyOne
+            }
+        };
 }
