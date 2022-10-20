@@ -30,7 +30,10 @@ public class CycloneDxBomReader : IBomReader
 
         foreach (var component in jsonCycloneDx.Components)
         {
-            packageUrls.Add(new PackageURL(component.Purl));
+            if (component.Hashes != null)
+            {
+                packageUrls.Add(new PackageURL(component.Purl));
+            }
         }
 
         return packageUrls;
