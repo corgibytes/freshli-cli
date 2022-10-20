@@ -17,10 +17,15 @@ public class CreateAnalysisApiActivity : IApplicationActivity
 
         var cachedAnalysis = cacheDb.RetrieveAnalysis(CachedAnalysisId);
 
-        cachedAnalysis!.ApiAnalysisId = apiService.CreateAnalysis(cachedAnalysis.RepositoryUrl);
+        var apiAnalysisId = apiService.CreateAnalysis(cachedAnalysis!.RepositoryUrl);
+        cachedAnalysis.ApiAnalysisId = apiAnalysisId;
 
         cacheDb.SaveAnalysis(cachedAnalysis);
 
-        eventClient.Fire(new AnalysisApiCreatedEvent { AnalysisId = CachedAnalysisId });
+        eventClient.Fire(new AnalysisApiCreatedEvent
+        {
+            AnalysisId = CachedAnalysisId,
+            ApiAnalysisId = apiAnalysisId
+        });
     }
 }
