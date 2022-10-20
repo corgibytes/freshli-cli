@@ -26,6 +26,10 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity
         var packageUrls = bomReader.AsPackageUrls(PathToBom);
         foreach (var packageUrl in packageUrls)
         {
+            if (packageUrl == null)
+            {
+                throw new Exception($"Null package URL detected for in {PathToBom}");
+            }
             eventClient.Fire(new PackageFoundEvent
             {
                 AnalysisId = AnalysisId,

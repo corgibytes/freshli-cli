@@ -6,11 +6,11 @@ using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
-public class ReadCycloneDxFile : IBomReader
+public class CycloneDxBomReader : IBomReader
 {
     [JsonProperty] private readonly IFileReader _fileReader;
 
-    public ReadCycloneDxFile(IFileReader fileReaderService) => _fileReader = fileReaderService;
+    public CycloneDxBomReader(IFileReader fileReaderService) => _fileReader = fileReaderService;
 
     public List<PackageURL> AsPackageUrls(string filePath)
     {
