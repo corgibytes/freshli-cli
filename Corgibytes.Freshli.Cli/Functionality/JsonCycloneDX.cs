@@ -30,6 +30,7 @@ public class JsonCycloneDx
     {
         // ReSharper disable once UnusedMember.Global
         public string? Alg { get; set; }
+
         // ReSharper disable once UnusedMember.Global
         public string? Content { get; set; }
     }

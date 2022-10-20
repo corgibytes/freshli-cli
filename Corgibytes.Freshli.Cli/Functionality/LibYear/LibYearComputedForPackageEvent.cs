@@ -11,8 +11,7 @@ public class LibYearComputedForPackageEvent : IApplicationEvent
     public int PackageLibYearId { get; init; }
     public string AgentExecutablePath { get; init; } = null!;
 
-    public void Handle(IApplicationActivityEngine eventClient)
-    {
+    public void Handle(IApplicationActivityEngine eventClient) =>
         eventClient.Dispatch(new CreateApiPackageLibYearActivity
         {
             AnalysisId = AnalysisId,
@@ -20,5 +19,4 @@ public class LibYearComputedForPackageEvent : IApplicationEvent
             PackageLibYearId = PackageLibYearId,
             AgentExecutablePath = AgentExecutablePath
         });
-    }
 }

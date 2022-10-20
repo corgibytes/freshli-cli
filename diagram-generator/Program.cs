@@ -1,4 +1,5 @@
-﻿using Microsoft.Build.Locator;
+﻿using Corgibytes.Freshli.DiagramGenerator;
+using Microsoft.Build.Locator;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -105,11 +106,14 @@ foreach (var tree in compilation!.SyntaxTrees)
 
 return 0;
 
-public static class TypeSymbolExtensions
+namespace Corgibytes.Freshli.DiagramGenerator
 {
-    public static bool HasInterfaceNamed(this ITypeSymbol symbol, string interfaceName)
+    public static class TypeSymbolExtensions
     {
-        var interfaceNames = symbol.AllInterfaces.Select(i => i.Name);
-        return interfaceNames.Contains(interfaceName);
+        public static bool HasInterfaceNamed(this ITypeSymbol symbol, string interfaceName)
+        {
+            var interfaceNames = symbol.AllInterfaces.Select(i => i.Name);
+            return interfaceNames.Contains(interfaceName);
+        }
     }
 }

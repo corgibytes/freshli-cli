@@ -12,8 +12,8 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality;
 [UnitTest]
 public class CycloneDxBomReaderTest : FreshliTest
 {
-    private readonly MockFileReader _fileReaderService;
     private readonly CycloneDxBomReader _cycloneDxBomReader;
+    private readonly MockFileReader _fileReaderService;
 
     public CycloneDxBomReaderTest(ITestOutputHelper output) : base(output)
     {
