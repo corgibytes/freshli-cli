@@ -9,15 +9,15 @@ using Xunit.Abstractions;
 namespace Corgibytes.Freshli.Cli.Test.Functionality;
 
 [UnitTest]
-public class ReadCycloneDxFileTest : FreshliTest
+public class CycloneDxBomReaderTest : FreshliTest
 {
     private readonly MockFileReader _fileReaderService;
-    private readonly ReadCycloneDxFile _readCycloneDxFile;
+    private readonly CycloneDxBomReader _cycloneDxBomReader;
 
-    public ReadCycloneDxFileTest(ITestOutputHelper output) : base(output)
+    public CycloneDxBomReaderTest(ITestOutputHelper output) : base(output)
     {
         _fileReaderService = new MockFileReader();
-        _readCycloneDxFile = new ReadCycloneDxFile(_fileReaderService);
+        _cycloneDxBomReader = new CycloneDxBomReader(_fileReaderService);
     }
 
     [Fact]
@@ -48,13 +48,13 @@ public class ReadCycloneDxFileTest : FreshliTest
             new("pkg:composer/org.corgibytes.tea/auto-cup-of-tea@112.0")
         };
 
-        Assert.Equivalent(expectedPackageUrls, _readCycloneDxFile.AsPackageUrls("This/is/a/filepath"));
+        Assert.Equivalent(expectedPackageUrls, _cycloneDxBomReader.AsPackageUrls("This/is/a/filepath"));
     }
 
     [Fact]
     public void Verify_it_throws_exception_when_no_filepath_was_given()
     {
-        var caughtException = Assert.Throws<ArgumentException>(() => _readCycloneDxFile.AsPackageUrls(""));
+        var caughtException = Assert.Throws<ArgumentException>(() => _cycloneDxBomReader.AsPackageUrls(""));
 
         Assert.Equal("Can not read file, as no file path was given", caughtException.Message);
     }
