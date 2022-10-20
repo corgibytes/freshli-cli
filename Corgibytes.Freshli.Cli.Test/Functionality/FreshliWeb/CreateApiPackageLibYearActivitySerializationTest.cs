@@ -16,7 +16,8 @@ public class CreateApiPackageLibYearActivitySerializationTest : SerializationTes
         AgentExecutablePath = "/path/to/agent"
     };
 
-    protected override void AssertEqual(CreateApiPackageLibYearActivity incoming, CreateApiPackageLibYearActivity outgoing)
+    protected override void AssertEqual(CreateApiPackageLibYearActivity incoming,
+        CreateApiPackageLibYearActivity outgoing)
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
         Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);

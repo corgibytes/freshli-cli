@@ -6,10 +6,7 @@ public class AgentManager : IAgentManager
 {
     private readonly IInvoke _invoke;
 
-    public AgentManager(IInvoke invoke)
-    {
-        _invoke = invoke;
-    }
+    public AgentManager(IInvoke invoke) => _invoke = invoke;
 
     public IAgentReader GetReader(string agentExecutablePath) => new AgentReader(_invoke, agentExecutablePath);
 }

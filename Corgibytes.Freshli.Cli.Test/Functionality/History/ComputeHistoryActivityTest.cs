@@ -21,9 +21,6 @@ public class ComputeHistoryActivityTest
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
 
-    private HistoryStopData HistoryStopData { get; }
-    private Configuration Configuration { get; }
-
     public ComputeHistoryActivityTest()
     {
         Configuration = new Configuration(new MockEnvironment());
@@ -40,6 +37,9 @@ public class ComputeHistoryActivityTest
             new HistoryStopData(Configuration, "test", "abcde1234",
                 new DateTimeOffset(2022, 9, 1, 1, 0, 0, TimeSpan.Zero));
     }
+
+    private HistoryStopData HistoryStopData { get; }
+    private Configuration Configuration { get; }
 
     [Fact]
     public void FiresHistoryIntervalStopFoundEvents()

@@ -34,7 +34,8 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
         }
     }
 
-    public static double CalculateLibYear(DateTimeOffset releaseDateCurrentVersion, DateTimeOffset releaseDateLatestVersion, int precision = 2)
+    public static double CalculateLibYear(DateTimeOffset releaseDateCurrentVersion,
+        DateTimeOffset releaseDateLatestVersion, int precision = 2)
     {
         // Note: This next bit is under discussion: https://github.com/corgibytes/freshli-cli/issues/114
 
@@ -88,4 +89,3 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
         throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList();
     }
 }
-
