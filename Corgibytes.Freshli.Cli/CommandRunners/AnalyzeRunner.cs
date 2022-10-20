@@ -53,11 +53,11 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             exitStatus = 1;
         });
 
-        _eventEngine.On<AnalysisStartedEvent>(startEvent =>
+        _eventEngine.On<AnalysisApiCreatedEvent>(createdEvent =>
         {
             context.Console.Out.WriteLine(
                 "Results will be available at: " +
-                _resultsApi.GetResultsUrl(startEvent.AnalysisId)
+                _resultsApi.GetResultsUrl(createdEvent.ApiAnalysisId)
             );
         });
 
