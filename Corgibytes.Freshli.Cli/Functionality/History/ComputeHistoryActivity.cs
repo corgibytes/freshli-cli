@@ -62,7 +62,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         {
             var historyStop = new HistoryStopData(configuration, HistoryStopData.RepositoryId,
                 historyIntervalStop.GitCommitIdentifier, historyIntervalStop.AsOfDateTime);
-            
+
             var historyStopPointId = cacheDb.AddHistoryStopPoint(
                 new CachedHistoryStopPoint
                 {

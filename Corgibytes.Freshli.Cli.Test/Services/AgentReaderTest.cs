@@ -35,7 +35,8 @@ public class AgentReaderTest
         SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
 
         // java/pom.xml is detected by detect manifest, see also DetectManifestsUsingProtobuf()
-        var billOfMaterialsPath = reader.ProcessManifest(Path.Combine(repositoryLocation, "java", "pom.xml"), DateTime.Now);
+        var billOfMaterialsPath =
+            reader.ProcessManifest(Path.Combine(repositoryLocation, "java", "pom.xml"), DateTime.Now);
 
         Assert.Equal(Path.Combine(repositoryLocation, "java", "target", "bom.json"), billOfMaterialsPath);
 
@@ -65,7 +66,7 @@ public class AgentReaderTest
 
         repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
 
-        reader = new AgentReader(new Invoke(),"freshli-agent-java");
+        reader = new AgentReader(new Invoke(), "freshli-agent-java");
     }
 
     private static string CreateCheckoutLocation(out DirectoryInfo checkoutDirectory)

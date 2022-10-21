@@ -26,11 +26,9 @@ public class CreateApiPackageLibYearActivityTest
 
         var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval,
             CommitHistory.AtInterval, RevisionHistoryMode.AllRevisions)
-        {
-            ApiAnalysisId = apiAnalysisId
-        };
+        { ApiAnalysisId = apiAnalysisId };
 
-        var activity = new CreateApiPackageLibYearActivity()
+        var activity = new CreateApiPackageLibYearActivity
         {
             AnalysisId = analysisId,
             HistoryStopPointId = historyStopPointId,
