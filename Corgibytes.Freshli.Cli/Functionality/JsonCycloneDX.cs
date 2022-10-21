@@ -23,5 +23,15 @@ public class JsonCycloneDx
     public class Component
     {
         public string? Purl { get; set; }
+        public List<ComponentHash>? Hashes { get; set; }
+    }
+
+    public class ComponentHash
+    {
+        // ReSharper disable once UnusedMember.Global
+        public string? Alg { get; set; }
+
+        // ReSharper disable once UnusedMember.Global
+        public string? Content { get; set; }
     }
 }
