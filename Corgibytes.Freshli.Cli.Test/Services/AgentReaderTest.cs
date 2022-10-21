@@ -1,85 +1,53 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
+using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
+using Moq;
+using PackageUrl;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Services;
 
-[IntegrationTest]
+[UnitTest]
 public class AgentReaderTest
 {
     [Fact]
-    public void DetectManifestsUsingProtobuf()
+    public void RetrieveReleaseHistoryWritesToCache()
     {
-        SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
+        var agentExecutable = "/path/to/agent";
+        var commandInvoker = new Mock<ICommandInvoker>();
+        var packageUrl = new PackageURL("pkg:maven/org.example/package");
 
-        var actualManifests = reader.DetectManifests(repositoryLocation);
+        var alphaPackage = new Package(
+            new PackageURL("pkg:maven/org.example/package@1"),
+            new DateTimeOffset(2021, 12, 13, 14, 15, 16, TimeSpan.FromHours(-4)));
+        var betaPackage = new Package(
+            new PackageURL("pkg:maven/org.example/package@2"),
+            alphaPackage.ReleasedAt.AddMonths(1));
+        var gammaPackage = new Package(
+            new PackageURL("pkg:maven/org.example/package@3"),
+            alphaPackage.ReleasedAt.AddMonths(2));
 
-        var expectedManifests = new List<string>
+        var expectedPackages = new List<Package>()
         {
-            "java/pom.xml",
-            "java/protoc/pom.xml",
-            "ruby/pom.xml"
+            alphaPackage,
+            betaPackage,
+            gammaPackage
         };
-        Assert.Equal(expectedManifests, actualManifests);
 
-        // delete cloned files
-        checkoutDirectory.Delete(true);
-    }
+        var commandResponse =
+            $"{alphaPackage.PackageUrl.Version}\t{alphaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n" +
+            $"{betaPackage.PackageUrl.Version}\t{betaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n" +
+            $"{gammaPackage.PackageUrl.Version}\t{gammaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n";
 
-    [Fact]
-    public void GenerateBillOfMaterialsUsingProtobuf()
-    {
-        SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
+        commandInvoker.Setup(mock => mock.Run(agentExecutable,
+            $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".")).Returns(commandResponse);
 
-        // java/pom.xml is detected by detect manifest, see also DetectManifestsUsingProtobuf()
-        var billOfMaterialsPath =
-            reader.ProcessManifest(Path.Combine(repositoryLocation, "java", "pom.xml"), DateTime.Now);
+        var reader = new AgentReader(commandInvoker.Object, agentExecutable);
 
-        Assert.Equal(Path.Combine(repositoryLocation, "java", "target", "bom.json"), billOfMaterialsPath);
+        var retrievedPackages = reader.RetrieveReleaseHistory(packageUrl);
 
-        // delete cloned files
-        checkoutDirectory.Delete(true);
-    }
-
-    [Fact]
-    public void AgentReaderReturnsEmptyListWhenNoManifestsFound()
-    {
-        var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);
-        var reader = new AgentReader(new CommandInvoker(), "freshli-agent-java");
-        var repositoryLocation = Path.Combine(checkoutLocation, "invalid_repository");
-
-        var actualManifests = reader.DetectManifests(repositoryLocation);
-        Assert.Empty(actualManifests);
-        checkoutDirectory.Delete();
-    }
-
-    private static void SetupDirectory(out string repositoryLocation, out AgentReader reader,
-        out DirectoryInfo checkoutDirectory)
-    {
-        var checkoutLocation = CreateCheckoutLocation(out checkoutDirectory);
-
-        // clone https://github.com/protocolbuffers/protobuf to a temp location
-        new CommandInvoker().Run("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
-
-        repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
-
-        reader = new AgentReader(new CommandInvoker(), "freshli-agent-java");
-    }
-
-    private static string CreateCheckoutLocation(out DirectoryInfo checkoutDirectory)
-    {
-        var checkoutLocation = Path.Combine(Path.GetTempPath(), "repositories");
-
-        checkoutDirectory = new DirectoryInfo(checkoutLocation);
-        if (checkoutDirectory.Exists)
-        {
-            checkoutDirectory.Delete(true);
-        }
-
-        checkoutDirectory.Create();
-        return checkoutLocation;
+        Assert.Equal(expectedPackages, retrievedPackages);
     }
 }
