@@ -9,11 +9,11 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CachedGitSourceRepository : ICachedGitSourceRepository
 {
-    [JsonProperty] private readonly IInvoke _invoke;
+    [JsonProperty] private readonly ICommandInvoker _commandInvoker;
 
-    public CachedGitSourceRepository(IInvoke invoke, IConfiguration configuration, ICacheManager cacheManager)
+    public CachedGitSourceRepository(ICommandInvoker commandInvoker, IConfiguration configuration, ICacheManager cacheManager)
     {
-        _invoke = invoke;
+        _commandInvoker = commandInvoker;
         Configuration = configuration;
         CacheManager = cacheManager;
     }
@@ -91,7 +91,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
         try
         {
-            commandOutput = _invoke.Command(Configuration.GitPath, $"pull origin {branch ?? ""}",
+            commandOutput = _commandInvoker.Run(Configuration.GitPath, $"pull origin {branch ?? ""}",
                     cachedGitSource.LocalPath)
                 .Replace("\n", " ");
         }
@@ -108,7 +108,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         try
         {
-            _invoke.Command(Configuration.GitPath, $"checkout {cachedGitSource.Branch ?? ""}",
+            _commandInvoker.Run(Configuration.GitPath, $"checkout {cachedGitSource.Branch ?? ""}",
                 cachedGitSource.LocalPath);
         }
         catch (IOException e)
@@ -132,7 +132,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         try
         {
-            _invoke.Command(Configuration.GitPath, $"clone {cachedGitSource.Url} .", cachedGitSource.LocalPath);
+            _commandInvoker.Run(Configuration.GitPath, $"clone {cachedGitSource.Url} .", cachedGitSource.LocalPath);
         }
         catch (IOException e)
         {
@@ -142,5 +142,5 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     }
 
     private string FetchCurrentBranch(CachedGitSource cachedGitSource) =>
-        _invoke.Command(Configuration.GitPath, "branch --show-current", cachedGitSource.LocalPath).Replace("\n", "");
+        _commandInvoker.Run(Configuration.GitPath, "branch --show-current", cachedGitSource.LocalPath).Replace("\n", "");
 }
