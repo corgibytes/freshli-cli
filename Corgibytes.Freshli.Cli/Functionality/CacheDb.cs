@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Git;
+using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -41,6 +44,17 @@ public class CacheDb : ICacheDb, IDisposable
 
     public CachedPackageLibYear? RetrievePackageLibYear(int packageLibYearId) =>
         Db.CachedPackageLibYears.Find(packageLibYearId);
+
+    public List<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl)
+    {
+        return Db.CachedPackages.Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString()).ToList();
+    }
+
+    public void StoreCachedReleaseHistory(List<CachedPackage> packages)
+    {
+        Db.CachedPackages.AddRange(packages);
+        Db.SaveChanges();
+    }
 
     public int AddPackageLibYear(CachedPackageLibYear packageLibYear)
     {

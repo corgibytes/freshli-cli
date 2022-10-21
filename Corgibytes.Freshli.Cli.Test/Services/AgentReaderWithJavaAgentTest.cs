@@ -4,6 +4,7 @@ using System.IO;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
 using Xunit;
+using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
 namespace Corgibytes.Freshli.Cli.Test.Services;
 
@@ -48,7 +49,7 @@ public class AgentReaderWithJavaAgentTest
     public void AgentReaderReturnsEmptyListWhenNoManifestsFound()
     {
         var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);
-        var reader = new AgentReader(new CommandInvoker(), "freshli-agent-java");
+        var reader = new AgentReader(new CacheManager(new Configuration(new Environment())), new CommandInvoker(), "freshli-agent-java");
         var repositoryLocation = Path.Combine(checkoutLocation, "invalid_repository");
 
         var actualManifests = reader.DetectManifests(repositoryLocation);
@@ -66,7 +67,7 @@ public class AgentReaderWithJavaAgentTest
 
         repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
 
-        reader = new AgentReader(new CommandInvoker(), "freshli-agent-java");
+        reader = new AgentReader(new CacheManager(new Configuration(new Environment())), new CommandInvoker(), "freshli-agent-java");
     }
 
     private static string CreateCheckoutLocation(out DirectoryInfo checkoutDirectory)

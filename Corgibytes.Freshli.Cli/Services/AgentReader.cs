@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using PackageUrl;
@@ -11,10 +12,12 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentReader : IAgentReader
 {
+    private readonly ICacheDb _cacheDb;
     private readonly ICommandInvoker _commandInvoker;
 
-    public AgentReader(ICommandInvoker commandInvoker, string agentExecutable)
+    public AgentReader(ICacheManager cacheManager, ICommandInvoker commandInvoker, string agentExecutable)
     {
+        _cacheDb = cacheManager.GetCacheDb();
         _commandInvoker = commandInvoker;
         AgentExecutablePath = agentExecutable;
     }
@@ -23,6 +26,13 @@ public class AgentReader : IAgentReader
 
     public List<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
+        var cachedPackages = _cacheDb.RetrieveCachedReleaseHistory(packageUrl);
+
+        if (cachedPackages.Count > 0)
+        {
+            return cachedPackages.Select(cachedPackage => cachedPackage.ToPackage()).ToList();
+        }
+
         var packages = new List<Package>();
         string packageUrlsWithDate;
         try
@@ -46,6 +56,8 @@ public class AgentReader : IAgentReader
                 )
             );
         }
+
+        _cacheDb.StoreCachedReleaseHistory(packages.Select(package => new CachedPackage(package)).ToList());
 
         return packages;
     }
