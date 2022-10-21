@@ -7,11 +7,11 @@ public class GitManager : IGitManager
 {
     [JsonProperty] private readonly IConfiguration _configuration;
     [JsonProperty] private readonly GitArchive _gitArchive;
-    [JsonProperty] private readonly IInvoke _invoke;
+    [JsonProperty] private readonly ICommandInvoker _commandInvoker;
 
-    public GitManager(IInvoke invoke, GitArchive gitArchive, IConfiguration configuration)
+    public GitManager(ICommandInvoker commandInvoker, GitArchive gitArchive, IConfiguration configuration)
     {
-        _invoke = invoke;
+        _commandInvoker = commandInvoker;
         _gitArchive = gitArchive;
         _configuration = configuration;
     }
@@ -24,7 +24,7 @@ public class GitManager : IGitManager
     {
         try
         {
-            _invoke.Command(_configuration.GitPath, "status", repositoryLocation);
+            _commandInvoker.Run(_configuration.GitPath, "status", repositoryLocation);
             return true;
         }
         catch (Exception)
