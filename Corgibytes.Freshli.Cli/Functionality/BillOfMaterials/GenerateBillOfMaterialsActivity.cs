@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Concurrent;
 using System.IO;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,8 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
     public readonly Guid AnalysisId;
     public readonly int HistoryStopPointId;
     public readonly string ManifestPath;
+
+    private static readonly ConcurrentDictionary<string, object> s_lockPoints = new();
 
     public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
         int historyStopPointId, string manifestPath)
@@ -29,13 +33,30 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity
 
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
+
         var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
 
-        var asOfDateTime = DateTime.Now;
-        var pathToBillOfMaterials =
-            agentReader.ProcessManifest(Path.Combine(historyStopPoint?.LocalPath!, ManifestPath), asOfDateTime);
+        var historyPointPath = historyStopPoint.LocalPath;
+        var asOfDateTime = historyStopPoint.AsOfDateTime;
 
-        eventClient.Fire(new BillOfMaterialsGeneratedEvent(AnalysisId, HistoryStopPointId, pathToBillOfMaterials,
-            AgentExecutablePath));
+        EnsureLockPointExists(historyPointPath);
+        lock (s_lockPoints[historyPointPath])
+        {
+            var fullManifestPath = Path.Combine(historyPointPath, ManifestPath);
+            var bomFilePath = agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
+            var cachedBomFilePath = cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
+
+            eventClient.Fire(new BillOfMaterialsGeneratedEvent(
+                AnalysisId, HistoryStopPointId, cachedBomFilePath, AgentExecutablePath));
+        }
+    }
+
+    private void EnsureLockPointExists(string path)
+    {
+        if (!s_lockPoints.ContainsKey(path))
+        {
+            s_lockPoints[path] = new object();
+        }
     }
 }

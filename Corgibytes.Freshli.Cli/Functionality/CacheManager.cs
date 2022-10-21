@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using System.Linq;
 using Corgibytes.Freshli.Cli.DataModel;
@@ -54,7 +55,7 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public DirectoryInfo GetDirectoryInCache(string[] directoryStructure)
+    public DirectoryInfo GetDirectoryInCache(params string[] directoryStructure)
     {
         var cacheDir = new DirectoryInfo(_configuration.CacheDir);
         Prepare();
@@ -80,6 +81,18 @@ public class CacheManager : ICacheManager
         }
 
         return focus;
+    }
+
+    public string StoreBomInCache(string bomFilePath, Guid analysisId, DateTimeOffset asOfDateTime)
+    {
+        var bomFileInfo = new FileInfo(bomFilePath);
+
+        var bomCacheDirInfo = GetDirectoryInCache("boms", analysisId.ToString(), asOfDateTime.ToString("u"));
+        var cachedBomFilePath = Path.Combine(bomCacheDirInfo.FullName, bomFileInfo.Name);
+
+        File.Copy(bomFilePath, cachedBomFilePath);
+
+        return cachedBomFilePath;
     }
 
     public bool Destroy()
