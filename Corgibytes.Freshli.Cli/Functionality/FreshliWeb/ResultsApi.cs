@@ -73,11 +73,11 @@ public class ResultsApi : IResultsApi
 
         // TODO: add implementation
         // ReSharper disable once UnusedVariable
-        var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
+        _ = cachedAnalysis!.ApiAnalysisId;
 
         var historyStopPointId = packageLibYear!.HistoryStopPointId;
         var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
         // ReSharper disable once UnusedVariable
-        var asOfDateTime = historyStopPoint!.AsOfDateTime;
+        _ = historyStopPoint!.AsOfDateTime;
     }
 }

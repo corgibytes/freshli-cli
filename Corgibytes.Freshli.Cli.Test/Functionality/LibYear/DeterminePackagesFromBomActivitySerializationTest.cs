@@ -16,7 +16,8 @@ public class DeterminePackagesFromBomActivitySerializationTest : SerializationTe
             "/path/to/agent"
         );
 
-    protected override void AssertEqual(DeterminePackagesFromBomActivity incoming, DeterminePackagesFromBomActivity outgoing)
+    protected override void AssertEqual(DeterminePackagesFromBomActivity incoming,
+        DeterminePackagesFromBomActivity outgoing)
     {
         Assert.Equal(incoming.AnalysisId, outgoing.AnalysisId);
         Assert.Equal(incoming.HistoryStopPointId, outgoing.HistoryStopPointId);

@@ -39,11 +39,12 @@ public class PackageLibYearCalculatorTest
             new(
                 currentlyInstalledPackageUrl,
                 new DateTimeOffset(2019, 3, 30, 14, 41, 55, TimeSpan.Zero)
-            ),
+            )
         };
 
         var agentReader = new Mock<IAgentReader>();
-        agentReader.Setup(mock => mock.RetrieveReleaseHistory(currentlyInstalledPackageUrl)).Returns(givenReleaseHistory);
+        agentReader.Setup(mock => mock.RetrieveReleaseHistory(currentlyInstalledPackageUrl))
+            .Returns(givenReleaseHistory);
 
         var calculator = new PackageLibYearCalculator();
         var asOfDateTime = new DateTimeOffset(2021, 12, 31, 12, 30, 45, TimeSpan.Zero);
@@ -57,7 +58,8 @@ public class PackageLibYearCalculatorTest
             asOfDateTime
         );
 
-        var actualPackageLibYear = calculator.ComputeLibYear(agentReader.Object, currentlyInstalledPackageUrl, asOfDateTime);
+        var actualPackageLibYear =
+            calculator.ComputeLibYear(agentReader.Object, currentlyInstalledPackageUrl, asOfDateTime);
 
         Assert.Equivalent(expectedPackageLibYear.CurrentVersion!, actualPackageLibYear.CurrentVersion!);
         Assert.Equivalent(expectedPackageLibYear.LatestVersion!, actualPackageLibYear.LatestVersion!);
@@ -69,9 +71,11 @@ public class PackageLibYearCalculatorTest
     [Theory]
     [MemberData(nameof(ExpectedLibYears))]
     public void VerifyExpectedLibYears(
-        DateTimeOffset releaseDateCurrentVersion, DateTimeOffset releaseDateLatestVersion, double expectedLibYear, int precision
+        DateTimeOffset releaseDateCurrentVersion, DateTimeOffset releaseDateLatestVersion, double expectedLibYear,
+        int precision
     ) =>
-        Assert.Equal(expectedLibYear, PackageLibYearCalculator.CalculateLibYear(releaseDateCurrentVersion, releaseDateLatestVersion, precision));
+        Assert.Equal(expectedLibYear,
+            PackageLibYearCalculator.CalculateLibYear(releaseDateCurrentVersion, releaseDateLatestVersion, precision));
 
     public static TheoryData<DateTimeOffset, DateTimeOffset, double, int> ExpectedLibYears() =>
         new()
@@ -108,4 +112,3 @@ public class PackageLibYearCalculatorTest
             }
         };
 }
-

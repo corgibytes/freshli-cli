@@ -16,7 +16,8 @@ public class PrepareCacheForAnalysisActivitySerializationTest : SerializationTes
         RevisionHistoryMode.OnlyLatestRevision
     );
 
-    protected override void AssertEqual(PrepareCacheForAnalysisActivity incoming, PrepareCacheForAnalysisActivity outgoing)
+    protected override void AssertEqual(PrepareCacheForAnalysisActivity incoming,
+        PrepareCacheForAnalysisActivity outgoing)
     {
         Assert.Equal(incoming.RepositoryUrl, outgoing.RepositoryUrl);
         Assert.Equal(incoming.RepositoryBranch, outgoing.RepositoryBranch);
