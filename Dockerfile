@@ -47,6 +47,9 @@ RUN ./gradlew installDist
 # Use Java JRE as the base image -- the `freshli` executable is self contained (meaning it does not need the .NET runtime to be installed)
 FROM eclipse-temurin:17-jre-jammy AS final
 
+# Install git
+RUN apt update -y && apt install git -y
+
 # Copy `freshli` executable from the `dotnet_build` image
 RUN mkdir -p /usr/local/share/freshli
 COPY --from=dotnet_build /app/freshli/exe/ /usr/local/share/freshli/
