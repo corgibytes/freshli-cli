@@ -45,10 +45,8 @@ public class CacheDb : ICacheDb, IDisposable
     public CachedPackageLibYear? RetrievePackageLibYear(int packageLibYearId) =>
         Db.CachedPackageLibYears.Find(packageLibYearId);
 
-    public List<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl)
-    {
-        return Db.CachedPackages.Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString()).ToList();
-    }
+    public List<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl) => Db.CachedPackages
+        .Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString()).ToList();
 
     public void StoreCachedReleaseHistory(List<CachedPackage> packages)
     {

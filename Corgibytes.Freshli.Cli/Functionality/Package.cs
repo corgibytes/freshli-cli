@@ -45,10 +45,5 @@ public class Package : IComparable<Package>
         return false;
     }
 
-    protected bool Equals(Package other)
-    {
-        return CompareTo(other) == 0;
-    }
-
     public override int GetHashCode() => HashCode.Combine(PackageUrl.ToString(), ReleasedAt);
 }
