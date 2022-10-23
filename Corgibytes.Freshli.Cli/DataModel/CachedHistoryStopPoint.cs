@@ -31,4 +31,6 @@ public class CachedHistoryStopPoint
 
     // ReSharper disable once UnusedMember.Global
     public virtual List<CachedPackageLibYear> PackageLibYears { get; set; } = null!;
+
+    public virtual List<CachedManifestPath>? ManifestPaths { get; set; }
 }
