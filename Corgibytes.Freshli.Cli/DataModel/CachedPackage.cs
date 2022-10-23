@@ -24,8 +24,8 @@ public class CachedPackage
     }
 
     [Required] public int Id { get; set; }
-    [Required] public string PackageUrlWithoutVersion { get; set; }
-    [Required] public string Version { get; set; }
+    [Required] public string PackageUrlWithoutVersion { get; set; } = null!;
+    [Required] public string Version { get; set; } = null!;
     [Required] public DateTimeOffset ReleasedAt { get; set; }
 
     public Package ToPackage()
