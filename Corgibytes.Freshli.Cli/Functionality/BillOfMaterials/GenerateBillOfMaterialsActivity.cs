@@ -10,12 +10,11 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
 {
+    private static readonly ConcurrentDictionary<string, Mutex> s_historyPointMutexes = new();
     public readonly string AgentExecutablePath;
     public readonly Guid AnalysisId;
     public readonly int HistoryStopPointId;
     public readonly string ManifestPath;
-
-    private static readonly ConcurrentDictionary<string, Mutex> s_historyPointMutexes = new();
 
     public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
         int historyStopPointId, string manifestPath)
@@ -24,20 +23,6 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
         AgentExecutablePath = agentExecutablePath;
         HistoryStopPointId = historyStopPointId;
         ManifestPath = manifestPath;
-    }
-
-    public Mutex GetMutex(IServiceProvider provider)
-    {
-        var cacheManager = provider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
-
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
-        // TODO create an exception class for this exception and write a test to cover it getting generated
-        _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
-
-        var historyPointPath = historyStopPoint.LocalPath;
-        EnsureHistoryPointMutexExists(historyPointPath);
-        return s_historyPointMutexes[historyPointPath];
     }
 
     public void Handle(IApplicationEventEngine eventClient)
@@ -60,6 +45,20 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
 
         eventClient.Fire(new BillOfMaterialsGeneratedEvent(
             AnalysisId, HistoryStopPointId, cachedBomFilePath, AgentExecutablePath));
+    }
+
+    public Mutex GetMutex(IServiceProvider provider)
+    {
+        var cacheManager = provider.GetRequiredService<ICacheManager>();
+        var cacheDb = cacheManager.GetCacheDb();
+
+        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        // TODO create an exception class for this exception and write a test to cover it getting generated
+        _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
+
+        var historyPointPath = historyStopPoint.LocalPath;
+        EnsureHistoryPointMutexExists(historyPointPath);
+        return s_historyPointMutexes[historyPointPath];
     }
 
     private static void EnsureHistoryPointMutexExists(string path)
