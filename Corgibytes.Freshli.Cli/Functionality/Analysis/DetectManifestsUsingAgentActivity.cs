@@ -21,13 +21,21 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
-        var agentReader = agentManager.GetReader(AgentExecutablePath);
-
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
         var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
-        foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint?.LocalPath!))
+
+        var manifestPaths = cacheDb.RetrieveCachedManifests(HistoryStopPointId, AgentExecutablePath);
+
+        if (manifestPaths.Count == 0)
+        {
+            var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
+            var agentReader = agentManager.GetReader(AgentExecutablePath);
+            manifestPaths = agentReader.DetectManifests(historyStopPoint?.LocalPath!);
+            cacheDb.StoreCachedManifests(HistoryStopPointId, AgentExecutablePath, manifestPaths);
+        }
+
+        foreach (var manifestPath in manifestPaths)
         {
             eventClient.Fire(new ManifestDetectedEvent(AnalysisId, HistoryStopPointId, AgentExecutablePath,
                 manifestPath));
