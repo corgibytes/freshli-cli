@@ -32,7 +32,7 @@ public class AgentReaderTest
             new PackageURL("pkg:maven/org.example/package@3"),
             alphaPackage.ReleasedAt.AddMonths(2));
 
-        var expectedPackages = new List<Package>()
+        var expectedPackages = new List<Package>
         {
             alphaPackage,
             betaPackage,
@@ -85,14 +85,14 @@ public class AgentReaderTest
             new PackageURL("pkg:maven/org.example/package@3"),
             alphaPackage.ReleasedAt.AddMonths(2));
 
-        var expectedPackages = new List<Package>()
+        var expectedPackages = new List<Package>
         {
             alphaPackage,
             betaPackage,
             gammaPackage
         };
 
-        var initialCachedPackages = new List<CachedPackage>()
+        var initialCachedPackages = new List<CachedPackage>
         {
             new(alphaPackage),
             new(betaPackage),

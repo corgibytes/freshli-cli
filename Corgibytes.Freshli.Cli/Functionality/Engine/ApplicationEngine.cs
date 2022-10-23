@@ -13,6 +13,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
 public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEngine
 {
+    private const int MutexWaitTimeoutInMilliseconds = 50;
     private static readonly Dictionary<Type, Action<IApplicationEvent>> s_eventHandlers = new();
 
     private static readonly object s_dispatchLock = new();
@@ -133,7 +134,6 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    const int MutexWaitTimeoutInMilliseconds = 50;
     // ReSharper disable once MemberCanBePrivate.Global
     public void HandleActivity(IApplicationActivity activity)
     {

@@ -11,7 +11,8 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 {
     [JsonProperty] private readonly ICommandInvoker _commandInvoker;
 
-    public CachedGitSourceRepository(ICommandInvoker commandInvoker, IConfiguration configuration, ICacheManager cacheManager)
+    public CachedGitSourceRepository(ICommandInvoker commandInvoker, IConfiguration configuration,
+        ICacheManager cacheManager)
     {
         _commandInvoker = commandInvoker;
         Configuration = configuration;
@@ -142,5 +143,6 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     }
 
     private string FetchCurrentBranch(CachedGitSource cachedGitSource) =>
-        _commandInvoker.Run(Configuration.GitPath, "branch --show-current", cachedGitSource.LocalPath).Replace("\n", "");
+        _commandInvoker.Run(Configuration.GitPath, "branch --show-current", cachedGitSource.LocalPath)
+            .Replace("\n", "");
 }

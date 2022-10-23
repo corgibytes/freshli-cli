@@ -5,9 +5,9 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitManager : IGitManager
 {
+    [JsonProperty] private readonly ICommandInvoker _commandInvoker;
     [JsonProperty] private readonly IConfiguration _configuration;
     [JsonProperty] private readonly GitArchive _gitArchive;
-    [JsonProperty] private readonly ICommandInvoker _commandInvoker;
 
     public GitManager(ICommandInvoker commandInvoker, GitArchive gitArchive, IConfiguration configuration)
     {
