@@ -109,6 +109,33 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.ToTable("CachedHistoryStopPoints");
                 });
 
+            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedPackage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("PackageUrlWithoutVersion")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTimeOffset>("ReleasedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("PackageUrlWithoutVersion");
+
+                    b.ToTable("CachedPackages");
+                });
+
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedPackageLibYear", b =>
                 {
                     b.Property<int>("Id")
