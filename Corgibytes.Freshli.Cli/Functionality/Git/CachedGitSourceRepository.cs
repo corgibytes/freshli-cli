@@ -23,8 +23,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
     public CachedGitSource FindOneByRepositoryId(string repositoryId)
     {
-        using var db = new CacheContext(Configuration.CacheDir);
-        var entry = db.CachedGitSources.Find(repositoryId);
+        var entry = CacheManager.GetCacheDb().RetrieveCachedGitSource(new CachedGitSourceId(repositoryId));
         if (entry == null)
         {
             throw new CacheException(CliOutput.CachedGitSourceRepository_No_Repository_Found_In_Cache);
@@ -43,18 +42,18 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     public CachedGitSource CloneOrPull(string url, string? branch)
     {
         // Generate a unique repositoryId for the repository based on its URL and branch.
-        var hash = new CachedGitSourceId(url, branch).Id;
+        var id = new CachedGitSourceId(url, branch);
 
         using var db = new CacheContext(Configuration.CacheDir);
-        var existingCachedGitSource = db.CachedGitSources.Find(hash);
+        var existingCachedGitSource = CacheManager.GetCacheDb().RetrieveCachedGitSource(id);
         if (existingCachedGitSource is not null)
         {
             return existingCachedGitSource;
         }
 
-        var directory = CacheManager.GetDirectoryInCache(new[] { "repositories", hash });
+        var directory = CacheManager.GetDirectoryInCache(new[] { "repositories", id.Id });
 
-        var cachedGitSource = new CachedGitSource(hash, url, branch, directory.FullName);
+        var cachedGitSource = new CachedGitSource(id.Id, url, branch, directory.FullName);
         db.CachedGitSources.Add(cachedGitSource);
         db.SaveChanges();
 
@@ -119,7 +118,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         var directory = new DirectoryInfo(cachedGitSource.LocalPath);
         using var db = new CacheContext(Configuration.CacheDir);
-        var entry = db.CachedGitSources.Find(cachedGitSource.Id);
+        var entry = CacheManager.GetCacheDb().RetrieveCachedGitSource(new CachedGitSourceId(cachedGitSource.Id));
         db.CachedGitSources.Remove(entry!);
 
         directory.Delete(true);
