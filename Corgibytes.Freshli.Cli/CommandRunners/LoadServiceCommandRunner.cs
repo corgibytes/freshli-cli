@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class LoadServiceCommandRunner : CommandRunner<LoadServiceCommand, EmptyCommandOptions>
 {
-    public LoadServiceCommandRunner(IServiceProvider serviceProvider, Runner runner,
+    public LoadServiceCommandRunner(IServiceProvider serviceProvider, IRunner runner,
         IApplicationActivityEngine activityEngine)
         : base(serviceProvider, runner) =>
         ActivityEngine = activityEngine;

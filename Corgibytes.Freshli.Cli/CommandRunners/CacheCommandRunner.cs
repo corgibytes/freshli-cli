@@ -8,7 +8,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class CacheCommandRunner : CommandRunner<CacheCommand, CacheCommandOptions>
 {
-    public CacheCommandRunner(IServiceProvider serviceProvider, Runner runner)
+    public CacheCommandRunner(IServiceProvider serviceProvider, IRunner runner)
         : base(serviceProvider, runner)
     {
     }

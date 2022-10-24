@@ -19,7 +19,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
     private readonly IResultsApi _resultsApi;
 
     public AnalyzeRunner(
-        IServiceProvider serviceProvider, Runner runner, IConfiguration configuration,
+        IServiceProvider serviceProvider, IRunner runner, IConfiguration configuration,
         IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine,
         IResultsApi resultsApi
     ) : base(serviceProvider, runner)
