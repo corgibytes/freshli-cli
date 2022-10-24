@@ -12,6 +12,7 @@ public interface ICacheDb
     public int AddPackageLibYear(CachedPackageLibYear packageLibYear);
     public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id);
     public void AddCachedGitSource(CachedGitSource cachedGitSource);
+    public void RemoveCachedGitSource(CachedGitSource cachedGitSource);
     public CachedHistoryStopPoint? RetrieveHistoryStopPoint(int historyStopPointId);
     public CachedPackageLibYear? RetrievePackageLibYear(int packageLibYearId);
 }
