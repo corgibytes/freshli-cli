@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using PackageUrl;
@@ -11,11 +12,13 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentReader : IAgentReader
 {
-    private readonly IInvoke _invoke;
+    private readonly ICacheDb _cacheDb;
+    private readonly ICommandInvoker _commandInvoker;
 
-    public AgentReader(IInvoke invoke, string agentExecutable)
+    public AgentReader(ICacheManager cacheManager, ICommandInvoker commandInvoker, string agentExecutable)
     {
-        _invoke = invoke;
+        _cacheDb = cacheManager.GetCacheDb();
+        _commandInvoker = commandInvoker;
         AgentExecutablePath = agentExecutable;
     }
 
@@ -23,11 +26,18 @@ public class AgentReader : IAgentReader
 
     public List<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
+        var cachedPackages = _cacheDb.RetrieveCachedReleaseHistory(packageUrl);
+
+        if (cachedPackages.Count > 0)
+        {
+            return cachedPackages.Select(cachedPackage => cachedPackage.ToPackage()).ToList();
+        }
+
         var packages = new List<Package>();
         string packageUrlsWithDate;
         try
         {
-            packageUrlsWithDate = _invoke.Command(AgentExecutablePath,
+            packageUrlsWithDate = _commandInvoker.Run(AgentExecutablePath,
                 $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".");
         }
         catch (IOException)
@@ -47,12 +57,14 @@ public class AgentReader : IAgentReader
             );
         }
 
+        _cacheDb.StoreCachedReleaseHistory(packages.Select(package => new CachedPackage(package)).ToList());
+
         return packages;
     }
 
     public List<string> DetectManifests(string projectPath)
     {
-        var manifests = _invoke.Command(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
+        var manifests = _commandInvoker.Run(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
 
         return manifests.IsEmpty() ? new List<string>() : manifests.TrimEnd('\n', '\r').Split("\n").ToList();
     }
@@ -60,7 +72,7 @@ public class AgentReader : IAgentReader
     public string ProcessManifest(string manifestPath, DateTimeOffset asOfDateTime)
     {
         var billOfMaterialsPath =
-            _invoke.Command(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDateTime:o}", ".");
+            _commandInvoker.Run(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDateTime:o}", ".");
 
         return billOfMaterialsPath.TrimEnd('\n', '\n');
     }

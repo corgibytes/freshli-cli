@@ -25,6 +25,7 @@ public class CacheContext : DbContext
     public DbSet<CachedAnalysis> CachedAnalyses => Set<CachedAnalysis>();
     public DbSet<CachedHistoryStopPoint> CachedHistoryStopPoints => Set<CachedHistoryStopPoint>();
     public DbSet<CachedPackageLibYear> CachedPackageLibYears => Set<CachedPackageLibYear>();
+    public DbSet<CachedPackage> CachedPackages => Set<CachedPackage>();
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlite($"Data Source={DbPath}");
