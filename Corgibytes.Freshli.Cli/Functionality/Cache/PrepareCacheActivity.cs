@@ -1,6 +1,5 @@
 using System;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Cache;
