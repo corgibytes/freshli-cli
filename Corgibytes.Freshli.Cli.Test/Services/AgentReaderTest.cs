@@ -13,99 +13,90 @@ namespace Corgibytes.Freshli.Cli.Test.Services;
 [UnitTest]
 public class AgentReaderTest
 {
+    private string _agentExecutable;
+    private Mock<ICommandInvoker> _commandInvoker;
+    private Mock<ICacheManager> _cacheManager;
+    private Mock<ICacheDb> _cacheDb;
+    private PackageURL _packageUrl;
+    private Package _alphaPackage;
+    private Package _betaPackage;
+    private Package _gammaPackage;
+    private List<Package> _expectedPackages;
+    private AgentReader _reader;
+
+    public AgentReaderTest()
+    {
+        _agentExecutable = "/path/to/agent";
+        _commandInvoker = new Mock<ICommandInvoker>();
+        _cacheManager = new Mock<ICacheManager>();
+        _cacheDb = new Mock<ICacheDb>();
+        _packageUrl = new PackageURL("pkg:maven/org.example/package");
+        _alphaPackage = new Package(
+            new PackageURL("pkg:maven/org.example/package@1"),
+            new DateTimeOffset(2021, 12, 13, 14, 15, 16, TimeSpan.FromHours(-4)));
+        _betaPackage = new Package(
+            new PackageURL("pkg:maven/org.example/package@2"),
+            _alphaPackage.ReleasedAt.AddMonths(1));
+        _gammaPackage = new Package(
+            new PackageURL("pkg:maven/org.example/package@3"),
+            _alphaPackage.ReleasedAt.AddMonths(2));
+        _expectedPackages = new List<Package>
+        {
+            _alphaPackage,
+            _betaPackage,
+            _gammaPackage
+        };
+
+        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _reader = new AgentReader(_cacheManager.Object, _commandInvoker.Object, _agentExecutable);
+    }
+
     [Fact]
     public void RetrieveReleaseHistoryWritesToCache()
     {
         var agentExecutable = "/path/to/agent";
-        var commandInvoker = new Mock<ICommandInvoker>();
-        var cacheManager = new Mock<ICacheManager>();
-        var cacheDb = new Mock<ICacheDb>();
-        var packageUrl = new PackageURL("pkg:maven/org.example/package");
-
-        var alphaPackage = new Package(
-            new PackageURL("pkg:maven/org.example/package@1"),
-            new DateTimeOffset(2021, 12, 13, 14, 15, 16, TimeSpan.FromHours(-4)));
-        var betaPackage = new Package(
-            new PackageURL("pkg:maven/org.example/package@2"),
-            alphaPackage.ReleasedAt.AddMonths(1));
-        var gammaPackage = new Package(
-            new PackageURL("pkg:maven/org.example/package@3"),
-            alphaPackage.ReleasedAt.AddMonths(2));
-
-        var expectedPackages = new List<Package>
-        {
-            alphaPackage,
-            betaPackage,
-            gammaPackage
-        };
 
         var commandResponse =
-            $"{alphaPackage.PackageUrl.Version}\t{alphaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n" +
-            $"{betaPackage.PackageUrl.Version}\t{betaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n" +
-            $"{gammaPackage.PackageUrl.Version}\t{gammaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n";
+            $"{_alphaPackage.PackageUrl.Version}\t{_alphaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n" +
+            $"{_betaPackage.PackageUrl.Version}\t{_betaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n" +
+            $"{_gammaPackage.PackageUrl.Version}\t{_gammaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n";
 
-        commandInvoker.Setup(mock => mock.Run(agentExecutable,
-            $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".")).Returns(commandResponse);
+        _commandInvoker.Setup(mock => mock.Run(agentExecutable,
+            $"retrieve-release-history {_packageUrl.FormatWithoutVersion()}", ".")).Returns(commandResponse);
 
         var initialCachedPackages = new List<CachedPackage>();
 
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(packageUrl)).Returns(initialCachedPackages);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(_packageUrl)).Returns(initialCachedPackages);
 
-        var reader = new AgentReader(cacheManager.Object, commandInvoker.Object, agentExecutable);
+        var reader = new AgentReader(_cacheManager.Object, _commandInvoker.Object, agentExecutable);
 
-        var retrievedPackages = reader.RetrieveReleaseHistory(packageUrl);
+        var retrievedPackages = reader.RetrieveReleaseHistory(_packageUrl);
 
-        Assert.Equal(expectedPackages, retrievedPackages);
+        Assert.Equal(_expectedPackages, retrievedPackages);
 
-        cacheDb.Verify(mock => mock.StoreCachedReleaseHistory(It.Is<List<CachedPackage>>(value =>
+        _cacheDb.Verify(mock => mock.StoreCachedReleaseHistory(It.Is<List<CachedPackage>>(value =>
             value.Count == 3 &&
-            value[0].ToPackage().Equals(alphaPackage) &&
-            value[1].ToPackage().Equals(betaPackage) &&
-            value[2].ToPackage().Equals(gammaPackage)
+            value[0].ToPackage().Equals(_alphaPackage) &&
+            value[1].ToPackage().Equals(_betaPackage) &&
+            value[2].ToPackage().Equals(_gammaPackage)
         )));
     }
 
     [Fact]
     public void RetrieveReleaseHistoryReadsFromCache()
     {
-        var agentExecutable = "/path/to/agent";
-        var commandInvoker = new Mock<ICommandInvoker>();
-        var cacheManager = new Mock<ICacheManager>();
-        var cacheDb = new Mock<ICacheDb>();
-        var packageUrl = new PackageURL("pkg:maven/org.example/package");
-
-        var alphaPackage = new Package(
-            new PackageURL("pkg:maven/org.example/package@1"),
-            new DateTimeOffset(2021, 12, 13, 14, 15, 16, TimeSpan.FromHours(-4)));
-        var betaPackage = new Package(
-            new PackageURL("pkg:maven/org.example/package@2"),
-            alphaPackage.ReleasedAt.AddMonths(1));
-        var gammaPackage = new Package(
-            new PackageURL("pkg:maven/org.example/package@3"),
-            alphaPackage.ReleasedAt.AddMonths(2));
-
-        var expectedPackages = new List<Package>
-        {
-            alphaPackage,
-            betaPackage,
-            gammaPackage
-        };
-
         var initialCachedPackages = new List<CachedPackage>
         {
-            new(alphaPackage),
-            new(betaPackage),
-            new(gammaPackage)
+            new(_alphaPackage),
+            new(_betaPackage),
+            new(_gammaPackage)
         };
 
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(packageUrl)).Returns(initialCachedPackages);
+        _cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(_packageUrl)).Returns(initialCachedPackages);
 
-        var reader = new AgentReader(cacheManager.Object, commandInvoker.Object, agentExecutable);
+        var retrievedPackages = _reader.RetrieveReleaseHistory(_packageUrl);
 
-        var retrievedPackages = reader.RetrieveReleaseHistory(packageUrl);
-
-        Assert.Equal(expectedPackages, retrievedPackages);
+        Assert.Equal(_expectedPackages, retrievedPackages);
     }
 }
