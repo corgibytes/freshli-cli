@@ -15,7 +15,6 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
     public readonly int HistoryStopPointId;
     public readonly string ManifestPath;
 
-    private static readonly ConcurrentDictionary<string, object> s_lockPoints = new();
     private static readonly ConcurrentDictionary<string, Mutex> s_historyPointMutexes = new();
 
     public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
