@@ -32,21 +32,6 @@ public partial class AddCachedManifestPathsTable : Migration
                     onDelete: ReferentialAction.Cascade);
             });
 
-        migrationBuilder.CreateTable(
-            name: "CachedPackages",
-            columns: table => new
-            {
-                Id = table.Column<int>(type: "INTEGER", nullable: false)
-                    .Annotation("Sqlite:Autoincrement", true),
-                PackageUrlWithoutVersion = table.Column<string>(type: "TEXT", nullable: false),
-                Version = table.Column<string>(type: "TEXT", nullable: false),
-                ReleasedAt = table.Column<DateTimeOffset>(type: "TEXT", nullable: false)
-            },
-            constraints: table =>
-            {
-                table.PrimaryKey("PK_CachedPackages", x => x.Id);
-            });
-
         migrationBuilder.CreateIndex(
             name: "IX_CachedManifestPaths_HistoryStopPointId",
             table: "CachedManifestPaths",
@@ -62,17 +47,6 @@ public partial class AddCachedManifestPathsTable : Migration
             table: "CachedManifestPaths",
             column: "Id",
             unique: true);
-
-        migrationBuilder.CreateIndex(
-            name: "IX_CachedPackages_Id",
-            table: "CachedPackages",
-            column: "Id",
-            unique: true);
-
-        migrationBuilder.CreateIndex(
-            name: "IX_CachedPackages_PackageUrlWithoutVersion",
-            table: "CachedPackages",
-            column: "PackageUrlWithoutVersion");
     }
 
     /// <inheritdoc />
@@ -80,8 +54,5 @@ public partial class AddCachedManifestPathsTable : Migration
     {
         migrationBuilder.DropTable(
             name: "CachedManifestPaths");
-
-        migrationBuilder.DropTable(
-            name: "CachedPackages");
     }
 }
