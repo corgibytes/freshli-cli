@@ -21,10 +21,10 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     [JsonProperty] private ICacheManager CacheManager { get; }
     [JsonProperty] private IConfiguration Configuration { get; }
 
-    public CachedGitSource FindOneByHash(string hash)
+    public CachedGitSource FindOneByRepositoryId(string repositoryId)
     {
         using var db = new CacheContext(Configuration.CacheDir);
-        var entry = db.CachedGitSources.Find(hash);
+        var entry = db.CachedGitSources.Find(repositoryId);
         if (entry == null)
         {
             throw new CacheException(CliOutput.CachedGitSourceRepository_No_Repository_Found_In_Cache);
@@ -45,7 +45,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         // Ensure the cache directory is ready for use.
         CacheManager.Prepare();
 
-        // Generate a unique hash for the repository based on its URL and branch.
+        // Generate a unique repositoryId for the repository based on its URL and branch.
         var hash = new CachedGitSourceId(url, branch).Id;
 
         using var db = new CacheContext(Configuration.CacheDir);
