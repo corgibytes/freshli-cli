@@ -12,7 +12,6 @@ Here are some things to keep in mind when viewing the graph:
 
 ```mermaid
 flowchart TD;
-    PrepareCacheActivity --> CachePreparedEvent
     AgentsDetectedEvent
     DetectAgentsActivity --> AgentsDetectedEvent
     NoAgentsDetectedFailureEvent -.-> FailureEvent
@@ -21,10 +20,10 @@ flowchart TD;
     AnalysisFailureLoggedEvent
     AnalysisIdNotFoundEvent -.-> FailureEvent
     AnalysisIdNotFoundEvent
-    AnalysisStartedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
-    AnalysisStartedEvent --> CloneGitRepositoryActivity
-    CacheWasNotPreparedEvent -.-> ErrorEvent
-    CacheWasNotPreparedEvent --> PrepareCacheActivity
+    AnalysisStartedEvent --> CreateAnalysisApiActivity
+    CacheDoesNotExistEvent -.-> ErrorEvent
+    CacheDoesNotExistEvent --> PrepareCacheForAnalysisActivity
+    CachePreparedForAnalysisEvent --> RestartAnalysisActivity
     DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
@@ -35,23 +34,32 @@ flowchart TD;
     InvalidHistoryIntervalEvent
     LogAnalysisFailureActivity --> AnalysisFailureLoggedEvent
     ManifestDetectedEvent --> GenerateBillOfMaterialsActivity
+    PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
     RestartAnalysisActivity -.-> StartAnalysisActivityBase
     RestartAnalysisActivity --> UnableToRestartAnalysisEvent
     StartAnalysisActivity -.-> StartAnalysisActivityBase
-    StartAnalysisActivity --> CacheWasNotPreparedEvent
+    StartAnalysisActivity --> CacheDoesNotExistEvent
     StartAnalysisActivityBase --> AnalysisStartedEvent
     StartAnalysisActivityBase --> InvalidHistoryIntervalEvent
     UnableToRestartAnalysisEvent -.-> FailureEvent
     UnableToRestartAnalysisEvent
-    BillOfMaterialsGeneratedEvent --> ComputeLibYearActivity
+    UnhandledExceptionEvent -.-> FailureEvent
+    UnhandledExceptionEvent
+    BillOfMaterialsGeneratedEvent --> DeterminePackagesFromBomActivity
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
     CacheDestroyedEvent
     CacheDestroyFailedEvent
+    CachePreparedEvent
     DestroyCacheActivity --> CacheDestroyedEvent
     DestroyCacheActivity --> CacheDestroyFailedEvent
-    CachePreparedEvent --> RestartAnalysisActivity
-    ComputeLibYearActivity --> LibYearComputedEvent
-    StartDoctorActivity
+    PrepareCacheActivity --> CachePreparedEvent
+    AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
+    AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
+    ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
+    ApiPackageLibYearCreatedEvent
+    CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
+    CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
+    CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
@@ -68,10 +76,15 @@ flowchart TD;
     VerifyGitRepositoryInLocalDirectoryActivity --> GitRepositoryInLocalDirectoryVerifiedEvent
     CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
     ComputeHistoryActivity --> AnalysisIdNotFoundEvent
+    ComputeHistoryActivity --> InvalidHistoryIntervalEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
-    HistoryIntervalStopFoundEvent --> CheckoutHistoryActivity
+    HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
-    LibYearComputedEvent
+    ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
+    DeterminePackagesFromBomActivity --> PackageFoundEvent
+    LibYearComputationForBomStartedEvent
+    LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
+    PackageFoundEvent --> ComputeLibYearForPackageActivity
     LoadServiceProviderActivity
     ThrowExceptionActivity
 

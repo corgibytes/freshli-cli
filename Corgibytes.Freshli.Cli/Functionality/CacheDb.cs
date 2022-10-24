@@ -14,18 +14,39 @@ public class CacheDb : ICacheDb, IDisposable
 
     public Guid SaveAnalysis(CachedAnalysis analysis)
     {
-        var savedEntity = Db.CachedAnalyses.Add(analysis);
+        if (analysis.Id == Guid.Empty)
+        {
+            var savedEntity = Db.CachedAnalyses.Add(analysis);
+            Db.SaveChanges();
+            return savedEntity.Entity.Id;
+        }
+
+        Db.CachedAnalyses.Update(analysis);
         Db.SaveChanges();
-        return savedEntity.Entity.Id;
+        return analysis.Id;
     }
 
     public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
     public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id) => Db.CachedGitSources.Find(id.Id);
 
-    public void AddHistoryIntervalStop(CachedHistoryIntervalStop historyIntervalStop)
+    public CachedHistoryStopPoint? RetrieveHistoryStopPoint(int historyStopPointId) =>
+        Db.CachedHistoryStopPoints.Find(historyStopPointId);
+
+    public int AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint)
     {
-        Db.CachedHistoryIntervalStops.Add(historyIntervalStop);
+        var savedEntity = Db.CachedHistoryStopPoints.Add(historyStopPoint);
         Db.SaveChanges();
+        return savedEntity.Entity.Id;
+    }
+
+    public CachedPackageLibYear? RetrievePackageLibYear(int packageLibYearId) =>
+        Db.CachedPackageLibYears.Find(packageLibYearId);
+
+    public int AddPackageLibYear(CachedPackageLibYear packageLibYear)
+    {
+        var savedEntity = Db.CachedPackageLibYears.Add(packageLibYear);
+        Db.SaveChanges();
+        return savedEntity.Entity.Id;
     }
 
     public void Dispose()

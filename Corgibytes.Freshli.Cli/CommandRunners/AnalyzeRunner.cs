@@ -1,7 +1,6 @@
 using System;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
-using System.Linq;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -54,23 +53,12 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             exitStatus = 1;
         });
 
-        _eventEngine.On<AnalysisStartedEvent>(startEvent =>
+        _eventEngine.On<AnalysisApiCreatedEvent>(createdEvent =>
         {
             context.Console.Out.WriteLine(
                 "Results will be available at: " +
-                _resultsApi.GetResultsUrl(startEvent.AnalysisId)
+                _resultsApi.GetResultsUrl(createdEvent.ApiAnalysisId)
             );
-        });
-
-        _eventEngine.On<LibYearComputedEvent>(computedEvent =>
-        {
-            var libYearSummed = 0.0;
-            if (computedEvent.LibYearPackages != null)
-            {
-                libYearSummed = computedEvent.LibYearPackages.Sum(libYear => libYear.LibYear);
-            }
-
-            context.Console.Out.WriteLine($"Libyear at {computedEvent.AnalysisLocation?.CommitId} is {libYearSummed}");
         });
 
         _activityEngine.Wait();

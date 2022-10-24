@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Hangfire;
+using Hangfire.Common;
 using Hangfire.Storage.Monitoring;
 using Microsoft.Extensions.Logging;
 
@@ -54,7 +56,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         var shouldWait = true;
         while (shouldWait)
         {
-            Thread.Sleep(10);
+            Thread.Sleep(500);
 
             var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
             var length = statistics.Processing + statistics.Enqueued;
@@ -101,7 +103,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private void LogWaitingStatus(StatisticsDto statistics, long length, bool localIsEventFiring,
         bool localIsActivityDispatching) =>
-        _logger.LogDebug(
+        _logger.LogTrace(
             "Queue length: {QueueLength} (" +
             "Processing: {JobsProcessing}, " +
             "Enqueued: {JobsEnqueued}, " +
@@ -132,10 +134,40 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleActivity(IApplicationActivity activity) => activity.Handle(this);
+    public void HandleActivity(IApplicationActivity activity)
+    {
+        try
+        {
+            _logger.LogDebug(
+                "Handling activity {ActivityType}: {Activity}",
+                activity.GetType(),
+                SerializationHelper.Serialize(activity)
+            );
+            activity.Handle(this);
+        }
+        catch (Exception error)
+        {
+            Fire(new UnhandledExceptionEvent(error));
+        }
+    }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleEvent(IApplicationEvent appEvent) => appEvent.Handle(this);
+    public void HandleEvent(IApplicationEvent appEvent)
+    {
+        try
+        {
+            _logger.LogDebug(
+                "Handling activity {AppEventType}: {AppEvent}",
+                appEvent.GetType(),
+                SerializationHelper.Serialize(appEvent)
+            );
+            appEvent.Handle(this);
+        }
+        catch (Exception error)
+        {
+            Fire(new UnhandledExceptionEvent(error));
+        }
+    }
 
     // ReSharper disable once MemberCanBePrivate.Global
     public void TriggerHandler(IApplicationEvent applicationEvent)

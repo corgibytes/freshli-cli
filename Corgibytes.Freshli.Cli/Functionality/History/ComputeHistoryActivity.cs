@@ -10,19 +10,18 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class ComputeHistoryActivity : IApplicationActivity
 {
-    public readonly IAnalysisLocation AnalysisLocation;
+    public readonly IHistoryStopData HistoryStopData;
 
     public Guid AnalysisId;
 
-    public ComputeHistoryActivity(Guid analysisId, IAnalysisLocation analysisLocation)
+    public ComputeHistoryActivity(Guid analysisId, IHistoryStopData historyStopData)
     {
         AnalysisId = analysisId;
-        AnalysisLocation = analysisLocation;
+        HistoryStopData = historyStopData;
     }
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
@@ -38,37 +37,43 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         if (cachedAnalysis.RevisionHistoryMode.Equals(RevisionHistoryMode.OnlyLatestRevision))
         {
-            historyIntervalStops = computeHistoryService.ComputeLatestOnly(AnalysisLocation);
+            historyIntervalStops = computeHistoryService.ComputeLatestOnly(HistoryStopData);
         }
         else if (cachedAnalysis.UseCommitHistory.Equals(CommitHistory.AtInterval))
         {
-            historyIntervalStops = computeHistoryService
-                .ComputeWithHistoryInterval(AnalysisLocation, cachedAnalysis.HistoryInterval, DateTimeOffset.Now);
+            try
+            {
+                historyIntervalStops = computeHistoryService
+                    .ComputeWithHistoryInterval(HistoryStopData, cachedAnalysis.HistoryInterval, DateTimeOffset.Now);
+            }
+            catch (InvalidHistoryIntervalException exception)
+            {
+                eventClient.Fire(new InvalidHistoryIntervalEvent { ErrorMessage = exception.Message });
+                return;
+            }
         }
         else
         {
-            historyIntervalStops = computeHistoryService.ComputeCommitHistory(AnalysisLocation);
+            historyIntervalStops = computeHistoryService.ComputeCommitHistory(HistoryStopData);
         }
 
+        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         foreach (var historyIntervalStop in historyIntervalStops)
         {
-            cacheDb.AddHistoryIntervalStop(
-                new CachedHistoryIntervalStop
+            var historyStop = new HistoryStopData(configuration, HistoryStopData.RepositoryId,
+                historyIntervalStop.GitCommitIdentifier, historyIntervalStop.AsOfDateTime);
+
+            var historyStopPointId = cacheDb.AddHistoryStopPoint(
+                new CachedHistoryStopPoint
                 {
                     CachedAnalysisId = AnalysisId,
-                    GitCommitId = historyIntervalStop.GitCommitIdentifier,
-                    GitCommitDate = historyIntervalStop.CommittedAt
+                    RepositoryId = historyStop.RepositoryId,
+                    LocalPath = historyStop.Path,
+                    GitCommitId = historyStop.CommitId!,
+                    AsOfDateTime = historyStop.AsOfDateTime
                 });
 
-            var historyStopLocation =
-                new AnalysisLocation(configuration, AnalysisLocation.RepositoryId,
-                    historyIntervalStop.GitCommitIdentifier);
-
-            eventClient.Fire(new HistoryIntervalStopFoundEvent
-            {
-                AnalysisId = AnalysisId,
-                AnalysisLocation = historyStopLocation
-            });
+            eventClient.Fire(new HistoryIntervalStopFoundEvent(AnalysisId, historyStopPointId));
         }
     }
 }

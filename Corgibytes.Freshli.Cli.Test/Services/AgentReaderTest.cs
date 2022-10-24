@@ -35,9 +35,10 @@ public class AgentReaderTest
         SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
 
         // java/pom.xml is detected by detect manifest, see also DetectManifestsUsingProtobuf()
-        var billOfMaterialsPath = reader.ProcessManifest(repositoryLocation + "/java/pom.xml", DateTime.Now);
+        var billOfMaterialsPath =
+            reader.ProcessManifest(Path.Combine(repositoryLocation, "java", "pom.xml"), DateTime.Now);
 
-        Assert.Equal("/tmp/repositories/protobuf/java/target/bom.json", billOfMaterialsPath);
+        Assert.Equal(Path.Combine(repositoryLocation, "java", "target", "bom.json"), billOfMaterialsPath);
 
         // delete cloned files
         checkoutDirectory.Delete(true);
@@ -47,7 +48,7 @@ public class AgentReaderTest
     public void AgentReaderReturnsEmptyListWhenNoManifestsFound()
     {
         var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);
-        var reader = new AgentReader("freshli-agent-java");
+        var reader = new AgentReader(new Invoke(), "freshli-agent-java");
         var repositoryLocation = Path.Combine(checkoutLocation, "invalid_repository");
 
         var actualManifests = reader.DetectManifests(repositoryLocation);
@@ -61,11 +62,11 @@ public class AgentReaderTest
         var checkoutLocation = CreateCheckoutLocation(out checkoutDirectory);
 
         // clone https://github.com/protocolbuffers/protobuf to a temp location
-        Invoke.Command("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
+        new Invoke().Command("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
 
         repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
 
-        reader = new AgentReader("freshli-agent-java");
+        reader = new AgentReader(new Invoke(), "freshli-agent-java");
     }
 
     private static string CreateCheckoutLocation(out DirectoryInfo checkoutDirectory)

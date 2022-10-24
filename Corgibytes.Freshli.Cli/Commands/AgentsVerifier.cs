@@ -10,13 +10,17 @@ namespace Corgibytes.Freshli.Cli.Commands;
 
 public class AgentsVerifier
 {
+    private readonly IInvoke _invoke;
+
+    public AgentsVerifier(IInvoke invoke) => _invoke = invoke;
+
     public void RunAgentsVerify(string agentFileAndPath, string argument, string cacheDir, string languageName)
     {
         var startTime = DateTime.Now;
         languageName = string.IsNullOrEmpty(languageName)
             ? Path.DirectorySeparatorChar + "repositories"
             : Path.DirectorySeparatorChar + languageName;
-        var validatingRepositoriesUrl = Invoke.Command(agentFileAndPath, argument, ".").TrimEnd('\n', '\r');
+        var validatingRepositoriesUrl = _invoke.Command(agentFileAndPath, argument, ".").TrimEnd('\n', '\r');
         if (validatingRepositoriesUrl.Contains('\n'))
         {
             foreach (var url in validatingRepositoriesUrl.Split("\n"))
@@ -24,7 +28,7 @@ public class AgentsVerifier
                 try
                 {
                     var pos = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-                    Invoke.Command("git",
+                    _invoke.Command("git",
                         $"clone {url} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{url.Trim().Substring(pos, url.Length - pos)}",
                         cacheDir);
                     RunDetectManfiest(agentFileAndPath, "detect-manifests", url, cacheDir, startTime);
@@ -40,7 +44,7 @@ public class AgentsVerifier
             try
             {
                 var pos = validatingRepositoriesUrl.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-                Invoke.Command("git",
+                _invoke.Command("git",
                     $"clone {validatingRepositoriesUrl} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{validatingRepositoriesUrl.Trim().Substring(pos, validatingRepositoriesUrl.Length - pos)}",
                     cacheDir);
                 RunDetectManfiest(agentFileAndPath, "detect-manifests", validatingRepositoriesUrl,
@@ -53,10 +57,10 @@ public class AgentsVerifier
         }
     }
 
-    private static void RunDetectManfiest(string agentFileAndPath, string argument, string url, string directory,
+    private void RunDetectManfiest(string agentFileAndPath, string argument, string url, string directory,
         DateTime startDate)
     {
-        var detectManifestOutput = Invoke.Command(agentFileAndPath, argument + $" {url}", ".");
+        var detectManifestOutput = _invoke.Command(agentFileAndPath, argument + $" {url}", ".");
 
         if (detectManifestOutput.ToLower().Contains("gemfile"))
         {
@@ -71,10 +75,10 @@ public class AgentsVerifier
         }
     }
 
-    private static void RunProcessManifest(string agentFileAndPath, string argument, string url,
+    private void RunProcessManifest(string agentFileAndPath, string argument, string url,
         string workingDirectory, string detectManifestFiles, DateTime startDate)
     {
-        var processManifestOutput = Invoke.Command(agentFileAndPath,
+        var processManifestOutput = _invoke.Command(agentFileAndPath,
             argument + " " + detectManifestFiles + " " + DateTimeOffset.Now.ToString("o"), workingDirectory);
         var processDetectManifestFiles = DetectManifestFileCount(detectManifestFiles);
         var processManifestFiles = VerifyFiles(processManifestOutput);
@@ -82,7 +86,7 @@ public class AgentsVerifier
         try
         {
             var pos = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-            var gitStatus = Invoke.Command("git", "status",
+            var gitStatus = _invoke.Command("git", "status",
                 workingDirectory + Path.DirectorySeparatorChar + url.Trim().Substring(pos, url.Length - pos));
             if (!gitStatus.Contains("working tree clean"))
             {
@@ -109,9 +113,9 @@ public class AgentsVerifier
         }
     }
 
-    private static void RunValidatingPackageUrls(string agentFileAndPath, string argument)
+    private void RunValidatingPackageUrls(string agentFileAndPath, string argument)
     {
-        var processManifestOutput = Invoke.Command(agentFileAndPath, argument, ".").TrimEnd('\n');
+        var processManifestOutput = _invoke.Command(agentFileAndPath, argument, ".").TrimEnd('\n');
         if (processManifestOutput.Contains('\n'))
         {
             foreach (var output in processManifestOutput.Split("\n"))

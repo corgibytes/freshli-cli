@@ -1,5 +1,6 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality.Analysis;
+using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
@@ -22,27 +23,34 @@ public class GenerateBillOfMaterialsActivityTest
         var agentManager = new Mock<IAgentManager>();
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(javaAgentReader.Object);
 
+        var cacheManager = new Mock<ICacheManager>();
+        var cacheDb = new Mock<ICacheDb>();
+        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = "/path/to/repository" };
+
+        var historyStopPointId = 29;
+        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         // Act
-        var analysisLocation = new Mock<IAnalysisLocation>();
-        analysisLocation.Setup(mock => mock.Path).Returns("/working/directory");
-
         var analysisId = Guid.NewGuid();
         var activity =
-            new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, analysisLocation.Object,
+            new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopPointId,
                 "/path/to/manifest");
         activity.Handle(eventEngine.Object);
 
         // Assert
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<BillOfMaterialsGeneratedEvent>(appEvent =>
+                appEvent.AgentExecutablePath == agentExecutablePath &&
                 appEvent.AnalysisId == analysisId &&
-                appEvent.AnalysisLocation == analysisLocation.Object &&
+                appEvent.HistoryStopPointId == historyStopPointId &&
                 appEvent.PathToBillOfMaterials == "/path/to/bill-of-materials")));
     }
 }
