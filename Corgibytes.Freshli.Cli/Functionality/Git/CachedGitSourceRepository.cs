@@ -34,9 +34,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
     public void Save(CachedGitSource cachedGitSource)
     {
-        using var db = new CacheContext(Configuration.CacheDir);
-        db.CachedGitSources.Add(cachedGitSource);
-        db.SaveChanges();
+        CacheManager.GetCacheDb().AddCachedGitSource(cachedGitSource);
     }
 
     public CachedGitSource CloneOrPull(string url, string? branch)
@@ -44,7 +42,6 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         // Generate a unique repositoryId for the repository based on its URL and branch.
         var id = new CachedGitSourceId(url, branch);
 
-        using var db = new CacheContext(Configuration.CacheDir);
         var existingCachedGitSource = CacheManager.GetCacheDb().RetrieveCachedGitSource(id);
         if (existingCachedGitSource is not null)
         {
@@ -54,8 +51,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         var directory = CacheManager.GetDirectoryInCache(new[] { "repositories", id.Id });
 
         var cachedGitSource = new CachedGitSource(id.Id, url, branch, directory.FullName);
-        db.CachedGitSources.Add(cachedGitSource);
-        db.SaveChanges();
+        CacheManager.GetCacheDb().AddCachedGitSource(cachedGitSource);
 
         if (directory.GetFiles().Any() || directory.GetDirectories().Any())
         {
