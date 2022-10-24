@@ -10,41 +10,72 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class PrepareCacheForAnalysisActivityTest
 {
-    [Fact]
-    public void VerifyItFiresCachePreparedEvent()
+    private Mock<IApplicationEventEngine> _eventClient;
+    private Mock<IServiceProvider> _serviceProvider;
+    private Mock<ICacheManager> _cacheManager;
+    private string _historyInterval;
+    private string _repositoryBranch;
+    private string _repositoryUrl;
+    private PrepareCacheForAnalysisActivity _activity;
+
+    public PrepareCacheForAnalysisActivityTest()
     {
-        var eventClient = new Mock<IApplicationEventEngine>();
-        var serviceProvider = new Mock<IServiceProvider>();
-        var configuration = new Mock<IConfiguration>();
-        var cacheManager = new Mock<ICacheManager>();
-        var cacheDb = new Mock<ICacheDb>();
+        _eventClient = new Mock<IApplicationEventEngine>();
+        _serviceProvider = new Mock<IServiceProvider>();
+        _cacheManager = new Mock<ICacheManager>();
 
-        eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
-        configuration.Setup(mock => mock.CacheDir).Returns("example");
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(configuration.Object);
+        _historyInterval = "2y";
+        _repositoryBranch = "trunk";
+        _repositoryUrl = "https://repository.com";
 
-        var historyInterval = "2y";
-        var repositoryBranch = "trunk";
-        var repositoryUrl = "https://repository.com";
+        _eventClient.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
 
-        var activity = new PrepareCacheForAnalysisActivity
+        _activity = new PrepareCacheForAnalysisActivity
         {
-            HistoryInterval = historyInterval,
-            RepositoryBranch = repositoryBranch,
-            RepositoryUrl = repositoryUrl,
+            HistoryInterval = _historyInterval,
+            RepositoryBranch = _repositoryBranch,
+            RepositoryUrl = _repositoryUrl,
             RevisionHistoryMode = RevisionHistoryMode.OnlyLatestRevision,
             UseCommitHistory = CommitHistory.AtInterval
         };
+    }
 
-        activity.Handle(eventClient.Object);
+    [Fact]
+    public void VerifyItFiresCachePreparedEventWhenPrepareSucceeds()
+    {
+        _cacheManager.Setup(mock => mock.Prepare()).Returns(true);
 
-        eventClient.Verify(mock => mock.Fire(It.Is<CachePreparedForAnalysisEvent>(value =>
-            value.HistoryInterval == historyInterval &&
-            value.RepositoryBranch == repositoryBranch &&
-            value.RepositoryUrl == repositoryUrl &&
+        _activity.Handle(_eventClient.Object);
+
+        _eventClient.Verify(mock => mock.Fire(It.Is<CachePreparedForAnalysisEvent>(value =>
+            value.HistoryInterval == _historyInterval &&
+            value.RepositoryBranch == _repositoryBranch &&
+            value.RepositoryUrl == _repositoryUrl &&
             value.RevisionHistoryMode == RevisionHistoryMode.OnlyLatestRevision &&
             value.UseCommitHistory == CommitHistory.AtInterval
         )));
     }
+
+    [Fact]
+    public void VerifyItFiresCachePreparedEventWhenPrepareFails()
+    {
+        _cacheManager.Setup(mock => mock.Prepare()).Returns(false);
+
+        _activity.Handle(_eventClient.Object);
+
+        _eventClient.Verify(mock => mock.Fire(It.IsAny<CachePrepareFailedForAnalysisEvent>()));
+    }
+
+    [Fact]
+    public void VerifyItFiresCachePreparedEventWhenPrepareThrowsAnException()
+    {
+        _cacheManager.Setup(mock => mock.Prepare()).Throws(new Exception("failure message"));
+
+        _activity.Handle(_eventClient.Object);
+
+        _eventClient.Verify(mock => mock.Fire(It.Is<CachePrepareFailedForAnalysisEvent>(value =>
+            value.ErrorMessage == "failure message")));
+    }
+
 }

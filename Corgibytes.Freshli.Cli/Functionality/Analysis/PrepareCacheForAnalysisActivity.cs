@@ -30,27 +30,32 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
 
     public void Handle(IApplicationEventEngine eventClient)
     {
-        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
-        var cacheManager = new CacheManager(configuration);
-        Console.Out.WriteLine(CliOutput.CachePrepareCommandRunner_Run_Preparing_cache, configuration.CacheDir);
+        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+
         try
         {
-            cacheManager.Prepare().ToExitCode();
-            var cacheDb = cacheManager.GetCacheDb();
-            cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
-                UseCommitHistory, RevisionHistoryMode));
-            eventClient.Fire(new CachePreparedForAnalysisEvent
+            if (cacheManager.Prepare())
             {
-                RepositoryUrl = RepositoryUrl,
-                RepositoryBranch = RepositoryBranch,
-                HistoryInterval = HistoryInterval,
-                UseCommitHistory = UseCommitHistory,
-                RevisionHistoryMode = RevisionHistoryMode
-            });
+                eventClient.Fire(new CachePreparedForAnalysisEvent
+                {
+                    RepositoryUrl = RepositoryUrl,
+                    RepositoryBranch = RepositoryBranch,
+                    HistoryInterval = HistoryInterval,
+                    UseCommitHistory = UseCommitHistory,
+                    RevisionHistoryMode = RevisionHistoryMode
+                });
+            }
+            else
+            {
+                eventClient.Fire(new CachePrepareFailedForAnalysisEvent
+                {
+                    ErrorMessage = "Failed to prepare the cache for an unknown reason"
+                });
+            }
         }
-        catch (CacheException e)
+        catch (Exception error)
         {
-            Console.Error.WriteLine(e.Message);
+            eventClient.Fire(new CachePrepareFailedForAnalysisEvent { ErrorMessage = error.Message });
         }
     }
 }
