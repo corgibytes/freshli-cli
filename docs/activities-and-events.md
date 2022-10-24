@@ -24,6 +24,8 @@ flowchart TD;
     CacheDoesNotExistEvent -.-> ErrorEvent
     CacheDoesNotExistEvent --> PrepareCacheForAnalysisActivity
     CachePreparedForAnalysisEvent --> RestartAnalysisActivity
+    CachePrepareFailedForAnalysisEvent -.-> FailureEvent
+    CachePrepareFailedForAnalysisEvent
     DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
@@ -35,6 +37,7 @@ flowchart TD;
     LogAnalysisFailureActivity --> AnalysisFailureLoggedEvent
     ManifestDetectedEvent --> GenerateBillOfMaterialsActivity
     PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
+    PrepareCacheForAnalysisActivity --> CachePrepareFailedForAnalysisEvent
     RestartAnalysisActivity -.-> StartAnalysisActivityBase
     RestartAnalysisActivity --> UnableToRestartAnalysisEvent
     StartAnalysisActivity -.-> StartAnalysisActivityBase
@@ -50,9 +53,12 @@ flowchart TD;
     CacheDestroyedEvent
     CacheDestroyFailedEvent
     CachePreparedEvent
+    CachePrepareFailedEvent -.-> FailureEvent
+    CachePrepareFailedEvent
     DestroyCacheActivity --> CacheDestroyedEvent
     DestroyCacheActivity --> CacheDestroyFailedEvent
     PrepareCacheActivity --> CachePreparedEvent
+    PrepareCacheActivity --> CachePrepareFailedEvent
     AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
