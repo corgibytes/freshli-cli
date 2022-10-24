@@ -1,4 +1,5 @@
 using System;
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
@@ -27,7 +28,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
-    public override int Run(CacheDestroyCommandOptions options, InvocationContext context)
+    public override int Run(CacheDestroyCommandOptions options, IConsole console)
     {
         Configuration.CacheDir = options.CacheDir;
 
@@ -37,9 +38,9 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
 
         // Unless the --force flag is passed, prompt the user whether they want
         // to destroy the cache
-        if (!options.Force && !Confirm(strConfirmDestroy, context))
+        if (!options.Force && !Confirm(strConfirmDestroy, console))
         {
-            context.Console.Out.WriteLine(
+            console.Out.WriteLine(
                 CliOutput.CacheDestroyCommandRunner_Run_Abort);
             return true.ToExitCode();
         }
@@ -47,21 +48,21 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
         var strDestroyingCache = string.Format(
             CliOutput.CacheDestroyCommandRunner_Run_Destroying,
             options.CacheDir);
-        context.Console.Out.WriteLine(strDestroyingCache);
+        console.Out.WriteLine(strDestroyingCache);
 
         ActivityEngine.Dispatch(new DestroyCacheActivity());
 
-        var exitCode = WaitForCacheDestroyEvents(context);
+        var exitCode = WaitForCacheDestroyEvents(console);
         return exitCode;
     }
 
-    private int WaitForCacheDestroyEvents(InvocationContext context)
+    private int WaitForCacheDestroyEvents(IConsole console)
     {
         var exitCode = true.ToExitCode();
 
         EventEngine.On<CacheDestroyFailedEvent>(destroyEvent =>
         {
-            context.Console.Error.WriteLine(destroyEvent.ResultMessage);
+            console.Error.WriteLine(destroyEvent.ResultMessage);
             exitCode = false.ToExitCode();
         });
 
