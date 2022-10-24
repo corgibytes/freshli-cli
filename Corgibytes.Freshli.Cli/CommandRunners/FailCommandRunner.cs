@@ -1,4 +1,5 @@
 using System;
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -16,7 +17,7 @@ public class FailCommandRunner : CommandRunner<FailCommand, EmptyCommandOptions>
 
     private IApplicationActivityEngine ActivityEngine { get; }
 
-    public override int Run(EmptyCommandOptions options, InvocationContext context)
+    public override int Run(EmptyCommandOptions options, IConsole console)
     {
         ActivityEngine.Dispatch(new ThrowExceptionActivity());
         ActivityEngine.Wait();

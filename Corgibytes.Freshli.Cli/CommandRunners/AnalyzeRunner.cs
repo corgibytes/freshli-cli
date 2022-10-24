@@ -1,4 +1,5 @@
 using System;
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
@@ -30,7 +31,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _resultsApi = resultsApi;
     }
 
-    public override int Run(AnalyzeCommandOptions options, InvocationContext context)
+    public override int Run(AnalyzeCommandOptions options, IConsole console)
     {
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
@@ -49,13 +50,13 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
 
         _eventEngine.On<AnalysisFailureLoggedEvent>(analysisFailure =>
         {
-            context.Console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
+            console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
             exitStatus = 1;
         });
 
         _eventEngine.On<AnalysisApiCreatedEvent>(createdEvent =>
         {
-            context.Console.Out.WriteLine(
+            console.Out.WriteLine(
                 "Results will be available at: " +
                 _resultsApi.GetResultsUrl(createdEvent.ApiAnalysisId)
             );

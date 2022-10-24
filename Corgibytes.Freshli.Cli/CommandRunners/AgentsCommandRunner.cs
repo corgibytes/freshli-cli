@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.CommandLine;
 using System.CommandLine.Invocation;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -18,7 +19,7 @@ public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOpti
     {
     }
 
-    public override int Run(EmptyCommandOptions options, InvocationContext context) => 0;
+    public override int Run(EmptyCommandOptions options, IConsole console) => 0;
 }
 
 public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, EmptyCommandOptions>
@@ -36,7 +37,7 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
-    public override int Run(EmptyCommandOptions options, InvocationContext context)
+    public override int Run(EmptyCommandOptions options, IConsole console)
     {
         ActivityEngine.Dispatch(new DetectAgentsActivity(AgentsDetector));
 
@@ -82,7 +83,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
 
     private AgentsVerifier AgentsVerifier { get; }
 
-    public override int Run(AgentsVerifyCommandOptions options, InvocationContext context)
+    public override int Run(AgentsVerifyCommandOptions options, IConsole console)
     {
         var agents = _agentsDetector.Detect();
 
