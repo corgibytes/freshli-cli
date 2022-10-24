@@ -28,6 +28,7 @@ public class CacheDb : ICacheDb, IDisposable
 
     public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
     public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id) => Db.CachedGitSources.Find(id.Id);
+    public void RemoveCachedGitSource(CachedGitSource cachedGitSource) => Db.CachedGitSources.Remove(cachedGitSource);
 
     public void AddCachedGitSource(CachedGitSource cachedGitSource)
     {
