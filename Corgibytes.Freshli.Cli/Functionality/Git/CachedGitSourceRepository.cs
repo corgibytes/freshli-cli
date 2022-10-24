@@ -55,7 +55,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
             return existingCachedGitSource;
         }
 
-        var directory = CacheManager.GetDirectoryInCache(new[] { "repositories", hash });
+        var directory = CacheManager.GetDirectoryInCache("repositories", hash);
 
         var cachedGitSource = new CachedGitSource(hash, url, branch, directory.FullName);
         db.CachedGitSources.Add(cachedGitSource);
