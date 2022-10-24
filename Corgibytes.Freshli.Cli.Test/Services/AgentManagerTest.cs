@@ -10,7 +10,7 @@ public class AgentManagerTest
     [Fact]
     public void GetReader()
     {
-        var manager = new AgentManager(new Invoke());
+        var manager = new AgentManager(new CacheManager(new Configuration(new Environment())), new CommandInvoker());
 
         var reader = manager.GetReader("freshli-agent-java");
 
