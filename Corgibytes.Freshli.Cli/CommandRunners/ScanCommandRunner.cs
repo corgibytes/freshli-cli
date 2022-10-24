@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class ScanCommandRunner : CommandRunner<ScanCommand, ScanCommandOptions>
 {
-    public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner) : base(serviceProvider, runner)
+    public ScanCommandRunner(IServiceProvider serviceProvider, IRunner runner) : base(serviceProvider, runner)
     {
     }
 

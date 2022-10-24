@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
 public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestroyCommandOptions>
 {
-    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, Runner runner,
+    public CacheDestroyCommandRunner(IServiceProvider serviceProvider, IRunner runner,
         IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine, IConfiguration configuration)
         : base(serviceProvider, runner)
     {

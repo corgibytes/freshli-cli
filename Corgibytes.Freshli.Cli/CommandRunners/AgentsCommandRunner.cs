@@ -13,7 +13,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOptions>
 {
-    public AgentsCommandRunner(IServiceProvider serviceProvider, Runner runner)
+    public AgentsCommandRunner(IServiceProvider serviceProvider, IRunner runner)
         : base(serviceProvider, runner)
     {
     }
@@ -23,7 +23,7 @@ public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOpti
 
 public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, EmptyCommandOptions>
 {
-    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, Runner runner, IAgentsDetector agentsDetector,
+    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, IRunner runner, IAgentsDetector agentsDetector,
         IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine)
         : base(serviceProvider, runner)
     {
@@ -72,7 +72,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
 {
     private readonly IAgentsDetector _agentsDetector;
 
-    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsVerifier agentsVerifier,
+    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, IRunner runner, AgentsVerifier agentsVerifier,
         IAgentsDetector agentsDetector)
         : base(serviceProvider, runner)
     {

@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class FailCommandRunner : CommandRunner<FailCommand, EmptyCommandOptions>
 {
-    public FailCommandRunner(IServiceProvider serviceProvider, Runner runner, IApplicationActivityEngine activityEngine)
+    public FailCommandRunner(IServiceProvider serviceProvider, IRunner runner, IApplicationActivityEngine activityEngine)
         : base(serviceProvider, runner) =>
         ActivityEngine = activityEngine;
 
