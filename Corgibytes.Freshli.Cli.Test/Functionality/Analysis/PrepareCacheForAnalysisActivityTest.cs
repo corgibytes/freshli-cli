@@ -10,26 +10,25 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class PrepareCacheForAnalysisActivityTest
 {
-    private Mock<IApplicationEventEngine> _eventClient;
-    private Mock<IServiceProvider> _serviceProvider;
-    private Mock<ICacheManager> _cacheManager;
-    private string _historyInterval;
-    private string _repositoryBranch;
-    private string _repositoryUrl;
-    private PrepareCacheForAnalysisActivity _activity;
+    private readonly Mock<IApplicationEventEngine> _eventClient;
+    private readonly Mock<ICacheManager> _cacheManager;
+    private readonly string _historyInterval;
+    private readonly string _repositoryBranch;
+    private readonly string _repositoryUrl;
+    private readonly PrepareCacheForAnalysisActivity _activity;
 
     public PrepareCacheForAnalysisActivityTest()
     {
         _eventClient = new Mock<IApplicationEventEngine>();
-        _serviceProvider = new Mock<IServiceProvider>();
+        var serviceProvider = new Mock<IServiceProvider>();
         _cacheManager = new Mock<ICacheManager>();
 
         _historyInterval = "2y";
         _repositoryBranch = "trunk";
         _repositoryUrl = "https://repository.com";
 
-        _eventClient.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
-        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
+        _eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
 
         _activity = new PrepareCacheForAnalysisActivity
         {

@@ -13,20 +13,19 @@ namespace Corgibytes.Freshli.Cli.Test.Services;
 [UnitTest]
 public class AgentReaderTest
 {
-    private string _agentExecutable;
-    private Mock<ICommandInvoker> _commandInvoker;
-    private Mock<ICacheManager> _cacheManager;
-    private Mock<ICacheDb> _cacheDb;
-    private PackageURL _packageUrl;
-    private Package _alphaPackage;
-    private Package _betaPackage;
-    private Package _gammaPackage;
-    private List<Package> _expectedPackages;
-    private AgentReader _reader;
+    private readonly Mock<ICommandInvoker> _commandInvoker;
+    private readonly Mock<ICacheManager> _cacheManager;
+    private readonly Mock<ICacheDb> _cacheDb;
+    private readonly PackageURL _packageUrl;
+    private readonly Package _alphaPackage;
+    private readonly Package _betaPackage;
+    private readonly Package _gammaPackage;
+    private readonly List<Package> _expectedPackages;
+    private readonly AgentReader _reader;
 
     public AgentReaderTest()
     {
-        _agentExecutable = "/path/to/agent";
+        const string agentExecutable = "/path/to/agent";
         _commandInvoker = new Mock<ICommandInvoker>();
         _cacheManager = new Mock<ICacheManager>();
         _cacheDb = new Mock<ICacheDb>();
@@ -48,7 +47,7 @@ public class AgentReaderTest
         };
 
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
-        _reader = new AgentReader(_cacheManager.Object, _commandInvoker.Object, _agentExecutable);
+        _reader = new AgentReader(_cacheManager.Object, _commandInvoker.Object, agentExecutable);
     }
 
     [Fact]
