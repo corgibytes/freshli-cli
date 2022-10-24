@@ -42,9 +42,6 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
     public CachedGitSource CloneOrPull(string url, string? branch)
     {
-        // Ensure the cache directory is ready for use.
-        CacheManager.Prepare();
-
         // Generate a unique repositoryId for the repository based on its URL and branch.
         var hash = new CachedGitSourceId(url, branch).Id;
 
