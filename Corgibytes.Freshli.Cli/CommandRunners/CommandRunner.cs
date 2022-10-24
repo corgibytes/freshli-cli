@@ -9,13 +9,13 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 public abstract class CommandRunner<TCommand, TCommandOptions> : ICommandRunner<TCommand, TCommandOptions>
     where TCommand : Command where TCommandOptions : CommandOptions.CommandOptions
 {
-    protected CommandRunner(IServiceProvider serviceProvider, Runner runner)
+    protected CommandRunner(IServiceProvider serviceProvider, IRunner runner)
     {
         Runner = runner;
         Services = serviceProvider;
     }
 
-    protected Runner Runner { get; }
+    protected IRunner Runner { get; }
     protected IServiceProvider Services { get; }
 
     public abstract int Run(TCommandOptions options, InvocationContext context);
