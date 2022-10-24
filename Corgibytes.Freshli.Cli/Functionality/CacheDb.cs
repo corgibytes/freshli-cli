@@ -17,12 +17,12 @@ public class CacheDb : ICacheDb, IDisposable
         if (analysis.Id == Guid.Empty)
         {
             var savedEntity = Db.CachedAnalyses.Add(analysis);
-            Db.SaveChanges();
+            SaveChanges();
             return savedEntity.Entity.Id;
         }
 
         Db.CachedAnalyses.Update(analysis);
-        Db.SaveChanges();
+        SaveChanges();
         return analysis.Id;
     }
 
@@ -33,7 +33,7 @@ public class CacheDb : ICacheDb, IDisposable
     public void AddCachedGitSource(CachedGitSource cachedGitSource)
     {
         Db.CachedGitSources.Add(cachedGitSource);
-        Db.SaveChanges();
+        SaveChanges();
     }
 
     public CachedHistoryStopPoint? RetrieveHistoryStopPoint(int historyStopPointId) =>
@@ -42,7 +42,7 @@ public class CacheDb : ICacheDb, IDisposable
     public int AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint)
     {
         var savedEntity = Db.CachedHistoryStopPoints.Add(historyStopPoint);
-        Db.SaveChanges();
+        SaveChanges();
         return savedEntity.Entity.Id;
     }
 
@@ -52,8 +52,13 @@ public class CacheDb : ICacheDb, IDisposable
     public int AddPackageLibYear(CachedPackageLibYear packageLibYear)
     {
         var savedEntity = Db.CachedPackageLibYears.Add(packageLibYear);
-        Db.SaveChanges();
+        SaveChanges();
         return savedEntity.Entity.Id;
+    }
+
+    private void SaveChanges()
+    {
+        Db.SaveChanges();
     }
 
     public void Dispose()
