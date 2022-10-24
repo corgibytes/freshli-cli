@@ -18,5 +18,10 @@ public class CachedGitSourceId
         Id = stringBuilder.ToString();
     }
 
+    public CachedGitSourceId(string id)
+    {
+        Id = id;
+    }
+
     public string Id { get; }
 }
