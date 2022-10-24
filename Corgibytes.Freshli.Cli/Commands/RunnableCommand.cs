@@ -11,12 +11,12 @@ public abstract class RunnableCommand<TCommand, TCommandOptions> : Command where
     where TCommandOptions : CommandOptions.CommandOptions
 {
     protected RunnableCommand(string name, string? description = null) : base(name, description) =>
-        Handler = CommandHandler.Create<IHost, InvocationContext, TCommandOptions>(Run);
+        Handler = CommandHandler.Create<IHost, IConsole, TCommandOptions>(Run);
 
-    protected virtual int Run(IHost host, InvocationContext context, TCommandOptions options)
+    protected virtual int Run(IHost host, IConsole console, TCommandOptions options)
     {
         using var scope = host.Services.CreateScope();
         var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<TCommand, TCommandOptions>>();
-        return runner.Run(options, context);
+        return runner.Run(options, console);
     }
 }

@@ -18,13 +18,13 @@ public abstract class CommandRunner<TCommand, TCommandOptions> : ICommandRunner<
     protected IRunner Runner { get; }
     protected IServiceProvider Services { get; }
 
-    public abstract int Run(TCommandOptions options, InvocationContext context);
+    public abstract int Run(TCommandOptions options, IConsole console);
 
-    protected static bool Confirm(string message, InvocationContext context, bool defaultYes = false)
+    protected static bool Confirm(string message, IConsole console, bool defaultYes = false)
     {
         // Prompt the user whether they want to proceed
         var prompt = defaultYes ? "[Y/n]" : "[y/N]";
-        context.Console.Out.Write($"{message} {prompt} ");
+        console.Out.Write($"{message} {prompt} ");
         var choice = Console.In.ReadLine();
 
         var yesChoices = new List<string>
