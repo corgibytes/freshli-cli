@@ -1,6 +1,8 @@
 using System;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Git;
+using Microsoft.Data.Sqlite;
+using Polly;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -58,7 +60,20 @@ public class CacheDb : ICacheDb, IDisposable
 
     private void SaveChanges()
     {
-        Db.SaveChanges();
+        void Changes()
+        {
+            Db.SaveChanges();
+        }
+
+        Policy
+            .Handle<SqliteException>()
+            .WaitAndRetry(new[]
+            {
+                TimeSpan.FromSeconds(1),
+                TimeSpan.FromSeconds(2),
+                TimeSpan.FromSeconds(3)
+            })
+            .Execute(Changes);
     }
 
     public void Dispose()
