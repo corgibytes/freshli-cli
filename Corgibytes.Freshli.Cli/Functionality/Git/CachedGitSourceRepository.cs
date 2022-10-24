@@ -115,7 +115,10 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         var directory = new DirectoryInfo(cachedGitSource.LocalPath);
         using var db = new CacheContext(Configuration.CacheDir);
         var entry = CacheManager.GetCacheDb().RetrieveCachedGitSource(new CachedGitSourceId(cachedGitSource.Id));
-        db.CachedGitSources.Remove(entry!);
+        if (entry != null)
+        {
+            CacheManager.GetCacheDb().RemoveCachedGitSource(entry);
+        }
 
         directory.Delete(true);
     }
