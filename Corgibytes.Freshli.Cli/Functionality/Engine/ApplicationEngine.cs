@@ -146,18 +146,29 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         var mutexAcquired = mutex?.WaitOne(MutexWaitTimeoutInMilliseconds) ?? true;
         if (!mutexAcquired)
         {
+            _logger.LogDebug(
+                "[{ThreadId}] Re-Dispatch Activity - {ActivityType}: {Activity}",
+                Thread.CurrentThread.ManagedThreadId,
+                activity.GetType(),
+                SerializationHelper.Serialize(activity)
+            );
+
             // place the activity back in the queue and free up the worker to make progress on a different activity
             Dispatch(activity);
             return;
         }
 
+        var stopwatch = new Stopwatch();
+        stopwatch.Start();
+        _logger.LogDebug(
+            "[{ThreadId}] Start Activity - {ActivityType}: {Activity}",
+            Thread.CurrentThread.ManagedThreadId,
+            activity.GetType(),
+            SerializationHelper.Serialize(activity)
+        );
+
         try
         {
-            _logger.LogDebug(
-                "Handling activity {ActivityType}: {Activity}",
-                activity.GetType(),
-                SerializationHelper.Serialize(activity)
-            );
             activity.Handle(this);
         }
         catch (Exception error)
@@ -171,24 +182,45 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
                 mutex.ReleaseMutex();
             }
         }
+
+        stopwatch.Stop();
+        _logger.LogDebug(
+            "[{ThreadId}] (Took {Time}ms) End Activity - {ActivityType}: {Activity}",
+            Thread.CurrentThread.ManagedThreadId,
+            stopwatch.ElapsedMilliseconds,
+            activity.GetType(),
+            SerializationHelper.Serialize(activity)
+        );
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
     public void HandleEvent(IApplicationEvent appEvent)
     {
+        var stopwatch = new Stopwatch();
+        _logger.LogDebug(
+            "[{Thread}] Start Event - {AppEventType}: {AppEvent}",
+            Thread.CurrentThread.ManagedThreadId,
+            appEvent.GetType(),
+            SerializationHelper.Serialize(appEvent)
+        );
+
         try
         {
-            _logger.LogDebug(
-                "Handling activity {AppEventType}: {AppEvent}",
-                appEvent.GetType(),
-                SerializationHelper.Serialize(appEvent)
-            );
             appEvent.Handle(this);
         }
         catch (Exception error)
         {
             Fire(new UnhandledExceptionEvent(error));
         }
+
+        stopwatch.Stop();
+        _logger.LogDebug(
+            "[{ThreadId}] (Took {Time}ms) End Event - {EventType}: {Event}",
+            Thread.CurrentThread.ManagedThreadId,
+            stopwatch.ElapsedMilliseconds,
+            appEvent.GetType(),
+            SerializationHelper.Serialize(appEvent)
+        );
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
