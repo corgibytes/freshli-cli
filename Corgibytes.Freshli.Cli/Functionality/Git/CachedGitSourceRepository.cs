@@ -33,10 +33,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         return entry;
     }
 
-    public void Save(CachedGitSource cachedGitSource)
-    {
-        CacheManager.GetCacheDb().AddCachedGitSource(cachedGitSource);
-    }
+    public void Save(CachedGitSource cachedGitSource) => CacheManager.GetCacheDb().AddCachedGitSource(cachedGitSource);
 
     public CachedGitSource CloneOrPull(string url, string? branch)
     {
