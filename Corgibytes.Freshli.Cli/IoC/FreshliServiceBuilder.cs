@@ -139,7 +139,7 @@ public class FreshliServiceBuilder
         Services.AddSingleton<ApplicationEngine>();
         Services.AddSingleton<IApplicationActivityEngine, ApplicationEngine>();
         Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>();
-        Services.AddSingleton<IInvoke, Invoke>();
+        Services.AddSingleton<ICommandInvoker, CommandInvoker>();
 
         RegisterHangfire();
         RegisterHangfireConfiguration();

@@ -15,8 +15,9 @@ public class GenerateBillOfMaterialsActivityTest
     public void Handle()
     {
         // Arrange
+        var asOfDateTime = DateTimeOffset.Now;
         var javaAgentReader = new Mock<IAgentReader>();
-        javaAgentReader.Setup(mock => mock.ProcessManifest("/path/to/manifest", It.IsAny<DateTime>()))
+        javaAgentReader.Setup(mock => mock.ProcessManifest("/path/to/manifest", asOfDateTime))
             .Returns("/path/to/bill-of-materials");
 
         const string agentExecutablePath = "/path/to/agent";
@@ -25,10 +26,16 @@ public class GenerateBillOfMaterialsActivityTest
 
         var cacheManager = new Mock<ICacheManager>();
         var cacheDb = new Mock<ICacheDb>();
-        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = "/path/to/repository" };
+        var historyStopPoint = new CachedHistoryStopPoint
+        {
+            LocalPath = "/path/to/repository",
+            AsOfDateTime = asOfDateTime
+        };
 
         var historyStopPointId = 29;
+
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
 
         var serviceProvider = new Mock<IServiceProvider>();
@@ -40,6 +47,10 @@ public class GenerateBillOfMaterialsActivityTest
 
         // Act
         var analysisId = Guid.NewGuid();
+
+        cacheManager.Setup(mock => mock.StoreBomInCache("/path/to/bill-of-materials", analysisId, asOfDateTime))
+            .Returns("/path/to/bom/in/cache");
+
         var activity =
             new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopPointId,
                 "/path/to/manifest");
@@ -51,6 +62,6 @@ public class GenerateBillOfMaterialsActivityTest
                 appEvent.AgentExecutablePath == agentExecutablePath &&
                 appEvent.AnalysisId == analysisId &&
                 appEvent.HistoryStopPointId == historyStopPointId &&
-                appEvent.PathToBillOfMaterials == "/path/to/bill-of-materials")));
+                appEvent.PathToBillOfMaterials == "/path/to/bom/in/cache")));
     }
 }
