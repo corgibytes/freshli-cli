@@ -91,7 +91,9 @@ public class CacheDb : ICacheDb, IDisposable
 
         Policy
             .Handle<SqliteException>()
-            .WaitAndRetry(new[] { TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(3) })
+            .WaitAndRetry(6, retryAttempt =>
+                TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
+            )
             .Execute(Changes);
     }
 }
