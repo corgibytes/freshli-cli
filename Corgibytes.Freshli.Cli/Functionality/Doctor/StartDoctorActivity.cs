@@ -53,8 +53,8 @@ public class StartDoctorActivity : IApplicationActivity
         try
         {
             // The git executable can be run -- tested by running git version and checking/displaying output
-            var invoke = new Invoke();
-            var version = invoke.Command("git", "version", GitPath);
+            var invoke = new CommandInvoker();
+            var version = invoke.Run("git", "version", GitPath);
             Console.WriteLine(@"Git version found: " + version);
         }
         catch (Exception e)

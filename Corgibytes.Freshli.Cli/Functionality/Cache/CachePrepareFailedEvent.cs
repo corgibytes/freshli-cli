@@ -4,5 +4,4 @@ namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 
 public class CachePrepareFailedEvent : FailureEvent
 {
-
 }
