@@ -59,6 +59,7 @@ flowchart TD;
     DestroyCacheActivity --> CacheDestroyFailedEvent
     PrepareCacheActivity --> CachePreparedEvent
     PrepareCacheActivity --> CachePrepareFailedEvent
+    StartDoctorActivity
     AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
