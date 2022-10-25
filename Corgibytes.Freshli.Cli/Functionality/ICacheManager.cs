@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
@@ -6,7 +7,9 @@ public interface ICacheManager
 {
     public bool ValidateCacheDirectory();
     public bool Destroy();
-    public DirectoryInfo GetDirectoryInCache(string[] directoryStructure);
+    public DirectoryInfo GetDirectoryInCache(params string[] directoryStructure);
+    public bool Prepare();
+    public string StoreBomInCache(string pathToBom, Guid analysisId, DateTimeOffset asOfDateTime);
 
     public ICacheDb GetCacheDb();
 }

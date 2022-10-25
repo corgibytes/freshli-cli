@@ -13,6 +13,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
 public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEngine
 {
+    private const int MutexWaitTimeoutInMilliseconds = 50;
     private static readonly Dictionary<Type, Action<IApplicationEvent>> s_eventHandlers = new();
 
     private static readonly object s_dispatchLock = new();
@@ -136,6 +137,20 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     // ReSharper disable once MemberCanBePrivate.Global
     public void HandleActivity(IApplicationActivity activity)
     {
+        Mutex? mutex = null;
+        if (activity is IMutexed mutexSource)
+        {
+            mutex = mutexSource.GetMutex(ServiceProvider);
+        }
+
+        var mutexAcquired = mutex?.WaitOne(MutexWaitTimeoutInMilliseconds) ?? true;
+        if (!mutexAcquired)
+        {
+            // place the activity back in the queue and free up the worker to make progress on a different activity
+            Dispatch(activity);
+            return;
+        }
+
         try
         {
             _logger.LogDebug(
@@ -148,6 +163,13 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         catch (Exception error)
         {
             Fire(new UnhandledExceptionEvent(error));
+        }
+        finally
+        {
+            if (mutex != null && mutexAcquired)
+            {
+                mutex.ReleaseMutex();
+            }
         }
     }
 

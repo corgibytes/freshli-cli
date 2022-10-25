@@ -10,5 +10,5 @@ public interface IAgentReader
     public string AgentExecutablePath { get; }
     public List<Package> RetrieveReleaseHistory(PackageURL packageUrl);
     public List<string> DetectManifests(string projectPath);
-    public string ProcessManifest(string manifestPath, DateTime asOfDateTime);
+    public string ProcessManifest(string manifestPath, DateTimeOffset asOfDateTime);
 }
