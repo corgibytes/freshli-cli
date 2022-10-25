@@ -10,12 +10,12 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class PrepareCacheForAnalysisActivityTest
 {
-    private readonly Mock<IApplicationEventEngine> _eventClient;
+    private readonly PrepareCacheForAnalysisActivity _activity;
     private readonly Mock<ICacheManager> _cacheManager;
+    private readonly Mock<IApplicationEventEngine> _eventClient;
     private readonly string _historyInterval;
     private readonly string _repositoryBranch;
     private readonly string _repositoryUrl;
-    private readonly PrepareCacheForAnalysisActivity _activity;
 
     public PrepareCacheForAnalysisActivityTest()
     {
@@ -76,5 +76,4 @@ public class PrepareCacheForAnalysisActivityTest
         _eventClient.Verify(mock => mock.Fire(It.Is<CachePrepareFailedForAnalysisEvent>(value =>
             value.ErrorMessage == "failure message")));
     }
-
 }
