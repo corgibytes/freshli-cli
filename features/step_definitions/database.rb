@@ -26,7 +26,8 @@ Then('the {string} contains history stop point at {string} {string}') do |databa
   expect(r[0][1]).to match(commit_id)
 end
 
-Then('the {string} contains lib year {double} for {string} as of {string}') do |database, lib_year, package, as_of_date_time|
+Then('the {string} contains lib year {double} for {string} as of {string}') do
+ |database, lib_year, package, as_of_date_time|
   database = resolve_path database
   db = SQLite3::Database.open database
   r = db.execute(<<-SQL)
@@ -37,5 +38,5 @@ Then('the {string} contains lib year {double} for {string} as of {string}') do |
   SQL
   expect(r[0][0]).to match(/#{package}/)
   expect(r[0][1]).to eq(lib_year)
-  expect(r[0][2]).to match("#{as_of_date_time}")
+  expect(r[0][2]).to match(as_of_date_time.to_s)
 end
