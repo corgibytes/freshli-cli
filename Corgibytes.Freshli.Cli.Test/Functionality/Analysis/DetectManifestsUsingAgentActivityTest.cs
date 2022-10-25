@@ -13,106 +13,91 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class DetectManifestsUsingAgentActivityTest
 {
-    [Fact]
-    public void HandleWritesManifestPathsToCache()
+    private string _localPath;
+    private Mock<IAgentReader> _agentReader;
+    private List<string> _manifestPaths;
+    private Mock<IAgentManager> _agentManager;
+    private Mock<ICacheManager> _cacheManager;
+    private Mock<ICacheDb> _cacheDb;
+    private CachedHistoryStopPoint _historyStopPoint;
+    private int _historyStopPointId;
+    private Mock<IServiceProvider> _serviceProvider;
+    private Mock<IApplicationEventEngine> _eventEngine;
+    private Guid _analysisId;
+    private string _agentExecutablePath;
+    private DetectManifestsUsingAgentActivity _activity;
+
+    public DetectManifestsUsingAgentActivityTest()
     {
-        var localPath = "/path/to/repository";
-        var agentReader = new Mock<IAgentReader>();
-        var manifestPaths = new List<string>
+        _localPath = "/path/to/repository";
+        _agentReader = new Mock<IAgentReader>();
+        _manifestPaths = new List<string>
         {
             "/path/to/first/manifest",
             "/path/to/second/manifest"
         };
-        agentReader.Setup(mock => mock.DetectManifests(localPath)).Returns(manifestPaths);
+        _agentManager = new Mock<IAgentManager>();
+        _cacheManager = new Mock<ICacheManager>();
+        _cacheDb = new Mock<ICacheDb>();
+        _historyStopPoint = new CachedHistoryStopPoint { LocalPath = _localPath };
+        _historyStopPointId = 29;
+        _serviceProvider = new Mock<IServiceProvider>();
+        _eventEngine = new Mock<IApplicationEventEngine>();
+        _analysisId = Guid.NewGuid();
+        _agentExecutablePath = "/path/to/agent";
+        _activity = new DetectManifestsUsingAgentActivity(_analysisId, _historyStopPointId, _agentExecutablePath);
 
-        const string agentExecutablePath = "/path/to/agent";
-        var agentManager = new Mock<IAgentManager>();
-        agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(agentReader.Object);
-
-        var cacheManager = new Mock<ICacheManager>();
-        var cacheDb = new Mock<ICacheDb>();
-        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
-
-        var historyStopPointId = 29;
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
-        cacheDb.Setup(mock => mock.RetrieveCachedManifests(historyStopPointId, agentExecutablePath))
+        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(_historyStopPointId)).Returns(_historyStopPoint);
+        _cacheDb.Setup(mock => mock.RetrieveCachedManifests(_historyStopPointId, _agentExecutablePath))
             .Returns(new List<string>());
 
-        var serviceProvider = new Mock<IServiceProvider>();
-        serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
-        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
+        _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+    }
 
-        var eventEngine = new Mock<IApplicationEventEngine>();
-        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+    [Fact]
+    public void HandleWritesManifestPathsToCache()
+    {
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(_agentManager.Object);
+        _agentReader.Setup(mock => mock.DetectManifests(_localPath)).Returns(_manifestPaths);
+        _agentManager.Setup(mock => mock.GetReader(_agentExecutablePath)).Returns(_agentReader.Object);
 
-        var analysisId = Guid.NewGuid();
-        var activity =
-            new DetectManifestsUsingAgentActivity(analysisId, historyStopPointId, agentExecutablePath);
+        _activity.Handle(_eventEngine.Object);
 
-        activity.Handle(eventEngine.Object);
-
-        eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
-            appEvent.AnalysisId == analysisId &&
-            appEvent.HistoryStopPointId == historyStopPointId &&
-            appEvent.AgentExecutablePath == agentExecutablePath &&
+        _eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
+            appEvent.AnalysisId == _analysisId &&
+            appEvent.HistoryStopPointId == _historyStopPointId &&
+            appEvent.AgentExecutablePath == _agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/first/manifest")));
 
-        eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
-            appEvent.AnalysisId == analysisId &&
-            appEvent.HistoryStopPointId == historyStopPointId &&
-            appEvent.AgentExecutablePath == agentExecutablePath &&
+        _eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
+            appEvent.AnalysisId == _analysisId &&
+            appEvent.HistoryStopPointId == _historyStopPointId &&
+            appEvent.AgentExecutablePath == _agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/second/manifest")));
 
-        cacheDb.Verify(mock => mock.StoreCachedManifests(historyStopPointId, agentExecutablePath, manifestPaths));
+        _cacheDb.Verify(mock => mock.StoreCachedManifests(_historyStopPointId, _agentExecutablePath, _manifestPaths));
     }
 
     [Fact]
     public void HandleReadsManifestPathsFromCache()
     {
-        var localPath = "/path/to/repository";
-        var agentReader = new Mock<IAgentReader>();
-        var manifestPaths = new List<string>
-        {
-            "/path/to/first/manifest",
-            "/path/to/second/manifest"
-        };
-        agentReader.Setup(mock => mock.DetectManifests(localPath)).Returns(manifestPaths);
+        _cacheDb.Setup(mock => mock.RetrieveCachedManifests(_historyStopPointId, _agentExecutablePath))
+            .Returns(_manifestPaths);
 
-        const string agentExecutablePath = "/path/to/agent";
+        _activity.Handle(_eventEngine.Object);
 
-        var cacheManager = new Mock<ICacheManager>();
-        var cacheDb = new Mock<ICacheDb>();
-        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
-
-        var historyStopPointId = 29;
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
-        cacheDb.Setup(mock => mock.RetrieveCachedManifests(historyStopPointId, agentExecutablePath))
-            .Returns(manifestPaths);
-
-        var serviceProvider = new Mock<IServiceProvider>();
-        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
-
-        var eventEngine = new Mock<IApplicationEventEngine>();
-        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
-
-        var analysisId = Guid.NewGuid();
-        var activity =
-            new DetectManifestsUsingAgentActivity(analysisId, historyStopPointId, agentExecutablePath);
-
-        activity.Handle(eventEngine.Object);
-
-        eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
-            appEvent.AnalysisId == analysisId &&
-            appEvent.HistoryStopPointId == historyStopPointId &&
-            appEvent.AgentExecutablePath == agentExecutablePath &&
+        _eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
+            appEvent.AnalysisId == _analysisId &&
+            appEvent.HistoryStopPointId == _historyStopPointId &&
+            appEvent.AgentExecutablePath == _agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/first/manifest")));
 
-        eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
-            appEvent.AnalysisId == analysisId &&
-            appEvent.HistoryStopPointId == historyStopPointId &&
-            appEvent.AgentExecutablePath == agentExecutablePath &&
+        _eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
+            appEvent.AnalysisId == _analysisId &&
+            appEvent.HistoryStopPointId == _historyStopPointId &&
+            appEvent.AgentExecutablePath == _agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/second/manifest")));
     }
 }
