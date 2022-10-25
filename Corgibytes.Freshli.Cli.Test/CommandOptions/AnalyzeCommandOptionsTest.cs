@@ -43,17 +43,20 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             // Entire commit history expected
             new object?[]
             {
-                new[] { "analyze", "--commit-history" }, DefaultGitPath, null, true, DefaultHistoryInterval, DefaultLatestOnly
+                new[] { "analyze", "--commit-history" }, DefaultGitPath, null, true, DefaultHistoryInterval,
+                DefaultLatestOnly
             },
             // Three yearly history interval expected
             new object?[]
             {
-                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, null, DefaultCommitHistory, "3y", DefaultLatestOnly
+                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, null, DefaultCommitHistory, "3y",
+                DefaultLatestOnly
             },
             // Latest only
             new object?[]
             {
-                new[] { "analyze", "--latest-only" }, DefaultGitPath, null, DefaultCommitHistory, DefaultHistoryInterval, true
+                new[] { "analyze", "--latest-only" }, DefaultGitPath, null, DefaultCommitHistory,
+                DefaultHistoryInterval, true
             }
         };
 

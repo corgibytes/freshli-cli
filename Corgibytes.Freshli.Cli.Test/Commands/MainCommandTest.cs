@@ -37,13 +37,7 @@ public class MainCommandTest : FreshliTest
     public static IEnumerable<object?[]> OptionsData() =>
         new List<object?[]>
         {
-            new object?[]
-            {
-                "--workers", ArgumentArity.ExactlyOne
-            },
-            new object?[]
-            {
-                "--cache-dir", ArgumentArity.ExactlyOne
-            }
+            new object?[] { "--workers", ArgumentArity.ExactlyOne },
+            new object?[] { "--cache-dir", ArgumentArity.ExactlyOne }
         };
 }

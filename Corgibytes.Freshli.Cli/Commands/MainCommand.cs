@@ -34,7 +34,7 @@ public class MainCommand : RootCommand
         Add(new ScanCommand());
         Add(new CacheCommand());
         Add(new AgentsCommand());
-        Add(new DoctorCommand());
+        Add(new DoctorCommand(configuration));
         Add(new AnalyzeCommand(configuration));
 
         if (ShouldIncludeFailCommand)
