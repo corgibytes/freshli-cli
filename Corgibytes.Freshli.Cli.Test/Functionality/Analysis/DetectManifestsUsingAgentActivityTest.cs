@@ -13,19 +13,17 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class DetectManifestsUsingAgentActivityTest
 {
-    private string _localPath;
-    private Mock<IAgentReader> _agentReader;
-    private List<string> _manifestPaths;
-    private Mock<IAgentManager> _agentManager;
-    private Mock<ICacheManager> _cacheManager;
-    private Mock<ICacheDb> _cacheDb;
-    private CachedHistoryStopPoint _historyStopPoint;
-    private int _historyStopPointId;
-    private Mock<IServiceProvider> _serviceProvider;
-    private Mock<IApplicationEventEngine> _eventEngine;
-    private Guid _analysisId;
-    private string _agentExecutablePath;
-    private DetectManifestsUsingAgentActivity _activity;
+    private readonly string _localPath;
+    private readonly Mock<IAgentReader> _agentReader;
+    private readonly List<string> _manifestPaths;
+    private readonly Mock<IAgentManager> _agentManager;
+    private readonly Mock<ICacheDb> _cacheDb;
+    private readonly int _historyStopPointId;
+    private readonly Mock<IServiceProvider> _serviceProvider;
+    private readonly Mock<IApplicationEventEngine> _eventEngine;
+    private readonly Guid _analysisId;
+    private readonly string _agentExecutablePath;
+    private readonly DetectManifestsUsingAgentActivity _activity;
 
     public DetectManifestsUsingAgentActivityTest()
     {
@@ -37,9 +35,9 @@ public class DetectManifestsUsingAgentActivityTest
             "/path/to/second/manifest"
         };
         _agentManager = new Mock<IAgentManager>();
-        _cacheManager = new Mock<ICacheManager>();
+        var cacheManager = new Mock<ICacheManager>();
         _cacheDb = new Mock<ICacheDb>();
-        _historyStopPoint = new CachedHistoryStopPoint { LocalPath = _localPath };
+        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = _localPath };
         _historyStopPointId = 29;
         _serviceProvider = new Mock<IServiceProvider>();
         _eventEngine = new Mock<IApplicationEventEngine>();
@@ -47,12 +45,12 @@ public class DetectManifestsUsingAgentActivityTest
         _agentExecutablePath = "/path/to/agent";
         _activity = new DetectManifestsUsingAgentActivity(_analysisId, _historyStopPointId, _agentExecutablePath);
 
-        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
-        _cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(_historyStopPointId)).Returns(_historyStopPoint);
+        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(_historyStopPointId)).Returns(historyStopPoint);
         _cacheDb.Setup(mock => mock.RetrieveCachedManifests(_historyStopPointId, _agentExecutablePath))
             .Returns(new List<string>());
 
-        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
     }
 
