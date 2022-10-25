@@ -149,7 +149,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             _logger.LogDebug(
                 "[{ThreadId}] (Blocked by Mutex {MutexId}) Re-Dispatch Activity - {ActivityType}: {Activity}",
                 Thread.CurrentThread.ManagedThreadId,
-                mutex.GetHashCode(),
+                mutex!.GetHashCode(),
                 activity.GetType(),
                 SerializationHelper.Serialize(activity)
             );
