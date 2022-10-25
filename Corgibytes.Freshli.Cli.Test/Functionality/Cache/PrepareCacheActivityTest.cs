@@ -10,24 +10,50 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Cache;
 [UnitTest]
 public class PrepareCacheActivityTest
 {
-    [Fact]
-    public void VerifyItFiresCachePreparedEvent()
+    private readonly Mock<IApplicationEventEngine> _eventClient;
+    private readonly Mock<ICacheManager> _cacheManager;
+    private readonly PrepareCacheActivity _activity;
+
+    public PrepareCacheActivityTest()
     {
-        var eventClient = new Mock<IApplicationEventEngine>();
+        _eventClient = new Mock<IApplicationEventEngine>();
         var serviceProvider = new Mock<IServiceProvider>();
-        var configuration = new Mock<IConfiguration>();
-        var cacheManager = new Mock<ICacheManager>();
-        var cacheDb = new Mock<ICacheDb>();
+        _cacheManager = new Mock<ICacheManager>();
 
-        eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
-        configuration.Setup(mock => mock.CacheDir).Returns("example");
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(configuration.Object);
+        _eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
 
-        var activity = new PrepareCacheActivity();
+        _activity = new PrepareCacheActivity();
+    }
 
-        activity.Handle(eventClient.Object);
+    [Fact]
+    public void VerifyItFiresCachePreparedEventWhenPrepareReturnsTrue()
+    {
+        _cacheManager.Setup(mock => mock.Prepare()).Returns(true);
 
-        eventClient.Verify(mock => mock.Fire(It.IsAny<CachePreparedEvent>()));
+        _activity.Handle(_eventClient.Object);
+
+        _eventClient.Verify(mock => mock.Fire(It.IsAny<CachePreparedEvent>()));
+    }
+
+    [Fact]
+    public void VerifyItFiresCachePreparedEventWhenPrepareReturnsFalse()
+    {
+        _cacheManager.Setup(mock => mock.Prepare()).Returns(false);
+
+        _activity.Handle(_eventClient.Object);
+
+        _eventClient.Verify(mock => mock.Fire(It.IsAny<CachePrepareFailedEvent>()));
+    }
+
+    [Fact]
+    public void VerifyItFiresCachePreparedEventWhenPrepareThrowsAnException()
+    {
+        _cacheManager.Setup(mock => mock.Prepare()).Throws(new Exception("failure message"));
+
+        _activity.Handle(_eventClient.Object);
+
+        _eventClient.Verify(mock => mock.Fire(It.Is<CachePrepareFailedEvent>(value =>
+            value.ErrorMessage == "failure message")));
     }
 }

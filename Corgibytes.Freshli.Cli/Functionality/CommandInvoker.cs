@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
-public class Invoke : IInvoke
+public class CommandInvoker : ICommandInvoker
 {
-    private readonly ILogger<Invoke>? _logger;
+    private readonly ILogger<CommandInvoker>? _logger;
 
-    public Invoke(ILogger<Invoke>? logger = null) => _logger = logger;
+    public CommandInvoker(ILogger<CommandInvoker>? logger = null) => _logger = logger;
 
-    public string Command(string executable, string arguments, string workingDirectory)
+    public string Run(string executable, string arguments, string workingDirectory)
     {
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
