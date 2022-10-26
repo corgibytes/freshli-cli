@@ -66,6 +66,7 @@ flowchart TD;
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
     CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
+    UpdateAnalysisStatusActivity
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
