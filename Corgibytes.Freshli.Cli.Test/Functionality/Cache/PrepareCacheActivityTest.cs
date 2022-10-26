@@ -10,9 +10,9 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Cache;
 [UnitTest]
 public class PrepareCacheActivityTest
 {
-    private readonly Mock<IApplicationEventEngine> _eventClient;
-    private readonly Mock<ICacheManager> _cacheManager;
     private readonly PrepareCacheActivity _activity;
+    private readonly Mock<ICacheManager> _cacheManager;
+    private readonly Mock<IApplicationEventEngine> _eventClient;
 
     public PrepareCacheActivityTest()
     {
