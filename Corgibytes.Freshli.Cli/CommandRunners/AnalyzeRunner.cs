@@ -54,8 +54,10 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             exitStatus = 1;
         });
 
+        Guid? apiAnalysisId = null;
         _eventEngine.On<AnalysisApiCreatedEvent>(createdEvent =>
         {
+            apiAnalysisId = createdEvent.ApiAnalysisId;
             console.Out.WriteLine(
                 "Results will be available at: " +
                 _resultsApi.GetResultsUrl(createdEvent.ApiAnalysisId)
@@ -63,6 +65,21 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         });
 
         _activityEngine.Wait();
+
+        if (apiAnalysisId != null)
+        {
+            _activityEngine.Dispatch(new UpdateAnalysisStatusActivity(
+                apiAnalysisId,
+                exitStatus == 0 ? "success" : "error"
+            ));
+
+            _activityEngine.Wait();
+        }
+        else
+        {
+            console.Out.WriteLine($"Unable to communicate with API. {nameof(apiAnalysisId)} is not set.");
+            exitStatus = -1;
+        }
 
         return exitStatus;
     }
