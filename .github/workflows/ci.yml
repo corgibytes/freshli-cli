@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: [self-hosted, linux, X64]
+    runs-on: ubuntu-20.04
     env:
       BUILD_ARTIFACTS_FOLDER: build_artifacts
 
