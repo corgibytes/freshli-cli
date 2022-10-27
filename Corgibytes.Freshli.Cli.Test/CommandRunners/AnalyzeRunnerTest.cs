@@ -15,12 +15,12 @@ namespace Corgibytes.Freshli.Cli.Test.CommandRunners;
 
 public class AnalyzeRunnerTest
 {
-    private readonly Mock<IConfiguration> _configuration;
     private readonly Mock<IApplicationActivityEngine> _activityEngine;
-    private readonly Mock<IApplicationEventEngine> _eventEngine;
     private readonly AnalyzeRunner _analyzeRunner;
-    private readonly AnalyzeCommandOptions _options;
+    private readonly Mock<IConfiguration> _configuration;
     private readonly Mock<IConsole> _console;
+    private readonly Mock<IApplicationEventEngine> _eventEngine;
+    private readonly AnalyzeCommandOptions _options;
 
     public AnalyzeRunnerTest()
     {
@@ -35,7 +35,7 @@ public class AnalyzeRunnerTest
         _analyzeRunner = new AnalyzeRunner(serviceProvider.Object, runner.Object, _configuration.Object,
             _activityEngine.Object, _eventEngine.Object, resultsApi.Object);
 
-        _options = new AnalyzeCommandOptions()
+        _options = new AnalyzeCommandOptions
         {
             Branch = "example-branch",
             CacheDir = "/path/to/cache/dir",
@@ -59,7 +59,7 @@ public class AnalyzeRunnerTest
         _eventEngine
             .Setup(mock => mock.On(It.IsAny<Action<AnalysisApiCreatedEvent>>()))
             .Callback<Action<AnalysisApiCreatedEvent>>(action => action(
-                new AnalysisApiCreatedEvent() {ApiAnalysisId = apiAnalysisId}
+                new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
             ));
 
         var exitCode = _analyzeRunner.Run(_options, _console.Object);
@@ -97,7 +97,7 @@ public class AnalyzeRunnerTest
         _eventEngine
             .Setup(mock => mock.On(It.IsAny<Action<AnalysisApiCreatedEvent>>()))
             .Callback<Action<AnalysisApiCreatedEvent>>(action => action(
-                new AnalysisApiCreatedEvent() {ApiAnalysisId = apiAnalysisId}
+                new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
             ));
 
         var exitCode = _analyzeRunner.Run(_options, _console.Object);

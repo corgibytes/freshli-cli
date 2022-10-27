@@ -1,5 +1,4 @@
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Microsoft.Extensions.DependencyInjection;

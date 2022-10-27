@@ -13,14 +13,14 @@ namespace Corgibytes.Freshli.Cli.Test.Services;
 [UnitTest]
 public class AgentReaderTest
 {
-    private readonly Mock<ICommandInvoker> _commandInvoker;
-    private readonly Mock<ICacheManager> _cacheManager;
-    private readonly Mock<ICacheDb> _cacheDb;
-    private readonly PackageURL _packageUrl;
     private readonly Package _alphaPackage;
     private readonly Package _betaPackage;
-    private readonly Package _gammaPackage;
+    private readonly Mock<ICacheDb> _cacheDb;
+    private readonly Mock<ICacheManager> _cacheManager;
+    private readonly Mock<ICommandInvoker> _commandInvoker;
     private readonly List<Package> _expectedPackages;
+    private readonly Package _gammaPackage;
+    private readonly PackageURL _packageUrl;
     private readonly AgentReader _reader;
 
     public AgentReaderTest()
