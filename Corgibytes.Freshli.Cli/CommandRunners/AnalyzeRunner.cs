@@ -1,6 +1,5 @@
 using System;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -69,7 +68,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         if (apiAnalysisId != null)
         {
             _activityEngine.Dispatch(new UpdateAnalysisStatusActivity(
-                apiAnalysisId,
+                apiAnalysisId.Value,
                 exitStatus == 0 ? "success" : "error"
             ));
 

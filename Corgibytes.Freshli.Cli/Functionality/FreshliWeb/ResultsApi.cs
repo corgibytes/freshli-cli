@@ -41,6 +41,25 @@ public class ResultsApi : IResultsApi
         throw new InvalidOperationException($"Failed to create analysis with url: {url}.");
     }
 
+    public void UpdateAnalysis(Guid apiAnalysisId, string status)
+    {
+        var client = new HttpClient();
+
+        var response = client.PutAsync(
+            _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId,
+            JsonContent.Create(
+                new { state = status },
+                new MediaTypeHeaderValue("application/json")
+            )
+        ).Result;
+
+        if (response.StatusCode != HttpStatusCode.OK)
+        {
+            throw new InvalidOperationException(
+                $"Failed to update analysis '{apiAnalysisId}' with state = '{status}'.");
+        }
+    }
+
     public void CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, int historyStopPointId)
     {
         var cachedAnalysis = cacheDb.RetrieveAnalysis(analysisId);
@@ -80,10 +99,11 @@ public class ResultsApi : IResultsApi
         var client = new HttpClient();
 
         var response = client.PostAsync(
-            _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId + "/" + asOfDateTime.ToString("o"),
+            $"{_configuration.FreshliWebApiBaseUrl}/api/v0/analysis-request/{apiAnalysisId}/{asOfDateTime:o}",
             JsonContent.Create(
-                new {
-                    packageUrl = packageLibYear.CurrentVersion!.ToString(),
+                new
+                {
+                    packageUrl = packageLibYear.CurrentVersion!,
                     publicationDate = packageLibYear.ReleaseDateCurrentVersion.ToString("o"),
                     libYear = packageLibYear.LibYear
                 },
@@ -94,7 +114,7 @@ public class ResultsApi : IResultsApi
         if (response.StatusCode != HttpStatusCode.Created)
         {
             throw new InvalidOperationException(
-                $"Failed to create package lib year for analysis '{apiAnalysisId}' and '{asOfDateTime.ToString("o")}' with package URL '{packageLibYear.CurrentVersion!.ToString()}' publication date '{packageLibYear.ReleaseDateCurrentVersion.ToString("o")}' and LibYear '{packageLibYear.LibYear}'.");
+                $"Failed to create package lib year for analysis '{apiAnalysisId}' and '{asOfDateTime:o}' with package URL '{packageLibYear.CurrentVersion!}' publication date '{packageLibYear.ReleaseDateCurrentVersion:o}' and LibYear '{packageLibYear.LibYear}'.");
         }
     }
 }
