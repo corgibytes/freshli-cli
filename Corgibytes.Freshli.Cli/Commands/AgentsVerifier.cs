@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Resources;
 using CycloneDX;
 using CycloneDX.Json;
+using ServiceStack;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
@@ -21,34 +23,20 @@ public class AgentsVerifier
             ? Path.DirectorySeparatorChar + "repositories"
             : Path.DirectorySeparatorChar + languageName;
         var validatingRepositoriesUrl = _commandInvoker.Run(agentFileAndPath, argument, ".").TrimEnd('\n', '\r');
-        if (validatingRepositoriesUrl.Contains('\n'))
-        {
-            foreach (var url in validatingRepositoriesUrl.Split("\n"))
-            {
-                try
-                {
-                    var pos = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-                    _commandInvoker.Run("git",
-                        $"clone {url} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{url.Trim().Substring(pos, url.Length - pos)}",
-                        cacheDir);
-                    RunDetectManfiest(agentFileAndPath, "detect-manifests", url, cacheDir, startTime);
-                }
-                catch (Exception e)
-                {
-                    Console.Error.WriteLine(e.Message);
-                }
-            }
-        }
-        else
+
+        foreach (var url in validatingRepositoriesUrl.Split("\n"))
         {
             try
             {
-                var pos = validatingRepositoriesUrl.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-                _commandInvoker.Run("git",
-                    $"clone {validatingRepositoriesUrl} {cacheDir}{Path.DirectorySeparatorChar}{languageName}{Path.DirectorySeparatorChar}{validatingRepositoriesUrl.Trim().Substring(pos, validatingRepositoriesUrl.Length - pos)}",
-                    cacheDir);
-                RunDetectManfiest(agentFileAndPath, "detect-manifests", validatingRepositoriesUrl,
-                    cacheDir + languageName, startTime);
+                var lastIndexOf = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
+                var targetDirectory = Path.Join(cacheDir, languageName, url.Trim().Substring(lastIndexOf, url.Length - lastIndexOf));
+
+                if (!targetDirectory.DirectoryExists())
+                {
+                    _commandInvoker.Run("git", $"clone {url} {targetDirectory}", cacheDir);
+                }
+
+                RunDetectManifest(agentFileAndPath, "detect-manifests", targetDirectory, startTime);
             }
             catch (Exception e)
             {
@@ -57,41 +45,31 @@ public class AgentsVerifier
         }
     }
 
-    private void RunDetectManfiest(string agentFileAndPath, string argument, string url, string directory,
-        DateTime startDate)
+    private void RunDetectManifest(string agentFileAndPath, string argument, string targetDirectory, DateTime startDate)
     {
-        var detectManifestOutput = _commandInvoker.Run(agentFileAndPath, argument + $" {url}", ".");
+        var detectManifestOutput = _commandInvoker.Run(agentFileAndPath, argument + $" {targetDirectory}", ".")
+            .Split("\n");
 
-        if (detectManifestOutput.ToLower().Contains("gemfile"))
+        var manifestFiles = detectManifestOutput.Where(manifestFile => !string.IsNullOrEmpty(manifestFile)).ToList();
+
+        foreach (var manifestFile in manifestFiles)
         {
-            foreach (var manifestFile in detectManifestOutput.Split("\t"))
-            {
-                if (manifestFile.ToLower().Contains("gemfile"))
-                {
-                    RunProcessManifest(agentFileAndPath, "process-manifests", url, directory, manifestFile.Trim(),
-                        startDate);
-                }
-            }
+            RunProcessManifest(agentFileAndPath, targetDirectory, manifestFile.Trim(), startDate);
         }
     }
 
-    private void RunProcessManifest(string agentFileAndPath, string argument, string url,
-        string workingDirectory, string detectManifestFiles, DateTime startDate)
+    private void RunProcessManifest(string agentFileAndPath, string targetDirectory, string manifestFile, DateTime startDate)
     {
         var processManifestOutput = _commandInvoker.Run(agentFileAndPath,
-            argument + " " + detectManifestFiles + " " + DateTimeOffset.Now.ToString("o"), workingDirectory);
-        var processDetectManifestFiles = DetectManifestFileCount(detectManifestFiles);
+            "process-manifest " + Path.Join(targetDirectory, manifestFile) + " " + DateTimeOffset.Now.ToString("o"), ".");
         var processManifestFiles = VerifyFiles(processManifestOutput);
 
         try
         {
-            var pos = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-            var gitStatus = _commandInvoker.Run("git", "status",
-                workingDirectory + Path.DirectorySeparatorChar + url.Trim().Substring(pos, url.Length - pos));
+            var gitStatus = _commandInvoker.Run("git", "status", targetDirectory);
             if (!gitStatus.Contains("working tree clean"))
             {
-                Console.Error.Write("The following are residual modifications from the cloned repository: " + url +
-                                    " ");
+                Console.Error.Write("The following are residual modifications from the cloned repository: " + targetDirectory + " ");
                 Console.Error.Write(gitStatus);
             }
         }
@@ -100,14 +78,15 @@ public class AgentsVerifier
             Console.Error.WriteLine("Failed to validate for residual modifications due to the following: " + e);
         }
 
-        if (processDetectManifestFiles.Count != processManifestFiles.Count)
+        // If it's not 1, that means it has processed more/less than what we expected.
+        if (processManifestFiles.Count != 1)
         {
-            Console.Error.Write("Number of detected manifest files and process files are not equal.");
+            Console.Error.Write($"Number of detected manifest files and process files are not equal. Expected 1 file to be processed, {processManifestFiles.Count} files were processed.");
         }
         else
         {
             var timeDifference = DateTime.Now - startDate;
-            Console.WriteLine(@"Repository tested: " + url);
+            Console.WriteLine(@"Repository tested: " + targetDirectory);
             Console.WriteLine(@"Total time to execute agent verify: " + timeDifference);
             RunValidatingPackageUrls(agentFileAndPath, "validating-package-urls");
         }
@@ -167,20 +146,5 @@ public class AgentsVerifier
         }
 
         return processManifestFiles;
-    }
-
-    private static List<string> DetectManifestFileCount(string detectManifestInput)
-    {
-        var detectManifestFiles = new List<string>();
-
-        foreach (var detectManifestFile in detectManifestInput.Split("\t"))
-        {
-            if (detectManifestFile.Contains(Path.DirectorySeparatorChar))
-            {
-                detectManifestFiles.Add(detectManifestFile);
-            }
-        }
-
-        return detectManifestFiles;
     }
 }
