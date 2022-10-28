@@ -16,12 +16,13 @@ internal sealed class DefaultClientManagerFactory : IBackgroundJobClientFactory,
 
     public IBackgroundJobClient GetClient(JobStorage storage)
     {
+        Console.WriteLine("Dona 0011");
         if (HangfireServiceCollectionExtensions.GetInternalServices(_serviceProvider, out var factory,
                 out var stateChanger, out _))
         {
             return new BackgroundJobClient(storage, factory, stateChanger);
         }
-
+        Console.WriteLine("Dona 0012");
         return new BackgroundJobClient(
             storage,
             _serviceProvider.GetRequiredService<IJobFilterProvider>());

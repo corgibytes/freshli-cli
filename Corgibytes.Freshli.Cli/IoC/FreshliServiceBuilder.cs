@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.CommandLine.Hosting;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
@@ -25,6 +26,7 @@ using Microsoft.Extensions.Logging;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
 namespace Corgibytes.Freshli.Cli.IoC;
 
@@ -148,10 +150,11 @@ public class FreshliServiceBuilder
         Services.AddSingleton<IApplicationActivityEngine, ApplicationEngine>();
         Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>();
         Services.AddSingleton<ICommandInvoker, CommandInvoker>();
-
+        Console.WriteLine("Dona 01");
         RegisterHangfire();
         RegisterHangfireConfiguration();
         RegisterHangfireServer();
+        Console.WriteLine("Dona 02");
     }
 
     // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L180
@@ -173,7 +176,7 @@ public class FreshliServiceBuilder
         JobStorage.Current = new MemoryStorage();
 
         Services.AddSingleton<IContractResolver, JsonContractResolver>();
-
+        Console.WriteLine("Dona 001");
         Services.TryAddSingletonChecked(_ => JobStorage.Current);
         Services.TryAddSingletonChecked(_ => JobActivator.Current);
 
@@ -192,6 +195,7 @@ public class FreshliServiceBuilder
 
         Services.TryAddSingletonChecked(x => x
             .GetService<IRecurringJobManagerFactory>()!.GetManager(x.GetService<JobStorage>()!));
+        Console.WriteLine("Dona 002");
     }
 
     // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L76

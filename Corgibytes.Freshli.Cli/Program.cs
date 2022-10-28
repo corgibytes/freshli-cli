@@ -36,10 +36,13 @@ public class Program
 
     public static async Task<int> Main(params string[] args)
     {
+        Console.WriteLine("Dona test 0");
         var cmdBuilder = CreateCommandLineBuilder();
+        Console.WriteLine("Dona test 10");
         return await cmdBuilder.UseDefaults()
             .Build()
             .InvokeAsync(args);
+
     }
 
     private static void ConfigureLogging(string? consoleLogLevel, string? logfile)
@@ -85,6 +88,7 @@ public class Program
 
     public static CommandLineBuilder CreateCommandLineBuilder()
     {
+        Console.WriteLine("Dona test 1");
         var builder = new CommandLineBuilder(new MainCommand(Configuration))
             .UseHost(CreateHostBuilder)
             .AddMiddleware(async (context, next) =>
@@ -113,6 +117,7 @@ public class Program
             })
             .UseExceptionHandler()
             .UseHelp();
+        Console.WriteLine("Dona test 4");
 
         return builder;
     }
