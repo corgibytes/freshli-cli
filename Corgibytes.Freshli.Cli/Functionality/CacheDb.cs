@@ -63,6 +63,31 @@ public class CacheDb : ICacheDb, IDisposable
         Db.SaveChanges();
     }
 
+    public List<string> RetrieveCachedManifests(int historyStopPointId, string agentExecutablePath) =>
+        Db.CachedManifestPaths.Where(value =>
+            value.HistoryStopPointId == historyStopPointId &&
+            value.AgentExecutablePath == agentExecutablePath
+        ).Select(value => value.ManifestPath).ToList();
+
+    public void StoreCachedManifests(int historyStopPointId, string agentExecutablePath, List<string> manifestPaths)
+    {
+        var cachedManifestPaths = manifestPaths.Select(manifestPath => new CachedManifestPath
+        {
+            HistoryStopPointId = historyStopPointId,
+            AgentExecutablePath = agentExecutablePath,
+            ManifestPath = manifestPath
+        })
+            .ToList();
+
+        if (manifestPaths.Count <= 0)
+        {
+            return;
+        }
+
+        Db.CachedManifestPaths.AddRange(cachedManifestPaths);
+        Db.SaveChanges();
+    }
+
     public int AddPackageLibYear(CachedPackageLibYear packageLibYear)
     {
         var savedEntity = Db.CachedPackageLibYears.Add(packageLibYear);

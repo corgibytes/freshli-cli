@@ -19,4 +19,6 @@ public interface ICacheDb
     public CachedPackageLibYear? RetrievePackageLibYear(int packageLibYearId);
     public List<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl);
     public void StoreCachedReleaseHistory(List<CachedPackage> packages);
+    public List<string> RetrieveCachedManifests(int historyStopPointId, string agentExecutablePath);
+    public void StoreCachedManifests(int historyStopPointId, string agentExecutablePath, List<string> manifests);
 }
