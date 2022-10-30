@@ -1,5 +1,5 @@
 using System;
-using System.CommandLine.Invocation;
+using System.CommandLine;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.CommandRunners.Cache;
 
 public class CachePrepareCommandRunner : CommandRunner<CacheCommand, CachePrepareCommandOptions>
 {
-    public CachePrepareCommandRunner(IServiceProvider serviceProvider, Runner runner,
+    public CachePrepareCommandRunner(IServiceProvider serviceProvider, IRunner runner,
         IApplicationActivityEngine activityEngine, IConfiguration configuration)
         : base(serviceProvider, runner)
     {
@@ -22,7 +22,7 @@ public class CachePrepareCommandRunner : CommandRunner<CacheCommand, CachePrepar
     private IConfiguration Configuration { get; }
     private IApplicationActivityEngine ActivityEngine { get; }
 
-    public override int Run(CachePrepareCommandOptions options, InvocationContext context)
+    public override int Run(CachePrepareCommandOptions options, IConsole console)
     {
         Configuration.CacheDir = options.CacheDir;
 

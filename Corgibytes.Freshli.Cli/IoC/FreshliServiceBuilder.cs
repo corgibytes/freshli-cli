@@ -47,6 +47,7 @@ public class FreshliServiceBuilder
         Services.AddScoped<ICacheManager, CacheManager>();
         Services.AddScoped<IAgentManager, AgentManager>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
+        Services.AddScoped<IRunner, Runner>();
         RegisterBaseCommand();
         RegisterAnalyzeCommand();
         RegisterFailCommand();
