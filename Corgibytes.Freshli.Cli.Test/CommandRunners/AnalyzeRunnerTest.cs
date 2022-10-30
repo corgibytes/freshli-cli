@@ -56,31 +56,15 @@ public class AnalyzeRunnerTest
     {
         var apiAnalysisId = Guid.NewGuid();
 
-        _eventEngine
-            .Setup(mock => mock.On(It.IsAny<Action<AnalysisApiCreatedEvent>>()))
-            .Callback<Action<AnalysisApiCreatedEvent>>(action => action(
-                new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
-            ));
+        SetupAnalysisApiCreatedEvent(apiAnalysisId);
 
         var exitCode = _analyzeRunner.Run(_options, _console.Object);
 
         Assert.Equal(0, exitCode);
 
-        _configuration.VerifySet(mock => mock.CacheDir = _options.CacheDir);
-        _configuration.VerifySet(mock => mock.GitPath = _options.GitPath);
-
-        _activityEngine.Verify(mock => mock.Dispatch(It.Is<StartAnalysisActivity>(value =>
-            value.HistoryInterval == _options.HistoryInterval &&
-            value.RepositoryBranch == _options.Branch &&
-            value.RepositoryUrl == _options.RepositoryLocation &&
-            value.RevisionHistoryMode == RevisionHistoryMode.AllRevisions &&
-            value.UseCommitHistory == CommitHistory.AtInterval
-        )));
-
-        _activityEngine.Verify(mock => mock.Dispatch(It.Is<UpdateAnalysisStatusActivity>(value =>
-            value.ApiAnalysisId == apiAnalysisId &&
-            value.Status == "success"
-        )));
+        VerifyConfigurationValuesSetCorrectly();
+        VerifyStartAnalysisActivityDispatched();
+        VerifyApiStatusUpdated(apiAnalysisId, "success");
     }
 
     [Fact]
@@ -88,37 +72,16 @@ public class AnalyzeRunnerTest
     {
         var apiAnalysisId = Guid.NewGuid();
 
-        _eventEngine
-            .Setup(mock => mock.On(It.IsAny<Action<AnalysisFailureLoggedEvent>>()))
-            .Callback<Action<AnalysisFailureLoggedEvent>>(action => action(
-                new AnalysisFailureLoggedEvent(new UnhandledExceptionEvent(new Exception("example failure")))
-            ));
-
-        _eventEngine
-            .Setup(mock => mock.On(It.IsAny<Action<AnalysisApiCreatedEvent>>()))
-            .Callback<Action<AnalysisApiCreatedEvent>>(action => action(
-                new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
-            ));
+        SetupAnalysisFailureLoggedEvent();
+        SetupAnalysisApiCreatedEvent(apiAnalysisId);
 
         var exitCode = _analyzeRunner.Run(_options, _console.Object);
 
         Assert.Equal(1, exitCode);
 
-        _configuration.VerifySet(mock => mock.CacheDir = _options.CacheDir);
-        _configuration.VerifySet(mock => mock.GitPath = _options.GitPath);
-
-        _activityEngine.Verify(mock => mock.Dispatch(It.Is<StartAnalysisActivity>(value =>
-            value.HistoryInterval == _options.HistoryInterval &&
-            value.RepositoryBranch == _options.Branch &&
-            value.RepositoryUrl == _options.RepositoryLocation &&
-            value.RevisionHistoryMode == RevisionHistoryMode.AllRevisions &&
-            value.UseCommitHistory == CommitHistory.AtInterval
-        )));
-
-        _activityEngine.Verify(mock => mock.Dispatch(It.Is<UpdateAnalysisStatusActivity>(value =>
-            value.ApiAnalysisId == apiAnalysisId &&
-            value.Status == "error"
-        )));
+        VerifyConfigurationValuesSetCorrectly();
+        VerifyStartAnalysisActivityDispatched();
+        VerifyApiStatusUpdated(apiAnalysisId, "error");
     }
 
     [Fact]
@@ -128,9 +91,17 @@ public class AnalyzeRunnerTest
 
         Assert.Equal(-1, exitCode);
 
-        _configuration.VerifySet(mock => mock.CacheDir = _options.CacheDir);
-        _configuration.VerifySet(mock => mock.GitPath = _options.GitPath);
+        VerifyConfigurationValuesSetCorrectly();
+        VerifyStartAnalysisActivityDispatched();
+    }
 
+    private void VerifyApiStatusUpdated(Guid apiAnalysisId, string status) =>
+        _activityEngine.Verify(mock => mock.Dispatch(It.Is<UpdateAnalysisStatusActivity>(value =>
+            value.ApiAnalysisId == apiAnalysisId &&
+            value.Status == status
+        )));
+
+    private void VerifyStartAnalysisActivityDispatched() =>
         _activityEngine.Verify(mock => mock.Dispatch(It.Is<StartAnalysisActivity>(value =>
             value.HistoryInterval == _options.HistoryInterval &&
             value.RepositoryBranch == _options.Branch &&
@@ -138,5 +109,24 @@ public class AnalyzeRunnerTest
             value.RevisionHistoryMode == RevisionHistoryMode.AllRevisions &&
             value.UseCommitHistory == CommitHistory.AtInterval
         )));
+
+    private void VerifyConfigurationValuesSetCorrectly()
+    {
+        _configuration.VerifySet(mock => mock.CacheDir = _options.CacheDir);
+        _configuration.VerifySet(mock => mock.GitPath = _options.GitPath);
     }
+
+    private void SetupAnalysisFailureLoggedEvent() =>
+        _eventEngine
+            .Setup(mock => mock.On(It.IsAny<Action<AnalysisFailureLoggedEvent>>()))
+            .Callback<Action<AnalysisFailureLoggedEvent>>(action => action(
+                new AnalysisFailureLoggedEvent(new UnhandledExceptionEvent(new Exception("example failure")))
+            ));
+
+    private void SetupAnalysisApiCreatedEvent(Guid apiAnalysisId) =>
+        _eventEngine
+            .Setup(mock => mock.On(It.IsAny<Action<AnalysisApiCreatedEvent>>()))
+            .Callback<Action<AnalysisApiCreatedEvent>>(action => action(
+                new AnalysisApiCreatedEvent {ApiAnalysisId = apiAnalysisId}
+            ));
 }
