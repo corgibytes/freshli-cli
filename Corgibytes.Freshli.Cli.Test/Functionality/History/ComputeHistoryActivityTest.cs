@@ -59,6 +59,7 @@ public class ComputeHistoryActivityTest
                 new DateTimeOffset(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
             )
         };
+        SetupHistoryStopPointIds(historyIntervalStops);
         _computeHistory.Setup(mock => mock.ComputeWithHistoryInterval(
                 It.IsAny<IHistoryStopData>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>())
             )
@@ -66,30 +67,10 @@ public class ComputeHistoryActivityTest
 
         // Act
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        new ComputeHistoryActivity(
-            analysisId,
-            HistoryStopData
-        ).Handle(_eventEngine.Object);
+        new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         // Assert
-        _eventEngine.Verify(
-            mock => mock.Fire(
-                It.Is<HistoryIntervalStopFoundEvent>(
-                    value =>
-                        value.AnalysisId == analysisId &&
-                        value.HistoryStopPointId == HistoryStopPointId
-                )
-            )
-        );
-        _eventEngine.Verify(
-            mock => mock.Fire(
-                It.Is<HistoryIntervalStopFoundEvent>(
-                    value =>
-                        value.AnalysisId == analysisId &&
-                        value.HistoryStopPointId == HistoryStopPointId
-                )
-            )
-        );
+        VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
     [Fact]
@@ -106,6 +87,7 @@ public class ComputeHistoryActivityTest
                 new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
             )
         };
+        SetupHistoryStopPointIds(historyIntervalStops);
         _computeHistory.Setup(mock => mock.ComputeCommitHistory(
                 It.IsAny<IHistoryStopData>())
             )
@@ -113,21 +95,10 @@ public class ComputeHistoryActivityTest
 
         // Act
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        new ComputeHistoryActivity(
-            analysisId,
-            HistoryStopData
-        ).Handle(_eventEngine.Object);
+        new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         // Assert
-        _eventEngine.Verify(
-            mock => mock.Fire(
-                It.Is<HistoryIntervalStopFoundEvent>(
-                    value =>
-                        value.AnalysisId == analysisId &&
-                        value.HistoryStopPointId == HistoryStopPointId
-                )
-            )
-        );
+        VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
     [Fact]
@@ -144,6 +115,7 @@ public class ComputeHistoryActivityTest
                 new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
             )
         };
+        SetupHistoryStopPointIds(historyIntervalStops);
         _computeHistory.Setup(mock => mock.ComputeLatestOnly(
                 It.IsAny<IHistoryStopData>())
             )
@@ -151,21 +123,10 @@ public class ComputeHistoryActivityTest
 
         // Act
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        new ComputeHistoryActivity(
-            analysisId,
-            HistoryStopData
-        ).Handle(_eventEngine.Object);
+        new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         // Assert
-        _eventEngine.Verify(
-            mock => mock.Fire(
-                It.Is<HistoryIntervalStopFoundEvent>(
-                    value =>
-                        value.AnalysisId == analysisId &&
-                        value.HistoryStopPointId == HistoryStopPointId
-                )
-            )
-        );
+        VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
     [Fact]
@@ -209,7 +170,53 @@ public class ComputeHistoryActivityTest
         var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval, useCommitHistory,
             revisionHistoryMode);
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
-        _cacheDb.Setup(mock => mock.AddHistoryStopPoint(It.IsAny<CachedHistoryStopPoint>()))
-            .Returns(HistoryStopPointId);
+    }
+
+    private void SetupHistoryStopPointIds(List<HistoryIntervalStop> historyIntervalStops)
+    {
+        var stopPointId = HistoryStopPointId;
+        foreach (var stopPoint in historyIntervalStops)
+        {
+            _cacheDb.Setup(mock => mock.AddHistoryStopPoint(It.Is<CachedHistoryStopPoint>(value =>
+                    value.GitCommitId == stopPoint.GitCommitIdentifier &&
+                    value.AsOfDateTime == stopPoint.AsOfDateTime)))
+                .Returns(stopPointId);
+            stopPointId++;
+        }
+    }
+
+    private void VerifyHistoryStopPoints(Guid analysisId, List<HistoryIntervalStop> historyIntervalStops)
+    {
+        var stopPointId = HistoryStopPointId;
+        foreach (var stopPoint in historyIntervalStops)
+        {
+            var path = System.IO.Path.Combine(Configuration.CacheDir, "histories", HistoryStopData.RepositoryId,
+                stopPoint.GitCommitIdentifier);
+
+            // Verifies that the expected data is being stored in the
+            // CachedHistoryStopPoints table.  This is to guard against a bug
+            // that was introduced when we started using the cached information
+            // from the database instead of passing the HistoryStopData object.
+            _cacheDb.Verify(mock => mock.AddHistoryStopPoint(
+                It.Is<CachedHistoryStopPoint>(value =>
+                    value.CachedAnalysisId == analysisId &&
+                    value.RepositoryId == HistoryStopData.RepositoryId &&
+                    value.LocalPath == path &&
+                    value.GitCommitId == stopPoint.GitCommitIdentifier &&
+                    value.AsOfDateTime == stopPoint.AsOfDateTime
+                )));
+
+            // Verifies that we get an event for each history stop point
+            var id = stopPointId;
+            _eventEngine.Verify(
+                mock => mock.Fire(
+                    It.Is<HistoryIntervalStopFoundEvent>(
+                        value =>
+                            value.AnalysisId == analysisId &&
+                            value.HistoryStopPointId == id
+                    )));
+
+            stopPointId++;
+        }
     }
 }
