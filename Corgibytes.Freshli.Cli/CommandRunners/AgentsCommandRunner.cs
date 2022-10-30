@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.CommandLine.Invocation;
+using System.CommandLine;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
@@ -13,17 +13,17 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOptions>
 {
-    public AgentsCommandRunner(IServiceProvider serviceProvider, Runner runner)
+    public AgentsCommandRunner(IServiceProvider serviceProvider, IRunner runner)
         : base(serviceProvider, runner)
     {
     }
 
-    public override int Run(EmptyCommandOptions options, InvocationContext context) => 0;
+    public override int Run(EmptyCommandOptions options, IConsole console) => 0;
 }
 
 public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, EmptyCommandOptions>
 {
-    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, Runner runner, IAgentsDetector agentsDetector,
+    public AgentsDetectCommandRunner(IServiceProvider serviceProvider, IRunner runner, IAgentsDetector agentsDetector,
         IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine)
         : base(serviceProvider, runner)
     {
@@ -36,7 +36,7 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
-    public override int Run(EmptyCommandOptions options, InvocationContext context)
+    public override int Run(EmptyCommandOptions options, IConsole console)
     {
         ActivityEngine.Dispatch(new DetectAgentsActivity(AgentsDetector));
 
@@ -72,7 +72,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
 {
     private readonly IAgentsDetector _agentsDetector;
 
-    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, Runner runner, AgentsVerifier agentsVerifier,
+    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, IRunner runner, AgentsVerifier agentsVerifier,
         IAgentsDetector agentsDetector)
         : base(serviceProvider, runner)
     {
@@ -82,7 +82,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
 
     private AgentsVerifier AgentsVerifier { get; }
 
-    public override int Run(AgentsVerifyCommandOptions options, InvocationContext context)
+    public override int Run(AgentsVerifyCommandOptions options, IConsole console)
     {
         var agents = _agentsDetector.Detect();
 

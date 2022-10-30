@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using System.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
@@ -45,10 +44,10 @@ public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
     }
 
 
-    protected override int Run(IHost host, InvocationContext context, ScanCommandOptions options)
+    protected override int Run(IHost host, IConsole console, ScanCommandOptions options)
     {
         _ = options ?? throw new ArgumentNullException(nameof(options));
-        context.Console.Out.WriteLine(CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler);
-        return base.Run(host, context, options);
+        console.Out.WriteLine(CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler);
+        return base.Run(host, console, options);
     }
 }

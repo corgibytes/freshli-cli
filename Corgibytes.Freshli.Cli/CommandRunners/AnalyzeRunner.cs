@@ -1,5 +1,5 @@
 using System;
-using System.CommandLine.Invocation;
+using System.CommandLine;
 using System.CommandLine.IO;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -19,7 +19,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
     private readonly IResultsApi _resultsApi;
 
     public AnalyzeRunner(
-        IServiceProvider serviceProvider, Runner runner, IConfiguration configuration,
+        IServiceProvider serviceProvider, IRunner runner, IConfiguration configuration,
         IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine,
         IResultsApi resultsApi
     ) : base(serviceProvider, runner)
@@ -30,7 +30,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _resultsApi = resultsApi;
     }
 
-    public override int Run(AnalyzeCommandOptions options, InvocationContext context)
+    public override int Run(AnalyzeCommandOptions options, IConsole console)
     {
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
@@ -49,19 +49,36 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
 
         _eventEngine.On<AnalysisFailureLoggedEvent>(analysisFailure =>
         {
-            context.Console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
+            console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
             exitStatus = 1;
         });
 
+        Guid? apiAnalysisId = null;
         _eventEngine.On<AnalysisApiCreatedEvent>(createdEvent =>
         {
-            context.Console.Out.WriteLine(
+            apiAnalysisId = createdEvent.ApiAnalysisId;
+            console.Out.WriteLine(
                 "Results will be available at: " +
                 _resultsApi.GetResultsUrl(createdEvent.ApiAnalysisId)
             );
         });
 
         _activityEngine.Wait();
+
+        if (apiAnalysisId != null)
+        {
+            _activityEngine.Dispatch(new UpdateAnalysisStatusActivity(
+                apiAnalysisId.Value,
+                exitStatus == 0 ? "success" : "error"
+            ));
+
+            _activityEngine.Wait();
+        }
+        else
+        {
+            console.Out.WriteLine($"Unable to communicate with API. {nameof(apiAnalysisId)} is not set.");
+            exitStatus = -1;
+        }
 
         return exitStatus;
     }

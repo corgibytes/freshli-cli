@@ -61,11 +61,13 @@ flowchart TD;
     PrepareCacheActivity --> CachePrepareFailedEvent
     AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
+    AnalysisApiStatusUpdatedEvent
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
     ApiPackageLibYearCreatedEvent
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
     CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
+    UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
