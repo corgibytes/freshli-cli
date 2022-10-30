@@ -22,10 +22,9 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     [JsonProperty] private ICacheManager CacheManager { get; }
     [JsonProperty] private IConfiguration Configuration { get; }
 
-    public CachedGitSource FindOneByHash(string hash)
+    public CachedGitSource FindOneByRepositoryId(string repositoryId)
     {
-        using var db = new CacheContext(Configuration.CacheDir);
-        var entry = db.CachedGitSources.Find(hash);
+        var entry = CacheManager.GetCacheDb().RetrieveCachedGitSource(new CachedGitSourceId(repositoryId));
         if (entry == null)
         {
             throw new CacheException(CliOutput.CachedGitSourceRepository_No_Repository_Found_In_Cache);
@@ -34,33 +33,23 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         return entry;
     }
 
-    public void Save(CachedGitSource cachedGitSource)
-    {
-        using var db = new CacheContext(Configuration.CacheDir);
-        db.CachedGitSources.Add(cachedGitSource);
-        db.SaveChanges();
-    }
+    public void Save(CachedGitSource cachedGitSource) => CacheManager.GetCacheDb().AddCachedGitSource(cachedGitSource);
 
     public CachedGitSource CloneOrPull(string url, string? branch)
     {
-        // Ensure the cache directory is ready for use.
-        CacheManager.Prepare();
+        // Generate a unique repositoryId for the repository based on its URL and branch.
+        var id = new CachedGitSourceId(url, branch);
 
-        // Generate a unique hash for the repository based on its URL and branch.
-        var hash = new CachedGitSourceId(url, branch).Id;
-
-        using var db = new CacheContext(Configuration.CacheDir);
-        var existingCachedGitSource = db.CachedGitSources.Find(hash);
+        var existingCachedGitSource = CacheManager.GetCacheDb().RetrieveCachedGitSource(id);
         if (existingCachedGitSource is not null)
         {
             return existingCachedGitSource;
         }
 
-        var directory = CacheManager.GetDirectoryInCache("repositories", hash);
+        var directory = CacheManager.GetDirectoryInCache("repositories", id.Id);
 
-        var cachedGitSource = new CachedGitSource(hash, url, branch, directory.FullName);
-        db.CachedGitSources.Add(cachedGitSource);
-        db.SaveChanges();
+        var cachedGitSource = new CachedGitSource(id.Id, url, branch, directory.FullName);
+        CacheManager.GetCacheDb().AddCachedGitSource(cachedGitSource);
 
         if (directory.GetFiles().Any() || directory.GetDirectories().Any())
         {
@@ -123,8 +112,11 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         var directory = new DirectoryInfo(cachedGitSource.LocalPath);
         using var db = new CacheContext(Configuration.CacheDir);
-        var entry = db.CachedGitSources.Find(cachedGitSource.Id);
-        db.CachedGitSources.Remove(entry!);
+        var entry = CacheManager.GetCacheDb().RetrieveCachedGitSource(new CachedGitSourceId(cachedGitSource.Id));
+        if (entry != null)
+        {
+            CacheManager.GetCacheDb().RemoveCachedGitSource(entry);
+        }
 
         directory.Delete(true);
     }
