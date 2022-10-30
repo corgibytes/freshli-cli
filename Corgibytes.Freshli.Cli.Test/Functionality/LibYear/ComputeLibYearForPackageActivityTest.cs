@@ -62,6 +62,16 @@ public class ComputeLibYearForPackageActivityTest
 
         activity.Handle(eventClient.Object);
 
+        cacheDb.Verify(mock => mock.AddPackageLibYear(
+            It.Is<CachedPackageLibYear>(value =>
+                value.PackageName == package.Name &&
+                value.CurrentVersion == packageLibYear.CurrentVersion!.ToString() &&
+                value.ReleaseDateCurrentVersion == packageLibYear.ReleaseDateCurrentVersion &&
+                value.LatestVersion == packageLibYear.LatestVersion!.ToString() &&
+                value.ReleaseDateLatestVersion == packageLibYear.ReleaseDateLatestVersion &&
+                Math.Abs(value.LibYear - packageLibYear.LibYear) < 0.1 &&
+                value.HistoryStopPointId == historyStopPointId)));
+
         eventClient.Verify(mock => mock.Fire(It.Is<LibYearComputedForPackageEvent>(value =>
             value.AnalysisId == analysisId &&
             value.HistoryStopPointId == historyStopPointId &&
