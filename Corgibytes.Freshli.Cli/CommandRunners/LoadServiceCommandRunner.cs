@@ -1,5 +1,5 @@
 using System;
-using System.CommandLine.Invocation;
+using System.CommandLine;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -10,14 +10,14 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class LoadServiceCommandRunner : CommandRunner<LoadServiceCommand, EmptyCommandOptions>
 {
-    public LoadServiceCommandRunner(IServiceProvider serviceProvider, Runner runner,
+    public LoadServiceCommandRunner(IServiceProvider serviceProvider, IRunner runner,
         IApplicationActivityEngine activityEngine)
         : base(serviceProvider, runner) =>
         ActivityEngine = activityEngine;
 
     private IApplicationActivityEngine ActivityEngine { get; }
 
-    public override int Run(EmptyCommandOptions options, InvocationContext context)
+    public override int Run(EmptyCommandOptions options, IConsole console)
     {
         ActivityEngine.Dispatch(new LoadServiceProviderActivity());
         ActivityEngine.Wait();

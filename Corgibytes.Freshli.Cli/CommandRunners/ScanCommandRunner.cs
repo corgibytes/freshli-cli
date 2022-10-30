@@ -1,5 +1,5 @@
 ﻿using System;
-using System.CommandLine.Invocation;
+using System.CommandLine;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Formatters;
@@ -11,11 +11,11 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class ScanCommandRunner : CommandRunner<ScanCommand, ScanCommandOptions>
 {
-    public ScanCommandRunner(IServiceProvider serviceProvider, Runner runner) : base(serviceProvider, runner)
+    public ScanCommandRunner(IServiceProvider serviceProvider, IRunner runner) : base(serviceProvider, runner)
     {
     }
 
-    public override int Run(ScanCommandOptions options, InvocationContext context)
+    public override int Run(ScanCommandOptions options, IConsole console)
     {
         if (string.IsNullOrWhiteSpace(options.Path.FullName))
         {
