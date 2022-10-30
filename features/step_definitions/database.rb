@@ -34,7 +34,7 @@ Then('the {string} contains lib year {double} for {string} as of {string}') do
     SELECT CachedPackageLibYears.PackageName, CachedPackageLibYears.LibYear, CachedHistoryStopPoints.AsOfDateTime
     FROM CachedHistoryStopPoints
     INNER JOIN CachedPackageLibYears ON CachedHistoryStopPoints.ID=CachedPackageLibYears.HistoryStopPointId
-    WHERE CachedHistoryStopPoints.AsOfDateTime LIKE '#{as_of_date_time}' AND CachedPackageLibYears.PackageName='#{package}
+    WHERE CachedHistoryStopPoints.AsOfDateTime LIKE '#{as_of_date_time}' AND CachedPackageLibYears.PackageName='#{package}'
   SQL
   expect(r[0][0]).to match(/#{package}/)
   expect(r[0][1]).to eq(lib_year)
