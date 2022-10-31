@@ -7,6 +7,7 @@ issue-labels-include:
   - epic
   - question
   - refactoring
+  - testing
 
 issue-labels-alias:
   - name: bug
@@ -40,3 +41,7 @@ issue-labels-alias:
   - name: refactoring
     header: Refactoring
     plural: Refactoring
+
+  - name: testing
+    header: Testing
+    plural: Testing
