@@ -168,9 +168,9 @@ jobs:
           ruby-version: 3.1 # Not needed with a .ruby-version file
           bundler-cache: true
 
-      - name: "[Test] - Behavior Acceptance Tests with Coverage Collection"
+      - name: "[Test] - Behavior Acceptance Tests"
         run: |
-          dotnet build -o exe && dotnet coverlet ./exe --target "bundle" --targetargs "exec cucumber" --output ./coverage-acceptance.info --format lcov
+          dotnet build -o exe && bundle exec cucumber
 
       - name: "[Test] - Send Code Coverage Data to Code Climate"
         uses: paambaati/codeclimate-action@v3.2.0
@@ -178,8 +178,7 @@ jobs:
           CC_TEST_REPORTER_ID: ${{ secrets.TEST_REPORTER_ID }}
         with:
           coverageLocations: |
-            ${{github.workspace}}/Corgibytes.Freshli.Cli.Test/coverage.info
-            ${{github.workspace}}/coverage-acceptance.info
+            ${{github.workspace}}/Corgibytes.Freshli.Cli.Test/coverage.info:lcov
 
       - name: "[Publish] - Publish win-x64, linux-x64 and osx-x64"
         run: |
