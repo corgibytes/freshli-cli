@@ -6,6 +6,7 @@ issue-labels-include:
   - enhancement
   - epic
   - question
+  - refactoring
 
 issue-labels-alias:
   - name: bug
@@ -35,3 +36,7 @@ issue-labels-alias:
   - name: question
     header: question
     plural: Questions
+
+  - name: refactoring
+    header: Refactoring
+    plural: Refactoring
