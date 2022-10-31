@@ -178,8 +178,8 @@ jobs:
           CC_TEST_REPORTER_ID: ${{ secrets.TEST_REPORTER_ID }}
         with:
           coverageLocations: |
-            ${{github.workspace}}/Corgibytes.Freshli.Cli.Test/coverage.info
-            ${{github.workspace}}/coverage-acceptance.info
+            ${{github.workspace}}/Corgibytes.Freshli.Cli.Test/coverage.info:lcov
+            ${{github.workspace}}/coverage-acceptance.info:lcov
 
       - name: "[Publish] - Publish win-x64, linux-x64 and osx-x64"
         run: |
