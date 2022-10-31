@@ -5,6 +5,7 @@ issue-labels-include:
   - documentation
   - enhancement
   - epic
+  - question
 
 issue-labels-alias:
   - name: bug
@@ -30,3 +31,7 @@ issue-labels-alias:
   - name: epic
     header: Epic
     plural: Epics
+
+  - name: question
+    header: question
+    plural: Questions
