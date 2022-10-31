@@ -1,12 +1,24 @@
+## v0.4.1
+
+
+As part of this release we had [1 issue](https://github.com/corgibytes/freshli-cli/milestone/4?closed=1) closed.
+Goals for this milestone:
+- Update to use Freshli-Lib v0.4.0 (handle multiple manifest files).
+
+__Dependencies__
+
+- [__#43__](https://github.com/corgibytes/freshli-cli/pull/43) Upgrade to Freshli-Lib v0.4.0
+
+
 ## v0.5.0
-Associated Docker image: [corgibytes/freshli-cli:0.5.0-beta.1+0-0.Branch.release-0.5.Sha.affda9bb296e2cc2e9b9cf906908a121bd903cf5](https://hub.docker.com/r/corgibytes/freshli-cli/tags?page=1name=0.5.0-beta.1+0-0.Branch.release-0.5.Sha.affda9bb296e2cc2e9b9cf906908a121bd903cf5)
+Associated Docker image: [corgibytes/freshli-cli:0.5.0-beta.1-3.Branch.release-0.5.Sha.ad481d18e7ee54c12ab2c94431a16683bd0fbf1e](https://hub.docker.com/r/corgibytes/freshli-cli/tags?page=1name=0.5.0-beta.1+3-3.Branch.release-0.5.Sha.ad481d18e7ee54c12ab2c94431a16683bd0fbf1e)
 
 As part of this release we had [86 issues](https://github.com/corgibytes/freshli-cli/milestone/3?closed=1) closed.
 
 - Packaged as a Docker container instead of as a `dotnet tool`
 - Adds the `analyze` command
     - Implements a new processing pipeline
-    - Relies on "language agent" executables for language-specific operations and
+    - Relies on "language agent" executables for language-specific operations and 
     - Uses language-agent-generated CycloneDX file as a data-source computing LibYear.
 - Adds the `cache prepare` command
     - Prepares the cache that's used by the `analyze` command. This is performed implicitly when `analyze` is run and the cache does not already exist.
@@ -131,18 +143,6 @@ __Testing__
 - [__#63__](https://github.com/corgibytes/freshli-cli/issues/63) Add Aruba Testing
 - [__#129__](https://github.com/corgibytes/freshli-cli/issues/129) Let `AgentsReader` return mock data from a script
 
-## v0.4.1
-
-
-As part of this release we had [1 issue](https://github.com/corgibytes/freshli-cli/milestone/4?closed=1) closed.
-Goals for this milestone:
-- Update to use Freshli-Lib v0.4.0 (handle multiple manifest files).
-
-__Dependencies__
-
-- [__#43__](https://github.com/corgibytes/freshli-cli/pull/43) Upgrade to Freshli-Lib v0.4.0
-
-
 ## v0.4.0
 
 
@@ -196,6 +196,9 @@ __Enhancements__
 - [__#7__](https://github.com/corgibytes/freshli-cli/issues/7) Create automated build for the executable
 - [__#6__](https://github.com/corgibytes/freshli-cli/pull/6) Consumes Freshli Core as NuGet Package
 - [__#4__](https://github.com/corgibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
+
+
+ibytes/freshli-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
 
 
 i-cli/issues/4) Setup CodeClimate Maintainability and Code Coverage for CLI
