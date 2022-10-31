@@ -1,15 +1,3 @@
-## v0.4.1
-
-
-As part of this release we had [1 issue](https://github.com/corgibytes/freshli-cli/milestone/4?closed=1) closed.
-Goals for this milestone:
-- Update to use Freshli-Lib v0.4.0 (handle multiple manifest files).
-
-__Dependencies__
-
-- [__#43__](https://github.com/corgibytes/freshli-cli/pull/43) Upgrade to Freshli-Lib v0.4.0
-
-
 ## v0.5.0
 Associated Docker image: [corgibytes/freshli-cli:0.5.0-beta.1+0-0.Branch.release-0.5.Sha.affda9bb296e2cc2e9b9cf906908a121bd903cf5](https://hub.docker.com/r/corgibytes/freshli-cli/tags?page=1name=0.5.0-beta.1+0-0.Branch.release-0.5.Sha.affda9bb296e2cc2e9b9cf906908a121bd903cf5)
 
@@ -18,7 +6,7 @@ As part of this release we had [86 issues](https://github.com/corgibytes/freshli
 - Packaged as a Docker container instead of as a `dotnet tool`
 - Adds the `analyze` command
     - Implements a new processing pipeline
-    - Relies on "language agent" executables for language-specific operations and 
+    - Relies on "language agent" executables for language-specific operations and
     - Uses language-agent-generated CycloneDX file as a data-source computing LibYear.
 - Adds the `cache prepare` command
     - Prepares the cache that's used by the `analyze` command. This is performed implicitly when `analyze` is run and the cache does not already exist.
@@ -142,6 +130,18 @@ __Testing__
 
 - [__#63__](https://github.com/corgibytes/freshli-cli/issues/63) Add Aruba Testing
 - [__#129__](https://github.com/corgibytes/freshli-cli/issues/129) Let `AgentsReader` return mock data from a script
+
+## v0.4.1
+
+
+As part of this release we had [1 issue](https://github.com/corgibytes/freshli-cli/milestone/4?closed=1) closed.
+Goals for this milestone:
+- Update to use Freshli-Lib v0.4.0 (handle multiple manifest files).
+
+__Dependencies__
+
+- [__#43__](https://github.com/corgibytes/freshli-cli/pull/43) Upgrade to Freshli-Lib v0.4.0
+
 
 ## v0.4.0
 
