@@ -68,6 +68,18 @@ ENV MAVEN_HOME /usr/share/maven
 ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 RUN mkdir -p $MAVEN_CONFIG
 
+# Bootstrap contents of .m2 directory
+RUN mkdir /root/bootstrap
+RUN echo "<project> \
+    <groupId>com.corgibytes</groupId> \
+    <artifactId>freshli-java-bootstrap</artifactId> \
+    <version>1.0</version> \
+    <modelVersion>4.0.0</modelVersion> \
+</project>" > /root/bootstrap/pom.xml
+RUN cd /root/bootstrap && \
+    mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom && \
+    mvn com.corgibytes:versions-maven-plugin:resolve-ranges-historical
+
 # Copy `freshli` executable from the `dotnet_build` image
 RUN mkdir -p /usr/local/share/freshli
 COPY --from=dotnet_build /app/freshli/exe/ /usr/local/share/freshli/
