@@ -38,9 +38,9 @@ public class AgentReader : IAgentReader
         try
         {
             packageUrlsWithDate = _commandInvoker.Run(AgentExecutablePath,
-                $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".");
+                $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".", 3);
         }
-        catch (IOException)
+        catch
         {
             return packages;
         }

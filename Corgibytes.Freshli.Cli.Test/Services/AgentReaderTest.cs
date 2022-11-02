@@ -61,7 +61,7 @@ public class AgentReaderTest
             $"{_gammaPackage.PackageUrl.Version}\t{_gammaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n";
 
         _commandInvoker.Setup(mock => mock.Run(agentExecutable,
-            $"retrieve-release-history {_packageUrl.FormatWithoutVersion()}", ".")).Returns(commandResponse);
+            $"retrieve-release-history {_packageUrl.FormatWithoutVersion()}", ".", 3)).Returns(commandResponse);
 
         var initialCachedPackages = new List<CachedPackage>();
 
