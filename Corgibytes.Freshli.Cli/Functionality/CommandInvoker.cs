@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using CliWrap;
 using Microsoft.Extensions.Logging;
+using Polly;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -12,7 +13,7 @@ public class CommandInvoker : ICommandInvoker
 
     public CommandInvoker(ILogger<CommandInvoker>? logger = null) => _logger = logger;
 
-    public string Run(string executable, string arguments, string workingDirectory)
+    public string Run(string executable, string arguments, string workingDirectory, int maxRetries = 0)
     {
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
@@ -34,21 +35,53 @@ public class CommandInvoker : ICommandInvoker
 
         try
         {
-            using var task = command.ExecuteAsync().Task;
-            task.Wait();
+            Policy
+                .Handle<Exception>()
+                .WaitAndRetry(
+                    maxRetries,
+                    // delay progression: 2s, 4s, 8s, 16s, 32s
+                    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+                    onRetry: (_, retryCount) =>
+                {
+                    _logger?.LogWarning(
+                        "Command failed. Retry {RetryCount} of {MaxRetries}. Command: {Executable}; " +
+                        "Args: {Arguments}; WorkingDir: {WorkingDir}",
+                        retryCount,
+                        maxRetries,
+                        executable,
+                        arguments,
+                        workingDirectory
+                    );
+                })
+                .Execute(() =>
+                {
+                    using var task = command.ExecuteAsync().Task;
+                    task.Wait();
+                });
         }
-        catch (AggregateException error)
+        catch (Exception error)
         {
-            _logger?.LogError("{Exception}", error.ToString());
-            foreach (var innerError in error.InnerExceptions)
+            _logger?.LogError(
+                "Command failed. No more retries. Command: {Executable}; Args: {Arguments}; WorkingDir: {WorkingDir}; " +
+                "Exception: {Exception}",
+                executable,
+                arguments,
+                workingDirectory,
+                error.ToString()
+            );
+
+            if (error is AggregateException aggregate)
             {
-                _logger?.LogError("{InnerException}", innerError.ToString());
+                foreach (var innerError in aggregate.InnerExceptions)
+                {
+                    _logger?.LogError("{InnerException}", innerError.ToString());
+                }
             }
 
             _logger?.LogError("{StdOutBuffer}", stdOutBuffer.ToString());
             _logger?.LogError("{StdErrBuffer}", stdErrBuffer.ToString());
 
-            throw new IOException(stdErrBuffer.ToString());
+            throw;
         }
 
         return stdOutBuffer.ToString();
