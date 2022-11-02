@@ -7,7 +7,7 @@ exclude_patterns:
 checks:
   method-lines:
     config:
-      threshold: 60
+      threshold: 65
   argument-count:
     enabled: true
     config:
