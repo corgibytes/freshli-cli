@@ -9,7 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest-16-cores
+    runs-on: ubuntu-latest-32-cores
     env:
       BUILD_ARTIFACTS_FOLDER: build_artifacts
 
