@@ -27,7 +27,8 @@ Then('the {string} contains history stop point at {string} {string}') do |databa
 end
 
 Then('the {string} contains lib year {double} for {string} as of {string}') do
- |database, lib_year, package, as_of_date_time|
+  |database, lib_year, package, as_of_date_time|
+
   database = resolve_path database
   db = SQLite3::Database.open database
   r = db.execute(<<-SQL)

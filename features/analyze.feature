@@ -188,8 +188,5 @@ Feature: analyze
         When I run `freshli --loglevel Debug analyze https://github.com/this-repository-does-not-exist`
         Then the output should contain:
         """
-        Analysis failed because: Git encountered an error:
-        Cloning into '.'...
-        remote: Not Found
-        fatal: repository 'https://github.com/this-repository-does-not-exist/' not found
+        Command failed. No more retries. Command: git; Args: clone https://github.com/this-repository-does-not-exist
         """
