@@ -18,7 +18,7 @@ As part of this release we had [86 issues](https://github.com/corgibytes/freshli
 - Packaged as a Docker container instead of as a `dotnet tool`
 - Adds the `analyze` command
     - Implements a new processing pipeline
-    - Relies on "language agent" executables for language-specific operations and 
+    - Relies on "language agent" executables for language-specific operations and
     - Uses language-agent-generated CycloneDX file as a data-source computing LibYear.
 - Adds the `cache prepare` command
     - Prepares the cache that's used by the `analyze` command. This is performed implicitly when `analyze` is run and the cache does not already exist.
