@@ -127,6 +127,6 @@ public class AnalyzeRunnerTest
         _eventEngine
             .Setup(mock => mock.On(It.IsAny<Action<AnalysisApiCreatedEvent>>()))
             .Callback<Action<AnalysisApiCreatedEvent>>(action => action(
-                new AnalysisApiCreatedEvent {ApiAnalysisId = apiAnalysisId}
+                new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
             ));
 }
