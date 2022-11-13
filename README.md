@@ -7,140 +7,128 @@ A tool for displaying historical metrics about a project's dependencies. Run the
 
 ## Installing and Running
 
-The preferred way of running a development environment is described in [Working with the DevContainer](#working-with-the-devcontainer).
-First you need .NET 6.0 runtime installed which you can find [here](https://dotnet.microsoft.com/download/dotnet/6.0/runtime).  After .NET 6.0 is installed you download the latest Freshli executables [here](https://github.com/corgibytes/freshli-cli/releases/latest).  Pick the Zip file that matches you OS (Windows, Linux, or MacOs) then:
+`freshli` is only distributed in binary form via a Docker container image. The Docker container image includes the `freshli-agent-java` executable. As new language agents are released, these will be added to the container image as well.
 
-1) Download it.
-2) Extract the Zip file.
-3) Copy the folder to an appropriate location.
-4) Open a terminal and run `Corgibytes.Freshli.Cli.exe`.
+If you don’t want to use Docker, you’ll need to build from source and configure your environment appropriately.
 
-To run Freshli:
+### Using Docker
 
-```
-Path\To\Freshli\Corgibytes.Freshli.Cli.exe scan <repo>
-```
-
-Where `<repo>` is the path the repository you want to check. Can be either `https` or `git` path. For example:
-
-```
-Corgibytes.Freshli.Cli.exe scan https://github.com/corgibytes/freshli-fixture-ruby-nokotest
-```
-
-The above repo is one we use for testing Freshli. When run you should get output like:
-
-```
-> Corgibytes.Freshli.Cli.exe scan https://github.com/corgibytes/freshli-fixture-ruby-nokotest
-Gemfile.lock
-Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
-2017-01-01              0.0000  0                       0
-2017-02-01              0.0219  1                       0
-2017-03-01              0.0219  1                       0
-...
-```
-
-Are you getting this error or something similar? You can solve it (for now) by installing version 5.0.0 as described, but that's not the preferred way. If developing, check out [Working with the DevContainer](#working-with-the-devcontainer).
-
-```
-It was not possible to find any compatible framework version
-The framework 'Microsoft.NETCore.App', version '5.0.0' (x64) was not found.
-  - The following frameworks were found:
-      6.0.5 at [/usr/share/dotnet/shared/Microsoft.NETCore.App]
-
-You can resolve the problem by installing the specified framework and/or SDK.
-
-The specified framework can be found at:
-  - https://aka.ms/dotnet-core-applaunch?framework=Microsoft.NETCore.App&framework_version=5.0.0&arch=x64&rid=pop.22.04-x64
-```
-
-### Docker
-
-A production-ready container is available at [Docker Hub](https://hub.docker.com/r/corgibytes/freshli-cli). Make sure you are logged in to Docker Hub:
+Use the `docker pull` command to retrieve the latest version of the container image. 
 
 ```bash
-docker login -u $USERNAME
+docker pull corgibytes/freshli-cli:latest
 ```
 
-After logging in, pull the image:
+It’s a good idea to run this command periodically to check for new versions.
+
+Next pass the `--version` option to check the version that’s been retrieved.
+
 ```bash
-docker pull corgibytes/freshli-cli
+docker run --rm corgibytes/freshli-cli --version
 ```
 
-Then run the container:
+### `analyze` command
+
+The `analyze` command is used to compute LibYear metrics from a local or remote Git repository. The LibYear metric is computed for every package found in every dependency manifest file for the entire history of the repository branch that is being analyzed.
+
+Data is sent to the [Freshli app website](https://freshli.io) via API calls. You need to visit the link that’s provided in the `analyze` command’s output to view the results. There is no other supported way to access the collected data at this time.
+
+> :exclamation: Warning
+> 
+> The `analyze` command may take a long time to complete. For some projects, it may take well over an hour. How long it takes is dependent on several variables, such as the amount of history in the Git repository and the number of packages that are found at each point in time. The performance characteristics of the computer running the command is also a factor.
+>
+> A progress bar has not been [implemented yet](https://github.com/corgibytes/freshli-cli/issues/370). 
+
+#### Analyzing a remote Git repository
+
+To analyze a remote Git repository, provide a Git URL that can be used to clone the repository, such as `https://github.com/corgibytes/freshli-fixture-java-test`.
+
 ```bash
-docker run --rm freshli-cli --help
+docker run --rm corgibytes/freshli-cli analyze https://github.com/corgibytes/freshli-fixture-java-test
 ```
 
-### Alpha/Beta Releases
+Unless a branch name is provided with the `--branch` option, the default branch will be used.
 
-If you like to live on the edge you can find alpha/beta builds of Freshli as .NET Tool on our GitHub Packages [feed](https://github.com/corgibytes/freshli-cli/packages/875174). To download from the GitHub Packages feed you need to add the GitHub Packages as a NuGet source:
+#### Analyzing a local Git repository
 
-```
-dotnet nuget add source --username USERNAME --password PERSONAL_ACCESS_TOKEN --store-password-in-clear-text --name github "https://nuget.pkg.github.com/corgibytes/index.json"
-```
+To analyze a local Git repository, one that has already been cloned, provide a file system path to the location of the repository. The branch that is checked out is the one that will be analyzed. 
 
-Alternately you can use a `nuget.config` file:
-
-```
-<?xml version="1.0" encoding="utf-8"?>
-<configuration>
-    <packageSources>
-        <clear />
-        <add key="GithubPackages" value="https://nuget.pkg.github.com/corgibytes/index.json" />
-    </packageSources>
-    <packageSourceCredentials>
-        <GithubPackages>
-            <add key="Username" value="USERNAME" />
-            <add key="ClearTextPassword" value="PERSONAL_ACCESS_TOKEN" />
-        </GithubPackages>
-    </packageSourceCredentials>
-</configuration>
+```bash
+git clone https://github.com/corgibytes/freshli-fixture-java-test
+docker run --rm corgibytes/freshli-cli analyze freshli-fixture-java-test
 ```
 
-More details on adding GitHub packages as a source can be found [here](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-nuget-registry).
+#### Adjusting the history interval
 
-When downloading a alpha/beta version make sure you put the version in the .NET Tool install command:
+By default, the `analyze` command computes metrics at one month intervals. This value can be changed with the `--history-interval` option. Valid values are in the form of `<number><unit>`, where `<number>` is a positive integer and `<unit>` is either `y` for years, `m` for months, `w` for weeks, or `d` for days.
 
+The following command sets the history interval to 2 weeks.
+
+```bash
+docker run --rm corgibytes/freshli-cli analyze --history-interval=2w https://github.com/corgibytes/freshli-fixture-java-test
 ```
-dotnet tool install Corgibytes.Freshli.Cli -g --version 0.5.0-alpha0001
+
+#### Analyzing every commit
+
+It is possible for some commits to get skipped depending on the history interval that is selected. Specifying the `--commit-history` option will instruct the `analyze` to compute metrics for every commit regardless of the history interval value.
+
+Example:
+
+```bash
+docker run --rm corgibytes/freshli-cli analyze --commit-history https://github.com/corgibytes/freshli-fixture-java-test
 ```
 
-### Old Releases
+#### Analyzing only the latest commit
 
-You can find old releases to download [here](https://github.com/corgibytes/freshli-cli/releases) and old .NET Tool releases [here](https://www.nuget.org/packages/Corgibytes.Freshli.Cli/).
+For times when you would like to prevent the collection of historical metrics, use the `--latest-only` option.
+
+Example:
+
+```bash
+docker run --rm corgibytes/freshli-cli analyze --latest-only https://github.com/corgibytes/freshli-fixture-java-test
+```
+
+#### Adjusting the number of workers
+
+The `analyze` command, like many `freshli` commands, employs background workers to make full use of available CPU resources. You can use the `--workers` option to control the number of background workers that are used. 
+
+Example:
+
+```bash
+docker run --rm corgibytes/freshli-cli --workers=2 analyze https://github.com/corgibytes/freshli-fixture-java-test
+```
+
+### `agents detect` command
+
+This command is used to determine the language agents that are available to `freshli`.
+
+```bash
+docker run --rm corgibytes/freshli-cli agents detect
+```
+
+### `agents verify` command
+
+This command is used to determine if the the language agents behave in the way that `Freshli` expects.
+
+```bash
+docker run --rm corgibytes/freshli-cli agents verify
+```
 
 ## Supported Dependency Managers
 
-The dependency managers that Freshli supports are listed below along with the manifest files it can parse. The manifest file is the file that lists what dependencies are required by the project and has changed over time for some dependency managers, like NuGet.
+The `freshli` executable does not have built-in support for processing dependency manifest files. Language-specific agent programs, executables with names starting with `freshli-agent-`, provide the ability to process dependency manifests from different language ecosystems.
 
-| Dependency Manager                        | Language(s)/Framework(s)                                                     | Manifest Files Format        |
-|-------------------------------------------|------------------------------------------------------------------------------|------------------------------|
-| [Bundler](https://bundler.io/)            | [Ruby](https://www.ruby-lang.org), [Ruby on Rails](https://rubyonrails.org/) | Gemfile.lock                 |
-| [Carton](https://metacpan.org/pod/Carton) | [Perl](https://www.perl.org/)                                                | cpanfile                     |
-| [Composer](https://getcomposer.org/)      | [PHP](https://www.php.net/)                                                  | composer.json, composer.lock |
-| [Pip](https://pypi.org/project/pip/)      | [Python](https://www.python.org/)                                            | requirements.txt             |
-| [NuGet](https://www.nuget.org/)           | [C#](https://docs.microsoft.com/en-us/dotnet/csharp/)                        | *.csproj                     |
+Here is a list of language agents that have been developed so far and are included in the Docker container image mentioned above.
+
+| Language | Agent | Dependency Manager |
+|----------|-------|--------------------|
+| Java     | [`freshli-agent-java`](https://github.com/corgibytes/freshli-agent-java) | Maven | 
 
 Please let us know what other dependency managers and/or manifest files you would like use to support via the contact information in the [Contributing](#contributing) section.
 
-## What Data Does Freshli Return?
+## Metrics
 
-Freshli check your projects dependencies at on month intervals and returns a table with the following that looks like:
-
-```
-Gemfile.lock
-Date (yyyy-MM-dd)       LibYear UpgradesAvailable       Skipped
-2017-01-01              0.0000  0                       0
-2017-02-01              0.0219  1                       0
-...
-```
-
-First is the name of the manifest file being parsed followed by the historical values for that manifest file:
-
--   Date: The date the check was done.
--   Libyear: The total [libyear](https://libyear.com/) of all the dependencies.
--   Upgrades Available: How many dependencies are out of date at the date of the check.
--   Skipped: How many dependencies Freshli couldn't determine the libyear for.
+The `freshli analyze` command computes the [LibYear](https://libyear.com) metric.
 
 ### Libyear
 
@@ -182,14 +170,6 @@ If you have v1.0.1 installed then your libyear when checking on May 1, 2019 is 6
 68 / 365 = 0.1863
 ```
 
-### Upgrades Available
-
-Is simply the number of dependencies in your project that are not using the latest version at the time of the check. For example, if you have 5 dependencies and 3 of them are not using the latest version then you the update count is 3.
-
-### Skipped
-
-Simply the number of dependencies Freshli could not calculate the libyear for on the given date. Could be because a package has been removed in the package manager or similar issue. Could also be a timeout error from the package manager or a bug in Freshli.
-
 ## Culture and Language Support
 
 The headings for column output are localized such that the culture settings of the user's computer are used. (This is found in the CurrentUICulture). Currently there are English and Spanish translations with English being the default.
@@ -211,7 +191,7 @@ Log levels can be adjusted by using the `--logLevel <level>` option when running
 -   Error
 -   Fatal
 
-Logs can be redirected to a file instead by using the `--logFile <file_path_and_name>` option when running the application.
+Logs can be redirected to a file instead by using the `--logfile <file_path_and_name>` option when running the application.
 
 ## Building
 
@@ -443,7 +423,7 @@ There are two paths to working with this DevContainer setup.
 
 2. Run `docker` directly. Run `docker build -t freshli-cli-dev .devcontainer/` to build the container. Then you'll be able to run `docker run --rm -it -v $PWD:/code -w /code freshli-cli-dev bash` to create a shell session inside of a running container with everything set up for you. (Note, you may need to run `bundle install` when you first start the container to install the ruby-based dependencies. This step is performed for you if you use the `devcontainer` CLI to open a Visual Studio Code instance.)
 
-## Production container
+## Production Docker container
 
 ### Building for local use
 
@@ -504,7 +484,7 @@ Follow these instructions if you need to produce a build manually.
       .
    ```
 
-## Migrations
+## Cache Database Migrations
 
 This project uses C#'s Code First Migrations: https://docs.microsoft.com/en-us/ef/ef6/modeling/code-first/migrations/
 Migrations allow us to keep track of changes we make to models saved in a database, and it keeps our databases up-to-date.
