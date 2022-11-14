@@ -1,4 +1,4 @@
-![docs/logo-banner.png](Freshli Logo)
+![Freshli Logo](docs/logo-banner.png)
 
 # Freshli Command Line
 
