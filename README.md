@@ -1,3 +1,5 @@
+![docs/logo-banner.png](Freshli Logo)
+
 # Freshli Command Line
 
 [![](https://img.shields.io/github/v/release/corgibytes/freshli-cli?label=Latest%20Release)](https://github.com/corgibytes/freshli-cli/releases/latest)
@@ -13,7 +15,7 @@ If you don’t want to use Docker, you’ll need to build from source and config
 
 ### Using Docker
 
-Use the `docker pull` command to retrieve the latest version of the container image. 
+Use the `docker pull` command to retrieve the latest version of the container image.
 
 ```bash
 docker pull corgibytes/freshli-cli:latest
@@ -34,10 +36,10 @@ The `analyze` command is used to compute LibYear metrics from a local or remote 
 Data is sent to the [Freshli app website](https://freshli.io) via API calls. You need to visit the link that’s provided in the `analyze` command’s output to view the results. There is no other supported way to access the collected data at this time.
 
 > :exclamation: Warning
-> 
+>
 > The `analyze` command may take a long time to complete. For some projects, it may take well over an hour. How long it takes is dependent on several variables, such as the amount of history in the Git repository and the number of packages that are found at each point in time. The performance characteristics of the computer running the command is also a factor.
 >
-> A progress bar has not been [implemented yet](https://github.com/corgibytes/freshli-cli/issues/370). 
+> A progress bar has not been [implemented yet](https://github.com/corgibytes/freshli-cli/issues/370).
 
 #### Analyzing a remote Git repository
 
@@ -51,7 +53,7 @@ Unless a branch name is provided with the `--branch` option, the default branch 
 
 #### Analyzing a local Git repository
 
-To analyze a local Git repository, one that has already been cloned, provide a file system path to the location of the repository. The branch that is checked out is the one that will be analyzed. 
+To analyze a local Git repository, one that has already been cloned, provide a file system path to the location of the repository. The branch that is checked out is the one that will be analyzed.
 
 ```bash
 git clone https://github.com/corgibytes/freshli-fixture-java-test
@@ -90,7 +92,7 @@ docker run --rm corgibytes/freshli-cli analyze --latest-only https://github.com/
 
 #### Adjusting the number of workers
 
-The `analyze` command, like many `freshli` commands, employs background workers to make full use of available CPU resources. You can use the `--workers` option to control the number of background workers that are used. 
+The `analyze` command, like many `freshli` commands, employs background workers to make full use of available CPU resources. You can use the `--workers` option to control the number of background workers that are used.
 
 Example:
 
@@ -122,7 +124,7 @@ Here is a list of language agents that have been developed so far and are includ
 
 | Language | Agent | Dependency Manager |
 |----------|-------|--------------------|
-| Java     | [`freshli-agent-java`](https://github.com/corgibytes/freshli-agent-java) | Maven | 
+| Java     | [`freshli-agent-java`](https://github.com/corgibytes/freshli-agent-java) | Maven |
 
 Please let us know what other dependency managers and/or manifest files you would like use to support via the contact information in the [Contributing](#contributing) section.
 
