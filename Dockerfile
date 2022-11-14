@@ -3,7 +3,7 @@
 # directory.
 
 ### Build `freshli` executable
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:6.0.400-1-bullseye-slim AS dotnet_build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0.100-bullseye-slim AS dotnet_build
 ARG TARGETARCH
 
 COPY . /app/freshli

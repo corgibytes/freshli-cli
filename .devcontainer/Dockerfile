@@ -4,7 +4,7 @@
 # copied from https://github.com/microsoft/vscode-dev-containers/blob/9ead9dfe607ac62c408180d25a71d499c0876e39/containers/dotnet/.devcontainer/base.Dockerfile
 # [Choice] .NET version: 6.0, 5.0, 3.1, 6.0-bullseye, 5.0-bullseye, 3.1-bullseye, 6.0-focal, 5.0-focal, 3.1-focal
 # Full list of available tags can be viewed at https://mcr.microsoft.com/v2/dotnet/sdk/tags/list
-ARG VARIANT=6.0.400-1-bullseye-slim
+ARG VARIANT=7.0.100-bullseye-slim
 FROM mcr.microsoft.com/dotnet/sdk:${VARIANT}
 
 # Copy library scripts to execute
