@@ -23,7 +23,7 @@ jobs:
       - name: "[Setup] - .NET Core"
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 7.0.x
 
       - name: "[Setup] - Install GitVersion"
         uses: gittools/actions/gitversion/setup@v0.9.15
@@ -157,19 +157,19 @@ jobs:
       - name: "[Post Publish] - Zip win-x64 Release"
         uses: papeloto/action-zip@v1
         with:
-          files: Corgibytes.Freshli.Cli/bin/Release/net6.0/win-x64/publish
+          files: Corgibytes.Freshli.Cli/bin/Release/net7.0/win-x64/publish
           dest: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-win-x64.zip
 
       - name: "[Post Publish] - Zip linux-x64 Release"
         uses: papeloto/action-zip@v1
         with:
-          files: Corgibytes.Freshli.Cli/bin/Release/net6.0/linux-x64/publish
+          files: Corgibytes.Freshli.Cli/bin/Release/net7.0/linux-x64/publish
           dest: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-linux-x64.zip
 
       - name: "[Post Publish] - Zip osx-x64 Release"
         uses: papeloto/action-zip@v1
         with:
-          files: Corgibytes.Freshli.Cli/bin/Release/net6.0/osx-x64/publish
+          files: Corgibytes.Freshli.Cli/bin/Release/net7.0/osx-x64/publish
           dest: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip
 
       - name: "[Post Publish] - View Build Artifacts Folder"
