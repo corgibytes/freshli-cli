@@ -11,6 +11,89 @@ Here are some things to keep in mind when viewing the graph:
 * Each arrow with a dotted line represents an "is a" relationship. The source class inherits from the destination class.
 
 ```mermaid
-/usr/share/dotnet/sdk/6.0.403/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.TargetFrameworkInference.targets(144,5): error NETSDK1045: The current .NET SDK does not support targeting .NET 7.0.  Either target .NET 6.0 or lower, or use a version of the .NET SDK that supports .NET 7.0. [/home/runner/work/freshli-cli/freshli-cli/diagram-generator/diagram-generator.csproj]
+flowchart TD;
+    AgentsDetectedEvent
+    DetectAgentsActivity --> AgentsDetectedEvent
+    NoAgentsDetectedFailureEvent -.-> FailureEvent
+    NoAgentsDetectedFailureEvent
+    AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
+    AnalysisFailureLoggedEvent
+    AnalysisIdNotFoundEvent -.-> FailureEvent
+    AnalysisIdNotFoundEvent
+    AnalysisStartedEvent --> CreateAnalysisApiActivity
+    CacheDoesNotExistEvent -.-> ErrorEvent
+    CacheDoesNotExistEvent --> PrepareCacheForAnalysisActivity
+    CachePreparedForAnalysisEvent --> RestartAnalysisActivity
+    CachePrepareFailedForAnalysisEvent -.-> FailureEvent
+    CachePrepareFailedForAnalysisEvent
+    DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
+    DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
+    DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
+    ErrorEvent
+    FailureEvent -.-> ErrorEvent
+    FailureEvent --> LogAnalysisFailureActivity
+    InvalidHistoryIntervalEvent -.-> FailureEvent
+    InvalidHistoryIntervalEvent
+    LogAnalysisFailureActivity --> AnalysisFailureLoggedEvent
+    ManifestDetectedEvent --> GenerateBillOfMaterialsActivity
+    PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
+    PrepareCacheForAnalysisActivity --> CachePrepareFailedForAnalysisEvent
+    RestartAnalysisActivity -.-> StartAnalysisActivityBase
+    RestartAnalysisActivity --> UnableToRestartAnalysisEvent
+    StartAnalysisActivity -.-> StartAnalysisActivityBase
+    StartAnalysisActivity --> CacheDoesNotExistEvent
+    StartAnalysisActivityBase --> AnalysisStartedEvent
+    StartAnalysisActivityBase --> InvalidHistoryIntervalEvent
+    UnableToRestartAnalysisEvent -.-> FailureEvent
+    UnableToRestartAnalysisEvent
+    UnhandledExceptionEvent -.-> FailureEvent
+    UnhandledExceptionEvent
+    BillOfMaterialsGeneratedEvent --> DeterminePackagesFromBomActivity
+    GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
+    CacheDestroyedEvent
+    CacheDestroyFailedEvent
+    CachePreparedEvent
+    CachePrepareFailedEvent -.-> FailureEvent
+    CachePrepareFailedEvent
+    DestroyCacheActivity --> CacheDestroyedEvent
+    DestroyCacheActivity --> CacheDestroyFailedEvent
+    PrepareCacheActivity --> CachePreparedEvent
+    PrepareCacheActivity --> CachePrepareFailedEvent
+    AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
+    AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
+    AnalysisApiStatusUpdatedEvent
+    ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
+    ApiPackageLibYearCreatedEvent
+    CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
+    CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
+    CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
+    UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
+    CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
+    CloneGitRepositoryActivity --> GitRepositoryClonedEvent
+    CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
+    CloneGitRepositoryFailedEvent -.-> FailureEvent
+    CloneGitRepositoryFailedEvent
+    DirectoryDoesNotExistFailureEvent -.-> FailureEvent
+    DirectoryDoesNotExistFailureEvent
+    DirectoryIsNotGitInitializedFailureEvent -.-> FailureEvent
+    DirectoryIsNotGitInitializedFailureEvent
+    GitRepositoryClonedEvent --> ComputeHistoryActivity
+    GitRepositoryInLocalDirectoryVerifiedEvent --> ComputeHistoryActivity
+    VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryDoesNotExistFailureEvent
+    VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryIsNotGitInitializedFailureEvent
+    VerifyGitRepositoryInLocalDirectoryActivity --> GitRepositoryInLocalDirectoryVerifiedEvent
+    CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
+    ComputeHistoryActivity --> AnalysisIdNotFoundEvent
+    ComputeHistoryActivity --> InvalidHistoryIntervalEvent
+    ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
+    HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
+    HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
+    ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
+    DeterminePackagesFromBomActivity --> PackageFoundEvent
+    LibYearComputationForBomStartedEvent
+    LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
+    PackageFoundEvent --> ComputeLibYearForPackageActivity
+    LoadServiceProviderActivity
+    ThrowExceptionActivity
 
 ```
