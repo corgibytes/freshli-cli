@@ -26,7 +26,7 @@ jobs:
           dotnet-version: 6.0.x
 
       - name: "[Setup] - Install GitVersion"
-        uses: gittools/actions/gitversion/setup@v0.9.14
+        uses: gittools/actions/gitversion/setup@v0.9.15
         with:
           versionSpec: '5.10.3'
 
@@ -43,19 +43,19 @@ jobs:
           java-version: '17'
 
       - name: "[Versioning] - GitVersion Config"
-        uses: gittools/actions/gitversion/execute@v0.9.14
+        uses: gittools/actions/gitversion/execute@v0.9.15
         with:
           useConfigFile: true
           additionalArguments: '/showConfig'
 
       - name: "[Versioning] - Determine Version"
-        uses: gittools/actions/gitversion/execute@v0.9.14
+        uses: gittools/actions/gitversion/execute@v0.9.15
         id: gitversion
         with:
           useConfigFile: true
 
       - name: "[Versioning] - Update csproj Files"
-        uses: gittools/actions/gitversion/execute@v0.9.14
+        uses: gittools/actions/gitversion/execute@v0.9.15
         with:
           useConfigFile: true
           additionalArguments: '/updateprojectfiles'
