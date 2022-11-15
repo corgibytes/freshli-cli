@@ -197,6 +197,11 @@ Logs can be redirected to a file instead by using the `--logfile <file_path_and_
 
 ## Building
 
+> :gear: Prerequisites
+
+* The scripts in the `bin/` directory require `ruby` version 3.1 or later to be [installed](https://www.ruby-lang.org/en/documentation/installation/).
+* Make sure you have the latest [.NET 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) installed before attempting to run any of the commands below.
+
 The project can be built using the `bin/build.rb` script.
 
 To build manually, you first need to install the DotNet tools that are used by the project with:
