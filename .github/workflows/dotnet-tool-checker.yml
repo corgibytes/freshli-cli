@@ -1,0 +1,70 @@
+# based on https://github.com/xt0rted/dotnet-tool-update-test/blob/73d39e03d693ece29330091015e151b9ee0b64f6/.github/workflows/dotnet-tool-checker.yml
+
+name: .NET tool checker
+
+on:
+  schedule:
+    - cron: "0 12 * * 1-5"
+  workflow_dispatch:
+
+env:
+  workflow_id: dotnet-tool-updater.yml
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3.1.0
+
+      - name: Get local tools
+        id: project
+        run: |
+          _tools="$(jq -r '.tools | map_values(.version) | to_entries | map({ "package-name": .key, "package-version": .value })' ./.config/dotnet-tools.json)"
+          echo 'tools<<EOF' >> $GITHUB_OUTPUT
+          echo $_tools >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
+      - name: Dispatch events
+        uses: actions/github-script@v6.3.3
+        with:
+          github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          script: |
+            async function asyncForEach(array, callback) {
+              for (let index = 0; index < array.length; index++) {
+                await callback(array[index], index, array);
+              }
+            }
+            const projects = JSON.parse(process.env["project_tools"]);
+            const summary = [
+              [
+                {
+                  header: true,
+                  data: "Name",
+                },
+                {
+                  header: true,
+                  data: "Current version",
+                },
+              ],
+            ];
+            await asyncForEach(projects, async (project) => {
+              console.info(`Dispatching for ${project["package-name"]}`);
+              summary.push([
+                project["package-name"],
+                `<a href="https://www.nuget.org/packages/${project["package-name"]}/${project["package-version"]}">${project["package-version"]}</a>`,
+              ]);
+              await github.request("POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches", {
+                ...context.repo,
+                ref: context.ref,
+                workflow_id: "${{ env.workflow_id }}",
+                inputs: project,
+              });
+            });
+            await core
+              .summary
+              .addHeading("Packages checked")
+              .addTable(summary)
+              .write();
+        env:
+         project_tools: ${{ steps.project.outputs.tools }}
