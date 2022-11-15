@@ -99,6 +99,10 @@ jobs:
         run: |
           dotnet tool restore
 
+      - name: "[Build] - dotnet build"
+        run: |
+          dotnet build -o exe
+
       - name: "[Lint] - Install eclint"
         env:
           ECLINT_VERSION: 0.3.3
@@ -127,7 +131,7 @@ jobs:
 
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
-          dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=lcov
+          dotnet coverlet ./exe --target "dotnet" --targetargs "test exe/Corgibytes.Freshli.Cli.Test.dll" --format lcov
 
       - name: "[Test] - Setup for Behavior Acceptance Tests"
         uses: ruby/setup-ruby@v1
@@ -137,7 +141,7 @@ jobs:
 
       - name: "[Test] - Behavior Acceptance Tests"
         run: |
-          dotnet build -o exe && bundle exec cucumber
+          bundle exec cucumber
 
       - name: "[Test] - Send Code Coverage Data to Code Climate"
         uses: paambaati/codeclimate-action@v3.2.0
@@ -146,7 +150,7 @@ jobs:
           CC_TEST_REPORTER_ID: ${{ secrets.TEST_REPORTER_ID }}
         with:
           coverageLocations: |
-            ${{github.workspace}}/Corgibytes.Freshli.Cli.Test/coverage.info:lcov
+            ${{github.workspace}}/coverage.info:lcov
 
       - name: "[Publish] - Publish win-x64, linux-x64 and osx-x64"
         run: |
