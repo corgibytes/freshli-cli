@@ -260,7 +260,8 @@ dotnet format --severity info
 
 ### `dotnet jb`
 
-> :exclamation: Known Issue https://youtrack.jetbrains.com/issue/RSRP-485906
+> :exclamation: [Known Issue](https://youtrack.jetbrains.com/issue/RSRP-485906)
+>
 > If you encounter linter errors that persist despite being explicitly suppressed, try clearing the cache for JetBrains
 > inspect code.
 > On Windows the cache is located here `%LocalAppData%\JetBrains\Transient\InspectCode\v212\SolutionCaches`
@@ -343,7 +344,9 @@ You can run the unit, integration, and acceptance tests by running the `bin/test
 
 #### Installing `freshli-agent-java` into the path
 
-> :warning: Some of the integration tests require `freshli-agent-java` to be correctly installed in the path.
+> :warning: Important Note
+>
+> Some of the integration tests require `freshli-agent-java` to be correctly installed in the path.
 
 You'll need to have the [Eclipse Temurin](https://adoptium.net/temurin/) version of Java 17 installed before running the following commands.
 And you'll need [Maven](https://maven.apache.org/install.html) for some of the agent commands.
@@ -395,7 +398,9 @@ First you'll need to make sure that the correct version of the [Coverlet code co
 dotnet tool restore
 ```
 
-> :orange_book: Make sure you run `bin/build.rb` before running any of the following commands.
+> :orange_book: Take Note
+>
+> Make sure you run `bin/build.rb` before running any of the following commands.
 
 #### Collecting Coverage for the Entire Test Suite
 
