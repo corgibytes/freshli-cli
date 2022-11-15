@@ -1,0 +1,130 @@
+# based on https://github.com/xt0rted/dotnet-tool-update-test/blob/73d39e03d693ece29330091015e151b9ee0b64f6/.github/workflows/dotnet-tool-updater.yml
+
+name: .NET tool updater
+
+on:
+  workflow_dispatch:
+    inputs:
+      package-name:
+        description: The name of the package
+        required: true
+        type: string
+      package-version:
+        description: The current version of the package
+        required: true
+        type: string
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3.1.0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          global-json-file: ./global.json
+
+      - name: Check for package update
+        run: dotnet tool update ${{ github.event.inputs.package-name }}
+
+      - name: Check for modified file
+        id: meta
+        shell: bash
+        run: |
+          version="$(jq --arg package "${{ github.event.inputs.package-name }}" -r '.tools | map_values(.version) | to_entries[] |select(.key == $package) | .value' .config/dotnet-tools.json)"
+          project_url="https://www.nuget.org/packages/${{ github.event.inputs.package-name }}/$version"
+          meta="$(curl --silent https://api.nuget.org/v3-flatcontainer/${{ github.event.inputs.package-name }}/$version/${{ github.event.inputs.package-name }}.nuspec)"
+          pattern='<repository.*url="([^"]*)'
+          if [[ $meta =~ $pattern ]]
+          then
+              project_url="$(echo ${BASH_REMATCH[1]} | sed 's/.git$//g')"
+          fi
+          echo "project-url=${project_url}" >> $GITHUB_OUTPUT
+          if [[ $(git status --porcelain .config/dotnet-tools.json) ]]; then
+              echo "updated=true" >> $GITHUB_OUTPUT
+              echo "new-version=${version}" >> $GITHUB_OUTPUT
+              update_type="$(npx -y semver-diff-cli ${{ github.event.inputs.package-version}} $version)"
+              echo "update-type=${update_type}" >> $GITHUB_OUTPUT
+          else
+            echo "updated=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Create pull request
+        if: steps.meta.outputs.updated == 'true'
+        id: cpr
+        uses: peter-evans/create-pull-request@v4.2.0
+        with:
+          # Can use a PAT here instead
+          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+          author: dotnet-updater[bot] <100138291+dotnet-updater[bot]@users.noreply.github.com>
+          signoff: true
+          committer: dotnet-updater[bot] <100138291+dotnet-updater[bot]@users.noreply.github.com>
+          commit-message: |
+            Bump ${{ github.event.inputs.package-name }} from ${{ github.event.inputs.package-version}} to ${{ steps.meta.outputs.new-version }}
+            Bumps [${{ github.event.inputs.package-name }}](${{ steps.meta.outputs.project-url }}) from ${{ github.event.inputs.package-version}} to ${{ steps.meta.outputs.new-version }}.
+            ---
+            updated-dependencies:
+            - dependency-name: ${{ github.event.inputs.package-name }}
+              dependency-type: direct:development
+              update-type: version-update:${{ steps.meta.outputs.update-type }}
+            ...
+          branch: "dependabot/nuget/${{ github.event.inputs.package-name }}-${{ steps.meta.outputs.new-version }}"
+          delete-branch: true
+          title: |
+            Bump ${{ github.event.inputs.package-name }} from ${{ github.event.inputs.package-version}} to ${{ steps.meta.outputs.new-version }}
+          body: |
+            Bumps [${{ github.event.inputs.package-name }}](${{ steps.meta.outputs.project-url }}) from ${{ github.event.inputs.package-version}} to ${{ steps.meta.outputs.new-version }}.
+          labels: |
+            dependencies
+            .NET
+      - name: Job summary (updated)
+        if: steps.meta.outputs.updated == 'true'
+        uses: actions/github-script@v6.3.3
+        with:
+          script: |
+            await core
+              .summary
+              .addHeading("Package details")
+              .addTable([
+                [
+                  {
+                    header: true,
+                    data: "Name",
+                  },
+                  '<a href="${{ steps.meta.outputs.project-url }}">${{ github.event.inputs.package-name }}</a>',
+                ],
+                [
+                  {
+                    header: true,
+                    data: "From version",
+                  },
+                  '<a href="https://www.nuget.org/packages/${{ github.event.inputs.package-name }}/${{ github.event.inputs.package-version }}">${{ github.event.inputs.package-version }}</a>',
+                ],
+                [
+                  {
+                    header: true,
+                    data: "To version",
+                  },
+                  '<a href="https://www.nuget.org/packages/${{ github.event.inputs.package-name }}/${{ steps.meta.outputs.new-version }}">${{ steps.meta.outputs.new-version }}</a>',
+                ],
+                [
+                  {
+                    header: true,
+                    data: "Update type",
+                  },
+                  "${{ steps.meta.outputs.update-type }}",
+                ],
+              ])
+              .write();
+      - name: Job summary (not updated)
+        if: steps.meta.outputs.updated != 'true'
+        uses: actions/github-script@v6.3.3
+        with:
+          script: |
+            await core
+              .summary
+              .addHeading("Package details")
+              .addRaw('<a href="${{ steps.meta.outputs.project-url }}"><code>${{ github.event.inputs.package-name }}</code></a> was not updated')
+              .write();
