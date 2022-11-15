@@ -405,7 +405,7 @@ dotnet coverlet --target "./bin/test.rb" --targetargs "--skip-build" ./exe
 The following command will report the code coverage of the tests that are authored using the .NET-based testing tools.
 
 ```bash
-dotnet coverlet --target "dotnet" --targetargs "vstest exe/Corgibytes.Freshli.Cli.Test.dll" ./exe
+dotnet coverlet --target "dotnet" --targetargs "test exe/Corgibytes.Freshli.Cli.Test.dll" ./exe
 ```
 
 ### Collecting Coverage for the Cucumber-based Acceptance Test Suite
