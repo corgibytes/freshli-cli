@@ -197,6 +197,11 @@ Logs can be redirected to a file instead by using the `--logfile <file_path_and_
 
 ## Building
 
+> :gear: Prerequisites
+
+* The scripts in the `bin/` directory require `ruby` version 3.1 or later to be [installed](https://www.ruby-lang.org/en/documentation/installation/).
+* Make sure you have the latest [.NET 7.0 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/7.0) installed before attempting to run any of the commands below.
+
 The project can be built using the `bin/build.rb` script.
 
 To build manually, you first need to install the DotNet tools that are used by the project with:
@@ -255,7 +260,8 @@ dotnet format --severity info
 
 ### `dotnet jb`
 
-> :exclamation: Known Issue https://youtrack.jetbrains.com/issue/RSRP-485906
+> :exclamation: [Known Issue](https://youtrack.jetbrains.com/issue/RSRP-485906)
+>
 > If you encounter linter errors that persist despite being explicitly suppressed, try clearing the cache for JetBrains
 > inspect code.
 > On Windows the cache is located here `%LocalAppData%\JetBrains\Transient\InspectCode\v212\SolutionCaches`
@@ -338,7 +344,9 @@ You can run the unit, integration, and acceptance tests by running the `bin/test
 
 #### Installing `freshli-agent-java` into the path
 
-> :warning: Some of the integration tests require `freshli-agent-java` to be correctly installed in the path.
+> :warning: Important Note
+>
+> Some of the integration tests require `freshli-agent-java` to be correctly installed in the path.
 
 You'll need to have the [Eclipse Temurin](https://adoptium.net/temurin/) version of Java 17 installed before running the following commands.
 And you'll need [Maven](https://maven.apache.org/install.html) for some of the agent commands.
@@ -390,7 +398,9 @@ First you'll need to make sure that the correct version of the [Coverlet code co
 dotnet tool restore
 ```
 
-> :orange_book: Make sure you run `bin/build.rb` before running any of the following commands.
+> :orange_book: Take Note
+>
+> Make sure you run `bin/build.rb` before running any of the following commands.
 
 #### Collecting Coverage for the Entire Test Suite
 
@@ -405,7 +415,7 @@ dotnet coverlet --target "./bin/test.rb" --targetargs "--skip-build" ./exe
 The following command will report the code coverage of the tests that are authored using the .NET-based testing tools.
 
 ```bash
-dotnet coverlet --target "dotnet" --targetargs "vstest exe/Corgibytes.Freshli.Cli.Test.dll" ./exe
+dotnet coverlet --target "dotnet" --targetargs "test exe/Corgibytes.Freshli.Cli.Test.dll" ./exe
 ```
 
 ### Collecting Coverage for the Cucumber-based Acceptance Test Suite
