@@ -8,12 +8,6 @@
         "coverlet"
       ]
     },
-    "dllprops.tool": {
-      "version": "3.0.0",
-      "commands": [
-        "dll-props"
-      ]
-    },
     "jetbrains.resharper.globaltools": {
       "version": "2022.2.4",
       "commands": [

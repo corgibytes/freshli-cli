@@ -10,9 +10,8 @@ Then('we can open a SQLite connection to {string}') do |database|
 end
 
 Then('the {channel} should contain the version of {string}') do |_channel, dll|
-  command_output = `dotnet dll-props #{dll}`
-  matches = /ProductVersion: (.*)/.match command_output
-  expect(last_command_started).to have_output output_string_eq matches[1]
+  command_output = `dotnet run --project tools/dll-version #{dll}`
+  expect(last_command_started).to have_output output_string_eq command_output
 end
 
 Then('the {string} contains history stop point at {string} {string}') do |database, commit_date, commit_id|
