@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
@@ -43,6 +44,7 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
         EventEngine.On<AgentsDetectedEvent>(detectionEvent =>
         {
             FormatAndWriteToConsole(detectionEvent.AgentsAndLocations ?? new Dictionary<string, string>());
+            return ValueTask.CompletedTask;
         });
 
         ActivityEngine.Wait();

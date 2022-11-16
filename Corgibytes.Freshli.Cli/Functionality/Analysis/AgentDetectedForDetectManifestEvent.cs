@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -17,7 +18,7 @@ public class AgentDetectedForDetectManifestEvent : IApplicationEvent
     public int HistoryStopPointId { get; }
     public string AgentExecutablePath { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(
+    public async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+        await eventClient.Dispatch(
             new DetectManifestsUsingAgentActivity(AnalysisId, HistoryStopPointId, AgentExecutablePath));
 }

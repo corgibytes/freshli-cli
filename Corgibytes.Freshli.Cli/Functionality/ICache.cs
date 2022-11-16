@@ -8,6 +8,7 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public interface ICacheDb
 {
+    // TODO: make each of these methods return ValueTask<T>
     public Guid SaveAnalysis(CachedAnalysis analysis);
     public CachedAnalysis? RetrieveAnalysis(Guid id);
     public int AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint);
