@@ -122,12 +122,12 @@ public class AnalyzeRunnerTest
             .Setup(mock => mock.On(It.IsAny<Func<AnalysisFailureLoggedEvent, ValueTask>>()))
             .Callback<Func<AnalysisFailureLoggedEvent, ValueTask>>(action => action(
                 new AnalysisFailureLoggedEvent(new UnhandledExceptionEvent(new Exception("example failure")))
-            ));
+            ).AsTask().Wait());
 
     private void SetupAnalysisApiCreatedEvent(Guid apiAnalysisId) =>
         _eventEngine
             .Setup(mock => mock.On(It.IsAny<Func<AnalysisApiCreatedEvent, ValueTask>>()))
             .Callback<Func<AnalysisApiCreatedEvent, ValueTask>>(action => action(
                 new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
-            ));
+            ).AsTask().Wait());
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -31,13 +32,13 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     protected virtual Func<TErrorEvent, bool> EventValidator => _ => true;
 
     [Fact]
-    public void HandlerFiresCacheWasNotPreparedEventWhenCacheIsMissing()
+    public async ValueTask HandlerFiresCacheWasNotPreparedEventWhenCacheIsMissing()
     {
         _configuration.Setup(mock => mock.CacheDir).Returns("example");
         _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
         _cacheManager.Setup(mock => mock.ValidateCacheDirectory()).Returns(false);
 
-        Activity.Handle(_eventEngine.Object);
+        await Activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<TErrorEvent>(value =>
@@ -46,7 +47,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     }
 
     [Fact]
-    public void HandlerFiresAnalysisStartedEventWhenCacheIsPresent()
+    public async ValueTask HandlerFiresAnalysisStartedEventWhenCacheIsPresent()
     {
         var analysisId = Guid.NewGuid();
 
@@ -57,7 +58,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
         _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).Returns(analysisId);
 
-        Activity.Handle(_eventEngine.Object);
+        await Activity.Handle(_eventEngine.Object);
 
         _cacheDb.Verify(mock => mock.SaveAnalysis(It.Is<CachedAnalysis>(value =>
             value.RepositoryUrl == "http://git.example.com" &&
@@ -69,13 +70,13 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     }
 
     [Fact]
-    public void HandlerFiresInvalidHistoryIntervalEventWhenHistoryIntervalValueIsInvalid()
+    public async ValueTask HandlerFiresInvalidHistoryIntervalEventWhenHistoryIntervalValueIsInvalid()
     {
         _configuration.Setup(mock => mock.CacheDir).Returns("example");
         _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(false);
         _cacheManager.Setup(mock => mock.ValidateCacheDirectory()).Returns(true);
 
-        Activity.Handle(_eventEngine.Object);
+        await Activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<InvalidHistoryIntervalEvent>(value =>
