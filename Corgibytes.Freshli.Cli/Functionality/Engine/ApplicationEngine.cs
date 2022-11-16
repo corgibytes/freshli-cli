@@ -125,7 +125,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
         if (s_eventHandlers.Keys.Any(type => type.IsAssignableTo(applicationEvent.GetType())))
         {
-            JobClient.QueueBackgroundWorkItemAsync((cancelationToken) => TriggerHandler(applicationEvent));
+            await JobClient.QueueBackgroundWorkItemAsync((cancelationToken) => TriggerHandler(applicationEvent));
         }
     }
 
