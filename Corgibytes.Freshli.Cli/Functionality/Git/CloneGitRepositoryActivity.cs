@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -12,7 +13,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
     public CloneGitRepositoryActivity(Guid cachedAnalysisId) => CachedAnalysisId = cachedAnalysisId;
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
 
@@ -25,7 +26,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
             if (cachedAnalysis == null)
             {
-                eventClient.Fire(new AnalysisIdNotFoundEvent());
+                await eventClient.Fire(new AnalysisIdNotFoundEvent());
                 return;
             }
 
@@ -35,15 +36,15 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
             var historyStopData = new HistoryStopData(configuration, gitRepository.Id);
 
-            eventClient.Fire(new GitRepositoryClonedEvent
+            await eventClient.Fire(new GitRepositoryClonedEvent
             {
                 AnalysisId = CachedAnalysisId,
                 HistoryStopData = historyStopData
             });
         }
-        catch (GitException e)
+        catch (GitException error)
         {
-            eventClient.Fire(new CloneGitRepositoryFailedEvent { ErrorMessage = e.Message });
+            await eventClient.Fire(new CloneGitRepositoryFailedEvent { ErrorMessage = error.Message });
         }
     }
 }

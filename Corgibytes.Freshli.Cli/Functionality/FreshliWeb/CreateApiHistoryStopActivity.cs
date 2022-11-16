@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,7 +19,7 @@ public class CreateApiHistoryStopActivity : IApplicationActivity
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public int HistoryStopPointId { get; set; }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
@@ -26,6 +27,6 @@ public class CreateApiHistoryStopActivity : IApplicationActivity
 
         resultsApi.CreateHistoryPoint(cacheDb, CachedAnalysisId, HistoryStopPointId);
 
-        eventClient.Fire(new ApiHistoryStopCreatedEvent(CachedAnalysisId, HistoryStopPointId));
+        await eventClient.Fire(new ApiHistoryStopCreatedEvent(CachedAnalysisId, HistoryStopPointId));
     }
 }

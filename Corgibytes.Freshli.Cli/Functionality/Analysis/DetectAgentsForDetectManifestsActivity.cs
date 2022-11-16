@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -17,20 +18,20 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
         _historyStopPointId = historyStopPointId;
     }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var agentsDetector = eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>();
         var agents = agentsDetector.Detect();
 
         if (agents.Count == 0)
         {
-            eventClient.Fire(new NoAgentsDetectedFailureEvent { ErrorMessage = "Could not locate any agents" });
+            await eventClient.Fire(new NoAgentsDetectedFailureEvent { ErrorMessage = "Could not locate any agents" });
             return;
         }
 
         foreach (var agentPath in agents)
         {
-            eventClient.Fire(new AgentDetectedForDetectManifestEvent(_analysisId, _historyStopPointId, agentPath));
+            await eventClient.Fire(new AgentDetectedForDetectManifestEvent(_analysisId, _historyStopPointId, agentPath));
         }
     }
 }

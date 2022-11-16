@@ -6,16 +6,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Microsoft.Extensions.Logging;
+using YamlDotNet.Core.Tokens;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
 public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEngine
 {
     private const int MutexWaitTimeoutInMilliseconds = 50;
-    private static readonly Dictionary<Type, Action<IApplicationEvent>> s_eventHandlers = new();
+    private static readonly Dictionary<Type, Func<IApplicationEvent, ValueTask>> s_eventHandlers = new();
 
-    private static readonly object s_dispatchLock = new();
-    private static readonly object s_fireLock = new();
+    private static readonly SemaphoreSlim s_dispatchSemaphore = new(1, 1);
+    private static readonly SemaphoreSlim s_fireSemaphore = new(1, 1);
     private static bool s_isActivityDispatchingInProgress;
     private static bool s_isEventFiringInProgress;
     private readonly ILogger<ApplicationEngine> _logger;
@@ -30,28 +31,24 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private IBackgroundTaskQueue JobClient { get; }
 
-    // TODO: Make this an async method
-    public void Dispatch(IApplicationActivity applicationActivity)
+    public async ValueTask Dispatch(IApplicationActivity applicationActivity)
     {
-        lock (s_dispatchLock)
+        await s_dispatchSemaphore.WaitAsync();
+        s_isActivityDispatchingInProgress = true;
+
+        try
         {
-            s_isActivityDispatchingInProgress = true;
-            try
-            {
-                // TODO: call await here
-                // TODO: Pass the cancellation token to HandleActivity
-#pragma warning disable CA2012
-                JobClient.QueueBackgroundWorkItemAsync(_ => HandleActivity(applicationActivity));
-#pragma warning restore CA2012
-            }
-            finally
-            {
-                s_isActivityDispatchingInProgress = false;
-            }
+            // TODO: Pass the cancellation token to HandleActivity
+            await JobClient.QueueBackgroundWorkItemAsync(_ => HandleActivity(applicationActivity));
+        }
+        finally
+        {
+            s_isActivityDispatchingInProgress = false;
+            s_dispatchSemaphore.Release();
         }
     }
 
-    public void Wait()
+    public async ValueTask Wait()
     {
         var watch = new Stopwatch();
         watch.Start();
@@ -60,7 +57,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         var shouldWait = true;
         while (shouldWait)
         {
-            Thread.Sleep(500);
+            await Task.Delay(500);
 
             var statistics = JobClient.GetStatistics();
             var length = statistics.Processing + statistics.Enqueued;
@@ -80,28 +77,23 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public IServiceProvider ServiceProvider { get; }
 
-    // TODO: Make this method async
-    public void Fire(IApplicationEvent applicationEvent)
+    public async ValueTask Fire(IApplicationEvent applicationEvent)
     {
-        lock (s_fireLock)
+        await s_fireSemaphore.WaitAsync();
+        s_isEventFiringInProgress = true;
+        try
         {
-            s_isEventFiringInProgress = true;
-            try
-            {
-                // TODO: call await here
-                // TODO: pass cancellation token to FireEventAndHandler
-#pragma warning disable CA2012
-                JobClient.QueueBackgroundWorkItemAsync(_ => FireEventAndHandler(applicationEvent));
-#pragma warning restore CA2012
-            }
-            finally
-            {
-                s_isEventFiringInProgress = false;
-            }
+            // TODO: pass cancellation token to FireEventAndHandler
+            await JobClient.QueueBackgroundWorkItemAsync(_ => FireEventAndHandler(applicationEvent));
+        }
+        finally
+        {
+            s_isEventFiringInProgress = false;
+            s_fireSemaphore.Release();
         }
     }
 
-    public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
+    public void On<TEvent>(Func<TEvent, ValueTask> eventHandler) where TEvent : IApplicationEvent =>
         s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
 
     private void LogWaitStart() => _logger.LogDebug("Starting to wait for an empty job queue...");
@@ -140,11 +132,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    // TODO: Remove pragma when IApplicationActivity.Handle is async
     // ReSharper disable once MemberCanBePrivate.Global
-#pragma warning disable CS1998
     public async ValueTask HandleActivity(IApplicationActivity activity)
-#pragma warning restore CS1998
     {
         Mutex? mutex = null;
         if (activity is IMutexed mutexSource)
@@ -156,7 +145,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         if (!mutexAcquired)
         {
             // place the activity back in the queue and free up the worker to make progress on a different activity
-            Dispatch(activity);
+            await Dispatch(activity);
             return;
         }
 
@@ -168,11 +157,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
                 // todo: figure out how best to log activity specific values here
                 activity
             );
-            activity.Handle(this);
+            await activity.Handle(this);
         }
         catch (Exception error)
         {
-            Fire(new UnhandledExceptionEvent(error));
+            await Fire(new UnhandledExceptionEvent(error));
         }
         finally
         {
@@ -183,11 +172,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    // TODO: Remove pragma when IApplicationActivity.Handle is async
     // ReSharper disable once MemberCanBePrivate.Global
-#pragma warning disable CS1998
     public async ValueTask HandleEvent(IApplicationEvent appEvent)
-#pragma warning restore CS1998
     {
         try
         {
@@ -197,21 +183,19 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
                 // todo: figure out how best to log event specific values here
                 appEvent
             );
-            appEvent.Handle(this);
+            await appEvent.Handle(this);
         }
         catch (Exception error)
         {
-            Fire(new UnhandledExceptionEvent(error));
+            await Fire(new UnhandledExceptionEvent(error));
         }
     }
 
-    // TODO: Remove pragma when IApplicationActivity.Handle is async
     // TODO: see if these methods can be made private now
     // ReSharper disable once MemberCanBePrivate.Global
-#pragma warning disable CS1998
     public async ValueTask TriggerHandler(IApplicationEvent applicationEvent)
-#pragma warning restore CS1998
     {
+        var tasks = new List<Task>();
         foreach (var type in s_eventHandlers.Keys)
         {
             if (!type.IsAssignableTo(applicationEvent.GetType()))
@@ -220,7 +204,10 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             }
 
             var handler = s_eventHandlers[type];
-            handler(applicationEvent);
+            var task = handler(applicationEvent);
+            tasks.Add(task.AsTask());
         }
+
+        Task.WaitAll(tasks.ToArray());
     }
 }

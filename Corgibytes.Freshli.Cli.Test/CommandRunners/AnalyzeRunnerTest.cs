@@ -1,6 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -118,15 +119,15 @@ public class AnalyzeRunnerTest
 
     private void SetupAnalysisFailureLoggedEvent() =>
         _eventEngine
-            .Setup(mock => mock.On(It.IsAny<Action<AnalysisFailureLoggedEvent>>()))
-            .Callback<Action<AnalysisFailureLoggedEvent>>(action => action(
+            .Setup(mock => mock.On(It.IsAny<Func<AnalysisFailureLoggedEvent, ValueTask>>()))
+            .Callback<Func<AnalysisFailureLoggedEvent, ValueTask>>(action => action(
                 new AnalysisFailureLoggedEvent(new UnhandledExceptionEvent(new Exception("example failure")))
             ));
 
     private void SetupAnalysisApiCreatedEvent(Guid apiAnalysisId) =>
         _eventEngine
-            .Setup(mock => mock.On(It.IsAny<Action<AnalysisApiCreatedEvent>>()))
-            .Callback<Action<AnalysisApiCreatedEvent>>(action => action(
+            .Setup(mock => mock.On(It.IsAny<Func<AnalysisApiCreatedEvent, ValueTask>>()))
+            .Callback<Func<AnalysisApiCreatedEvent, ValueTask>>(action => action(
                 new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
             ));
 }

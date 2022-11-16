@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -20,7 +21,7 @@ public class ManifestDetectedEvent : IApplicationEvent
     public string AgentExecutablePath { get; }
     public string ManifestPath { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
+    public async ValueTask Handle(IApplicationActivityEngine eventClient) => await eventClient.Dispatch(
         new GenerateBillOfMaterialsActivity(
             AnalysisId,
             AgentExecutablePath,
