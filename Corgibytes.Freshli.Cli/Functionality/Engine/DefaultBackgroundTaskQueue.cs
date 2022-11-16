@@ -45,7 +45,7 @@ public sealed class DefaultBackgroundTaskQueue : IBackgroundTaskQueue
                 // Operation canceled should not be counted as a failure
                 throw;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 IncrementFailedCount();
                 throw;
