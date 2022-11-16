@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -11,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class CachePreparedForAnalysisEventTest
 {
     [Fact]
-    public void CorrectlyDispatchesRestartAnalysisActivity()
+    public async ValueTask CorrectlyDispatchesRestartAnalysisActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var configuration = new Mock<IConfiguration>();
@@ -33,7 +34,7 @@ public class CachePreparedForAnalysisEventTest
         var engine = new Mock<IApplicationActivityEngine>();
         engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        cacheEvent.Handle(engine.Object);
+        await cacheEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<RestartAnalysisActivity>(value =>
             value.RepositoryUrl == "https://git.example.com" &&

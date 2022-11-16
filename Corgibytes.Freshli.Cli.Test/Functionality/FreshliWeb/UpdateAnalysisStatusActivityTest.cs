@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Moq;
@@ -10,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class UpdateAnalysisStatusActivityTest
 {
     [Fact]
-    public void HandleSendsSuccessStatusToApi()
+    public async ValueTask HandleSendsSuccessStatusToApi()
     {
         var apiAnalysisId = Guid.NewGuid();
         const string status = "success";
@@ -25,7 +26,7 @@ public class UpdateAnalysisStatusActivityTest
         var resultsApi = new Mock<IResultsApi>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(resultsApi.Object);
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         resultsApi.Verify(mock => mock.UpdateAnalysis(apiAnalysisId, status));
 

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.Logging;
@@ -11,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class LogAnalysisFailureActivityTest
 {
     [Fact]
-    public void VerifyItFiresAnalysisFailureLoggedEvent()
+    public async ValueTask VerifyItFiresAnalysisFailureLoggedEvent()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var eventClient = new Mock<IApplicationEventEngine>();
@@ -24,7 +25,7 @@ public class LogAnalysisFailureActivityTest
         var errorEvent = new AnalysisIdNotFoundEvent();
         var activity = new LogAnalysisFailureActivity(errorEvent);
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         eventClient.Setup(mock => mock.Fire(It.Is<AnalysisFailureLoggedEvent>(value =>
             value.ErrorEvent == errorEvent

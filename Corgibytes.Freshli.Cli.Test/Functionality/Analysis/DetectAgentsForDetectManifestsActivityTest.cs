@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -33,7 +34,7 @@ public class DetectAgentsForDetectManifestsActivityTest
     }
 
     [Fact]
-    public void VerifyItDispatchesAgentDetectedForDetectManifestEvent()
+    public async ValueTask VerifyItDispatchesAgentDetectedForDetectManifestEvent()
     {
         var agentPaths = new List<string>
         {
@@ -48,7 +49,7 @@ public class DetectAgentsForDetectManifestsActivityTest
         var activity =
             new DetectAgentsForDetectManifestsActivity(analysisId, historyStopPointId);
 
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
@@ -64,7 +65,7 @@ public class DetectAgentsForDetectManifestsActivityTest
     }
 
     [Fact]
-    public void VerifyItDispatchesNoAgentsDetectedFailureEvent()
+    public async ValueTask VerifyItDispatchesNoAgentsDetectedFailureEvent()
     {
         var agentPaths = new List<string>();
 
@@ -73,7 +74,7 @@ public class DetectAgentsForDetectManifestsActivityTest
         var analysisId = Guid.NewGuid();
         var activity = new DetectAgentsForDetectManifestsActivity(analysisId, HistoryStopPointId);
 
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<NoAgentsDetectedFailureEvent>(
             failEvent => failEvent.ErrorMessage == "Could not locate any agents"

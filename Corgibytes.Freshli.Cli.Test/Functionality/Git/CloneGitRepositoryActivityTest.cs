@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -55,20 +56,20 @@ public class CloneGitRepositoryActivityTest
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).Returns(_cachedAnalysis);
 
     [Fact]
-    public void HandlerFiresGitRepositoryClonedEventWhenAnalysisStarted()
+    public async ValueTask HandlerFiresGitRepositoryClonedEventWhenAnalysisStarted()
     {
         SetupCachedAnalysis();
         SetupCloneOrPullUsingDefaults();
 
         var activity = new CloneGitRepositoryActivity(_analysisId);
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<GitRepositoryClonedEvent>(value => value.AnalysisId == _analysisId)));
     }
 
     [Fact]
-    public void HandlerFiresCloneGitRepositoryFailedEventWhenGitCloneFails()
+    public async ValueTask HandlerFiresCloneGitRepositoryFailedEventWhenGitCloneFails()
     {
         SetupCachedAnalysis();
 
@@ -76,7 +77,7 @@ public class CloneGitRepositoryActivityTest
             .Throws(new GitException("Git clone failed"));
 
         var activity = new CloneGitRepositoryActivity(_analysisId);
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<CloneGitRepositoryFailedEvent>(value => value.ErrorMessage == "Git clone failed")));
