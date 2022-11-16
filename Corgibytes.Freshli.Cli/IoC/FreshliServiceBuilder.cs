@@ -41,7 +41,6 @@ public class FreshliServiceBuilder
 
     public void Register()
     {
-        // todo: register an implementation of IPackageLibYearCalculator
         Services.AddSingleton(Configuration);
         Services.AddSingleton<IEnvironment, Environment>();
         Services.AddScoped<ICacheManager, CacheManager>();
@@ -133,9 +132,19 @@ public class FreshliServiceBuilder
         Services.AddScoped<IFileReader, CycloneDxFileReaderFromFileReaderSystem>();
     }
 
+    private void RegisterApplicationEngine()
+    {
+        Services.AddSingleton<ApplicationEngine>();
+        Services.AddSingleton<IApplicationActivityEngine, ApplicationEngine>();
+        Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>();
+        Services.AddSingleton<ICommandInvoker, CommandInvoker>();
+
+        Services.AddSingleton<IBackgroundTaskQueue, DefaultBackgroundTaskQueue>();
+    }
+
     // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L43
     // and https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L168
-    private void RegisterApplicationEngine()
+    private void RegisterApplicationEngine2()
     {
         Services.AddSingleton<ApplicationEngine>();
         Services.AddSingleton<IApplicationActivityEngine, ApplicationEngine>();
