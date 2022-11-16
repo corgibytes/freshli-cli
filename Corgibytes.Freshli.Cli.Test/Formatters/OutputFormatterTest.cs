@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Corgibytes.Freshli.Lib;
 using FluentAssertions;
-using Newtonsoft.Json;
 using ServiceStack.Text;
 using Xunit;
 using Xunit.Abstractions;
 using YamlDotNet.Serialization;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Corgibytes.Freshli.Cli.Test.Formatters;
 
@@ -71,7 +72,8 @@ public class OutputFormatterTest : FreshliTest
             new object[]
             {
                 JsonFormatter.Format(s_metricsResultTestData),
-                JsonConvert.SerializeObject(s_metricsResultTestData, Formatting.Indented), JsonFormatter.Type
+                JsonSerializer.Serialize(s_metricsResultTestData, new JsonSerializerOptions { WriteIndented = true }),
+                JsonFormatter.Type
             },
             new object[]
             {
@@ -87,7 +89,7 @@ public class OutputFormatterTest : FreshliTest
             new object[]
             {
                 JsonFormatter.Format(s_metricsResultListTestData),
-                JsonConvert.SerializeObject(s_metricsResultListTestData, Formatting.Indented),
+                JsonSerializer.Serialize(s_metricsResultListTestData, new JsonSerializerOptions { WriteIndented = true }),
                 JsonFormatter.Type
             },
             new object[]
@@ -103,7 +105,8 @@ public class OutputFormatterTest : FreshliTest
             new object[]
             {
                 JsonFormatter.Format<MetricsResult>(new List<MetricsResult>()),
-                JsonConvert.SerializeObject(new List<MetricsResult>(), Formatting.Indented), JsonFormatter.Type
+                JsonSerializer.Serialize(new List<MetricsResult>(), new JsonSerializerOptions { WriteIndented = true }),
+                JsonFormatter.Type
             },
             new object[]
             {
