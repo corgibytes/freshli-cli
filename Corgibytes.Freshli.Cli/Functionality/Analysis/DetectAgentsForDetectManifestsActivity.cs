@@ -28,7 +28,7 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
             return;
         }
 
-        foreach (var agentPath in agentsDetector.Detect())
+        foreach (var agentPath in agents)
         {
             eventClient.Fire(new AgentDetectedForDetectManifestEvent(_analysisId, _historyStopPointId, agentPath));
         }
