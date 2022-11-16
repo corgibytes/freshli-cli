@@ -31,12 +31,12 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _resultsApi = resultsApi;
     }
 
-    public override int Run(AnalyzeCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(AnalyzeCommandOptions options, IConsole console)
     {
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
 
-        _activityEngine.Dispatch(new StartAnalysisActivity
+        await _activityEngine.Dispatch(new StartAnalysisActivity
         {
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,
@@ -66,16 +66,16 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             return ValueTask.CompletedTask;
         });
 
-        _activityEngine.Wait();
+        await _activityEngine.Wait();
 
         if (apiAnalysisId != null)
         {
-            _activityEngine.Dispatch(new UpdateAnalysisStatusActivity(
+            await _activityEngine.Dispatch(new UpdateAnalysisStatusActivity(
                 apiAnalysisId.Value,
                 exitStatus == 0 ? "success" : "error"
             ));
 
-            _activityEngine.Wait();
+            await _activityEngine.Wait();
         }
         else
         {

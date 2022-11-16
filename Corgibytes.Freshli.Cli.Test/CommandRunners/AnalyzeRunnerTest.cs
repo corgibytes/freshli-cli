@@ -53,13 +53,13 @@ public class AnalyzeRunnerTest
     }
 
     [Fact]
-    public void RunIndicatesThatAnalysisIsComplete()
+    public async ValueTask RunIndicatesThatAnalysisIsComplete()
     {
         var apiAnalysisId = Guid.NewGuid();
 
         SetupAnalysisApiCreatedEvent(apiAnalysisId);
 
-        var exitCode = _analyzeRunner.Run(_options, _console.Object);
+        var exitCode = await _analyzeRunner.Run(_options, _console.Object);
 
         Assert.Equal(0, exitCode);
 
@@ -69,14 +69,14 @@ public class AnalyzeRunnerTest
     }
 
     [Fact]
-    public void RunIndicatesThatAnalysisFailed()
+    public async ValueTask RunIndicatesThatAnalysisFailed()
     {
         var apiAnalysisId = Guid.NewGuid();
 
         SetupAnalysisFailureLoggedEvent();
         SetupAnalysisApiCreatedEvent(apiAnalysisId);
 
-        var exitCode = _analyzeRunner.Run(_options, _console.Object);
+        var exitCode = await _analyzeRunner.Run(_options, _console.Object);
 
         Assert.Equal(1, exitCode);
 
@@ -86,9 +86,9 @@ public class AnalyzeRunnerTest
     }
 
     [Fact]
-    public void RunIndicatesThatCouldNotCallApi()
+    public async ValueTask RunIndicatesThatCouldNotCallApi()
     {
-        var exitCode = _analyzeRunner.Run(_options, _console.Object);
+        var exitCode = await _analyzeRunner.Run(_options, _console.Object);
 
         Assert.Equal(-1, exitCode);
 
