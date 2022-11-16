@@ -44,7 +44,7 @@ public class DetectAgentsForDetectManifestsActivityTest
         _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
         var analysisId = Guid.NewGuid();
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         var activity =
             new DetectAgentsForDetectManifestsActivity(analysisId, historyStopPointId);
 

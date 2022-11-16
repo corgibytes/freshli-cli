@@ -13,11 +13,11 @@ public class BillOfMaterialsGeneratedEventTest
     public void CorrectlyDispatchesComputeLibYearActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
-        var pathToBom = "/path/to/bom";
-        var agentExecutablePath = "/path/to/agent";
+        const string pathToBom = "/path/to/bom";
+        const string agentExecutablePath = "/path/to/agent";
 
         var analysisId = Guid.NewGuid();
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         var billOfMaterialsGeneratedEvent =
             new BillOfMaterialsGeneratedEvent(analysisId, historyStopPointId, pathToBom, agentExecutablePath);
 

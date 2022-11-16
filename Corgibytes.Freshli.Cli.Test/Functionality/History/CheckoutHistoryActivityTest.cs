@@ -15,10 +15,10 @@ public class CheckoutHistoryActivityTest
     [Fact]
     public void Handle()
     {
-        var commitId = "abcdef1";
-        var gitExecutablePath = "/path/to/git";
+        const string commitId = "abcdef1";
+        const string gitExecutablePath = "/path/to/git";
         var repositoryId = Guid.NewGuid().ToString();
-        var cacheDirectory = "/path/to/cache/dir";
+        const string cacheDirectory = "/path/to/cache/dir";
         var archiveLocation = $"{cacheDirectory}/histories/{repositoryId}/{commitId}";
 
         var configuration = new Mock<IConfiguration>();
@@ -33,7 +33,7 @@ public class CheckoutHistoryActivityTest
             GitCommitId = commitId
         };
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
 

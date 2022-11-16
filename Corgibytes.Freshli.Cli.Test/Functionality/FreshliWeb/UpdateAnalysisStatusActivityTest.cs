@@ -13,7 +13,7 @@ public class UpdateAnalysisStatusActivityTest
     public void HandleSendsSuccessStatusToApi()
     {
         var apiAnalysisId = Guid.NewGuid();
-        var status = "success";
+        const string status = "success";
 
         var activity = new UpdateAnalysisStatusActivity(apiAnalysisId, status);
 

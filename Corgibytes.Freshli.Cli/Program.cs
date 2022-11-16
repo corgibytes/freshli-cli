@@ -31,7 +31,7 @@ public class Program
 
     private static ILogger<Program>? Logger { get; set; }
     private static IConfiguration Configuration { get; } = new Configuration(new Environment());
-    private static List<QueuedHostedService> Workers { get; set; }= new();
+    private static List<QueuedHostedService> Workers { get; } = new();
 
     public static async Task<int> Main(params string[] args)
     {
