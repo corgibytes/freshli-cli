@@ -33,7 +33,7 @@ public sealed class DefaultBackgroundTaskQueue : IBackgroundTaskQueue
 
     private Func<CancellationToken, ValueTask> WrapWorkItem(Func<CancellationToken, ValueTask> workItem)
     {
-        return async (cancellationToken) =>
+        return async cancellationToken =>
         {
             try
             {

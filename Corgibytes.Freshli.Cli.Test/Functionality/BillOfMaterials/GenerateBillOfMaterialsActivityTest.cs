@@ -32,7 +32,7 @@ public class GenerateBillOfMaterialsActivityTest
             AsOfDateTime = asOfDateTime
         };
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
 
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
 

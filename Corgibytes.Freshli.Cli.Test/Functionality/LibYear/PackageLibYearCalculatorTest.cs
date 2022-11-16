@@ -14,7 +14,7 @@ public class PackageLibYearCalculatorTest
     [Fact]
     public void VerifyItCanCalculateTheLibYear()
     {
-        var packageName = "pkg:maven/org.apache.maven/apache-maven";
+        const string packageName = "pkg:maven/org.apache.maven/apache-maven";
         var currentlyInstalledPackageUrl = new PackageURL(packageName + "@1.3.4");
 
         var givenReleaseHistory = new List<Package>

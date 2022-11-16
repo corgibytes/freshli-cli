@@ -16,12 +16,12 @@ public class DeterminePackagesFromBomActivityTest
     public void HandleCorrectlyFiresLibYearComputatitonForBomStartedEvent()
     {
         var analysisId = Guid.NewGuid();
-        var pathToBom = "/path/to/bom";
-        var pathToAgentExecutable = "/path/to/agent";
+        const string pathToBom = "/path/to/bom";
+        const string pathToAgentExecutable = "/path/to/agent";
 
         var eventClient = new Mock<IApplicationEventEngine>();
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         var activity =
             new DeterminePackagesFromBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
 

@@ -16,7 +16,7 @@ public class DetectManifestsUsingAgentActivityTest
     [Fact]
     public void Handle()
     {
-        var localPath = "/path/to/repository";
+        const string localPath = "/path/to/repository";
         var agentReader = new Mock<IAgentReader>();
         agentReader.Setup(mock => mock.DetectManifests(localPath)).Returns(
             new List<string>
@@ -33,7 +33,7 @@ public class DetectManifestsUsingAgentActivityTest
         var cacheDb = new Mock<ICacheDb>();
         var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
 

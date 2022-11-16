@@ -30,6 +30,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private IBackgroundTaskQueue JobClient { get; }
 
+    // TODO: Make this an async method
     public void Dispatch(IApplicationActivity applicationActivity)
     {
         lock (s_dispatchLock)
@@ -37,7 +38,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             s_isActivityDispatchingInProgress = true;
             try
             {
-                JobClient.QueueBackgroundWorkItemAsync((cancelationToken) => HandleActivity(applicationActivity));
+                // TODO: call await here
+                // TODO: Pass the cancellation token to HandleActivity
+#pragma warning disable CA2012
+                JobClient.QueueBackgroundWorkItemAsync(_ => HandleActivity(applicationActivity));
+#pragma warning restore CA2012
             }
             finally
             {
@@ -75,6 +80,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public IServiceProvider ServiceProvider { get; }
 
+    // TODO: Make this method async
     public void Fire(IApplicationEvent applicationEvent)
     {
         lock (s_fireLock)
@@ -82,7 +88,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             s_isEventFiringInProgress = true;
             try
             {
-                JobClient.QueueBackgroundWorkItemAsync((cancelationToken) => FireEventAndHandler(applicationEvent));
+                // TODO: call await here
+                // TODO: pass cancellation token to FireEventAndHandler
+#pragma warning disable CA2012
+                JobClient.QueueBackgroundWorkItemAsync(_ => FireEventAndHandler(applicationEvent));
+#pragma warning restore CA2012
             }
             finally
             {
@@ -125,12 +135,16 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
         if (s_eventHandlers.Keys.Any(type => type.IsAssignableTo(applicationEvent.GetType())))
         {
-            await JobClient.QueueBackgroundWorkItemAsync((cancelationToken) => TriggerHandler(applicationEvent));
+            // TODO: Pass the cancellation token to TriggerHandler
+            await JobClient.QueueBackgroundWorkItemAsync(_ => TriggerHandler(applicationEvent));
         }
     }
 
+    // TODO: Remove pragma when IApplicationActivity.Handle is async
     // ReSharper disable once MemberCanBePrivate.Global
+#pragma warning disable CS1998
     public async ValueTask HandleActivity(IApplicationActivity activity)
+#pragma warning restore CS1998
     {
         Mutex? mutex = null;
         if (activity is IMutexed mutexSource)
@@ -169,8 +183,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
+    // TODO: Remove pragma when IApplicationActivity.Handle is async
     // ReSharper disable once MemberCanBePrivate.Global
+#pragma warning disable CS1998
     public async ValueTask HandleEvent(IApplicationEvent appEvent)
+#pragma warning restore CS1998
     {
         try
         {
@@ -188,9 +205,12 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
+    // TODO: Remove pragma when IApplicationActivity.Handle is async
     // TODO: see if these methods can be made private now
     // ReSharper disable once MemberCanBePrivate.Global
+#pragma warning disable CS1998
     public async ValueTask TriggerHandler(IApplicationEvent applicationEvent)
+#pragma warning restore CS1998
     {
         foreach (var type in s_eventHandlers.Keys)
         {

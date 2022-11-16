@@ -7,7 +7,7 @@ public class HistoryIntervalParser : IHistoryIntervalParser
 {
     public bool IsValid(string value)
     {
-        var pattern = @"^(-?\d+)([ymwd]?)$";
+        const string pattern = @"^(-?\d+)([ymwd]?)$";
         var matches = Regex.Matches(value, pattern, RegexOptions.None, TimeSpan.FromSeconds(1));
 
         var isSyntaxValid = matches.Count == 1;

@@ -1,6 +1,6 @@
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public record struct QueueStatistics
+public readonly record struct QueueStatistics
 {
     public long Processing { get; init; }
     public long Enqueued { get; init; }
