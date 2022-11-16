@@ -14,10 +14,10 @@ public class PackageFoundEventTest
     public void HandleCorrectlyDispatchesComputeLibYearForPackageActivity()
     {
         var analysisId = Guid.NewGuid();
-        var agentExecutablePath = "/path/to/agent";
+        const string agentExecutablePath = "/path/to/agent";
         var activityEngine = new Mock<IApplicationActivityEngine>();
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         var package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
         var packageEvent = new PackageFoundEvent
         {

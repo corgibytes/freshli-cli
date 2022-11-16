@@ -14,7 +14,7 @@ public class ApiHistoryStopCreatedEventTest
     public void HandleDispatchesCheckoutHistoryActivity()
     {
         var cachedAnalysisId = Guid.NewGuid();
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         var appEvent = new ApiHistoryStopCreatedEvent(cachedAnalysisId, historyStopPointId);
 
         var eventClient = new Mock<IApplicationActivityEngine>();

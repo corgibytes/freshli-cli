@@ -15,9 +15,9 @@ public class GitRepositoryClonedEventTest
     [Fact]
     public void CorrectlyDispatchesComputeHistoryActivity()
     {
-        var gitPath = "test";
-        var cacheDir = "example";
-        var gitRepositoryId = "example";
+        const string gitPath = "test";
+        const string cacheDir = "example";
+        const string gitRepositoryId = "example";
         var analysisId = Guid.NewGuid();
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(mock => mock.GitPath).Returns(gitPath);

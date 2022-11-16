@@ -10,19 +10,6 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class PackageLibYear
 {
-    // todo: remove this constructor - it's being kept to support existing tests
-    public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
-        DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear)
-    {
-        AsOfDateTime = default;
-        ReleaseDateCurrentVersion = releaseDateCurrentVersion;
-        CurrentVersion = currentVersion;
-        ReleaseDateLatestVersion = releaseDateLatestVersion;
-        LatestVersion = latestVersion;
-        LibYear = libYear;
-    }
-
-
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
         DateTimeOffset asOfDateTime)
@@ -38,20 +25,6 @@ public class PackageLibYear
     public PackageLibYear(PackageURL packageUrl, string exceptionMessage)
     {
         PackageUrl = packageUrl;
-        ExceptionMessage = exceptionMessage;
-    }
-
-    public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
-        DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
-        PackageURL packageUrl, DateTimeOffset asOfDateTime, string exceptionMessage)
-    {
-        ReleaseDateCurrentVersion = releaseDateCurrentVersion;
-        CurrentVersion = currentVersion;
-        ReleaseDateLatestVersion = releaseDateLatestVersion;
-        LatestVersion = latestVersion;
-        LibYear = libYear;
-        PackageUrl = packageUrl;
-        AsOfDateTime = asOfDateTime;
         ExceptionMessage = exceptionMessage;
     }
 

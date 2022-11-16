@@ -53,7 +53,7 @@ public class AgentReaderTest
     [Fact]
     public void RetrieveReleaseHistoryWritesToCache()
     {
-        var agentExecutable = "/path/to/agent";
+        const string agentExecutable = "/path/to/agent";
 
         var commandResponse =
             $"{_alphaPackage.PackageUrl.Version}\t{_alphaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n" +

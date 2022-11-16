@@ -20,8 +20,8 @@ public class CreateAnalysisApiActivityTest
     [Fact]
     public void HandleSendsRequest()
     {
-        var url = "anything";
-        var branch = "anythingelse";
+        const string url = "anything";
+        const string branch = "anythingelse";
         var api = new Mock<IResultsApi>();
         var apiAnalysisId = Guid.NewGuid();
         var cachedAnalysisId = Guid.NewGuid();

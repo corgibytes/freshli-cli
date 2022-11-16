@@ -17,7 +17,7 @@ public class DetectAgentsActivityTest
         var agentsDetector = new Mock<IAgentsDetector>();
         var activity = new DetectAgentsActivity(agentsDetector.Object);
 
-        var pathToAgent = "/agent/smith";
+        const string pathToAgent = "/agent/smith";
 
         agentsDetector.Setup(mock => mock.Detect()).Returns(new List<string> { pathToAgent });
 
