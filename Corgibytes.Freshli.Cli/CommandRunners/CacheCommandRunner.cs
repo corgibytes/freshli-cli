@@ -1,5 +1,6 @@
 using System;
 using System.CommandLine;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Lib;
@@ -13,5 +14,5 @@ public class CacheCommandRunner : CommandRunner<CacheCommand, CacheCommandOption
     {
     }
 
-    public override int Run(CacheCommandOptions options, IConsole console) => 0;
+    public override ValueTask<int> Run(CacheCommandOptions options, IConsole console) => ValueTask.FromResult(0);
 }

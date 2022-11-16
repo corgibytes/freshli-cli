@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.IO;
 using System.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.OutputStrategies;
@@ -44,7 +45,7 @@ public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
     }
 
 
-    protected override int Run(IHost host, IConsole console, ScanCommandOptions options)
+    protected override ValueTask<int> Run(IHost host, IConsole console, ScanCommandOptions options)
     {
         _ = options ?? throw new ArgumentNullException(nameof(options));
         console.Out.WriteLine(CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler);
