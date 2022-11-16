@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
-using Hangfire;
-using Hangfire.Common;
-using Hangfire.Storage.Monitoring;
 using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -22,7 +20,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private static bool s_isEventFiringInProgress;
     private readonly ILogger<ApplicationEngine> _logger;
 
-    public ApplicationEngine(IBackgroundJobClient jobClient, ILogger<ApplicationEngine> logger,
+    public ApplicationEngine(IBackgroundTaskQueue jobClient, ILogger<ApplicationEngine> logger,
         IServiceProvider serviceProvider)
     {
         JobClient = jobClient ?? throw new ArgumentNullException(nameof(jobClient));
@@ -30,7 +28,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         ServiceProvider = serviceProvider;
     }
 
-    private IBackgroundJobClient JobClient { get; }
+    private IBackgroundTaskQueue JobClient { get; }
 
     public void Dispatch(IApplicationActivity applicationActivity)
     {
@@ -39,7 +37,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             s_isActivityDispatchingInProgress = true;
             try
             {
-                JobClient.Enqueue(() => HandleActivity(applicationActivity));
+                JobClient.QueueBackgroundWorkItemAsync((cancelationToken) => HandleActivity(applicationActivity));
             }
             finally
             {
@@ -59,7 +57,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         {
             Thread.Sleep(500);
 
-            var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
+            var statistics = JobClient.GetStatistics();
             var length = statistics.Processing + statistics.Enqueued;
 
             // store the value of static boolean fields to avoid a race condition between the output of those values
@@ -84,7 +82,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             s_isEventFiringInProgress = true;
             try
             {
-                JobClient.Enqueue(() => FireEventAndHandler(applicationEvent));
+                JobClient.QueueBackgroundWorkItemAsync((cancelationToken) => FireEventAndHandler(applicationEvent));
             }
             finally
             {
@@ -92,7 +90,6 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             }
         }
     }
-
 
     public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
         s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
@@ -102,14 +99,13 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private void LogWaitStop(long durationInMilliseconds) =>
         _logger.LogDebug("Waited for {Duration} milliseconds", durationInMilliseconds);
 
-    private void LogWaitingStatus(StatisticsDto statistics, long length, bool localIsEventFiring,
+    private void LogWaitingStatus(QueueStatistics statistics, long length, bool localIsEventFiring,
         bool localIsActivityDispatching) =>
         _logger.LogTrace(
             "Queue length: {QueueLength} (" +
             "Processing: {JobsProcessing}, " +
             "Enqueued: {JobsEnqueued}, " +
             "Succeeded: {JobsSucceeded}, " +
-            "Scheduled: {JobsScheduled}, " +
             "Failed: {JobsFailed}), " +
             "Activity Dispatch in Progress: {IsActivityDispatchInProgress}, " +
             "Event Fire in Progress: {IsEventFireInProgress}",
@@ -117,25 +113,24 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             statistics.Processing,
             statistics.Enqueued,
             statistics.Succeeded,
-            statistics.Scheduled,
             statistics.Failed,
             localIsActivityDispatching,
             localIsEventFiring
         );
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void FireEventAndHandler(IApplicationEvent applicationEvent)
+    public async ValueTask FireEventAndHandler(IApplicationEvent applicationEvent)
     {
-        var jobId = JobClient.Enqueue(() => HandleEvent(applicationEvent));
+        await HandleEvent(applicationEvent);
 
-        foreach (var _ in s_eventHandlers.Keys.Where(type => type.IsAssignableTo(applicationEvent.GetType())))
+        if (s_eventHandlers.Keys.Any(type => type.IsAssignableTo(applicationEvent.GetType())))
         {
-            JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
+            JobClient.QueueBackgroundWorkItemAsync((cancelationToken) => TriggerHandler(applicationEvent));
         }
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleActivity(IApplicationActivity activity)
+    public async ValueTask HandleActivity(IApplicationActivity activity)
     {
         Mutex? mutex = null;
         if (activity is IMutexed mutexSource)
@@ -156,7 +151,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             _logger.LogDebug(
                 "Handling activity {ActivityType}: {Activity}",
                 activity.GetType(),
-                SerializationHelper.Serialize(activity)
+                // todo: figure out how best to log activity specific values here
+                activity
             );
             activity.Handle(this);
         }
@@ -174,14 +170,15 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleEvent(IApplicationEvent appEvent)
+    public async ValueTask HandleEvent(IApplicationEvent appEvent)
     {
         try
         {
             _logger.LogDebug(
                 "Handling activity {AppEventType}: {AppEvent}",
                 appEvent.GetType(),
-                SerializationHelper.Serialize(appEvent)
+                // todo: figure out how best to log event specific values here
+                appEvent
             );
             appEvent.Handle(this);
         }
@@ -191,8 +188,9 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
+    // TODO: see if these methods can be made private now
     // ReSharper disable once MemberCanBePrivate.Global
-    public void TriggerHandler(IApplicationEvent applicationEvent)
+    public async ValueTask TriggerHandler(IApplicationEvent applicationEvent)
     {
         foreach (var type in s_eventHandlers.Keys)
         {
