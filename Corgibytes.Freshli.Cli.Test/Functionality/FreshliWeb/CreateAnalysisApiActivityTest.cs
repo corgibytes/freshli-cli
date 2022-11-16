@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -18,7 +19,7 @@ public class CreateAnalysisApiActivityTest
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
 
     [Fact]
-    public void HandleSendsRequest()
+    public async ValueTask HandleSendsRequest()
     {
         const string url = "anything";
         const string branch = "anythingelse";
@@ -42,7 +43,7 @@ public class CreateAnalysisApiActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(api.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         cacheDb.Verify(mock => mock.SaveAnalysis(It.Is<CachedAnalysis>(value =>
             value.Id == cachedAnalysisId &&

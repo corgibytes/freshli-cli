@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -11,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class ManifestDetectedEventTest
 {
     [Fact]
-    public void CorrectlyDispatchesGenerateBillOfMaterialsActivity()
+    public async ValueTask CorrectlyDispatchesGenerateBillOfMaterialsActivity()
     {
         const string manifestPath = "/path/to/manifest";
         var engine = new Mock<IApplicationActivityEngine>();
@@ -21,7 +22,7 @@ public class ManifestDetectedEventTest
         const int historyStopPointId = 29;
         var manifestEvent =
             new ManifestDetectedEvent(analysisId, historyStopPointId, agentExecutablePath, manifestPath);
-        manifestEvent.Handle(engine.Object);
+        await manifestEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<GenerateBillOfMaterialsActivity>(value =>
             value.AnalysisId == analysisId &&

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
@@ -12,7 +13,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.BillOfMaterials;
 public class GenerateBillOfMaterialsActivityTest
 {
     [Fact]
-    public void Handle()
+    public async ValueTask Handle()
     {
         // Arrange
         var asOfDateTime = DateTimeOffset.Now;
@@ -54,7 +55,7 @@ public class GenerateBillOfMaterialsActivityTest
         var activity =
             new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopPointId,
                 "/path/to/manifest");
-        activity.Handle(eventEngine.Object);
+        await activity.Handle(eventEngine.Object);
 
         // Assert
         eventEngine.Verify(mock =>

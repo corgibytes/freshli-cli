@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Moq;
@@ -11,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class PackageFoundEventTest
 {
     [Fact]
-    public void HandleCorrectlyDispatchesComputeLibYearForPackageActivity()
+    public async ValueTask HandleCorrectlyDispatchesComputeLibYearForPackageActivity()
     {
         var analysisId = Guid.NewGuid();
         const string agentExecutablePath = "/path/to/agent";
@@ -27,7 +28,7 @@ public class PackageFoundEventTest
             Package = package
         };
 
-        packageEvent.Handle(activityEngine.Object);
+        await packageEvent.Handle(activityEngine.Object);
 
         activityEngine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearForPackageActivity>(value =>
             value.AnalysisId == analysisId &&

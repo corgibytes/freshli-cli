@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
@@ -10,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 public class BillOfMaterialsGeneratedEventTest
 {
     [Fact]
-    public void CorrectlyDispatchesComputeLibYearActivity()
+    public async ValueTask CorrectlyDispatchesComputeLibYearActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         const string pathToBom = "/path/to/bom";
@@ -24,7 +25,7 @@ public class BillOfMaterialsGeneratedEventTest
         var engine = new Mock<IApplicationActivityEngine>();
         engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        billOfMaterialsGeneratedEvent.Handle(engine.Object);
+        await billOfMaterialsGeneratedEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<DeterminePackagesFromBomActivity>(value =>
             value.AnalysisId == analysisId &&

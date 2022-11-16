@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -12,7 +13,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class CreateApiPackageLibYearActivityTest
 {
     [Fact]
-    public void HandleCorrectlyCallsApiAndFiresApiPackageLibYearCreatedEvent()
+    public async ValueTask HandleCorrectlyCallsApiAndFiresApiPackageLibYearCreatedEvent()
     {
         var analysisId = Guid.NewGuid();
         const int historyStopPointId = 12;
@@ -49,7 +50,7 @@ public class CreateApiPackageLibYearActivityTest
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         eventClient.Verify(mock => mock.Fire(It.Is<ApiPackageLibYearCreatedEvent>(value =>
             value.AnalysisId == analysisId &&
