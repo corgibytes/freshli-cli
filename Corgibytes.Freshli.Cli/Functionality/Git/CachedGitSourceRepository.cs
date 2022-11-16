@@ -3,13 +3,12 @@ using System.Linq;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Resources;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CachedGitSourceRepository : ICachedGitSourceRepository
 {
-    [JsonProperty] private readonly ICommandInvoker _commandInvoker;
+    private readonly ICommandInvoker _commandInvoker;
 
     public CachedGitSourceRepository(ICommandInvoker commandInvoker, IConfiguration configuration,
         ICacheManager cacheManager)
@@ -19,8 +18,8 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         CacheManager = cacheManager;
     }
 
-    [JsonProperty] private ICacheManager CacheManager { get; }
-    [JsonProperty] private IConfiguration Configuration { get; }
+    private ICacheManager CacheManager { get; }
+    private IConfiguration Configuration { get; }
 
     public CachedGitSource FindOneByRepositoryId(string repositoryId)
     {

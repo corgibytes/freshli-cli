@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace Corgibytes.Freshli.Cli.Formatters;
 
@@ -7,7 +7,9 @@ public class JsonOutputFormatter : OutputFormatter
 {
     public override FormatType Type => FormatType.Json;
 
-    protected override string Build<T>(T entity) => JsonConvert.SerializeObject(entity, Formatting.Indented);
+    protected override string Build<T>(T entity) =>
+        JsonSerializer.Serialize(entity, new JsonSerializerOptions { WriteIndented = true });
 
-    protected override string Build<T>(IList<T> entities) => JsonConvert.SerializeObject(entities, Formatting.Indented);
+    protected override string Build<T>(IList<T> entities) =>
+        JsonSerializer.Serialize(entities, new JsonSerializerOptions { WriteIndented = true });
 }
