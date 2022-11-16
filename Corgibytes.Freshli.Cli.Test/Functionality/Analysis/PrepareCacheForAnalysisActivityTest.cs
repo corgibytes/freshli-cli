@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -41,11 +42,11 @@ public class PrepareCacheForAnalysisActivityTest
     }
 
     [Fact]
-    public void VerifyItFiresCachePreparedEventWhenPrepareSucceeds()
+    public async ValueTask VerifyItFiresCachePreparedEventWhenPrepareSucceeds()
     {
         _cacheManager.Setup(mock => mock.Prepare()).Returns(true);
 
-        _activity.Handle(_eventClient.Object);
+        await _activity.Handle(_eventClient.Object);
 
         _eventClient.Verify(mock => mock.Fire(It.Is<CachePreparedForAnalysisEvent>(value =>
             value.HistoryInterval == _historyInterval &&
@@ -57,21 +58,21 @@ public class PrepareCacheForAnalysisActivityTest
     }
 
     [Fact]
-    public void VerifyItFiresCachePreparedEventWhenPrepareFails()
+    public async ValueTask VerifyItFiresCachePreparedEventWhenPrepareFails()
     {
         _cacheManager.Setup(mock => mock.Prepare()).Returns(false);
 
-        _activity.Handle(_eventClient.Object);
+        await _activity.Handle(_eventClient.Object);
 
         _eventClient.Verify(mock => mock.Fire(It.IsAny<CachePrepareFailedForAnalysisEvent>()));
     }
 
     [Fact]
-    public void VerifyItFiresCachePreparedEventWhenPrepareThrowsAnException()
+    public async ValueTask VerifyItFiresCachePreparedEventWhenPrepareThrowsAnException()
     {
         _cacheManager.Setup(mock => mock.Prepare()).Throws(new Exception("failure message"));
 
-        _activity.Handle(_eventClient.Object);
+        await _activity.Handle(_eventClient.Object);
 
         _eventClient.Verify(mock => mock.Fire(It.Is<CachePrepareFailedForAnalysisEvent>(value =>
             value.ErrorMessage == "failure message")));

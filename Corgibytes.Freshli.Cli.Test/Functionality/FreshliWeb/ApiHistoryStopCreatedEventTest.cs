@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -11,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class ApiHistoryStopCreatedEventTest
 {
     [Fact]
-    public void HandleDispatchesCheckoutHistoryActivity()
+    public async ValueTask HandleDispatchesCheckoutHistoryActivity()
     {
         var cachedAnalysisId = Guid.NewGuid();
         const int historyStopPointId = 29;
@@ -19,7 +20,7 @@ public class ApiHistoryStopCreatedEventTest
 
         var eventClient = new Mock<IApplicationActivityEngine>();
 
-        appEvent.Handle(eventClient.Object);
+        await appEvent.Handle(eventClient.Object);
 
         eventClient.Verify(mock => mock.Dispatch(
             It.Is<CheckoutHistoryActivity>(

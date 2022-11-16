@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -12,7 +13,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class CreateApiHistoryStopActivityTest
 {
     [Fact]
-    public void Handle()
+    public async ValueTask Handle()
     {
         var cachedAnalysisId = Guid.NewGuid();
         var apiAnalysisId = Guid.NewGuid();
@@ -46,7 +47,7 @@ public class CreateApiHistoryStopActivityTest
 
         var activity = new CreateApiHistoryStopActivity(cachedAnalysisId, historyStopPointId);
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         resultsApi.Verify(mock => mock.CreateHistoryPoint(cacheDb.Object, cachedAnalysisId, historyStopPointId));
 

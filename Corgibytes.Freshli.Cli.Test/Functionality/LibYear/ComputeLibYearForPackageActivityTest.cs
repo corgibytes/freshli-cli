@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -14,7 +15,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class ComputeLibYearForPackageActivityTest
 {
     [Fact]
-    public void HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
+    public async ValueTask HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
     {
         var analysisId = Guid.NewGuid();
         var asOfDateTime = new DateTimeOffset(2021, 1, 29, 12, 30, 45, 0, TimeSpan.Zero);
@@ -60,7 +61,7 @@ public class ComputeLibYearForPackageActivityTest
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         cacheDb.Verify(mock => mock.AddPackageLibYear(
             It.Is<CachedPackageLibYear>(value =>

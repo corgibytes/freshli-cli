@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -13,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 public class CheckoutHistoryActivityTest
 {
     [Fact]
-    public void Handle()
+    public async ValueTask Handle()
     {
         const string commitId = "abcdef1";
         const string gitExecutablePath = "/path/to/git";
@@ -54,7 +55,7 @@ public class CheckoutHistoryActivityTest
             mock => mock.CreateArchive(repositoryId, parsedCommitId)
         ).Returns(archiveLocation);
 
-        activity.Handle(eventEngine.Object);
+        await activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(
             mock => mock.Fire(It.Is<HistoryStopCheckedOutEvent>(appEvent =>

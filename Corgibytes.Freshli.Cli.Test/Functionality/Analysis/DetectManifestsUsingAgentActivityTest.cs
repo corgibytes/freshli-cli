@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -14,7 +15,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class DetectManifestsUsingAgentActivityTest
 {
     [Fact]
-    public void Handle()
+    public async ValueTask Handle()
     {
         const string localPath = "/path/to/repository";
         var agentReader = new Mock<IAgentReader>();
@@ -48,7 +49,7 @@ public class DetectManifestsUsingAgentActivityTest
         var activity =
             new DetectManifestsUsingAgentActivity(analysisId, historyStopPointId, agentExecutablePath);
 
-        activity.Handle(eventEngine.Object);
+        await activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
             appEvent.AnalysisId == analysisId &&

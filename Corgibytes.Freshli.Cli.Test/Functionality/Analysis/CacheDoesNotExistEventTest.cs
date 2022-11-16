@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -11,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class CacheWasNotPreparedEventTest
 {
     [Fact]
-    public void CorrectlyDispatchesPrepareCacheActivity()
+    public async ValueTask CorrectlyDispatchesPrepareCacheActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var cacheManager = new Mock<ICacheManager>();
@@ -32,7 +33,7 @@ public class CacheWasNotPreparedEventTest
         var engine = new Mock<IApplicationActivityEngine>();
         engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        cacheEvent.Handle(engine.Object);
+        await cacheEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<PrepareCacheForAnalysisActivity>(value =>
             value.RepositoryUrl == cacheEvent.RepositoryUrl &&
