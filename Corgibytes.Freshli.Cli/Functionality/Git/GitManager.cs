@@ -1,13 +1,12 @@
 using System;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitManager : IGitManager
 {
-    [JsonProperty] private readonly ICommandInvoker _commandInvoker;
-    [JsonProperty] private readonly IConfiguration _configuration;
-    [JsonProperty] private readonly GitArchive _gitArchive;
+    private readonly ICommandInvoker _commandInvoker;
+    private readonly IConfiguration _configuration;
+    private readonly GitArchive _gitArchive;
 
     public GitManager(ICommandInvoker commandInvoker, GitArchive gitArchive, IConfiguration configuration)
     {

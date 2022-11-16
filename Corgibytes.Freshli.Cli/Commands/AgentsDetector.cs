@@ -2,13 +2,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Corgibytes.Freshli.Cli.Functionality;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
 public class AgentsDetector : IAgentsDetector
 {
-    [JsonProperty] private readonly IEnvironment _environment;
+    private readonly IEnvironment _environment;
 
     public AgentsDetector(IEnvironment environment) => _environment = environment;
 

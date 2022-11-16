@@ -1,5 +1,4 @@
 using System;
-using Newtonsoft.Json;
 using PackageUrl;
 
 // Currently the public fields aren't being used but once we get the API call to submit the results to we'll need these to be public
@@ -42,7 +41,6 @@ public class PackageLibYear
         ExceptionMessage = exceptionMessage;
     }
 
-    [JsonConstructor]
     public PackageLibYear(DateTimeOffset releaseDateCurrentVersion, PackageURL currentVersion,
         DateTimeOffset releaseDateLatestVersion, PackageURL latestVersion, double libYear,
         PackageURL packageUrl, DateTimeOffset asOfDateTime, string exceptionMessage)
