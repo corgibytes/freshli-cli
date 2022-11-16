@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.CommandLine.Builder;
 using System.CommandLine.Hosting;
 using System.CommandLine.Invocation;
@@ -8,6 +10,7 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.IoC;
 using Hangfire;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +22,7 @@ using NLog.Extensions.Hosting;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using static System.String;
+using ConfigureExtensions = NLog.Extensions.Hosting.ConfigureExtensions;
 using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 using LogLevel = NLog.LogLevel;
 
@@ -33,13 +37,14 @@ public class Program
     private static IHostedService? HangfireBackgroundService { get; set; }
     private static BackgroundJobServerOptions? HangfireOptions { get; set; }
     private static IConfiguration Configuration { get; } = new Configuration(new Environment());
+    private static List<QueuedHostedService> Workers { get; set; }= new();
 
     public static async Task<int> Main(params string[] args)
     {
         var cmdBuilder = CreateCommandLineBuilder();
-        return await cmdBuilder.UseDefaults()
-            .Build()
-            .InvokeAsync(args);
+        var parser = cmdBuilder.UseDefaults()
+            .Build();
+        return await parser.InvokeAsync(args);
     }
 
     private static void ConfigureLogging(string? consoleLogLevel, string? logfile)
@@ -66,8 +71,9 @@ public class Program
         LogManager.Configuration = config;
     }
 
-    private static IHostBuilder CreateHostBuilder(string[] args) =>
-        Host.CreateDefaultBuilder(args)
+    private static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
             .ConfigureLogging(logging =>
             {
                 logging.ClearProviders();
@@ -78,9 +84,10 @@ public class Program
             {
                 new FreshliServiceBuilder(services, Configuration).Register();
                 Logger = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
-                HangfireBackgroundService = services.BuildServiceProvider().GetRequiredService<IHostedService>();
-                HangfireOptions = services.BuildServiceProvider().GetRequiredService<BackgroundJobServerOptions>();
+                // HangfireBackgroundService = services.BuildServiceProvider().GetRequiredService<IHostedService>();
+                // HangfireOptions = services.BuildServiceProvider().GetRequiredService<BackgroundJobServerOptions>();
             });
+    }
 
 
     public static CommandLineBuilder CreateCommandLineBuilder()
@@ -100,16 +107,44 @@ public class Program
             .AddMiddleware(async (context, next) =>
             {
                 var workerCount = context.ParseResult.GetOptionValueByName<int>("workers");
-                await Task.Run(() => { HangfireBackgroundService?.StopAsync(CancellationToken.None); });
 
-                if (HangfireOptions != null && workerCount > 0)
+                if (workerCount == 0)
                 {
-                    HangfireOptions.WorkerCount = workerCount;
+                    workerCount = System.Environment.ProcessorCount * 5;
                 }
 
-                HangfireBackgroundService?.StartAsync(new CancellationToken());
+                var host = context.BindingContext.GetRequiredService<IHost>();
+
+                while (Workers.Count < workerCount)
+                {
+                    var worker = ActivatorUtilities.CreateInstance<QueuedHostedService>(host.Services);
+                    Workers.Add(worker);
+
+                    worker.StartAsync(context.GetCancellationToken());
+                }
+
+                // await Task.Run(() => { HangfireBackgroundService?.StopAsync(CancellationToken.None); });
+                //
+                // if (HangfireOptions != null && workerCount > 0)
+                // {
+                //     HangfireOptions.WorkerCount = workerCount;
+                // }
+                //
+                // HangfireBackgroundService?.StartAsync(new CancellationToken());
 
                 await next(context);
+
+                var stopTasks = new List<Task>();
+                while (Workers.Count > 0)
+                {
+                    var worker = Workers[0];
+
+                    var stopTask = worker.StopAsync(context.GetCancellationToken());
+                    stopTasks.Add(stopTask);
+                    Workers.Remove(worker);
+                }
+
+                Task.WaitAll(stopTasks.ToArray(), context.GetCancellationToken());
             })
             .UseExceptionHandler()
             .UseHelp();
