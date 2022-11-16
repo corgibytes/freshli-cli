@@ -19,7 +19,7 @@ public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOpti
     {
     }
 
-    public override int Run(EmptyCommandOptions options, IConsole console) => 0;
+    public override ValueTask<int> Run(EmptyCommandOptions options, IConsole console) => ValueTask.FromResult(0);
 }
 
 public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, EmptyCommandOptions>
@@ -37,9 +37,9 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
-    public override int Run(EmptyCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(EmptyCommandOptions options, IConsole console)
     {
-        ActivityEngine.Dispatch(new DetectAgentsActivity(AgentsDetector));
+        await ActivityEngine.Dispatch(new DetectAgentsActivity(AgentsDetector));
 
         EventEngine.On<AgentsDetectedEvent>(detectionEvent =>
         {
@@ -47,7 +47,7 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
             return ValueTask.CompletedTask;
         });
 
-        ActivityEngine.Wait();
+        await ActivityEngine.Wait();
 
         return 0;
     }
@@ -84,7 +84,8 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
 
     private AgentsVerifier AgentsVerifier { get; }
 
-    public override int Run(AgentsVerifyCommandOptions options, IConsole console)
+    // TODO: This method should dispatch an activity
+    public override ValueTask<int> Run(AgentsVerifyCommandOptions options, IConsole console)
     {
         var agents = _agentsDetector.Detect();
 
@@ -107,6 +108,6 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
             }
         }
 
-        return 0;
+        return ValueTask.FromResult(0);
     }
 }
