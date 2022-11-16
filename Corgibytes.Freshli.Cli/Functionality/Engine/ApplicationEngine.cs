@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Microsoft.Extensions.Logging;
-using YamlDotNet.Core.Tokens;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -208,6 +207,6 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             tasks.Add(task.AsTask());
         }
 
-        Task.WaitAll(tasks.ToArray());
+        await Task.WhenAll(tasks);
     }
 }
