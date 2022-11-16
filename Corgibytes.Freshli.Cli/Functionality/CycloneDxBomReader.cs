@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using Corgibytes.Freshli.Cli.Resources;
-using Newtonsoft.Json;
 using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class CycloneDxBomReader : IBomReader
 {
-    [JsonProperty] private readonly IFileReader _fileReader;
+    private readonly IFileReader _fileReader;
 
     public CycloneDxBomReader(IFileReader fileReaderService) => _fileReader = fileReaderService;
 
