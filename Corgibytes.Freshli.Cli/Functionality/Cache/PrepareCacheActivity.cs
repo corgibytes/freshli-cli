@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -6,7 +7,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 
 public class PrepareCacheActivity : IApplicationActivity
 {
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
 
@@ -14,11 +15,11 @@ public class PrepareCacheActivity : IApplicationActivity
         {
             if (cacheManager.Prepare())
             {
-                eventClient.Fire(new CachePreparedEvent());
+                await eventClient.Fire(new CachePreparedEvent());
             }
             else
             {
-                eventClient.Fire(new CachePrepareFailedEvent
+                await eventClient.Fire(new CachePrepareFailedEvent
                 {
                     ErrorMessage = "Failed to prepare the cache for an unknown reason"
                 });
@@ -26,7 +27,7 @@ public class PrepareCacheActivity : IApplicationActivity
         }
         catch (Exception error)
         {
-            eventClient.Fire(new CachePrepareFailedEvent { ErrorMessage = error.Message });
+            await eventClient.Fire(new CachePrepareFailedEvent { ErrorMessage = error.Message });
         }
     }
 }

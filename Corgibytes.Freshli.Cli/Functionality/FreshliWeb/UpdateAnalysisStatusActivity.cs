@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,12 +16,12 @@ public class UpdateAnalysisStatusActivity : IApplicationActivity
     public Guid ApiAnalysisId { get; }
     public string Status { get; }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
 
         resultsApi.UpdateAnalysis(ApiAnalysisId, Status);
 
-        eventClient.Fire(new AnalysisApiStatusUpdatedEvent(ApiAnalysisId, Status));
+        await eventClient.Fire(new AnalysisApiStatusUpdatedEvent(ApiAnalysisId, Status));
     }
 }

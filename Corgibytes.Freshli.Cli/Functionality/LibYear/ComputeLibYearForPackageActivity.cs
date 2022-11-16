@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
@@ -14,7 +15,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
     public PackageURL Package { get; init; } = null!;
     public string AgentExecutablePath { get; init; } = null!;
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
         var agentReader = agentManager.GetReader(AgentExecutablePath);
@@ -37,7 +38,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
             HistoryStopPointId = HistoryStopPointId
         });
 
-        eventClient.Fire(new LibYearComputedForPackageEvent
+        await eventClient.Fire(new LibYearComputedForPackageEvent
         {
             AnalysisId = AnalysisId,
             HistoryStopPointId = HistoryStopPointId,

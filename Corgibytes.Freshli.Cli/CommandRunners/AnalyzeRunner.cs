@@ -1,6 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -51,6 +52,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         {
             console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
             exitStatus = 1;
+            return ValueTask.CompletedTask;
         });
 
         Guid? apiAnalysisId = null;
@@ -61,6 +63,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
                 "Results will be available at: " +
                 _resultsApi.GetResultsUrl(createdEvent.ApiAnalysisId)
             );
+            return ValueTask.CompletedTask;
         });
 
         _activityEngine.Wait();

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
         ManifestPath = manifestPath;
     }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
         var agentReader = agentManager.GetReader(AgentExecutablePath);
@@ -43,7 +44,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
         var bomFilePath = agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
         var cachedBomFilePath = cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
 
-        eventClient.Fire(new BillOfMaterialsGeneratedEvent(
+        await eventClient.Fire(new BillOfMaterialsGeneratedEvent(
             AnalysisId, HistoryStopPointId, cachedBomFilePath, AgentExecutablePath));
     }
 

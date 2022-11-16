@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -20,7 +21,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         HistoryStopData = historyStopData;
     }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
@@ -29,7 +30,7 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         if (cachedAnalysis == null)
         {
-            eventClient.Fire(new AnalysisIdNotFoundEvent());
+            await eventClient.Fire(new AnalysisIdNotFoundEvent());
             return;
         }
 
@@ -48,7 +49,7 @@ public class ComputeHistoryActivity : IApplicationActivity
             }
             catch (InvalidHistoryIntervalException exception)
             {
-                eventClient.Fire(new InvalidHistoryIntervalEvent { ErrorMessage = exception.Message });
+                await eventClient.Fire(new InvalidHistoryIntervalEvent { ErrorMessage = exception.Message });
                 return;
             }
         }
@@ -73,7 +74,7 @@ public class ComputeHistoryActivity : IApplicationActivity
                     AsOfDateTime = historyStop.AsOfDateTime
                 });
 
-            eventClient.Fire(new HistoryIntervalStopFoundEvent(AnalysisId, historyStopPointId));
+            await eventClient.Fire(new HistoryIntervalStopFoundEvent(AnalysisId, historyStopPointId));
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +21,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public int HistoryStopPointId { get; set; }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
@@ -37,7 +38,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
             gitManager.ParseCommitId(historyStopPoint.GitCommitId)
         );
 
-        eventClient.Fire(new HistoryStopCheckedOutEvent
+        await eventClient.Fire(new HistoryStopCheckedOutEvent
         {
             AnalysisId = AnalysisId,
             HistoryStopPointId = HistoryStopPointId

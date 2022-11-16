@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -12,7 +13,7 @@ public class DetectAgentsActivity : IApplicationActivity
 
     public DetectAgentsActivity(IAgentsDetector agentsDetector) => _agentsDetector = agentsDetector;
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var agents = _agentsDetector.Detect();
 
@@ -23,6 +24,6 @@ public class DetectAgentsActivity : IApplicationActivity
             x => Path.GetFileName(x) ?? throw new ArgumentException("No file name for given path.")
         );
 
-        eventClient.Fire(new AgentsDetectedEvent { AgentsAndLocations = agentsAndLocations });
+        await eventClient.Fire(new AgentsDetectedEvent { AgentsAndLocations = agentsAndLocations });
     }
 }

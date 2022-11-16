@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,7 +26,7 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
     // TODO: Research how to use a value class here instead of a string
     public string HistoryInterval { get; init; }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
 
@@ -33,7 +34,7 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
         {
             if (cacheManager.Prepare())
             {
-                eventClient.Fire(new CachePreparedForAnalysisEvent
+                await eventClient.Fire(new CachePreparedForAnalysisEvent
                 {
                     RepositoryUrl = RepositoryUrl,
                     RepositoryBranch = RepositoryBranch,
@@ -44,7 +45,7 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
             }
             else
             {
-                eventClient.Fire(new CachePrepareFailedForAnalysisEvent
+                await eventClient.Fire(new CachePrepareFailedForAnalysisEvent
                 {
                     ErrorMessage = "Failed to prepare the cache for an unknown reason"
                 });
@@ -52,7 +53,7 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
         }
         catch (Exception error)
         {
-            eventClient.Fire(new CachePrepareFailedForAnalysisEvent { ErrorMessage = error.Message });
+            await eventClient.Fire(new CachePrepareFailedForAnalysisEvent { ErrorMessage = error.Message });
         }
     }
 }

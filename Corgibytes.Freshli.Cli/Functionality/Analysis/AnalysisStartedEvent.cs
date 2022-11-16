@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
@@ -8,6 +9,6 @@ public class AnalysisStartedEvent : IApplicationEvent
 {
     public Guid AnalysisId { get; init; }
 
-    public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new CreateAnalysisApiActivity(AnalysisId));
+    public async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+        await eventClient.Dispatch(new CreateAnalysisApiActivity(AnalysisId));
 }

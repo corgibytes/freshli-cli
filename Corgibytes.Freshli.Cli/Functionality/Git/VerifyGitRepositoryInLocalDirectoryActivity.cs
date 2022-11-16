@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -11,7 +12,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
 {
     public Guid AnalysisId { get; init; }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
@@ -27,7 +28,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
 
         if (new DirectoryInfo(analysis.RepositoryUrl).Exists == false)
         {
-            eventClient.Fire(new DirectoryDoesNotExistFailureEvent
+            await eventClient.Fire(new DirectoryDoesNotExistFailureEvent
             {
                 ErrorMessage = $"Directory does not exist at {analysis.RepositoryUrl}"
             });
@@ -36,7 +37,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
 
         if (gitManager.IsGitRepositoryInitialized(analysis.RepositoryUrl) == false)
         {
-            eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent
+            await eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent
             {
                 ErrorMessage = $"Directory is not a git initialised directory at {analysis.RepositoryUrl}"
             });
@@ -56,7 +57,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
         var historyStopData =
             new HistoryStopData(configuration, cachedGitSourceId.Id) { LocalDirectory = analysis.RepositoryUrl };
 
-        eventClient.Fire(new GitRepositoryInLocalDirectoryVerifiedEvent
+        await eventClient.Fire(new GitRepositoryInLocalDirectoryVerifiedEvent
         {
             AnalysisId = analysis.Id,
             HistoryStopData = historyStopData

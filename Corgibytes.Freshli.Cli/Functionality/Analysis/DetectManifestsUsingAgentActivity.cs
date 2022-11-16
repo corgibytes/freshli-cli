@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,7 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity
     public int HistoryStopPointId { get; }
     public string AgentExecutablePath { get; }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
         var agentReader = agentManager.GetReader(AgentExecutablePath);
@@ -29,7 +30,7 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity
         var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
         foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint?.LocalPath!))
         {
-            eventClient.Fire(new ManifestDetectedEvent(AnalysisId, HistoryStopPointId, AgentExecutablePath,
+            await eventClient.Fire(new ManifestDetectedEvent(AnalysisId, HistoryStopPointId, AgentExecutablePath,
                 manifestPath));
         }
     }
