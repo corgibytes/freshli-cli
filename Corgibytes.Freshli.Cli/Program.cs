@@ -105,7 +105,7 @@ public class Program
                     workerCount = System.Environment.ProcessorCount * 5;
                 }
 
-                Logger.LogDebug("Starting workers. Worker count: {WorkerCount}", workerCount);
+                Logger!.LogDebug("Starting workers. Worker count: {WorkerCount}", workerCount);
 
                 var host = context.BindingContext.GetRequiredService<IHost>();
 
