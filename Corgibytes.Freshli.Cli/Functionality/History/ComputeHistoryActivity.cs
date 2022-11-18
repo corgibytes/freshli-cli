@@ -26,7 +26,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
-        var cachedAnalysis = cacheDb.RetrieveAnalysis(AnalysisId);
+        var cachedAnalysis = await cacheDb.RetrieveAnalysis(AnalysisId);
 
         if (cachedAnalysis == null)
         {
@@ -64,7 +64,7 @@ public class ComputeHistoryActivity : IApplicationActivity
             var historyStop = new HistoryStopData(configuration, HistoryStopData.RepositoryId,
                 historyIntervalStop.GitCommitIdentifier, historyIntervalStop.AsOfDateTime);
 
-            var historyStopPointId = cacheDb.AddHistoryStopPoint(
+            var historyStopPointId = await cacheDb.AddHistoryStopPoint(
                 new CachedHistoryStopPoint
                 {
                     CachedAnalysisId = AnalysisId,

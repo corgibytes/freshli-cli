@@ -19,7 +19,7 @@ public class GenerateBillOfMaterialsActivityTest
         var asOfDateTime = DateTimeOffset.Now;
         var javaAgentReader = new Mock<IAgentReader>();
         javaAgentReader.Setup(mock => mock.ProcessManifest("/path/to/manifest", asOfDateTime))
-            .Returns("/path/to/bill-of-materials");
+            .ReturnsAsync("/path/to/bill-of-materials");
 
         const string agentExecutablePath = "/path/to/agent";
         var agentManager = new Mock<IAgentManager>();
@@ -37,7 +37,7 @@ public class GenerateBillOfMaterialsActivityTest
 
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
 
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
@@ -50,7 +50,7 @@ public class GenerateBillOfMaterialsActivityTest
         var analysisId = Guid.NewGuid();
 
         cacheManager.Setup(mock => mock.StoreBomInCache("/path/to/bill-of-materials", analysisId, asOfDateTime))
-            .Returns("/path/to/bom/in/cache");
+            .ReturnsAsync("/path/to/bom/in/cache");
 
         var activity =
             new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopPointId,

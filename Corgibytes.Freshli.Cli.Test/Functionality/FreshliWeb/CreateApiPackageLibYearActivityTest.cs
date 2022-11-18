@@ -43,7 +43,7 @@ public class CreateApiPackageLibYearActivityTest
         var resultsApi = new Mock<IResultsApi>();
         var eventClient = new Mock<IApplicationEventEngine>();
 
-        cacheDb.Setup(mock => mock.RetrieveAnalysis(analysisId)).Returns(cachedAnalysis);
+        cacheDb.Setup(mock => mock.RetrieveAnalysis(analysisId)).ReturnsAsync(cachedAnalysis);
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
         resultsApi.Setup(mock => mock.CreatePackageLibYear(cacheDb.Object, analysisId, packageLibYearId));
         serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(resultsApi.Object);

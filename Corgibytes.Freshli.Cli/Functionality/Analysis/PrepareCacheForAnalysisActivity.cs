@@ -32,7 +32,7 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
 
         try
         {
-            if (cacheManager.Prepare())
+            if (await cacheManager.Prepare())
             {
                 await eventClient.Fire(new CachePreparedForAnalysisEvent
                 {

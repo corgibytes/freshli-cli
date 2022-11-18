@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -24,7 +25,7 @@ public class DetectManifestsUsingAgentActivityTest
             {
                 "/path/to/first/manifest",
                 "/path/to/second/manifest"
-            });
+            }.ToAsyncEnumerable());
 
         const string agentExecutablePath = "/path/to/agent";
         var agentManager = new Mock<IAgentManager>();
@@ -36,7 +37,7 @@ public class DetectManifestsUsingAgentActivityTest
 
         const int historyStopPointId = 29;
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);

@@ -1,20 +1,16 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
 public interface ICacheManager
 {
-    // TODO: Make this method return ValueTask<bool>
-    public bool ValidateCacheDirectory();
-    // TODO: Make this method return ValueTask<bool>
-    public bool Destroy();
-    // TODO: Make this method return ValueTask<DirectoryInfo>
-    public DirectoryInfo GetDirectoryInCache(params string[] directoryStructure);
-    // TODO: Make this method return ValueTask<bool>
-    public bool Prepare();
-    // TODO: Make this method return ValueTask<string>
-    public string StoreBomInCache(string pathToBom, Guid analysisId, DateTimeOffset asOfDateTime);
+    public ValueTask<bool> ValidateCacheDirectory();
+    public ValueTask<bool> Destroy();
+    public ValueTask<DirectoryInfo> GetDirectoryInCache(params string[] directoryStructure);
+    public ValueTask<bool> Prepare();
+    public ValueTask<string> StoreBomInCache(string pathToBom, Guid analysisId, DateTimeOffset asOfDateTime);
 
     public ICacheDb GetCacheDb();
 }

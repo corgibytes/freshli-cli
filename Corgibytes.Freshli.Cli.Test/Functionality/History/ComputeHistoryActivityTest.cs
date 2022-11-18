@@ -170,7 +170,7 @@ public class ComputeHistoryActivityTest
         // Have an analysis available
         var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval, useCommitHistory,
             revisionHistoryMode);
-        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
+        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).ReturnsAsync(cachedAnalysis);
     }
 
     private void SetupHistoryStopPointIds(List<HistoryIntervalStop> historyIntervalStops)
@@ -181,7 +181,7 @@ public class ComputeHistoryActivityTest
             _cacheDb.Setup(mock => mock.AddHistoryStopPoint(It.Is<CachedHistoryStopPoint>(value =>
                     value.GitCommitId == stopPoint.GitCommitIdentifier &&
                     value.AsOfDateTime == stopPoint.AsOfDateTime)))
-                .Returns(stopPointId);
+                .ReturnsAsync(stopPointId);
             stopPointId++;
         }
     }

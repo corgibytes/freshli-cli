@@ -25,7 +25,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
         if (historyStopPoint?.GitCommitId == null)
         {
             throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
@@ -33,7 +33,7 @@ public class CheckoutHistoryActivity : IApplicationActivity
 
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
-        gitManager.CreateArchive(
+        await gitManager.CreateArchive(
             historyStopPoint.RepositoryId,
             gitManager.ParseCommitId(historyStopPoint.GitCommitId)
         );

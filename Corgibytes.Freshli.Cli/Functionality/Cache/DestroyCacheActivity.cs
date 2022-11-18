@@ -13,7 +13,7 @@ public class DestroyCacheActivity : IApplicationActivity
 
         try
         {
-            var exitCode = cacheManager.Destroy().ToExitCode();
+            var exitCode = (await cacheManager.Destroy()).ToExitCode();
             await eventClient.Fire(new CacheDestroyedEvent { ExitCode = exitCode });
         }
         catch (CacheException error)

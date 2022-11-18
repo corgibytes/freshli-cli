@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Threading.Tasks;
 using CliWrap;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -12,7 +13,7 @@ public class CommandInvoker : ICommandInvoker
 
     public CommandInvoker(ILogger<CommandInvoker>? logger = null) => _logger = logger;
 
-    public string Run(string executable, string arguments, string workingDirectory, int maxRetries = 0)
+    public async ValueTask<string> Run(string executable, string arguments, string workingDirectory, int maxRetries = 0)
     {
         var stdOutBuffer = new StringBuilder();
         var stdErrBuffer = new StringBuilder();
@@ -34,9 +35,9 @@ public class CommandInvoker : ICommandInvoker
 
         try
         {
-            Policy
+            await Policy
                 .Handle<Exception>()
-                .WaitAndRetry(
+                .WaitAndRetryAsync(
                     maxRetries,
                     // delay progression: 2s, 4s, 8s, 16s, 32s
                     retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
@@ -52,11 +53,7 @@ public class CommandInvoker : ICommandInvoker
                         workingDirectory
                     );
                 })
-                .Execute(() =>
-                {
-                    using var task = command.ExecuteAsync().Task;
-                    task.Wait();
-                });
+                .ExecuteAsync(async () => await command.ExecuteAsync());
         }
         catch (Exception error)
         {
