@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using PackageUrl;
 using Polly;
 
@@ -17,59 +19,67 @@ public class CacheDb : ICacheDb, IDisposable
 
     private CacheContext Db { get; }
 
-    public Guid SaveAnalysis(CachedAnalysis analysis)
+    public async ValueTask<Guid> SaveAnalysis(CachedAnalysis analysis)
     {
         if (analysis.Id == Guid.Empty)
         {
-            var savedEntity = Db.CachedAnalyses.Add(analysis);
-            SaveChanges();
+            var savedEntity = await Db.CachedAnalyses.AddAsync(analysis);
+            await SaveChanges();
             return savedEntity.Entity.Id;
         }
 
         Db.CachedAnalyses.Update(analysis);
-        SaveChanges();
+        await SaveChanges();
         return analysis.Id;
     }
 
-    public CachedAnalysis? RetrieveAnalysis(Guid id) => Db.CachedAnalyses.Find(id);
-    public CachedGitSource? RetrieveCachedGitSource(CachedGitSourceId id) => Db.CachedGitSources.Find(id.Id);
-    public void RemoveCachedGitSource(CachedGitSource cachedGitSource) => Db.CachedGitSources.Remove(cachedGitSource);
+    public async ValueTask<CachedAnalysis?> RetrieveAnalysis(Guid id) => await Db.CachedAnalyses.FindAsync(id);
 
-    public void AddCachedGitSource(CachedGitSource cachedGitSource)
+    public async ValueTask<CachedGitSource?> RetrieveCachedGitSource(CachedGitSourceId id) =>
+        await Db.CachedGitSources.FindAsync(id.Id);
+
+    public async ValueTask RemoveCachedGitSource(CachedGitSource cachedGitSource)
     {
-        Db.CachedGitSources.Add(cachedGitSource);
-        SaveChanges();
+        Db.CachedGitSources.Remove(cachedGitSource);
+        await SaveChanges();
     }
 
-    public CachedHistoryStopPoint? RetrieveHistoryStopPoint(int historyStopPointId) =>
-        Db.CachedHistoryStopPoints.Find(historyStopPointId);
-
-    public int AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint)
+    public async ValueTask AddCachedGitSource(CachedGitSource cachedGitSource)
     {
-        var savedEntity = Db.CachedHistoryStopPoints.Add(historyStopPoint);
-        SaveChanges();
+        await Db.CachedGitSources.AddAsync(cachedGitSource);
+        await SaveChanges();
+    }
+
+    public async ValueTask<CachedHistoryStopPoint?> RetrieveHistoryStopPoint(int historyStopPointId) =>
+        await Db.CachedHistoryStopPoints.FindAsync(historyStopPointId);
+
+    public async ValueTask<int> AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint)
+    {
+        var savedEntity = await Db.CachedHistoryStopPoints.AddAsync(historyStopPoint);
+        await SaveChanges();
         return savedEntity.Entity.Id;
     }
 
-    public CachedPackageLibYear? RetrievePackageLibYear(int packageLibYearId) =>
-        Db.CachedPackageLibYears.Find(packageLibYearId);
+    public async ValueTask<CachedPackageLibYear?> RetrievePackageLibYear(int packageLibYearId) =>
+        await Db.CachedPackageLibYears.FindAsync(packageLibYearId);
 
-    public List<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl) => Db.CachedPackages
-        .Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString()).ToList();
+    public IAsyncEnumerable<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl) =>
+        Db.CachedPackages.Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString()).AsAsyncEnumerable();
 
-    public void StoreCachedReleaseHistory(List<CachedPackage> packages)
+    public async ValueTask StoreCachedReleaseHistory(List<CachedPackage> packages)
     {
-        Db.CachedPackages.AddRange(packages);
-        Db.SaveChanges();
+        await Db.CachedPackages.AddRangeAsync(packages);
+        await SaveChanges();
     }
 
-    public int AddPackageLibYear(CachedPackageLibYear packageLibYear)
+    public async ValueTask<int> AddPackageLibYear(CachedPackageLibYear packageLibYear)
     {
-        var savedEntity = Db.CachedPackageLibYears.Add(packageLibYear);
-        SaveChanges();
+        var savedEntity = await Db.CachedPackageLibYears.AddAsync(packageLibYear);
+        await SaveChanges();
         return savedEntity.Entity.Id;
     }
 
+    // TODO: Should this call DisposeAsync?
     public void Dispose()
     {
         if (_disposed)
@@ -82,18 +92,13 @@ public class CacheDb : ICacheDb, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private void SaveChanges()
+    private async ValueTask SaveChanges()
     {
-        void Changes()
-        {
-            Db.SaveChanges();
-        }
-
-        Policy
+        await Policy
             .Handle<SqliteException>()
-            .WaitAndRetry(6, retryAttempt =>
+            .WaitAndRetryAsync(6, retryAttempt =>
                 TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
             )
-            .Execute(Changes);
+            .ExecuteAsync(async () => await Db.SaveChangesAsync());
     }
 }

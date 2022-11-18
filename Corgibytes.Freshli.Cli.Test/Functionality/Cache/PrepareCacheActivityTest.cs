@@ -30,7 +30,7 @@ public class PrepareCacheActivityTest
     [Fact]
     public async ValueTask VerifyItFiresCachePreparedEventWhenPrepareReturnsTrue()
     {
-        _cacheManager.Setup(mock => mock.Prepare()).Returns(true);
+        _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(true);
 
         await _activity.Handle(_eventClient.Object);
 
@@ -40,7 +40,7 @@ public class PrepareCacheActivityTest
     [Fact]
     public async ValueTask VerifyItFiresCachePreparedEventWhenPrepareReturnsFalse()
     {
-        _cacheManager.Setup(mock => mock.Prepare()).Returns(false);
+        _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(false);
 
         await _activity.Handle(_eventClient.Object);
 

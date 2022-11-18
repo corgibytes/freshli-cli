@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Resources;
 using CycloneDX;
@@ -16,14 +17,14 @@ public class AgentsVerifier
 
     public AgentsVerifier(ICommandInvoker commandInvoker) => _commandInvoker = commandInvoker;
 
-    // TODO: Make this method return ValueTask
-    public void RunAgentsVerify(string agentFileAndPath, string argument, string cacheDir, string languageName)
+    public async ValueTask RunAgentsVerify(string agentFileAndPath, string argument, string cacheDir, string languageName)
     {
         var startTime = DateTime.Now;
         languageName = string.IsNullOrEmpty(languageName)
             ? Path.DirectorySeparatorChar + "repositories"
             : Path.DirectorySeparatorChar + languageName;
-        var validatingRepositoriesUrl = _commandInvoker.Run(agentFileAndPath, argument, ".").TrimEnd('\n', '\r');
+        var rawCommandOutput = await _commandInvoker.Run(agentFileAndPath, argument, ".");
+        var validatingRepositoriesUrl = rawCommandOutput.TrimEnd('\n', '\r');
 
         foreach (var url in validatingRepositoriesUrl.Split("\n"))
         {
@@ -32,70 +33,72 @@ public class AgentsVerifier
                 var lastIndexOf = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
                 var targetDirectory = Path.Join(cacheDir, languageName, url.Trim().Substring(lastIndexOf, url.Length - lastIndexOf));
 
-                if (!targetDirectory.DirectoryExists())
+                if (await Task.Run(() => !targetDirectory.DirectoryExists()))
                 {
-                    _commandInvoker.Run("git", $"clone {url} {targetDirectory}", cacheDir);
+                    await _commandInvoker.Run("git", $"clone {url} {targetDirectory}", cacheDir);
                 }
 
-                RunDetectManifest(agentFileAndPath, "detect-manifests", targetDirectory, startTime);
+                await RunDetectManifest(agentFileAndPath, "detect-manifests", targetDirectory, startTime);
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine(e.Message);
+                await Console.Error.WriteLineAsync(e.Message);
             }
         }
     }
 
-    private void RunDetectManifest(string agentFileAndPath, string argument, string targetDirectory, DateTime startDate)
+    private async ValueTask RunDetectManifest(string agentFileAndPath, string argument, string targetDirectory, DateTime startDate)
     {
-        var detectManifestOutput = _commandInvoker.Run(agentFileAndPath, argument + $" {targetDirectory}", ".")
-            .Split("\n");
+        var rawCommandOutput = await _commandInvoker.Run(agentFileAndPath, argument + $" {targetDirectory}", ".");
+        var detectManifestOutput = rawCommandOutput.Split("\n");
 
         var manifestFiles = detectManifestOutput.Where(manifestFile => !string.IsNullOrEmpty(manifestFile)).ToList();
 
         foreach (var manifestFile in manifestFiles)
         {
-            RunProcessManifest(agentFileAndPath, targetDirectory, manifestFile.Trim(), startDate);
+            await RunProcessManifest(agentFileAndPath, targetDirectory, manifestFile.Trim(), startDate);
         }
     }
 
-    private void RunProcessManifest(string agentFileAndPath, string targetDirectory, string manifestFile, DateTime startDate)
+    private async ValueTask RunProcessManifest(string agentFileAndPath, string targetDirectory, string manifestFile, DateTime startDate)
     {
-        var processManifestOutput = _commandInvoker.Run(agentFileAndPath,
+        var processManifestOutput = await _commandInvoker.Run(agentFileAndPath,
             "process-manifest " + Path.Join(targetDirectory, manifestFile) + " " + DateTimeOffset.Now.ToString("o"), ".");
-        var processManifestFiles = VerifyFiles(processManifestOutput);
+        var processManifestFiles = await VerifyFiles(processManifestOutput);
 
         try
         {
-            var gitStatus = _commandInvoker.Run("git", "status", targetDirectory);
+            var gitStatus = await _commandInvoker.Run("git", "status", targetDirectory);
             if (!gitStatus.Contains("working tree clean"))
             {
-                Console.Error.Write("The following are residual modifications from the cloned repository: " + targetDirectory + " ");
-                Console.Error.Write(gitStatus);
+                await Console.Error.WriteAsync("The following are residual modifications from the cloned repository: " + targetDirectory + " ");
+                await Console.Error.WriteAsync(gitStatus);
             }
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine("Failed to validate for residual modifications due to the following: " + e);
+            await Console.Error.WriteLineAsync("Failed to validate for residual modifications due to the following: " + e);
         }
 
+        // TODO: Remove this check. It's not going to hold for all cases.
         // If it's not 1, that means it has processed more/less than what we expected.
         if (processManifestFiles.Count != 1)
         {
-            Console.Error.Write($"Number of detected manifest files and process files are not equal. Expected 1 file to be processed, {processManifestFiles.Count} files were processed.");
+            await Console.Error.WriteAsync($"Number of detected manifest files and process files are not equal. Expected 1 file to be processed, {processManifestFiles.Count} files were processed.");
         }
         else
         {
             var timeDifference = DateTime.Now - startDate;
             Console.WriteLine(@"Repository tested: " + targetDirectory);
             Console.WriteLine(@"Total time to execute agent verify: " + timeDifference);
-            RunValidatingPackageUrls(agentFileAndPath, "validating-package-urls");
+            await RunValidatingPackageUrls(agentFileAndPath, "validating-package-urls");
         }
     }
 
-    private void RunValidatingPackageUrls(string agentFileAndPath, string argument)
+    private async ValueTask RunValidatingPackageUrls(string agentFileAndPath, string argument)
     {
-        var processManifestOutput = _commandInvoker.Run(agentFileAndPath, argument, ".").TrimEnd('\n');
+        var rawCommandOutput = await _commandInvoker.Run(agentFileAndPath, argument, ".");
+        var processManifestOutput = rawCommandOutput.TrimEnd('\n');
         if (processManifestOutput.Contains('\n'))
         {
             foreach (var output in processManifestOutput.Split("\n"))
@@ -109,7 +112,8 @@ public class AgentsVerifier
         }
     }
 
-    private static List<string> VerifyFiles(string manifestOutput)
+    // TODO: Should this return IAsyncEnumerable instead?
+    private static async ValueTask<List<string>> VerifyFiles(string manifestOutput)
     {
         var processManifestFiles = new List<string>();
 
@@ -117,25 +121,26 @@ public class AgentsVerifier
         {
             try
             {
-                if (!File.Exists(manifestFile.Trim('\n', '\r').TrimEnd()))
+                if (!await Task.Run(() => File.Exists(manifestFile.Trim('\n', '\r').TrimEnd())))
                 {
                     Console.WriteLine(CliOutput.AgentsVerifier_VerifyFiles_File__0__does_not_exist,
                         manifestFile.TrimEnd('\n', '\r'));
                 }
-                else if (new FileInfo(manifestFile.Trim()).Length != 0 && File.Exists(manifestFile.Trim()))
+                // TODO: Extract these file information checks to other methods
+                else if (await Task.Run(() => new FileInfo(manifestFile.Trim()).Length) != 0 && await Task.Run(() => File.Exists(manifestFile.Trim())))
                 {
                     try
                     {
-                        Validator.Validate(File.ReadAllText(manifestFile.Trim()),
+                        Validator.Validate(await File.ReadAllTextAsync(manifestFile.Trim()),
                             SpecificationVersion.v1_3);
                         processManifestFiles.Add(manifestFile);
                     }
                     catch (Exception e)
                     {
-                        Console.Error.Write("Unable to validate if a file is a CycloneDX file:" + e);
+                        await Console.Error.WriteAsync("Unable to validate if a file is a CycloneDX file:" + e);
                     }
                 }
-                else if (new FileInfo(manifestFile.Trim()).Length == 0)
+                else if (await Task.Run(() => new FileInfo(manifestFile.Trim()).Length) == 0)
                 {
                     Console.WriteLine(manifestFile + @" is empty");
                 }

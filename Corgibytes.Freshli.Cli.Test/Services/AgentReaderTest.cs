@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -61,18 +62,17 @@ public class AgentReaderTest
             $"{_gammaPackage.PackageUrl.Version}\t{_gammaPackage.ReleasedAt:yyyy'-'MM'-'dd'T'HH':'mm':'ssK}\n";
 
         _commandInvoker.Setup(mock => mock.Run(agentExecutable,
-            $"retrieve-release-history {_packageUrl.FormatWithoutVersion()}", ".", 3)).Returns(commandResponse);
-
-        var initialCachedPackages = new List<CachedPackage>();
+            $"retrieve-release-history {_packageUrl.FormatWithoutVersion()}", ".", 3)).ReturnsAsync(commandResponse);
 
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
-        _cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(_packageUrl)).Returns(initialCachedPackages);
+        _cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(_packageUrl))
+            .Returns(new List<CachedPackage>().ToAsyncEnumerable());
 
         var reader = new AgentReader(_cacheManager.Object, _commandInvoker.Object, agentExecutable);
 
         var retrievedPackages = reader.RetrieveReleaseHistory(_packageUrl);
 
-        Assert.Equal(_expectedPackages, retrievedPackages);
+        Assert.Equal(_expectedPackages.ToAsyncEnumerable(), retrievedPackages);
 
         _cacheDb.Verify(mock => mock.StoreCachedReleaseHistory(It.Is<List<CachedPackage>>(value =>
             value.Count == 3 &&
@@ -92,10 +92,11 @@ public class AgentReaderTest
             new(_gammaPackage)
         };
 
-        _cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(_packageUrl)).Returns(initialCachedPackages);
+        _cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(_packageUrl))
+            .Returns(initialCachedPackages.ToAsyncEnumerable);
 
         var retrievedPackages = _reader.RetrieveReleaseHistory(_packageUrl);
 
-        Assert.Equal(_expectedPackages, retrievedPackages);
+        Assert.Equal(_expectedPackages.ToAsyncEnumerable(), retrievedPackages);
     }
 }

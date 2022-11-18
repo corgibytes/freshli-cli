@@ -36,7 +36,7 @@ public class CheckoutHistoryActivityTest
 
         const int historyStopPointId = 29;
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
         var gitManager = new Mock<IGitManager>();
 
@@ -53,7 +53,7 @@ public class CheckoutHistoryActivityTest
         gitManager.Setup(mock => mock.ParseCommitId(commitId)).Returns(parsedCommitId);
         gitManager.Setup(
             mock => mock.CreateArchive(repositoryId, parsedCommitId)
-        ).Returns(archiveLocation);
+        ).ReturnsAsync(archiveLocation);
 
         await activity.Handle(eventEngine.Object);
 

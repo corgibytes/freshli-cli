@@ -22,7 +22,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb();
-            var cachedAnalysis = cacheDb.RetrieveAnalysis(CachedAnalysisId);
+            var cachedAnalysis = await cacheDb.RetrieveAnalysis(CachedAnalysisId);
 
             if (cachedAnalysis == null)
             {
@@ -30,9 +30,9 @@ public class CloneGitRepositoryActivity : IApplicationActivity
                 return;
             }
 
-            var gitRepository =
-                eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>()
-                    .CloneOrPull(cachedAnalysis.RepositoryUrl, cachedAnalysis.RepositoryBranch);
+            var gitRepositoryService = eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>();
+            var gitRepository = await gitRepositoryService.CloneOrPull(
+                cachedAnalysis.RepositoryUrl, cachedAnalysis.RepositoryBranch);
 
             var historyStopData = new HistoryStopData(configuration, gitRepository.Id);
 

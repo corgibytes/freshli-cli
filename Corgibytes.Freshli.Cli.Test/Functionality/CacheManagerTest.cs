@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Moq;
@@ -27,19 +28,19 @@ public class CacheManagerTest : IDisposable
     }
 
     [Fact]
-    public void SavePersistsACachedAnalysisAndGeneratesAnId()
+    public async ValueTask SavePersistsACachedAnalysisAndGeneratesAnId()
     {
         var cacheManager = new CacheManager(_configuration.Object);
-        cacheManager.Prepare();
+        await cacheManager.Prepare();
 
         var cache = cacheManager.GetCacheDb();
 
         var expectedAnalysis = new CachedAnalysis("https://git.example.com", "main", "1m", CommitHistory.Full,
             RevisionHistoryMode.OnlyLatestRevision);
 
-        var id = cache.SaveAnalysis(expectedAnalysis);
+        var id = await cache.SaveAnalysis(expectedAnalysis);
 
-        var actualAnalysis = cache.RetrieveAnalysis(id);
+        var actualAnalysis = await cache.RetrieveAnalysis(id);
 
         Assert.NotNull(actualAnalysis);
         Assert.Equal(id, actualAnalysis.Id);

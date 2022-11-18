@@ -22,12 +22,12 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
 
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
 
         var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
-        var packageLibYear = calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
+        var packageLibYear = await calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
 
-        var packageLibYearId = cacheDb.AddPackageLibYear(new CachedPackageLibYear
+        var packageLibYearId = await cacheDb.AddPackageLibYear(new CachedPackageLibYear
         {
             PackageName = Package.Name,
             CurrentVersion = packageLibYear.CurrentVersion?.ToString(),

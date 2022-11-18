@@ -26,7 +26,7 @@ public class CreateAnalysisApiActivityTest
         var api = new Mock<IResultsApi>();
         var apiAnalysisId = Guid.NewGuid();
         var cachedAnalysisId = Guid.NewGuid();
-        api.Setup(mock => mock.CreateAnalysis(url)).Returns(apiAnalysisId);
+        api.Setup(mock => mock.CreateAnalysis(url)).ReturnsAsync(apiAnalysisId);
         var activity = new CreateAnalysisApiActivity(cachedAnalysisId);
 
         var cachedAnalysis =
@@ -35,7 +35,7 @@ public class CreateAnalysisApiActivityTest
                 Id = cachedAnalysisId
             };
         var cacheDb = new Mock<ICacheDb>();
-        cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).Returns(cachedAnalysis);
+        cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).ReturnsAsync(cachedAnalysis);
 
         var cacheManager = new Mock<ICacheManager>();
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);

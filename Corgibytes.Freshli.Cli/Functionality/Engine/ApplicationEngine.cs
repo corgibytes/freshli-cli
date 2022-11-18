@@ -137,7 +137,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         Mutex? mutex = null;
         if (activity is IMutexed mutexSource)
         {
-            mutex = mutexSource.GetMutex(ServiceProvider);
+            mutex = await mutexSource.GetMutex(ServiceProvider);
         }
 
         var mutexAcquired = mutex?.WaitOne(MutexWaitTimeoutInMilliseconds) ?? true;
@@ -153,7 +153,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             _logger.LogDebug(
                 "Handling activity {ActivityType}: {Activity}",
                 activity.GetType(),
-                // todo: figure out how best to log activity specific values here
+                // TODO: figure out how best to log activity specific values here
                 activity
             );
             await activity.Handle(this);
@@ -179,7 +179,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             _logger.LogDebug(
                 "Handling activity {AppEventType}: {AppEvent}",
                 appEvent.GetType(),
-                // todo: figure out how best to log event specific values here
+                // TODO: figure out how best to log event specific values here
                 appEvent
             );
             await appEvent.Handle(this);

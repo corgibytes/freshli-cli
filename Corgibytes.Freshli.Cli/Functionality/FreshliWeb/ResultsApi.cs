@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
@@ -13,13 +14,14 @@ public class ResultsApi : IResultsApi
 
     public ResultsApi(IConfiguration configuration) => _configuration = configuration;
 
+    // TODO: the results URL should use the base URL from the configuration
     public string GetResultsUrl(Guid analysisId) => "https://freshli.io/AnalysisRequests/" + analysisId;
 
-    public Guid CreateAnalysis(string url)
+    public async ValueTask<Guid> CreateAnalysis(string url)
     {
         var client = new HttpClient();
 
-        var response = client.PostAsync(
+        var response = await client.PostAsync(
             _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request",
             JsonContent.Create(
                 new
@@ -30,28 +32,28 @@ public class ResultsApi : IResultsApi
                 },
                 new MediaTypeHeaderValue("application/json")
             )
-        ).Result;
+        );
 
         if (response.StatusCode == HttpStatusCode.Created)
         {
-            var document = response.Content.ReadFromJsonAsync<JsonNode>().Result;
+            var document = await response.Content.ReadFromJsonAsync<JsonNode>();
             return document!["id"]!.GetValue<Guid>();
         }
 
         throw new InvalidOperationException($"Failed to create analysis with url: {url}.");
     }
 
-    public void UpdateAnalysis(Guid apiAnalysisId, string status)
+    public async ValueTask UpdateAnalysis(Guid apiAnalysisId, string status)
     {
         var client = new HttpClient();
 
-        var response = client.PutAsync(
+        var response = await client.PutAsync(
             _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId,
             JsonContent.Create(
                 new { state = status },
                 new MediaTypeHeaderValue("application/json")
             )
-        ).Result;
+        );
 
         if (response.StatusCode != HttpStatusCode.OK)
         {
@@ -60,23 +62,23 @@ public class ResultsApi : IResultsApi
         }
     }
 
-    public void CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, int historyStopPointId)
+    public async ValueTask CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, int historyStopPointId)
     {
-        var cachedAnalysis = cacheDb.RetrieveAnalysis(analysisId);
+        var cachedAnalysis = await cacheDb.RetrieveAnalysis(analysisId);
         var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
 
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
         var asOfDateTime = historyStopPoint!.AsOfDateTime;
 
         var client = new HttpClient();
 
-        var response = client.PostAsync(
+        var response = await client.PostAsync(
             _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId,
             JsonContent.Create(
                 new { date = asOfDateTime.ToString("o") },
                 new MediaTypeHeaderValue("application/json")
             )
-        ).Result;
+        );
 
         if (response.StatusCode != HttpStatusCode.Created)
         {
@@ -85,20 +87,20 @@ public class ResultsApi : IResultsApi
         }
     }
 
-    public void CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, int packageLibYearId)
+    public async ValueTask CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, int packageLibYearId)
     {
-        var cachedAnalysis = cacheDb.RetrieveAnalysis(analysisId);
-        var packageLibYear = cacheDb.RetrievePackageLibYear(packageLibYearId);
+        var cachedAnalysis = await cacheDb.RetrieveAnalysis(analysisId);
+        var packageLibYear = await cacheDb.RetrievePackageLibYear(packageLibYearId);
 
         var historyStopPointId = packageLibYear!.HistoryStopPointId;
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
 
         var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
         var asOfDateTime = historyStopPoint!.AsOfDateTime;
 
         var client = new HttpClient();
 
-        var response = client.PostAsync(
+        var response = await client.PostAsync(
             $"{_configuration.FreshliWebApiBaseUrl}/api/v0/analysis-request/{apiAnalysisId}/{asOfDateTime:o}",
             JsonContent.Create(
                 new
@@ -109,7 +111,7 @@ public class ResultsApi : IResultsApi
                 },
                 new MediaTypeHeaderValue("application/json")
             )
-        ).Result;
+        );
 
         if (response.StatusCode != HttpStatusCode.Created)
         {

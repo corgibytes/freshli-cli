@@ -25,7 +25,7 @@ public class DetectAgentsForDetectManifestsActivityTest
 
     public DetectAgentsForDetectManifestsActivityTest()
     {
-        _cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(HistoryStopPointId)).Returns(_historyStopPoint.Object);
+        _cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(HistoryStopPointId)).ReturnsAsync(_historyStopPoint.Object);
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
 
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);

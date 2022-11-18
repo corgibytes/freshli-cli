@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -15,15 +16,15 @@ public class GitManager : IGitManager
         _configuration = configuration;
     }
 
-    public string CreateArchive(
+    public async ValueTask<string> CreateArchive(
         string repositoryId, GitCommitIdentifier gitCommitIdentifier) =>
-        _gitArchive.CreateArchive(repositoryId, gitCommitIdentifier);
+        await _gitArchive.CreateArchive(repositoryId, gitCommitIdentifier);
 
-    public bool IsGitRepositoryInitialized(string repositoryLocation)
+    public async ValueTask<bool> IsGitRepositoryInitialized(string repositoryLocation)
     {
         try
         {
-            _commandInvoker.Run(_configuration.GitPath, "status", repositoryLocation);
+            await _commandInvoker.Run(_configuration.GitPath, "status", repositoryLocation);
             return true;
         }
         catch (Exception)
