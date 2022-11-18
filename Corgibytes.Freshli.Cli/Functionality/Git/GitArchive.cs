@@ -65,7 +65,6 @@ public class GitArchive
             );
 
             createArchiveTask = s_gitIdsAndSourceTargets[gitCommitIdentifier.ToString()];
-            createArchiveTask.Start();
         }
         finally
         {
