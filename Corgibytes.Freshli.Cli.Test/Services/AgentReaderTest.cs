@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -52,7 +53,7 @@ public class AgentReaderTest
     }
 
     [Fact]
-    public void RetrieveReleaseHistoryWritesToCache()
+    public async ValueTask RetrieveReleaseHistoryWritesToCache()
     {
         const string agentExecutable = "/path/to/agent";
 
@@ -72,7 +73,7 @@ public class AgentReaderTest
 
         var retrievedPackages = reader.RetrieveReleaseHistory(_packageUrl);
 
-        Assert.Equal(_expectedPackages.ToAsyncEnumerable(), retrievedPackages);
+        Assert.Equal(_expectedPackages, await retrievedPackages.ToListAsync());
 
         _cacheDb.Verify(mock => mock.StoreCachedReleaseHistory(It.Is<List<CachedPackage>>(value =>
             value.Count == 3 &&
@@ -83,7 +84,7 @@ public class AgentReaderTest
     }
 
     [Fact]
-    public void RetrieveReleaseHistoryReadsFromCache()
+    public async ValueTask RetrieveReleaseHistoryReadsFromCache()
     {
         var initialCachedPackages = new List<CachedPackage>
         {
@@ -97,6 +98,6 @@ public class AgentReaderTest
 
         var retrievedPackages = _reader.RetrieveReleaseHistory(_packageUrl);
 
-        Assert.Equal(_expectedPackages.ToAsyncEnumerable(), retrievedPackages);
+        Assert.Equal(_expectedPackages, await retrievedPackages.ToListAsync());
     }
 }
