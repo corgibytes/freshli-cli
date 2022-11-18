@@ -1,8 +1,7 @@
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Exceptions;
@@ -12,8 +11,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitArchive
 {
-    private static readonly Dictionary<string, Task<string>> s_gitIdsAndSourceTargets = new();
-    private static readonly SemaphoreSlim s_gitIdsAndSourceTargetsLock = new(1, 1);
+    private static readonly ConcurrentDictionary<string, Task<string>> s_gitIdsAndSourceTargets = new();
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
     private readonly IConfiguration _configuration;
@@ -31,45 +29,9 @@ public class GitArchive
         var gitSourceTarget = new DirectoryInfo(Path.Combine(_configuration.CacheDir, "histories", cachedGitSource.Id,
             gitCommitIdentifier.ToString()));
 
-        Task<string>? createArchiveTask = null;
-
-        await s_gitIdsAndSourceTargetsLock.WaitAsync();
-        try
-        {
-            if (s_gitIdsAndSourceTargets.ContainsKey(gitCommitIdentifier.ToString()))
-            {
-                createArchiveTask = s_gitIdsAndSourceTargets[gitCommitIdentifier.ToString()];
-            }
-        }
-        finally
-        {
-            s_gitIdsAndSourceTargetsLock.Release();
-        }
-
-        if (createArchiveTask != null)
-        {
-            return await createArchiveTask;
-        }
-
-        await s_gitIdsAndSourceTargetsLock.WaitAsync();
-        try
-        {
-            if (await Task.Run(() => Directory.Exists(gitSourceTarget.FullName)))
-            {
-                return gitSourceTarget.FullName;
-            }
-
-            s_gitIdsAndSourceTargets.Add(
-                gitCommitIdentifier.ToString(),
-                CreateArchiveTask(gitCommitIdentifier, gitSourceTarget, cachedGitSource).AsTask()
-            );
-
-            createArchiveTask = s_gitIdsAndSourceTargets[gitCommitIdentifier.ToString()];
-        }
-        finally
-        {
-            s_gitIdsAndSourceTargetsLock.Release();
-        }
+        var createArchiveTask = s_gitIdsAndSourceTargets.GetOrAdd(
+            gitCommitIdentifier.ToString(),
+            _ => CreateArchiveTask(gitCommitIdentifier, gitSourceTarget, cachedGitSource).AsTask());
 
         return await createArchiveTask;
     }
@@ -77,6 +39,11 @@ public class GitArchive
     private async ValueTask<string> CreateArchiveTask(GitCommitIdentifier gitCommitIdentifier,
         DirectoryInfo gitSourceTarget, CachedGitSource gitSource)
     {
+        if (await Task.Run(() => Directory.Exists(gitSourceTarget.FullName)))
+        {
+            return gitSourceTarget.FullName;
+        }
+
         // Create the directory where we want to place the archive
         await Task.Run(gitSourceTarget.Create);
         var archivePath = Path.Combine(gitSourceTarget.FullName, "archive.zip");

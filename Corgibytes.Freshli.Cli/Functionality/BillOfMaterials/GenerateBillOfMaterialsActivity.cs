@@ -58,15 +58,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
         _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
 
         var historyPointPath = historyStopPoint.LocalPath;
-        EnsureHistoryPointMutexExists(historyPointPath);
-        return s_historyPointSemaphores[historyPointPath];
-    }
 
-    private static void EnsureHistoryPointMutexExists(string path)
-    {
-        if (!s_historyPointSemaphores.ContainsKey(path))
-        {
-            s_historyPointSemaphores[path] = new SemaphoreSlim(1, 1);
-        }
+        return s_historyPointSemaphores.GetOrAdd(historyPointPath, new SemaphoreSlim(1, 1));
     }
 }
