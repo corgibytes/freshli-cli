@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public interface IMutexed
+public interface ISynchronized
 {
-    public ValueTask<Mutex> GetMutex(IServiceProvider serviceProvider);
+    public ValueTask<SemaphoreSlim> GetSemaphore(IServiceProvider serviceProvider);
 }

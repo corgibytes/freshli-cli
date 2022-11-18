@@ -9,9 +9,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
-public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
+public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchronized
 {
-    private static readonly ConcurrentDictionary<string, Mutex> s_historyPointMutexes = new();
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_historyPointSemaphores = new();
     public readonly string AgentExecutablePath;
     public readonly Guid AnalysisId;
     public readonly int HistoryStopPointId;
@@ -48,7 +48,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
             AnalysisId, HistoryStopPointId, cachedBomFilePath, AgentExecutablePath));
     }
 
-    public async ValueTask<Mutex> GetMutex(IServiceProvider provider)
+    public async ValueTask<SemaphoreSlim> GetSemaphore(IServiceProvider provider)
     {
         var cacheManager = provider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
@@ -59,14 +59,14 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
 
         var historyPointPath = historyStopPoint.LocalPath;
         EnsureHistoryPointMutexExists(historyPointPath);
-        return s_historyPointMutexes[historyPointPath];
+        return s_historyPointSemaphores[historyPointPath];
     }
 
     private static void EnsureHistoryPointMutexExists(string path)
     {
-        if (!s_historyPointMutexes.ContainsKey(path))
+        if (!s_historyPointSemaphores.ContainsKey(path))
         {
-            s_historyPointMutexes[path] = new Mutex();
+            s_historyPointSemaphores[path] = new SemaphoreSlim(1, 1);
         }
     }
 }
