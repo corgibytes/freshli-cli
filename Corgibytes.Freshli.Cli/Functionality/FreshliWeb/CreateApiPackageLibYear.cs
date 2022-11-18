@@ -18,7 +18,7 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity
         var cacheDb = cacheManager.GetCacheDb();
 
         var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
-        resultsApi.CreatePackageLibYear(cacheDb, AnalysisId, PackageLibYearId);
+        await resultsApi.CreatePackageLibYear(cacheDb, AnalysisId, PackageLibYearId);
 
         await eventClient.Fire(new ApiPackageLibYearCreatedEvent
         {

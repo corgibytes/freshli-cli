@@ -21,7 +21,7 @@ public class DestroyCacheActivityTest
 
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
-        cacheManager.Setup(mock => mock.Destroy()).Returns(true);
+        cacheManager.Setup(mock => mock.Destroy()).ReturnsAsync(true);
 
         await activity.Handle(eventClient.Object);
 

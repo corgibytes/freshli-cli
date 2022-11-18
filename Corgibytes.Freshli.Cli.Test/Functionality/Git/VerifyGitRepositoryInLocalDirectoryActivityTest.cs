@@ -37,7 +37,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _repositoryLocation = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         _analysisId = new Guid();
 
-        _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).Returns(
+        _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(
             new CachedAnalysis(_repositoryLocation, "main", "1m", CommitHistory.Full, RevisionHistoryMode.AllRevisions)
         );
     }
@@ -49,7 +49,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         repositoryLocation.Create();
 
         _gitManager.Setup(mock =>
-            mock.IsGitRepositoryInitialized(_repositoryLocation)).Returns(true);
+            mock.IsGitRepositoryInitialized(_repositoryLocation)).ReturnsAsync(true);
 
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
         await activity.Handle(_eventEngine.Object);
@@ -93,7 +93,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         repositoryLocation.Create();
 
         _gitManager.Setup(mock => mock.IsGitRepositoryInitialized(_repositoryLocation))
-            .Returns(false);
+            .ReturnsAsync(false);
 
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
         await activity.Handle(_eventEngine.Object);

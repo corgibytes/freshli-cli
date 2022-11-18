@@ -30,7 +30,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     private async ValueTask FireAnalysisStartedEvent(IApplicationEventEngine eventClient)
     {
         var cacheDb = CacheManager.GetCacheDb();
-        var id = cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
+        var id = await cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
             UseCommitHistory, RevisionHistoryMode));
         await eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id });
     }
@@ -52,7 +52,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
 
     private async ValueTask<bool> FireCacheNotFoundEventIfNeeded(IApplicationEventEngine eventClient)
     {
-        if (!CacheManager.ValidateCacheDirectory())
+        if (!await CacheManager.ValidateCacheDirectory())
         {
             await eventClient.Fire(CreateErrorEvent());
             return true;

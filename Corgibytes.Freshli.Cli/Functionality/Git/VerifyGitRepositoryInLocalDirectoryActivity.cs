@@ -19,7 +19,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var gitSourceRepository = eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>();
         var cacheDb = cacheManager.GetCacheDb();
-        var analysis = cacheDb.RetrieveAnalysis(AnalysisId);
+        var analysis = await cacheDb.RetrieveAnalysis(AnalysisId);
 
         if (analysis == null)
         {
@@ -35,7 +35,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
             return;
         }
 
-        if (gitManager.IsGitRepositoryInitialized(analysis.RepositoryUrl) == false)
+        if (await gitManager.IsGitRepositoryInitialized(analysis.RepositoryUrl) == false)
         {
             await eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent
             {
@@ -46,12 +46,12 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
 
         var cachedGitSourceId = new CachedGitSourceId(analysis.RepositoryUrl);
 
-        var entry = cacheDb.RetrieveCachedGitSource(cachedGitSourceId);
+        var entry = await cacheDb.RetrieveCachedGitSource(cachedGitSourceId);
         if (entry == null)
         {
             var cachedGitSource = new CachedGitSource(cachedGitSourceId.Id, analysis.RepositoryUrl, null,
                 analysis.RepositoryUrl);
-            gitSourceRepository.Save(cachedGitSource);
+            await gitSourceRepository.Save(cachedGitSource);
         }
 
         var historyStopData =

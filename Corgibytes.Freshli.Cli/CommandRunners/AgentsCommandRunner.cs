@@ -85,7 +85,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
     private AgentsVerifier AgentsVerifier { get; }
 
     // TODO: This method should dispatch an activity
-    public override ValueTask<int> Run(AgentsVerifyCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(AgentsVerifyCommandOptions options, IConsole console)
     {
         var agents = _agentsDetector.Detect();
 
@@ -93,7 +93,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
         {
             foreach (var agentsAndPath in agents)
             {
-                AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir, "");
+                await AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir, "");
             }
         }
         else
@@ -102,12 +102,12 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
             {
                 if (agentsAndPath.ToLower().Contains("freshli-agent-" + options.LanguageName.ToLower()))
                 {
-                    AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir,
+                    await AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir,
                         options.LanguageName);
                 }
             }
         }
 
-        return ValueTask.FromResult(0);
+        return 0;
     }
 }

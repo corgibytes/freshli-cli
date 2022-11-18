@@ -34,26 +34,26 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
 
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
         _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
 
         var historyPointPath = historyStopPoint.LocalPath;
         var asOfDateTime = historyStopPoint.AsOfDateTime;
 
         var fullManifestPath = Path.Combine(historyPointPath, ManifestPath);
-        var bomFilePath = agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
-        var cachedBomFilePath = cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
+        var bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
+        var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
 
         await eventClient.Fire(new BillOfMaterialsGeneratedEvent(
             AnalysisId, HistoryStopPointId, cachedBomFilePath, AgentExecutablePath));
     }
 
-    public Mutex GetMutex(IServiceProvider provider)
+    public async ValueTask<Mutex> GetMutex(IServiceProvider provider)
     {
         var cacheManager = provider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
 
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
         // TODO create an exception class for this exception and write a test to cover it getting generated
         _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
 

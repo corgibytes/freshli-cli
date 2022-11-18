@@ -20,7 +20,7 @@ public class UpdateAnalysisStatusActivity : IApplicationActivity
     {
         var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
 
-        resultsApi.UpdateAnalysis(ApiAnalysisId, Status);
+        await resultsApi.UpdateAnalysis(ApiAnalysisId, Status);
 
         await eventClient.Fire(new AnalysisApiStatusUpdatedEvent(ApiAnalysisId, Status));
     }

@@ -27,8 +27,8 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity
 
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
-        foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint?.LocalPath!))
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        await foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint?.LocalPath!))
         {
             await eventClient.Fire(new ManifestDetectedEvent(AnalysisId, HistoryStopPointId, AgentExecutablePath,
                 manifestPath));

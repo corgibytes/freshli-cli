@@ -51,10 +51,10 @@ public class ComputeLibYearForPackageActivityTest
 
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(agentReader.Object);
         calculator.Setup(mock => mock.ComputeLibYear(agentReader.Object, package, asOfDateTime))
-            .Returns(packageLibYear);
+            .ReturnsAsync(packageLibYear);
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
-        cacheDb.Setup(mock => mock.AddPackageLibYear(It.IsAny<CachedPackageLibYear>())).Returns(packageLibYearId);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
+        cacheDb.Setup(mock => mock.AddPackageLibYear(It.IsAny<CachedPackageLibYear>())).ReturnsAsync(packageLibYearId);
 
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IPackageLibYearCalculator))).Returns(calculator.Object);
