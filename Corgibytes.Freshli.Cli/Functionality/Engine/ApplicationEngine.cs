@@ -134,14 +134,18 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     // ReSharper disable once MemberCanBePrivate.Global
     public async ValueTask HandleActivity(IApplicationActivity activity)
     {
-        Mutex? mutex = null;
-        if (activity is IMutexed mutexSource)
+        SemaphoreSlim? semaphore = null;
+        if (activity is ISynchronized mutexSource)
         {
-            mutex = await mutexSource.GetMutex(ServiceProvider);
+            semaphore = await mutexSource.GetSemaphore(ServiceProvider);
         }
 
-        var mutexAcquired = mutex?.WaitOne(MutexWaitTimeoutInMilliseconds) ?? true;
-        if (!mutexAcquired)
+        var semaphoreEntered = true;
+        if (semaphore != null)
+        {
+            semaphoreEntered = await semaphore.WaitAsync(MutexWaitTimeoutInMilliseconds);
+        }
+        if (!semaphoreEntered)
         {
             // place the activity back in the queue and free up the worker to make progress on a different activity
             await Dispatch(activity);
@@ -164,9 +168,9 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
         finally
         {
-            if (mutex != null && mutexAcquired)
+            if (semaphore != null && semaphoreEntered)
             {
-                mutex.ReleaseMutex();
+                semaphore.Release();
             }
         }
     }
