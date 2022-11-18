@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -11,7 +10,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitArchive
 {
-    private static readonly ConcurrentDictionary<string, Task<string>> s_gitIdsAndSourceTargets = new();
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
     private readonly IConfiguration _configuration;
@@ -29,11 +27,7 @@ public class GitArchive
         var gitSourceTarget = new DirectoryInfo(Path.Combine(_configuration.CacheDir, "histories", cachedGitSource.Id,
             gitCommitIdentifier.ToString()));
 
-        var createArchiveTask = s_gitIdsAndSourceTargets.GetOrAdd(
-            gitCommitIdentifier.ToString(),
-            _ => CreateArchiveTask(gitCommitIdentifier, gitSourceTarget, cachedGitSource).AsTask());
-
-        return await createArchiveTask;
+        return await CreateArchiveTask(gitCommitIdentifier, gitSourceTarget, cachedGitSource).AsTask();
     }
 
     private async ValueTask<string> CreateArchiveTask(GitCommitIdentifier gitCommitIdentifier,
