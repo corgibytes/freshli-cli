@@ -16,7 +16,7 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized
         HistoryStopPointId = historyStopPointId;
     }
 
-    private static ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new();
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new();
 
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     // ReSharper disable once MemberCanBePrivate.Global
