@@ -11,7 +11,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
 public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEngine
 {
-    private const int MutexWaitTimeoutInMilliseconds = 50;
+    // TODO: Make this a configurable value
+    private const int MutexWaitTimeoutInMilliseconds = 200;
     private static readonly Dictionary<Type, Func<IApplicationEvent, ValueTask>> s_eventHandlers = new();
 
     private static readonly SemaphoreSlim s_dispatchSemaphore = new(1, 1);
