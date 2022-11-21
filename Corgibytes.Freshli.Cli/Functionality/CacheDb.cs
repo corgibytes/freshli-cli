@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,8 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 public class CacheDb : ICacheDb, IDisposable
 {
     private bool _disposed;
+
+    private ConcurrentDictionary<Guid, CachedAnalysis> _analysisMemoryCache = new();
 
     public CacheDb(string cacheDir) => Db = new CacheContext(cacheDir);
 
@@ -33,7 +36,17 @@ public class CacheDb : ICacheDb, IDisposable
         return analysis.Id;
     }
 
-    public async ValueTask<CachedAnalysis?> RetrieveAnalysis(Guid id) => await Db.CachedAnalyses.FindAsync(id);
+    public async ValueTask<CachedAnalysis?> RetrieveAnalysis(Guid id)
+    {
+        if (_analysisMemoryCache.TryGetValue(id, out var value))
+        {
+            return await ValueTask.FromResult(value);
+        }
+
+        value = await Db.CachedAnalyses.FindAsync(id);
+        _analysisMemoryCache.TryAdd(id, value);
+        return value;
+    }
 
     public async ValueTask<CachedGitSource?> RetrieveCachedGitSource(CachedGitSourceId id) =>
         await Db.CachedGitSources.FindAsync(id.Id);
