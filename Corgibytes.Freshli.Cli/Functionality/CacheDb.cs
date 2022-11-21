@@ -33,6 +33,8 @@ public class CacheDb : ICacheDb, IDisposable
 
         Db.CachedAnalyses.Update(analysis);
         await SaveChanges();
+
+        _analysisMemoryCache[analysis.Id] = analysis;
         return analysis.Id;
     }
 
