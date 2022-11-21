@@ -22,7 +22,7 @@
     <PackageReference Include="CycloneDX.Core" Version="5.2.3" />
     <PackageReference Include="Hangfire.Core" Version="1.7.31" />
     <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
-    <PackageReference Include="MediatR" Version="11.0.0" />
+    <PackageReference Include="MediatR" Version="11.1.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
