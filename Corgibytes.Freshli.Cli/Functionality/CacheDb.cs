@@ -17,6 +17,7 @@ public class CacheDb : ICacheDb, IDisposable
     private bool _disposed;
 
     private readonly ConcurrentDictionary<Guid, CachedAnalysis> _analysisMemoryCache = new();
+    private readonly ConcurrentDictionary<string, CachedGitSource> _gitSourceMemoryCache = new();
 
     public CacheDb(string cacheDir) => Db = new CacheContext(cacheDir);
 
@@ -54,17 +55,32 @@ public class CacheDb : ICacheDb, IDisposable
         return value;
     }
 
-    public async ValueTask<CachedGitSource?> RetrieveCachedGitSource(CachedGitSourceId id) =>
-        await Db.CachedGitSources.FindAsync(id.Id);
+    public async ValueTask<CachedGitSource?> RetrieveCachedGitSource(CachedGitSourceId id)
+    {
+        if (_gitSourceMemoryCache.TryGetValue(id.Id, out var value))
+        {
+            return await ValueTask.FromResult(value);
+        }
+
+        value = await Db.CachedGitSources.FindAsync(id.Id);
+        if (value != null)
+        {
+            _gitSourceMemoryCache.TryAdd(id.Id, value);
+        }
+
+        return value;
+    }
 
     public async ValueTask RemoveCachedGitSource(CachedGitSource cachedGitSource)
     {
+        _gitSourceMemoryCache.TryRemove(cachedGitSource.Id, out _);
         Db.CachedGitSources.Remove(cachedGitSource);
         await SaveChanges();
     }
 
     public async ValueTask AddCachedGitSource(CachedGitSource cachedGitSource)
     {
+        _gitSourceMemoryCache[cachedGitSource.Id] = cachedGitSource;
         await Db.CachedGitSources.AddAsync(cachedGitSource);
         await SaveChanges();
     }
