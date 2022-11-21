@@ -16,7 +16,7 @@ public class CacheDb : ICacheDb, IDisposable
 {
     private bool _disposed;
 
-    private ConcurrentDictionary<Guid, CachedAnalysis> _analysisMemoryCache = new();
+    private readonly ConcurrentDictionary<Guid, CachedAnalysis> _analysisMemoryCache = new();
 
     public CacheDb(string cacheDir) => Db = new CacheContext(cacheDir);
 
@@ -44,7 +44,11 @@ public class CacheDb : ICacheDb, IDisposable
         }
 
         value = await Db.CachedAnalyses.FindAsync(id);
-        _analysisMemoryCache.TryAdd(id, value);
+        if (value != null)
+        {
+            _analysisMemoryCache.TryAdd(id, value);
+        }
+
         return value;
     }
 
