@@ -20,6 +20,7 @@ public class CacheDb : ICacheDb, IDisposable
     private readonly ConcurrentDictionary<string, CachedGitSource> _gitSourceMemoryCache = new();
     private readonly ConcurrentDictionary<int, CachedHistoryStopPoint> _historyStopPointMemoryCache = new();
     private readonly ConcurrentDictionary<int, CachedPackageLibYear> _packageLibYearMemoryCache = new();
+    private readonly ConcurrentDictionary<string, IList<CachedPackage>> _releaseHistoryMemoryCache = new();
 
     public CacheDb(string cacheDir) => Db = new CacheContext(cacheDir);
 
@@ -126,12 +127,33 @@ public class CacheDb : ICacheDb, IDisposable
         return value;
     }
 
-    public IAsyncEnumerable<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl) =>
-        Db.CachedPackages.Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString()).AsAsyncEnumerable();
+    public async IAsyncEnumerable<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl)
+    {
+        IAsyncEnumerable<CachedPackage> query;
+        if (_releaseHistoryMemoryCache.TryGetValue(packageUrl.ToString(), out var value))
+        {
+            query = value.ToAsyncEnumerable();
+        }
+        else
+        {
+            query = Db.CachedPackages.Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString())
+                .AsAsyncEnumerable();
+        }
+
+        var list = new List<CachedPackage>();
+        await foreach (var package in query)
+        {
+            yield return package;
+        }
+
+        _releaseHistoryMemoryCache[packageUrl.ToString()] = list;
+    }
 
     public async ValueTask StoreCachedReleaseHistory(List<CachedPackage> packages)
     {
         await Db.CachedPackages.AddRangeAsync(packages);
+        var firstPackage = packages.First();
+        _releaseHistoryMemoryCache[firstPackage.PackageUrlWithoutVersion] = packages;
         await SaveChanges();
     }
 
