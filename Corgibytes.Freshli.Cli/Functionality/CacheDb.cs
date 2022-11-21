@@ -18,6 +18,7 @@ public class CacheDb : ICacheDb, IDisposable
 
     private readonly ConcurrentDictionary<Guid, CachedAnalysis> _analysisMemoryCache = new();
     private readonly ConcurrentDictionary<string, CachedGitSource> _gitSourceMemoryCache = new();
+    private readonly ConcurrentDictionary<int, CachedHistoryStopPoint> _historyStopPointMemoryCache = new();
 
     public CacheDb(string cacheDir) => Db = new CacheContext(cacheDir);
 
@@ -85,13 +86,27 @@ public class CacheDb : ICacheDb, IDisposable
         await SaveChanges();
     }
 
-    public async ValueTask<CachedHistoryStopPoint?> RetrieveHistoryStopPoint(int historyStopPointId) =>
-        await Db.CachedHistoryStopPoints.FindAsync(historyStopPointId);
+    public async ValueTask<CachedHistoryStopPoint?> RetrieveHistoryStopPoint(int historyStopPointId)
+    {
+        if (_historyStopPointMemoryCache.TryGetValue(historyStopPointId, out var value))
+        {
+            return await ValueTask.FromResult(value);
+        }
+
+        value = await Db.CachedHistoryStopPoints.FindAsync(historyStopPointId);
+        if (value != null)
+        {
+            _historyStopPointMemoryCache.TryAdd(historyStopPointId, value);
+        }
+
+        return value;
+    }
 
     public async ValueTask<int> AddHistoryStopPoint(CachedHistoryStopPoint historyStopPoint)
     {
         var savedEntity = await Db.CachedHistoryStopPoints.AddAsync(historyStopPoint);
         await SaveChanges();
+        _historyStopPointMemoryCache[savedEntity.Entity.Id] = savedEntity.Entity;
         return savedEntity.Entity.Id;
     }
 
