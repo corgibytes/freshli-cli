@@ -19,6 +19,7 @@ public class CacheDb : ICacheDb, IDisposable
     private readonly ConcurrentDictionary<Guid, CachedAnalysis> _analysisMemoryCache = new();
     private readonly ConcurrentDictionary<string, CachedGitSource> _gitSourceMemoryCache = new();
     private readonly ConcurrentDictionary<int, CachedHistoryStopPoint> _historyStopPointMemoryCache = new();
+    private readonly ConcurrentDictionary<int, CachedPackageLibYear> _packageLibYearMemoryCache = new();
 
     public CacheDb(string cacheDir) => Db = new CacheContext(cacheDir);
 
@@ -110,8 +111,20 @@ public class CacheDb : ICacheDb, IDisposable
         return savedEntity.Entity.Id;
     }
 
-    public async ValueTask<CachedPackageLibYear?> RetrievePackageLibYear(int packageLibYearId) =>
-        await Db.CachedPackageLibYears.FindAsync(packageLibYearId);
+    public async ValueTask<CachedPackageLibYear?> RetrievePackageLibYear(int packageLibYearId)
+    {
+        if (_packageLibYearMemoryCache.TryGetValue(packageLibYearId, out var value))
+        {
+            return await ValueTask.FromResult(value);
+        }
+
+        value = await Db.CachedPackageLibYears.FindAsync(packageLibYearId);
+        if (value != null)
+        {
+            _packageLibYearMemoryCache.TryAdd(packageLibYearId, value);
+        }
+        return value;
+    }
 
     public IAsyncEnumerable<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl) =>
         Db.CachedPackages.Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString()).AsAsyncEnumerable();
@@ -126,6 +139,7 @@ public class CacheDb : ICacheDb, IDisposable
     {
         var savedEntity = await Db.CachedPackageLibYears.AddAsync(packageLibYear);
         await SaveChanges();
+        _packageLibYearMemoryCache[savedEntity.Entity.Id] = savedEntity.Entity;
         return savedEntity.Entity.Id;
     }
 
