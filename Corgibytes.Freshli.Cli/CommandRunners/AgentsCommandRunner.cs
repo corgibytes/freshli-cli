@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
@@ -18,7 +19,7 @@ public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOpti
     {
     }
 
-    public override int Run(EmptyCommandOptions options, IConsole console) => 0;
+    public override ValueTask<int> Run(EmptyCommandOptions options, IConsole console) => ValueTask.FromResult(0);
 }
 
 public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, EmptyCommandOptions>
@@ -36,16 +37,17 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
-    public override int Run(EmptyCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(EmptyCommandOptions options, IConsole console)
     {
-        ActivityEngine.Dispatch(new DetectAgentsActivity(AgentsDetector));
+        await ActivityEngine.Dispatch(new DetectAgentsActivity(AgentsDetector));
 
         EventEngine.On<AgentsDetectedEvent>(detectionEvent =>
         {
             FormatAndWriteToConsole(detectionEvent.AgentsAndLocations ?? new Dictionary<string, string>());
+            return ValueTask.CompletedTask;
         });
 
-        ActivityEngine.Wait();
+        await ActivityEngine.Wait();
 
         return 0;
     }
@@ -82,7 +84,8 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
 
     private AgentsVerifier AgentsVerifier { get; }
 
-    public override int Run(AgentsVerifyCommandOptions options, IConsole console)
+    // TODO: This method should dispatch an activity
+    public override async ValueTask<int> Run(AgentsVerifyCommandOptions options, IConsole console)
     {
         var agents = _agentsDetector.Detect();
 
@@ -90,7 +93,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
         {
             foreach (var agentsAndPath in agents)
             {
-                AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir, "");
+                await AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir, "");
             }
         }
         else
@@ -99,7 +102,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
             {
                 if (agentsAndPath.ToLower().Contains("freshli-agent-" + options.LanguageName.ToLower()))
                 {
-                    AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir,
+                    await AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir,
                         options.LanguageName);
                 }
             }

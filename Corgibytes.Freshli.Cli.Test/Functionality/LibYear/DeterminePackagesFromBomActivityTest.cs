@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
@@ -13,15 +14,15 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class DeterminePackagesFromBomActivityTest
 {
     [Fact]
-    public void HandleCorrectlyFiresLibYearComputatitonForBomStartedEvent()
+    public async ValueTask HandleCorrectlyFiresLibYearComputatitonForBomStartedEvent()
     {
         var analysisId = Guid.NewGuid();
-        var pathToBom = "/path/to/bom";
-        var pathToAgentExecutable = "/path/to/agent";
+        const string pathToBom = "/path/to/bom";
+        const string pathToAgentExecutable = "/path/to/agent";
 
         var eventClient = new Mock<IApplicationEventEngine>();
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         var activity =
             new DeterminePackagesFromBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
 
@@ -44,7 +45,7 @@ public class DeterminePackagesFromBomActivityTest
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IBomReader))).Returns(bomReader.Object);
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         eventClient.Verify(mock => mock.Fire(It.Is<PackageFoundEvent>(value =>
             value.AnalysisId == analysisId &&

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -12,13 +13,13 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class CreateApiHistoryStopActivityTest
 {
     [Fact]
-    public void Handle()
+    public async ValueTask Handle()
     {
         var cachedAnalysisId = Guid.NewGuid();
         var apiAnalysisId = Guid.NewGuid();
 
-        var repositoryUrl = "repository-url";
-        var repositoryBranch = "branch";
+        const string repositoryUrl = "repository-url";
+        const string repositoryBranch = "branch";
         var asOfDateTime = new DateTimeOffset(2022, 1, 1, 12, 52, 28, 0, TimeSpan.Zero);
 
         var cachedAnalysis =
@@ -26,11 +27,11 @@ public class CreateApiHistoryStopActivityTest
                 RevisionHistoryMode.AllRevisions)
             { ApiAnalysisId = apiAnalysisId };
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         var cacheDb = new Mock<ICacheDb>();
         var historyStopPoint = new CachedHistoryStopPoint { AsOfDateTime = asOfDateTime };
-        cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).Returns(cachedAnalysis);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+        cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).ReturnsAsync(cachedAnalysis);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
         var cacheManager = new Mock<ICacheManager>();
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
@@ -46,7 +47,7 @@ public class CreateApiHistoryStopActivityTest
 
         var activity = new CreateApiHistoryStopActivity(cachedAnalysisId, historyStopPointId);
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         resultsApi.Verify(mock => mock.CreateHistoryPoint(cacheDb.Object, cachedAnalysisId, historyStopPointId));
 

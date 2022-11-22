@@ -1,6 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Extensions;
@@ -27,7 +28,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
-    public override int Run(CacheDestroyCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(CacheDestroyCommandOptions options, IConsole console)
     {
         Configuration.CacheDir = options.CacheDir;
 
@@ -49,13 +50,13 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
             options.CacheDir);
         console.Out.WriteLine(strDestroyingCache);
 
-        ActivityEngine.Dispatch(new DestroyCacheActivity());
+        await ActivityEngine.Dispatch(new DestroyCacheActivity());
 
-        var exitCode = WaitForCacheDestroyEvents(console);
+        var exitCode = await WaitForCacheDestroyEvents(console);
         return exitCode;
     }
 
-    private int WaitForCacheDestroyEvents(IConsole console)
+    private async ValueTask<int> WaitForCacheDestroyEvents(IConsole console)
     {
         var exitCode = true.ToExitCode();
 
@@ -63,11 +64,16 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
         {
             console.Error.WriteLine(destroyEvent.ResultMessage);
             exitCode = false.ToExitCode();
+            return ValueTask.CompletedTask;
         });
 
-        EventEngine.On<CacheDestroyedEvent>(destroyEvent => { exitCode = destroyEvent.ExitCode; });
+        EventEngine.On<CacheDestroyedEvent>(destroyEvent =>
+        {
+            exitCode = destroyEvent.ExitCode;
+            return ValueTask.CompletedTask;
+        });
 
-        ActivityEngine.Wait();
+        await ActivityEngine.Wait();
 
         return exitCode;
     }

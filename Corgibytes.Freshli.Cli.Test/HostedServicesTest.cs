@@ -11,7 +11,7 @@ public abstract class HostedServicesTest
 
     protected HostedServicesTest() => ServiceScope = Host.Services.CreateScope();
 
-    protected static IHost Host =>
+    private static IHost Host =>
         s_host ??= new HostBuilder()
             .UseDefaultServiceProvider((_, options) =>
             {

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,7 +21,7 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity
     public string PathToBom { get; }
     public string AgentExecutablePath { get; }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var bomReader = eventClient.ServiceProvider.GetRequiredService<IBomReader>();
         var packageUrls = bomReader.AsPackageUrls(PathToBom);
@@ -31,7 +32,7 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity
                 throw new Exception($"Null package URL detected for in {PathToBom}");
             }
 
-            eventClient.Fire(new PackageFoundEvent
+            await eventClient.Fire(new PackageFoundEvent
             {
                 AnalysisId = AnalysisId,
                 HistoryStopPointId = HistoryStopPointId,

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -9,6 +10,6 @@ public class HistoryStopCheckedOutEvent : IApplicationEvent
     public Guid AnalysisId { get; init; }
     public int HistoryStopPointId { get; init; }
 
-    public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new DetectAgentsForDetectManifestsActivity(AnalysisId, HistoryStopPointId));
+    public async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+        await eventClient.Dispatch(new DetectAgentsForDetectManifestsActivity(AnalysisId, HistoryStopPointId));
 }

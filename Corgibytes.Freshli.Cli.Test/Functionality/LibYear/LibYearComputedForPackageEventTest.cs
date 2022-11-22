@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
@@ -11,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class LibYearComputedForPackageEventTest
 {
     [Fact]
-    public void HandleCorrectlyDispatchesCreateApiPackageLibYear()
+    public async ValueTask HandleCorrectlyDispatchesCreateApiPackageLibYear()
     {
         var analysisId = Guid.NewGuid();
         const int historyStopPointId = 12;
@@ -28,7 +29,7 @@ public class LibYearComputedForPackageEventTest
 
         var activityClient = new Mock<IApplicationActivityEngine>();
 
-        appEvent.Handle(activityClient.Object);
+        await appEvent.Handle(activityClient.Object);
 
         activityClient.Verify(mock => mock.Dispatch(It.Is<CreateApiPackageLibYearActivity>(value =>
             value.AnalysisId == analysisId &&

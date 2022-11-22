@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -10,8 +11,8 @@ public class CachePreparedForAnalysisEvent : IApplicationEvent
     public CommitHistory UseCommitHistory { get; init; }
     public RevisionHistoryMode RevisionHistoryMode { get; init; }
 
-    public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new RestartAnalysisActivity
+    public async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+        await eventClient.Dispatch(new RestartAnalysisActivity
         {
             RepositoryUrl = RepositoryUrl,
             RepositoryBranch = RepositoryBranch,

@@ -9,7 +9,7 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test;
 
 [IntegrationTest]
-public class ProgramTest : SerializationDependentTest
+public class ProgramTest
 {
     private readonly StringWriter _consoleOutput = new();
 

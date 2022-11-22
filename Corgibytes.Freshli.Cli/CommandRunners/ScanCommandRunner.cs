@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Formatters;
@@ -15,7 +16,7 @@ public class ScanCommandRunner : CommandRunner<ScanCommand, ScanCommandOptions>
     {
     }
 
-    public override int Run(ScanCommandOptions options, IConsole console)
+    public override ValueTask<int> Run(ScanCommandOptions options, IConsole console)
     {
         if (string.IsNullOrWhiteSpace(options.Path.FullName))
         {
@@ -33,6 +34,6 @@ public class ScanCommandRunner : CommandRunner<ScanCommand, ScanCommandOptions>
             output.Send(results, formatter, options);
         }
 
-        return 0;
+        return ValueTask.FromResult(0);
     }
 }
