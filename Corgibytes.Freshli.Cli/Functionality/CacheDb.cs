@@ -130,9 +130,9 @@ public class CacheDb : ICacheDb, IDisposable
     public async IAsyncEnumerable<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl)
     {
         IAsyncEnumerable<CachedPackage> query;
-        if (_releaseHistoryMemoryCache.TryGetValue(packageUrl.ToString(), out var value))
+        if (_releaseHistoryMemoryCache.TryGetValue(packageUrl.ToString(), out var cacheList))
         {
-            query = value.ToAsyncEnumerable();
+            query = cacheList.ToAsyncEnumerable();
         }
         else
         {
