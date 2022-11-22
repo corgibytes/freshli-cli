@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,18 +7,18 @@ namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 
 public class DestroyCacheActivity : IApplicationActivity
 {
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        // Destroy the cache
+
         try
         {
-            var exitCode = cacheManager.Destroy().ToExitCode();
-            eventClient.Fire(new CacheDestroyedEvent { ExitCode = exitCode });
+            var exitCode = (await cacheManager.Destroy()).ToExitCode();
+            await eventClient.Fire(new CacheDestroyedEvent { ExitCode = exitCode });
         }
         catch (CacheException error)
         {
-            eventClient.Fire(new CacheDestroyFailedEvent { ResultMessage = error.Message });
+            await eventClient.Fire(new CacheDestroyFailedEvent { ResultMessage = error.Message });
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
@@ -11,8 +12,8 @@ public class LibYearComputedForPackageEvent : IApplicationEvent
     public int PackageLibYearId { get; init; }
     public string AgentExecutablePath { get; init; } = null!;
 
-    public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new CreateApiPackageLibYearActivity
+    public async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+        await eventClient.Dispatch(new CreateApiPackageLibYearActivity
         {
             AnalysisId = AnalysisId,
             HistoryStopPointId = HistoryStopPointId,

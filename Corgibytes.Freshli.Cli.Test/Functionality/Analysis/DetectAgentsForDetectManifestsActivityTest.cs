@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -24,7 +25,7 @@ public class DetectAgentsForDetectManifestsActivityTest
 
     public DetectAgentsForDetectManifestsActivityTest()
     {
-        _cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(HistoryStopPointId)).Returns(_historyStopPoint.Object);
+        _cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(HistoryStopPointId)).ReturnsAsync(_historyStopPoint.Object);
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
 
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
@@ -33,7 +34,7 @@ public class DetectAgentsForDetectManifestsActivityTest
     }
 
     [Fact]
-    public void VerifyItDispatchesAgentDetectedForDetectManifestEvent()
+    public async ValueTask VerifyItDispatchesAgentDetectedForDetectManifestEvent()
     {
         var agentPaths = new List<string>
         {
@@ -44,11 +45,11 @@ public class DetectAgentsForDetectManifestsActivityTest
         _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
         var analysisId = Guid.NewGuid();
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         var activity =
             new DetectAgentsForDetectManifestsActivity(analysisId, historyStopPointId);
 
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
@@ -64,7 +65,7 @@ public class DetectAgentsForDetectManifestsActivityTest
     }
 
     [Fact]
-    public void VerifyItDispatchesNoAgentsDetectedFailureEvent()
+    public async ValueTask VerifyItDispatchesNoAgentsDetectedFailureEvent()
     {
         var agentPaths = new List<string>();
 
@@ -73,7 +74,7 @@ public class DetectAgentsForDetectManifestsActivityTest
         var analysisId = Guid.NewGuid();
         var activity = new DetectAgentsForDetectManifestsActivity(analysisId, HistoryStopPointId);
 
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<NoAgentsDetectedFailureEvent>(
             failEvent => failEvent.ErrorMessage == "Could not locate any agents"

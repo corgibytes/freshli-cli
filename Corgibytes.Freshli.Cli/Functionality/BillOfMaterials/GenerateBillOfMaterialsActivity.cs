@@ -2,15 +2,16 @@ using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
-public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
+public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchronized
 {
-    private static readonly ConcurrentDictionary<string, Mutex> s_historyPointMutexes = new();
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_historyPointSemaphores = new();
     public readonly string AgentExecutablePath;
     public readonly Guid AnalysisId;
     public readonly int HistoryStopPointId;
@@ -25,7 +26,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
         ManifestPath = manifestPath;
     }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
         var agentReader = agentManager.GetReader(AgentExecutablePath);
@@ -33,39 +34,31 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, IMutexed
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
 
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
         _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
 
         var historyPointPath = historyStopPoint.LocalPath;
         var asOfDateTime = historyStopPoint.AsOfDateTime;
 
         var fullManifestPath = Path.Combine(historyPointPath, ManifestPath);
-        var bomFilePath = agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
-        var cachedBomFilePath = cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
+        var bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
+        var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
 
-        eventClient.Fire(new BillOfMaterialsGeneratedEvent(
+        await eventClient.Fire(new BillOfMaterialsGeneratedEvent(
             AnalysisId, HistoryStopPointId, cachedBomFilePath, AgentExecutablePath));
     }
 
-    public Mutex GetMutex(IServiceProvider provider)
+    public async ValueTask<SemaphoreSlim> GetSemaphore(IServiceProvider provider)
     {
         var cacheManager = provider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
 
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
         // TODO create an exception class for this exception and write a test to cover it getting generated
         _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
 
         var historyPointPath = historyStopPoint.LocalPath;
-        EnsureHistoryPointMutexExists(historyPointPath);
-        return s_historyPointMutexes[historyPointPath];
-    }
 
-    private static void EnsureHistoryPointMutexExists(string path)
-    {
-        if (!s_historyPointMutexes.ContainsKey(path))
-        {
-            s_historyPointMutexes[path] = new Mutex();
-        }
+        return s_historyPointSemaphores.GetOrAdd(historyPointPath, new SemaphoreSlim(1, 1));
     }
 }

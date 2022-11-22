@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
@@ -12,13 +13,13 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.BillOfMaterials;
 public class GenerateBillOfMaterialsActivityTest
 {
     [Fact]
-    public void Handle()
+    public async ValueTask Handle()
     {
         // Arrange
         var asOfDateTime = DateTimeOffset.Now;
         var javaAgentReader = new Mock<IAgentReader>();
         javaAgentReader.Setup(mock => mock.ProcessManifest("/path/to/manifest", asOfDateTime))
-            .Returns("/path/to/bill-of-materials");
+            .ReturnsAsync("/path/to/bill-of-materials");
 
         const string agentExecutablePath = "/path/to/agent";
         var agentManager = new Mock<IAgentManager>();
@@ -32,11 +33,11 @@ public class GenerateBillOfMaterialsActivityTest
             AsOfDateTime = asOfDateTime
         };
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
 
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
 
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
@@ -49,12 +50,12 @@ public class GenerateBillOfMaterialsActivityTest
         var analysisId = Guid.NewGuid();
 
         cacheManager.Setup(mock => mock.StoreBomInCache("/path/to/bill-of-materials", analysisId, asOfDateTime))
-            .Returns("/path/to/bom/in/cache");
+            .ReturnsAsync("/path/to/bom/in/cache");
 
         var activity =
             new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopPointId,
                 "/path/to/manifest");
-        activity.Handle(eventEngine.Object);
+        await activity.Handle(eventEngine.Object);
 
         // Assert
         eventEngine.Verify(mock =>

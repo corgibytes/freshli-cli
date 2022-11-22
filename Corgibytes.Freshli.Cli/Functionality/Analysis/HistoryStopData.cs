@@ -1,11 +1,10 @@
 using System;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class HistoryStopData : IHistoryStopData
 {
-    [JsonProperty] private readonly IConfiguration _configuration;
+    private readonly IConfiguration _configuration;
 
     public HistoryStopData(IConfiguration configuration, string repositoryId, string? commitId = null,
         DateTimeOffset asOfDateTime = default)

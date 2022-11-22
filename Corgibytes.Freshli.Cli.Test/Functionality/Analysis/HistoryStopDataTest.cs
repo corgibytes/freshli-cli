@@ -9,10 +9,10 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 
 public class HistoryStopDataTest
 {
-    private readonly string _cacheDirectory = "/path/to/cache/dir";
+    private const string CacheDirectory = "/path/to/cache/dir";
     private readonly Mock<IConfiguration> _configuration = new();
 
-    public HistoryStopDataTest() => _configuration.Setup(mock => mock.CacheDir).Returns(_cacheDirectory);
+    public HistoryStopDataTest() => _configuration.Setup(mock => mock.CacheDir).Returns(CacheDirectory);
 
     [Fact]
     public void PathWithoutCommitId()
@@ -20,7 +20,7 @@ public class HistoryStopDataTest
         var repositoryId = Guid.NewGuid().ToString();
         var data = new HistoryStopData(_configuration.Object, repositoryId);
 
-        var expectedPath = Path.Combine(_cacheDirectory, "repositories", repositoryId);
+        var expectedPath = Path.Combine(CacheDirectory, "repositories", repositoryId);
         Assert.Equal(expectedPath, data.Path);
     }
 
@@ -31,7 +31,7 @@ public class HistoryStopDataTest
         var commitId = Guid.NewGuid().ToString();
         var data = new HistoryStopData(_configuration.Object, repositoryId, commitId);
 
-        var expectedPath = Path.Combine(_cacheDirectory, "histories", repositoryId, commitId);
+        var expectedPath = Path.Combine(CacheDirectory, "histories", repositoryId, commitId);
         Assert.Equal(expectedPath, data.Path);
     }
 
@@ -57,7 +57,7 @@ public class HistoryStopDataTest
         var historyStopData =
             new HistoryStopData(_configuration.Object, repositoryId, commitId) { LocalDirectory = localDirectory };
 
-        var expectedPath = Path.Combine(_cacheDirectory, "histories", repositoryId, commitId);
+        var expectedPath = Path.Combine(CacheDirectory, "histories", repositoryId, commitId);
         Assert.Equal(expectedPath, historyStopData.Path);
     }
 }

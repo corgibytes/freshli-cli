@@ -1,6 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -30,12 +31,12 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _resultsApi = resultsApi;
     }
 
-    public override int Run(AnalyzeCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(AnalyzeCommandOptions options, IConsole console)
     {
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
 
-        _activityEngine.Dispatch(new StartAnalysisActivity
+        await _activityEngine.Dispatch(new StartAnalysisActivity
         {
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,
@@ -51,6 +52,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         {
             console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
             exitStatus = 1;
+            return ValueTask.CompletedTask;
         });
 
         Guid? apiAnalysisId = null;
@@ -61,18 +63,19 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
                 "Results will be available at: " +
                 _resultsApi.GetResultsUrl(createdEvent.ApiAnalysisId)
             );
+            return ValueTask.CompletedTask;
         });
 
-        _activityEngine.Wait();
+        await _activityEngine.Wait();
 
         if (apiAnalysisId != null)
         {
-            _activityEngine.Dispatch(new UpdateAnalysisStatusActivity(
+            await _activityEngine.Dispatch(new UpdateAnalysisStatusActivity(
                 apiAnalysisId.Value,
                 exitStatus == 0 ? "success" : "error"
             ));
 
-            _activityEngine.Wait();
+            await _activityEngine.Wait();
         }
         else
         {

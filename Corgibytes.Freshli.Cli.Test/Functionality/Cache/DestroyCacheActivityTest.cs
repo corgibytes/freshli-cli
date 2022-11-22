@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -11,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Cache;
 public class DestroyCacheActivityTest
 {
     [Fact]
-    public void VerifyItFiresCacheDestroyedEvent()
+    public async ValueTask VerifyItFiresCacheDestroyedEvent()
     {
         var cacheManager = new Mock<ICacheManager>();
         var serviceProvider = new Mock<IServiceProvider>();
@@ -20,9 +21,9 @@ public class DestroyCacheActivityTest
 
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
-        cacheManager.Setup(mock => mock.Destroy()).Returns(true);
+        cacheManager.Setup(mock => mock.Destroy()).ReturnsAsync(true);
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         eventClient.Verify(mock => mock.Fire(It.Is<CacheDestroyedEvent>(
             value =>
@@ -31,7 +32,7 @@ public class DestroyCacheActivityTest
     }
 
     [Fact]
-    public void VerifyItFiresCacheDestroyFailedEvent()
+    public async ValueTask VerifyItFiresCacheDestroyFailedEvent()
     {
         var cacheManager = new Mock<ICacheManager>();
         var serviceProvider = new Mock<IServiceProvider>();
@@ -42,7 +43,7 @@ public class DestroyCacheActivityTest
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         cacheManager.Setup(mock => mock.Destroy()).Throws<CacheException>();
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         eventClient.Verify(mock => mock.Fire(It.IsAny<CacheDestroyFailedEvent>()));
     }

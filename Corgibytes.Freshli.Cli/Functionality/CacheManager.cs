@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.Data.Sqlite;
@@ -14,38 +15,42 @@ public class CacheManager : ICacheManager
 
     public CacheManager(IConfiguration configuration) => _configuration = configuration;
 
-    public bool ValidateCacheDirectory()
+    public async ValueTask<bool> ValidateCacheDirectory()
     {
-        var cacheDir = new DirectoryInfo(_configuration.CacheDir);
+        // use Task.Run to wait for file IO operation to complete
+        var cacheDir = await Task.Run(() => new DirectoryInfo(_configuration.CacheDir));
         if (!cacheDir.Exists)
         {
             return false;
         }
 
-        var dirContents = cacheDir.GetFiles().Select(file => file.Name).ToList();
+        // using Task.Run to wait for file IO to complete
+        var files = await Task.Run(() => cacheDir.GetFiles().Select(file => file.Name).ToList());
+        // using Task.RUn to wait for file IO to complete
+        var subDirectories = await Task.Run(() => cacheDir.GetDirectories());
         // Folder is valid cache if empty or if contains "freshli.db"
         return
-            (!dirContents.Any() && !cacheDir.GetDirectories().Any())
-            || dirContents.Contains(CacheContext.CacheDbName);
+            (!files.Any() && !subDirectories.Any())
+            || files.Contains(CacheContext.CacheDbName);
     }
 
-    public bool Prepare()
+    public async ValueTask<bool> Prepare()
     {
-        var cacheDir = new DirectoryInfo(_configuration.CacheDir);
-        // Create the directory if it doesn't already exist
+        // use Task.Run to wait for file IO to complete
+        var cacheDir = await Task.Run(() => new DirectoryInfo(_configuration.CacheDir));
         if (!cacheDir.Exists)
         {
             cacheDir.Create();
         }
-        else if (!ValidateCacheDirectory())
+        else if (!await ValidateCacheDirectory())
         {
             throw new CacheException(CliOutput.Exception_Cache_Prepare_NonEmpty);
         }
 
-        using var db = new CacheContext(_configuration.CacheDir);
+        await using var db = new CacheContext(_configuration.CacheDir);
         try
         {
-            MigrateIfPending(db);
+            await MigrateIfPending(db);
         }
         catch (SqliteException e)
         {
@@ -55,16 +60,18 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public DirectoryInfo GetDirectoryInCache(params string[] directoryStructure)
+    public async ValueTask<DirectoryInfo> GetDirectoryInCache(params string[] directoryStructure)
     {
         var cacheDir = new DirectoryInfo(_configuration.CacheDir);
-        Prepare();
+        await Prepare();
         var focus = cacheDir;
 
         foreach (var directory in directoryStructure)
         {
             var found = false;
-            foreach (var match in focus.GetDirectories(directory))
+            // using Task.Run to wait for file IO
+            var focusDirectories = await Task.Run(() => focus.GetDirectories(directory));
+            foreach (var match in focusDirectories)
             {
                 if (match.Name == directory)
                 {
@@ -76,53 +83,57 @@ public class CacheManager : ICacheManager
 
             if (!found)
             {
-                focus = focus.CreateSubdirectory(directory);
+                // use Task.Run to wait for file IO
+                focus = await Task.Run(() => focus.CreateSubdirectory(directory));
             }
         }
 
         return focus;
     }
 
-    public string StoreBomInCache(string bomFilePath, Guid analysisId, DateTimeOffset asOfDateTime)
+    public async ValueTask<string> StoreBomInCache(string bomFilePath, Guid analysisId, DateTimeOffset asOfDateTime)
     {
         var bomFileInfo = new FileInfo(bomFilePath);
 
-        var bomCacheDirInfo = GetDirectoryInCache("boms", analysisId.ToString(), asOfDateTime.ToString("u"));
+        var bomCacheDirInfo = await GetDirectoryInCache("boms", analysisId.ToString(), asOfDateTime.ToString("u"));
         var cachedBomFilePath = Path.Combine(bomCacheDirInfo.FullName, bomFileInfo.Name);
 
-        File.Copy(bomFilePath, cachedBomFilePath);
+        // use Task.Run to wait for file IO to complete
+        await Task.Run(() => File.Copy(bomFilePath, cachedBomFilePath));
 
         return cachedBomFilePath;
     }
 
-    public bool Destroy()
+    public async ValueTask<bool> Destroy()
     {
-        var cacheDir = new DirectoryInfo(_configuration.CacheDir);
+        // use Task.Run to wait for file IO
+        var cacheDir = await Task.Run(() => new DirectoryInfo(_configuration.CacheDir));
         // If the directory doesn't exist, do nothing (be idempotent).
         if (!cacheDir.Exists)
         {
             throw new CacheException(CliOutput.Warning_Cache_Destroy_DoesNotExist) { IsWarning = true };
         }
 
-        if (!ValidateCacheDirectory())
+        if (!await ValidateCacheDirectory())
         {
             throw new CacheException(CliOutput.Exception_Cache_Destroy_NonCache);
         }
 
-        cacheDir.Delete(true);
+        // use Task.Run to wait for file IO
+        await Task.Run(() => cacheDir.Delete(true));
         return true;
     }
 
     public ICacheDb GetCacheDb() => new CacheDb(_configuration.CacheDir);
 
-    private static void MigrateIfPending(CacheContext context)
+    private static async ValueTask MigrateIfPending(CacheContext context)
     {
-        var pending = context.Database.GetPendingMigrations();
+        var pending = await context.Database.GetPendingMigrationsAsync();
         if (!pending.Any())
         {
             return;
         }
 
-        context.Database.Migrate();
+        await context.Database.MigrateAsync();
     }
 }

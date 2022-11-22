@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,19 +11,19 @@ public class CreateAnalysisApiActivity : IApplicationActivity
 
     public Guid CachedAnalysisId { get; }
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var cacheDb = eventClient.ServiceProvider.GetRequiredService<ICacheManager>().GetCacheDb();
         var apiService = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
 
-        var cachedAnalysis = cacheDb.RetrieveAnalysis(CachedAnalysisId);
+        var cachedAnalysis = await cacheDb.RetrieveAnalysis(CachedAnalysisId);
 
-        var apiAnalysisId = apiService.CreateAnalysis(cachedAnalysis!.RepositoryUrl);
+        var apiAnalysisId = await apiService.CreateAnalysis(cachedAnalysis!.RepositoryUrl);
         cachedAnalysis.ApiAnalysisId = apiAnalysisId;
 
-        cacheDb.SaveAnalysis(cachedAnalysis);
+        await cacheDb.SaveAnalysis(cachedAnalysis);
 
-        eventClient.Fire(new AnalysisApiCreatedEvent
+        await eventClient.Fire(new AnalysisApiCreatedEvent
         {
             AnalysisId = CachedAnalysisId,
             ApiAnalysisId = apiAnalysisId
