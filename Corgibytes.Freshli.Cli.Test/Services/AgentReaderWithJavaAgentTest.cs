@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
 using Xunit;
@@ -11,12 +13,13 @@ namespace Corgibytes.Freshli.Cli.Test.Services;
 [IntegrationTest]
 public class AgentReaderWithJavaAgentTest
 {
+
     [Fact]
-    public void DetectManifestsUsingProtobuf()
+    public async ValueTask DetectManifestsUsingProtobuf()
     {
         SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
 
-        var actualManifests = reader.DetectManifests(repositoryLocation);
+        var actualManifests = await reader.DetectManifests(repositoryLocation).ToListAsync();
 
         var expectedManifests = new List<string>
         {
@@ -31,13 +34,13 @@ public class AgentReaderWithJavaAgentTest
     }
 
     [Fact]
-    public void GenerateBillOfMaterialsUsingProtobuf()
+    public async ValueTask GenerateBillOfMaterialsUsingProtobuf()
     {
         SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
 
         // java/pom.xml is detected by detect manifest, see also DetectManifestsUsingProtobuf()
         var billOfMaterialsPath =
-            reader.ProcessManifest(Path.Combine(repositoryLocation, "java", "pom.xml"), DateTime.Now);
+            await reader.ProcessManifest(Path.Combine(repositoryLocation, "java", "pom.xml"), DateTime.Now);
 
         Assert.Equal(Path.Combine(repositoryLocation, "java", "target", "bom.json"), billOfMaterialsPath);
 
@@ -46,14 +49,14 @@ public class AgentReaderWithJavaAgentTest
     }
 
     [Fact]
-    public void AgentReaderReturnsEmptyListWhenNoManifestsFound()
+    public async ValueTask AgentReaderReturnsEmptyListWhenNoManifestsFound()
     {
         var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);
         var reader = new AgentReader(new CacheManager(new Configuration(new Environment())), new CommandInvoker(),
             "freshli-agent-java");
         var repositoryLocation = Path.Combine(checkoutLocation, "invalid_repository");
 
-        var actualManifests = reader.DetectManifests(repositoryLocation);
+        var actualManifests = await reader.DetectManifests(repositoryLocation).ToListAsync();
         Assert.Empty(actualManifests);
         checkoutDirectory.Delete();
     }
@@ -64,7 +67,8 @@ public class AgentReaderWithJavaAgentTest
         var checkoutLocation = CreateCheckoutLocation(out checkoutDirectory);
 
         // clone https://github.com/protocolbuffers/protobuf to a temp location
-        new CommandInvoker().Run("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
+        new CommandInvoker()
+            .Run("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation).AsTask().Wait();
 
         repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
 

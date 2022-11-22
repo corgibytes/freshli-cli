@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Services;
@@ -10,11 +11,16 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class PackageLibYearCalculator : IPackageLibYearCalculator
 {
-    public PackageLibYear ComputeLibYear(IAgentReader agentReader, PackageURL packageUrl, DateTimeOffset asOfDateTime)
+    public async ValueTask<PackageLibYear> ComputeLibYear(IAgentReader agentReader, PackageURL packageUrl, DateTimeOffset asOfDateTime)
     {
         try
         {
-            var releaseHistory = agentReader.RetrieveReleaseHistory(packageUrl);
+            var releaseHistory = new List<Package>();
+            await foreach (var package in agentReader.RetrieveReleaseHistory(packageUrl))
+            {
+                releaseHistory.Add(package);
+            }
+
             var latestVersionPackageUrl = GetLatestVersion(releaseHistory, asOfDateTime);
             var releaseDateCurrentVersion = GetReleaseDate(releaseHistory, packageUrl);
             var releaseDateLatestVersion = GetReleaseDate(releaseHistory, latestVersionPackageUrl);

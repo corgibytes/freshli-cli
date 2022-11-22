@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -6,6 +7,6 @@ public interface IApplicationActivityEngine
 {
     public IServiceProvider ServiceProvider { get; }
 
-    public void Dispatch(IApplicationActivity applicationActivity);
-    public void Wait();
+    public ValueTask Dispatch(IApplicationActivity applicationActivity);
+    public ValueTask Wait();
 }

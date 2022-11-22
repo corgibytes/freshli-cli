@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -11,15 +12,15 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity
     public int PackageLibYearId { get; init; }
     public string AgentExecutablePath { get; init; } = null!;
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
 
         var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
-        resultsApi.CreatePackageLibYear(cacheDb, AnalysisId, PackageLibYearId);
+        await resultsApi.CreatePackageLibYear(cacheDb, AnalysisId, PackageLibYearId);
 
-        eventClient.Fire(new ApiPackageLibYearCreatedEvent
+        await eventClient.Fire(new ApiPackageLibYearCreatedEvent
         {
             AnalysisId = AnalysisId,
             HistoryStopPointId = HistoryStopPointId,

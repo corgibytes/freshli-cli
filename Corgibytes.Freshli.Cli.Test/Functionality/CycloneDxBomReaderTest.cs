@@ -25,8 +25,7 @@ public class CycloneDxBomReaderTest : FreshliTest
     public void Verify_it_can_create_a_json_object()
     {
         // File was shortened to only show relevant information for this test
-        var fileContents =
-            @"{
+        const string fileContents = @"{
     ""components"": [
         {
             ""purl"": ""pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"",
@@ -77,8 +76,7 @@ public class CycloneDxBomReaderTest : FreshliTest
     public void Verify_it_skips_packages_without_hashes()
     {
         // File was shortened to only show relevant information for this test
-        var fileContents =
-            @"{
+        const string fileContents = @"{
     ""components"": [
         {
             ""purl"": ""pkg:nuget/org.corgibytes.calculatron/calculatron@14.6"",

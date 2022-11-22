@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -42,7 +43,7 @@ public class ComputeHistoryActivityTest
     private Configuration Configuration { get; }
 
     [Fact]
-    public void FiresHistoryIntervalStopFoundEvents()
+    public async ValueTask FiresHistoryIntervalStopFoundEvents()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval,
             RevisionHistoryMode.AllRevisions);
@@ -67,14 +68,14 @@ public class ComputeHistoryActivityTest
 
         // Act
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
+        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         // Assert
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
     [Fact]
-    public void FiresHistoryIntervalStopFoundEventsForComputeHistory()
+    public async ValueTask FiresHistoryIntervalStopFoundEventsForComputeHistory()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
             RevisionHistoryMode.AllRevisions);
@@ -95,14 +96,14 @@ public class ComputeHistoryActivityTest
 
         // Act
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
+        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         // Assert
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
     [Fact]
-    public void FiresHistoryIntervalStopFoundEventsForLatestOnly()
+    public async ValueTask FiresHistoryIntervalStopFoundEventsForLatestOnly()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
             RevisionHistoryMode.OnlyLatestRevision);
@@ -123,14 +124,14 @@ public class ComputeHistoryActivityTest
 
         // Act
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
+        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         // Assert
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
     [Fact]
-    public void FiresInvalidHistoryIntervalStopEvent()
+    public async ValueTask FiresInvalidHistoryIntervalStopEvent()
     {
         // This could happen when we run the analysis on a codebase that barely has any commits.
         // If we want to analyse it, we have to be wary of the interval not being bigger than the age of the first commit.
@@ -153,7 +154,7 @@ public class ComputeHistoryActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(computeHistory);
 
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
+        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<InvalidHistoryIntervalEvent>(value =>
@@ -169,7 +170,7 @@ public class ComputeHistoryActivityTest
         // Have an analysis available
         var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval, useCommitHistory,
             revisionHistoryMode);
-        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).Returns(cachedAnalysis);
+        _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).ReturnsAsync(cachedAnalysis);
     }
 
     private void SetupHistoryStopPointIds(List<HistoryIntervalStop> historyIntervalStops)
@@ -180,7 +181,7 @@ public class ComputeHistoryActivityTest
             _cacheDb.Setup(mock => mock.AddHistoryStopPoint(It.Is<CachedHistoryStopPoint>(value =>
                     value.GitCommitId == stopPoint.GitCommitIdentifier &&
                     value.AsOfDateTime == stopPoint.AsOfDateTime)))
-                .Returns(stopPointId);
+                .ReturnsAsync(stopPointId);
             stopPointId++;
         }
     }

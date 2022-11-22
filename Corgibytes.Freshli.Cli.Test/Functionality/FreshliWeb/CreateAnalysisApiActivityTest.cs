@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -18,14 +19,14 @@ public class CreateAnalysisApiActivityTest
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
 
     [Fact]
-    public void HandleSendsRequest()
+    public async ValueTask HandleSendsRequest()
     {
-        var url = "anything";
-        var branch = "anythingelse";
+        const string url = "anything";
+        const string branch = "anythingelse";
         var api = new Mock<IResultsApi>();
         var apiAnalysisId = Guid.NewGuid();
         var cachedAnalysisId = Guid.NewGuid();
-        api.Setup(mock => mock.CreateAnalysis(url)).Returns(apiAnalysisId);
+        api.Setup(mock => mock.CreateAnalysis(url)).ReturnsAsync(apiAnalysisId);
         var activity = new CreateAnalysisApiActivity(cachedAnalysisId);
 
         var cachedAnalysis =
@@ -34,7 +35,7 @@ public class CreateAnalysisApiActivityTest
                 Id = cachedAnalysisId
             };
         var cacheDb = new Mock<ICacheDb>();
-        cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).Returns(cachedAnalysis);
+        cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).ReturnsAsync(cachedAnalysis);
 
         var cacheManager = new Mock<ICacheManager>();
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
@@ -42,7 +43,7 @@ public class CreateAnalysisApiActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(api.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         cacheDb.Verify(mock => mock.SaveAnalysis(It.Is<CachedAnalysis>(value =>
             value.Id == cachedAnalysisId &&

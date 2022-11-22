@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -12,7 +13,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class AnalysisApiCreatedEventTest
 {
     [Fact]
-    public void CorrectlyDispatchesCloneGitRepositoryActivity()
+    public async ValueTask CorrectlyDispatchesCloneGitRepositoryActivity()
     {
         var startedEvent = new AnalysisApiCreatedEvent
         {
@@ -22,7 +23,7 @@ public class AnalysisApiCreatedEventTest
         };
 
         var engine = new Mock<IApplicationActivityEngine>();
-        startedEvent.Handle(engine.Object);
+        await startedEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<CloneGitRepositoryActivity>(value =>
             value.CachedAnalysisId == startedEvent.AnalysisId
@@ -30,7 +31,7 @@ public class AnalysisApiCreatedEventTest
     }
 
     [Fact]
-    public void CorrectlyDispatchesVerifyGitRepositoryInLocalDirectoryActivity()
+    public async ValueTask CorrectlyDispatchesVerifyGitRepositoryInLocalDirectoryActivity()
     {
         var temporaryLocation = new DirectoryInfo(Path.Combine(Path.GetTempPath(), new Guid().ToString()));
         temporaryLocation.Create();
@@ -42,7 +43,7 @@ public class AnalysisApiCreatedEventTest
         };
 
         var engine = new Mock<IApplicationActivityEngine>();
-        startedEvent.Handle(engine.Object);
+        await startedEvent.Handle(engine.Object);
 
         engine.Verify(mock => mock.Dispatch(It.Is<VerifyGitRepositoryInLocalDirectoryActivity>(value =>
             value.AnalysisId == startedEvent.AnalysisId

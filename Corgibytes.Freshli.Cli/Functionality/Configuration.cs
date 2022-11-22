@@ -1,15 +1,14 @@
 using System.IO;
-using Newtonsoft.Json;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
 public class Configuration : IConfiguration
 {
     public const string FreshliWebApiBaseUrlEnvVarName = "FRESHLI_WEB_API_BASE_URL";
-    [JsonProperty] private readonly IEnvironment _environment;
-    [JsonProperty] private string? _cacheDir;
-    [JsonProperty] private string? _freshliWebApiBaseUrl;
-    [JsonProperty] private string? _gitPath;
+    private readonly IEnvironment _environment;
+    private string? _cacheDir;
+    private string? _freshliWebApiBaseUrl;
+    private string? _gitPath;
 
     public Configuration(IEnvironment environment) => _environment = environment;
 

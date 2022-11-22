@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 
@@ -11,15 +12,15 @@ public class AnalysisApiCreatedEvent : IApplicationEvent
     public Guid ApiAnalysisId { get; init; }
     public string RepositoryUrl { get; init; } = null!;
 
-    public void Handle(IApplicationActivityEngine eventClient)
+    public async ValueTask Handle(IApplicationActivityEngine eventClient)
     {
         if (Directory.Exists(RepositoryUrl))
         {
-            eventClient.Dispatch(new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = AnalysisId });
+            await eventClient.Dispatch(new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = AnalysisId });
         }
         else
         {
-            eventClient.Dispatch(new CloneGitRepositoryActivity(AnalysisId));
+            await eventClient.Dispatch(new CloneGitRepositoryActivity(AnalysisId));
         }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -36,22 +37,22 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _repositoryLocation = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         _analysisId = new Guid();
 
-        _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).Returns(
+        _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(
             new CachedAnalysis(_repositoryLocation, "main", "1m", CommitHistory.Full, RevisionHistoryMode.AllRevisions)
         );
     }
 
     [Fact]
-    public void VerifyHandlerFiresEvent()
+    public async ValueTask VerifyHandlerFiresEvent()
     {
         var repositoryLocation = new DirectoryInfo(_repositoryLocation);
         repositoryLocation.Create();
 
         _gitManager.Setup(mock =>
-            mock.IsGitRepositoryInitialized(_repositoryLocation)).Returns(true);
+            mock.IsGitRepositoryInitialized(_repositoryLocation)).ReturnsAsync(true);
 
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         var expectedCachedGitSource = new CachedGitSource(
             new CachedGitSourceId(repositoryLocation.FullName).Id, _repositoryLocation, null,
@@ -75,10 +76,10 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     }
 
     [Fact]
-    public void VerifyHandlerFiresFailureEventIfDirectoryDoesNotExist()
+    public async ValueTask VerifyHandlerFiresFailureEventIfDirectoryDoesNotExist()
     {
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<DirectoryDoesNotExistFailureEvent>(value =>
             value.ErrorMessage == $"Directory does not exist at {_repositoryLocation}"
@@ -86,16 +87,16 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     }
 
     [Fact]
-    public void VerifyHandlerFiresFailureEventIfDirectoryIsNotGitInitialized()
+    public async ValueTask VerifyHandlerFiresFailureEventIfDirectoryIsNotGitInitialized()
     {
         var repositoryLocation = new DirectoryInfo(_repositoryLocation);
         repositoryLocation.Create();
 
         _gitManager.Setup(mock => mock.IsGitRepositoryInitialized(_repositoryLocation))
-            .Returns(false);
+            .ReturnsAsync(false);
 
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
-        activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<DirectoryIsNotGitInitializedFailureEvent>(value =>
             value.ErrorMessage == $"Directory is not a git initialised directory at {_repositoryLocation}"

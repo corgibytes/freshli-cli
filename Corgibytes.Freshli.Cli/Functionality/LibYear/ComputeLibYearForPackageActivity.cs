@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Services;
@@ -14,19 +15,19 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
     public PackageURL Package { get; init; } = null!;
     public string AgentExecutablePath { get; init; } = null!;
 
-    public void Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
         var agentReader = agentManager.GetReader(AgentExecutablePath);
 
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
-        var historyStopPoint = cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
 
         var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
-        var packageLibYear = calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
+        var packageLibYear = await calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
 
-        var packageLibYearId = cacheDb.AddPackageLibYear(new CachedPackageLibYear
+        var packageLibYearId = await cacheDb.AddPackageLibYear(new CachedPackageLibYear
         {
             PackageName = Package.Name,
             CurrentVersion = packageLibYear.CurrentVersion?.ToString(),
@@ -37,7 +38,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity
             HistoryStopPointId = HistoryStopPointId
         });
 
-        eventClient.Fire(new LibYearComputedForPackageEvent
+        await eventClient.Fire(new LibYearComputedForPackageEvent
         {
             AnalysisId = AnalysisId,
             HistoryStopPointId = HistoryStopPointId,

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -14,16 +16,16 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class DetectManifestsUsingAgentActivityTest
 {
     [Fact]
-    public void Handle()
+    public async ValueTask Handle()
     {
-        var localPath = "/path/to/repository";
+        const string localPath = "/path/to/repository";
         var agentReader = new Mock<IAgentReader>();
         agentReader.Setup(mock => mock.DetectManifests(localPath)).Returns(
             new List<string>
             {
                 "/path/to/first/manifest",
                 "/path/to/second/manifest"
-            });
+            }.ToAsyncEnumerable());
 
         const string agentExecutablePath = "/path/to/agent";
         var agentManager = new Mock<IAgentManager>();
@@ -33,9 +35,9 @@ public class DetectManifestsUsingAgentActivityTest
         var cacheDb = new Mock<ICacheDb>();
         var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
@@ -48,7 +50,7 @@ public class DetectManifestsUsingAgentActivityTest
         var activity =
             new DetectManifestsUsingAgentActivity(analysisId, historyStopPointId, agentExecutablePath);
 
-        activity.Handle(eventEngine.Object);
+        await activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
             appEvent.AnalysisId == analysisId &&

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.Services;
@@ -12,9 +14,9 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class PackageLibYearCalculatorTest
 {
     [Fact]
-    public void VerifyItCanCalculateTheLibYear()
+    public async ValueTask VerifyItCanCalculateTheLibYear()
     {
-        var packageName = "pkg:maven/org.apache.maven/apache-maven";
+        const string packageName = "pkg:maven/org.apache.maven/apache-maven";
         var currentlyInstalledPackageUrl = new PackageURL(packageName + "@1.3.4");
 
         var givenReleaseHistory = new List<Package>
@@ -44,7 +46,7 @@ public class PackageLibYearCalculatorTest
 
         var agentReader = new Mock<IAgentReader>();
         agentReader.Setup(mock => mock.RetrieveReleaseHistory(currentlyInstalledPackageUrl))
-            .Returns(givenReleaseHistory);
+            .Returns(givenReleaseHistory.ToAsyncEnumerable());
 
         var calculator = new PackageLibYearCalculator();
         var asOfDateTime = new DateTimeOffset(2021, 12, 31, 12, 30, 45, TimeSpan.Zero);
@@ -59,7 +61,7 @@ public class PackageLibYearCalculatorTest
         );
 
         var actualPackageLibYear =
-            calculator.ComputeLibYear(agentReader.Object, currentlyInstalledPackageUrl, asOfDateTime);
+            await calculator.ComputeLibYear(agentReader.Object, currentlyInstalledPackageUrl, asOfDateTime);
 
         Assert.Equivalent(expectedPackageLibYear.CurrentVersion!, actualPackageLibYear.CurrentVersion!);
         Assert.Equivalent(expectedPackageLibYear.LatestVersion!, actualPackageLibYear.LatestVersion!);

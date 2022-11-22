@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 
@@ -20,7 +21,7 @@ public class BillOfMaterialsGeneratedEvent : IApplicationEvent
     public string PathToBillOfMaterials { get; }
     public string AgentExecutablePath { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient) => eventClient.Dispatch(
+    public async ValueTask Handle(IApplicationActivityEngine eventClient) => await eventClient.Dispatch(
         new DeterminePackagesFromBomActivity(
             AnalysisId,
             HistoryStopPointId,

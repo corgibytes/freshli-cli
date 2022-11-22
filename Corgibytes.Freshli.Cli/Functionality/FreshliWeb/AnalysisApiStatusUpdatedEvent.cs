@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
@@ -14,7 +15,8 @@ public class AnalysisApiStatusUpdatedEvent : IApplicationEvent
     public Guid ApiAnalysisId { get; }
     public string Status { get; }
 
-    public void Handle(IApplicationActivityEngine eventClient)
+    public ValueTask Handle(IApplicationActivityEngine eventClient)
     {
+        return ValueTask.CompletedTask;
     }
 }

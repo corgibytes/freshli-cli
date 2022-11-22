@@ -3,26 +3,25 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
-using Hangfire;
-using Hangfire.Common;
-using Hangfire.Storage.Monitoring;
 using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
 public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEngine
 {
-    private const int MutexWaitTimeoutInMilliseconds = 50;
-    private static readonly Dictionary<Type, Action<IApplicationEvent>> s_eventHandlers = new();
+    // TODO: Make this a configurable value
+    private const int MutexWaitTimeoutInMilliseconds = 200;
+    private static readonly Dictionary<Type, Func<IApplicationEvent, ValueTask>> s_eventHandlers = new();
 
-    private static readonly object s_dispatchLock = new();
-    private static readonly object s_fireLock = new();
+    private static readonly SemaphoreSlim s_dispatchSemaphore = new(1, 1);
+    private static readonly SemaphoreSlim s_fireSemaphore = new(1, 1);
     private static bool s_isActivityDispatchingInProgress;
     private static bool s_isEventFiringInProgress;
     private readonly ILogger<ApplicationEngine> _logger;
 
-    public ApplicationEngine(IBackgroundJobClient jobClient, ILogger<ApplicationEngine> logger,
+    public ApplicationEngine(IBackgroundTaskQueue jobClient, ILogger<ApplicationEngine> logger,
         IServiceProvider serviceProvider)
     {
         JobClient = jobClient ?? throw new ArgumentNullException(nameof(jobClient));
@@ -30,25 +29,26 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         ServiceProvider = serviceProvider;
     }
 
-    private IBackgroundJobClient JobClient { get; }
+    private IBackgroundTaskQueue JobClient { get; }
 
-    public void Dispatch(IApplicationActivity applicationActivity)
+    public async ValueTask Dispatch(IApplicationActivity applicationActivity)
     {
-        lock (s_dispatchLock)
+        await s_dispatchSemaphore.WaitAsync();
+        s_isActivityDispatchingInProgress = true;
+
+        try
         {
-            s_isActivityDispatchingInProgress = true;
-            try
-            {
-                JobClient.Enqueue(() => HandleActivity(applicationActivity));
-            }
-            finally
-            {
-                s_isActivityDispatchingInProgress = false;
-            }
+            // TODO: Pass the cancellation token to HandleActivity
+            await JobClient.QueueBackgroundWorkItemAsync(_ => HandleActivity(applicationActivity));
+        }
+        finally
+        {
+            s_isActivityDispatchingInProgress = false;
+            s_dispatchSemaphore.Release();
         }
     }
 
-    public void Wait()
+    public async ValueTask Wait()
     {
         var watch = new Stopwatch();
         watch.Start();
@@ -57,9 +57,9 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         var shouldWait = true;
         while (shouldWait)
         {
-            Thread.Sleep(500);
+            await Task.Delay(500);
 
-            var statistics = JobStorage.Current.GetMonitoringApi().GetStatistics();
+            var statistics = JobClient.GetStatistics();
             var length = statistics.Processing + statistics.Enqueued;
 
             // store the value of static boolean fields to avoid a race condition between the output of those values
@@ -77,24 +77,23 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public IServiceProvider ServiceProvider { get; }
 
-    public void Fire(IApplicationEvent applicationEvent)
+    public async ValueTask Fire(IApplicationEvent applicationEvent)
     {
-        lock (s_fireLock)
+        await s_fireSemaphore.WaitAsync();
+        s_isEventFiringInProgress = true;
+        try
         {
-            s_isEventFiringInProgress = true;
-            try
-            {
-                JobClient.Enqueue(() => FireEventAndHandler(applicationEvent));
-            }
-            finally
-            {
-                s_isEventFiringInProgress = false;
-            }
+            // TODO: pass cancellation token to FireEventAndHandler
+            await JobClient.QueueBackgroundWorkItemAsync(_ => FireEventAndHandler(applicationEvent));
+        }
+        finally
+        {
+            s_isEventFiringInProgress = false;
+            s_fireSemaphore.Release();
         }
     }
 
-
-    public void On<TEvent>(Action<TEvent> eventHandler) where TEvent : IApplicationEvent =>
+    public void On<TEvent>(Func<TEvent, ValueTask> eventHandler) where TEvent : IApplicationEvent =>
         s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
 
     private void LogWaitStart() => _logger.LogDebug("Starting to wait for an empty job queue...");
@@ -102,14 +101,13 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private void LogWaitStop(long durationInMilliseconds) =>
         _logger.LogDebug("Waited for {Duration} milliseconds", durationInMilliseconds);
 
-    private void LogWaitingStatus(StatisticsDto statistics, long length, bool localIsEventFiring,
+    private void LogWaitingStatus(QueueStatistics statistics, long length, bool localIsEventFiring,
         bool localIsActivityDispatching) =>
         _logger.LogTrace(
             "Queue length: {QueueLength} (" +
             "Processing: {JobsProcessing}, " +
             "Enqueued: {JobsEnqueued}, " +
             "Succeeded: {JobsSucceeded}, " +
-            "Scheduled: {JobsScheduled}, " +
             "Failed: {JobsFailed}), " +
             "Activity Dispatch in Progress: {IsActivityDispatchInProgress}, " +
             "Event Fire in Progress: {IsEventFireInProgress}",
@@ -117,37 +115,41 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             statistics.Processing,
             statistics.Enqueued,
             statistics.Succeeded,
-            statistics.Scheduled,
             statistics.Failed,
             localIsActivityDispatching,
             localIsEventFiring
         );
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void FireEventAndHandler(IApplicationEvent applicationEvent)
+    public async ValueTask FireEventAndHandler(IApplicationEvent applicationEvent)
     {
-        var jobId = JobClient.Enqueue(() => HandleEvent(applicationEvent));
+        await HandleEvent(applicationEvent);
 
-        foreach (var _ in s_eventHandlers.Keys.Where(type => type.IsAssignableTo(applicationEvent.GetType())))
+        if (s_eventHandlers.Keys.Any(type => type.IsAssignableTo(applicationEvent.GetType())))
         {
-            JobClient.ContinueJobWith(jobId, () => TriggerHandler(applicationEvent));
+            // TODO: Pass the cancellation token to TriggerHandler
+            await JobClient.QueueBackgroundWorkItemAsync(_ => TriggerHandler(applicationEvent));
         }
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleActivity(IApplicationActivity activity)
+    public async ValueTask HandleActivity(IApplicationActivity activity)
     {
-        Mutex? mutex = null;
-        if (activity is IMutexed mutexSource)
+        SemaphoreSlim? semaphore = null;
+        if (activity is ISynchronized mutexSource)
         {
-            mutex = mutexSource.GetMutex(ServiceProvider);
+            semaphore = await mutexSource.GetSemaphore(ServiceProvider);
         }
 
-        var mutexAcquired = mutex?.WaitOne(MutexWaitTimeoutInMilliseconds) ?? true;
-        if (!mutexAcquired)
+        var semaphoreEntered = true;
+        if (semaphore != null)
+        {
+            semaphoreEntered = await semaphore.WaitAsync(MutexWaitTimeoutInMilliseconds);
+        }
+        if (!semaphoreEntered)
         {
             // place the activity back in the queue and free up the worker to make progress on a different activity
-            Dispatch(activity);
+            await Dispatch(activity);
             return;
         }
 
@@ -156,44 +158,48 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             _logger.LogDebug(
                 "Handling activity {ActivityType}: {Activity}",
                 activity.GetType(),
-                SerializationHelper.Serialize(activity)
+                // TODO: figure out how best to log activity specific values here
+                activity
             );
-            activity.Handle(this);
+            await activity.Handle(this);
         }
         catch (Exception error)
         {
-            Fire(new UnhandledExceptionEvent(error));
+            await Fire(new UnhandledExceptionEvent(error));
         }
         finally
         {
-            if (mutex != null && mutexAcquired)
+            if (semaphore != null && semaphoreEntered)
             {
-                mutex.ReleaseMutex();
+                semaphore.Release();
             }
         }
     }
 
     // ReSharper disable once MemberCanBePrivate.Global
-    public void HandleEvent(IApplicationEvent appEvent)
+    public async ValueTask HandleEvent(IApplicationEvent appEvent)
     {
         try
         {
             _logger.LogDebug(
                 "Handling activity {AppEventType}: {AppEvent}",
                 appEvent.GetType(),
-                SerializationHelper.Serialize(appEvent)
+                // TODO: figure out how best to log event specific values here
+                appEvent
             );
-            appEvent.Handle(this);
+            await appEvent.Handle(this);
         }
         catch (Exception error)
         {
-            Fire(new UnhandledExceptionEvent(error));
+            await Fire(new UnhandledExceptionEvent(error));
         }
     }
 
+    // TODO: see if these methods can be made private now
     // ReSharper disable once MemberCanBePrivate.Global
-    public void TriggerHandler(IApplicationEvent applicationEvent)
+    public async ValueTask TriggerHandler(IApplicationEvent applicationEvent)
     {
+        var tasks = new List<Task>();
         foreach (var type in s_eventHandlers.Keys)
         {
             if (!type.IsAssignableTo(applicationEvent.GetType()))
@@ -202,7 +208,10 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             }
 
             var handler = s_eventHandlers[type];
-            handler(applicationEvent);
+            var task = handler(applicationEvent);
+            tasks.Add(task.AsTask());
         }
+
+        await Task.WhenAll(tasks);
     }
 }

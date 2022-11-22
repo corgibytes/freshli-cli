@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -11,8 +10,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class GitArchive
 {
-    private static readonly Dictionary<string, Task<string>> s_gitIdsAndSourceTargets = new();
-    private static readonly object s_gitIdsAndSourceTargetsLock = new();
     private readonly ICachedGitSourceRepository _cachedGitSourceRepository;
 
     private readonly IConfiguration _configuration;
@@ -23,51 +20,29 @@ public class GitArchive
         _cachedGitSourceRepository = cachedGitSourceRepository;
     }
 
-    public string CreateArchive(string repositoryId, GitCommitIdentifier gitCommitIdentifier)
+    public async ValueTask<string> CreateArchive(string repositoryId, GitCommitIdentifier gitCommitIdentifier)
     {
-        var cachedGitSource = _cachedGitSourceRepository.FindOneByRepositoryId(repositoryId);
+        var cachedGitSource = await _cachedGitSourceRepository.FindOneByRepositoryId(repositoryId);
 
         var gitSourceTarget = new DirectoryInfo(Path.Combine(_configuration.CacheDir, "histories", cachedGitSource.Id,
             gitCommitIdentifier.ToString()));
 
-        Task<string>? createArchiveTask = null;
-        lock (s_gitIdsAndSourceTargetsLock)
-        {
-            if (s_gitIdsAndSourceTargets.ContainsKey(gitCommitIdentifier.ToString()))
-            {
-                createArchiveTask = s_gitIdsAndSourceTargets[gitCommitIdentifier.ToString()];
-            }
-        }
-
-        if (createArchiveTask != null)
-        {
-            return createArchiveTask.Result;
-        }
-
-        lock (s_gitIdsAndSourceTargetsLock)
-        {
-            if (Directory.Exists(gitSourceTarget.FullName))
-            {
-                return gitSourceTarget.FullName;
-            }
-
-            s_gitIdsAndSourceTargets.Add(gitCommitIdentifier.ToString(), new Task<string>(() =>
-                CreateArchiveTask(gitCommitIdentifier, gitSourceTarget, cachedGitSource)));
-
-            createArchiveTask = s_gitIdsAndSourceTargets[gitCommitIdentifier.ToString()];
-            createArchiveTask.Start();
-        }
-
-        return createArchiveTask.Result;
+        return await CreateArchiveTask(gitCommitIdentifier, gitSourceTarget, cachedGitSource).AsTask();
     }
 
-    private string CreateArchiveTask(GitCommitIdentifier gitCommitIdentifier,
+    private async ValueTask<string> CreateArchiveTask(GitCommitIdentifier gitCommitIdentifier,
         DirectoryInfo gitSourceTarget, CachedGitSource gitSource)
     {
+        if (await Task.Run(() => Directory.Exists(gitSourceTarget.FullName)))
+        {
+            return gitSourceTarget.FullName;
+        }
+
         // Create the directory where we want to place the archive
-        gitSourceTarget.Create();
+        await Task.Run(gitSourceTarget.Create);
         var archivePath = Path.Combine(gitSourceTarget.FullName, "archive.zip");
 
+        // TODO: This should use the CommandInvoker class
         var archiveProcess = new Process
         {
             StartInfo = new ProcessStartInfo
@@ -80,16 +55,17 @@ public class GitArchive
             }
         };
         archiveProcess.Start();
-        archiveProcess.WaitForExit();
+        await archiveProcess.WaitForExitAsync();
 
         if (archiveProcess.ExitCode != 0)
         {
-            throw new GitException(string.Format(CliOutput.GitArchive_Git_Exception,
-                archiveProcess.StandardError.ReadToEnd()));
+            throw new GitException(
+                string.Format(CliOutput.GitArchive_Git_Exception,
+                await archiveProcess.StandardError.ReadToEndAsync()));
         }
 
-        ZipFile.ExtractToDirectory($"{archivePath}", gitSourceTarget.FullName);
-        File.Delete($"{archivePath}");
+        await Task.Run(() => ZipFile.ExtractToDirectory($"{archivePath}", gitSourceTarget.FullName));
+        await Task.Run(() => File.Delete($"{archivePath}"));
 
         return gitSourceTarget.FullName;
     }

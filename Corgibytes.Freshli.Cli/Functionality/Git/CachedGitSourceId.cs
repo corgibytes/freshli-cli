@@ -7,8 +7,7 @@ public class CachedGitSourceId
 {
     public CachedGitSourceId(string url, string? branch = null)
     {
-        using var sha256 = SHA256.Create();
-        var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(url + branch));
+        var hashBytes = SHA256.HashData(Encoding.UTF8.GetBytes(url + branch));
         var stringBuilder = new StringBuilder();
         foreach (var hashByte in hashBytes)
         {

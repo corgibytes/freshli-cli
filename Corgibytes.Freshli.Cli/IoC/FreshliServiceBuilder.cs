@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.CommandLine.Hosting;
+﻿using System.CommandLine.Hosting;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
@@ -10,21 +9,11 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
-using Corgibytes.Freshli.Cli.IoC.Engine;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
-using Hangfire;
-using Hangfire.Common;
-using Hangfire.MemoryStorage;
-using Hangfire.Server;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Corgibytes.Freshli.Cli.IoC;
 
@@ -41,7 +30,6 @@ public class FreshliServiceBuilder
 
     public void Register()
     {
-        // todo: register an implementation of IPackageLibYearCalculator
         Services.AddSingleton(Configuration);
         Services.AddSingleton<IEnvironment, Environment>();
         Services.AddScoped<ICacheManager, CacheManager>();
@@ -133,8 +121,6 @@ public class FreshliServiceBuilder
         Services.AddScoped<IFileReader, CycloneDxFileReaderFromFileReaderSystem>();
     }
 
-    // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L43
-    // and https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L168
     private void RegisterApplicationEngine()
     {
         Services.AddSingleton<ApplicationEngine>();
@@ -142,81 +128,6 @@ public class FreshliServiceBuilder
         Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>();
         Services.AddSingleton<ICommandInvoker, CommandInvoker>();
 
-        RegisterHangfire();
-        RegisterHangfireConfiguration();
-        RegisterHangfireServer();
+        Services.AddSingleton<IBackgroundTaskQueue, DefaultBackgroundTaskQueue>();
     }
-
-    // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L180
-    private void RegisterHangfireServer()
-    {
-        Services.AddSingleton(new BackgroundJobServerOptions { WorkerCount = 10 });
-
-        Services.AddTransient<IHostedService, BackgroundJobServerHostedService>(provider =>
-        {
-            var options = provider.GetService<BackgroundJobServerOptions>() ?? new BackgroundJobServerOptions();
-            var storage = provider.GetService<JobStorage>() ?? JobStorage.Current;
-            return new BackgroundJobServerHostedService(storage, options, new List<IBackgroundProcess>());
-        });
-    }
-
-    // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L43
-    private void RegisterHangfire()
-    {
-        JobStorage.Current = new MemoryStorage();
-
-        Services.AddSingleton<IContractResolver, JsonContractResolver>();
-
-        Services.TryAddSingletonChecked(_ => JobStorage.Current);
-        Services.TryAddSingletonChecked(_ => JobActivator.Current);
-
-        Services.TryAddSingleton<IJobFilterProvider>(_ => JobFilterProviders.Providers);
-        Services.TryAddSingleton<ITimeZoneResolver>(_ => new DefaultTimeZoneResolver());
-
-        Services.TryAddSingleton<IJobFilterProvider>(_ => JobFilterProviders.Providers);
-        Services.TryAddSingleton<ITimeZoneResolver>(_ => new DefaultTimeZoneResolver());
-
-        Services.TryAddSingleton(x => new DefaultClientManagerFactory(x));
-        Services.TryAddSingletonChecked<IBackgroundJobClientFactory>(x => x.GetService<DefaultClientManagerFactory>()!);
-        Services.TryAddSingletonChecked<IRecurringJobManagerFactory>(x => x.GetService<DefaultClientManagerFactory>()!);
-
-        Services.TryAddSingletonChecked(x => x
-            .GetService<IBackgroundJobClientFactory>()!.GetClient(x.GetService<JobStorage>()!));
-
-        Services.TryAddSingletonChecked(x => x
-            .GetService<IRecurringJobManagerFactory>()!.GetManager(x.GetService<JobStorage>()!));
-    }
-
-    // Based on https://github.com/HangfireIO/Hangfire/blob/c63127851a8f8a406f22fd14ae3e94d3124e9e8a/src/Hangfire.AspNetCore/HangfireServiceCollectionExtensions.cs#L76
-    private void RegisterHangfireConfiguration() =>
-        Services.AddSingleton(serviceProvider =>
-        {
-            var configurationInstance = GlobalConfiguration.Configuration;
-
-            // init defaults for log provider and job activator
-            // they may be overwritten by the configuration callback later
-
-            var loggerFactory = serviceProvider.GetService<ILoggerFactory>();
-            if (loggerFactory != null)
-            {
-                configurationInstance.UseLogProvider(new MicrosoftExtensionsCoreLogProvider(loggerFactory));
-            }
-
-            var scopeFactory = serviceProvider.GetService<IServiceScopeFactory>();
-            if (scopeFactory != null)
-            {
-                configurationInstance.UseActivator(new MicrosoftExtensionsJobActivator(scopeFactory));
-            }
-
-            var jsonSettings = new JsonSerializerSettings
-            {
-                ContractResolver = serviceProvider.GetRequiredService<IContractResolver>(),
-                TypeNameHandling = TypeNameHandling.All
-            };
-            configurationInstance.UseSerializerSettings(jsonSettings);
-
-            configurationInstance.UseFilter(new AutomaticRetryAttribute { Attempts = 0 });
-
-            return configurationInstance;
-        });
 }

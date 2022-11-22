@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using PackageUrl;
 
@@ -11,8 +12,8 @@ public class PackageFoundEvent : IApplicationEvent
     public string AgentExecutablePath { get; init; } = null!;
     public PackageURL Package { get; init; } = null!;
 
-    public void Handle(IApplicationActivityEngine eventClient) =>
-        eventClient.Dispatch(new ComputeLibYearForPackageActivity
+    public async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+        await eventClient.Dispatch(new ComputeLibYearForPackageActivity
         {
             AnalysisId = AnalysisId,
             HistoryStopPointId = HistoryStopPointId,

@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -13,12 +14,12 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 public class CheckoutHistoryActivityTest
 {
     [Fact]
-    public void Handle()
+    public async ValueTask Handle()
     {
-        var commitId = "abcdef1";
-        var gitExecutablePath = "/path/to/git";
+        const string commitId = "abcdef1";
+        const string gitExecutablePath = "/path/to/git";
         var repositoryId = Guid.NewGuid().ToString();
-        var cacheDirectory = "/path/to/cache/dir";
+        const string cacheDirectory = "/path/to/cache/dir";
         var archiveLocation = $"{cacheDirectory}/histories/{repositoryId}/{commitId}";
 
         var configuration = new Mock<IConfiguration>();
@@ -33,9 +34,9 @@ public class CheckoutHistoryActivityTest
             GitCommitId = commitId
         };
 
-        var historyStopPointId = 29;
+        const int historyStopPointId = 29;
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
         var gitManager = new Mock<IGitManager>();
 
@@ -52,9 +53,9 @@ public class CheckoutHistoryActivityTest
         gitManager.Setup(mock => mock.ParseCommitId(commitId)).Returns(parsedCommitId);
         gitManager.Setup(
             mock => mock.CreateArchive(repositoryId, parsedCommitId)
-        ).Returns(archiveLocation);
+        ).ReturnsAsync(archiveLocation);
 
-        activity.Handle(eventEngine.Object);
+        await activity.Handle(eventEngine.Object);
 
         eventEngine.Verify(
             mock => mock.Fire(It.Is<HistoryStopCheckedOutEvent>(appEvent =>

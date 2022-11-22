@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -14,7 +15,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class ComputeLibYearForPackageActivityTest
 {
     [Fact]
-    public void HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
+    public async ValueTask HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
     {
         var analysisId = Guid.NewGuid();
         var asOfDateTime = new DateTimeOffset(2021, 1, 29, 12, 30, 45, 0, TimeSpan.Zero);
@@ -50,17 +51,17 @@ public class ComputeLibYearForPackageActivityTest
 
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(agentReader.Object);
         calculator.Setup(mock => mock.ComputeLibYear(agentReader.Object, package, asOfDateTime))
-            .Returns(packageLibYear);
+            .ReturnsAsync(packageLibYear);
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).Returns(historyStopPoint);
-        cacheDb.Setup(mock => mock.AddPackageLibYear(It.IsAny<CachedPackageLibYear>())).Returns(packageLibYearId);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
+        cacheDb.Setup(mock => mock.AddPackageLibYear(It.IsAny<CachedPackageLibYear>())).ReturnsAsync(packageLibYearId);
 
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IPackageLibYearCalculator))).Returns(calculator.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
-        activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object);
 
         cacheDb.Verify(mock => mock.AddPackageLibYear(
             It.Is<CachedPackageLibYear>(value =>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Threading.Tasks;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
@@ -17,7 +18,7 @@ public abstract class CommandRunner<TCommand, TCommandOptions> : ICommandRunner<
     protected IRunner Runner { get; }
     protected IServiceProvider Services { get; }
 
-    public abstract int Run(TCommandOptions options, IConsole console);
+    public abstract ValueTask<int> Run(TCommandOptions options, IConsole console);
 
     protected static bool Confirm(string message, IConsole console, bool defaultYes = false)
     {
