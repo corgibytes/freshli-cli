@@ -7,6 +7,12 @@ Given('a blank file named {string} exists') do |filename|
   FileUtils.touch filename
 end
 
+Given('a blank executable file name {string} exists') do |filename|
+  filename = resolve_path filename
+  FileUtils.touch filename
+  FileUtils.chmod('a=x', filename)
+end
+
 Given('I create a directory named {string}') do |dirname|
   dirname = resolve_path dirname
   Dir.mkdir dirname
