@@ -4,7 +4,7 @@ Feature: Agents
     One line of output is created for each language agent that is detected.
     Scenario: Displays all language agents
         Given the directory named "~/bin"
-        And an empty file named "~/bin/freshli-agent-test"
+        And an empty executable file named "~/bin/freshli-agent-test"
         And the directory named "~/bin" is prepended to the PATH environment variable
         When I run `freshli agents detect`
         Then the output should contain:
