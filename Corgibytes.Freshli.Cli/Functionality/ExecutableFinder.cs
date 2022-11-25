@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ServiceStack;
 
@@ -22,7 +20,7 @@ public class ExecutableFinder : IExecutableFinder
         foreach (var path in paths)
         {
             var searchPath = path;
-            IList<string?> filesResults;
+            IList<string> filesResults;
             if (path.Contains("~" + _environment.PathSeparator))
             {
                 var homePath = _environment.HomeDirectory;
