@@ -32,6 +32,7 @@ public class FreshliServiceBuilder
     {
         Services.AddSingleton(Configuration);
         Services.AddSingleton<IEnvironment, Environment>();
+        Services.AddScoped<IExecutableFinder, ExecutableFinder>();
         Services.AddScoped<ICacheManager, CacheManager>();
         Services.AddScoped<IAgentManager, AgentManager>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
