@@ -7,7 +7,7 @@ Given('a blank file named {string} exists') do |filename|
   FileUtils.touch filename
 end
 
-Given('a blank executable file name {string} exists') do |filename|
+Given('an empty executable file named {string}') do |filename|
   filename = resolve_path filename
   FileUtils.touch filename
   FileUtils.chmod('a=x', filename)
