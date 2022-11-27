@@ -34,9 +34,21 @@ public class Environment : IEnvironment
             return false;
         }
 
+        UnixFileMode mode;
+        try
+        {
 #pragma warning disable CA1416
-        var mode = File.GetUnixFileMode(fileName);
+            mode = File.GetUnixFileMode(fileName);
 #pragma warning restore CA1416
+        }
+        catch (FileNotFoundException)
+        {
+            // This happens when a symbolic link points to a file that
+            // doesn't exist, in that case, just assume that the file
+            // is not executable, so it doesn't get included in the
+            // results.
+            return false;
+        }
         return (
             mode & (
                 UnixFileMode.UserExecute | UnixFileMode.GroupExecute | UnixFileMode.OtherExecute
