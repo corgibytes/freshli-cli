@@ -21,6 +21,7 @@ Feature: Agents
         And the directory named "~/bin"
         And an empty executable file named "~/not-bin/freshli-agent-test"
         And a symbolic link from "~/not-bin/freshli-agent-test" to "~/bin/freshli-agent-test"
+        And a symbolic link from "~/not-bin/invalid-file" to "~/bin/invalid-file"
         And the directory named "~/bin" is prepended to the PATH environment variable
         When I run `freshli agents detect`
         Then the output should contain:
