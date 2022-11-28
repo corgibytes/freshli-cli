@@ -43,7 +43,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     }
 
     [Fact]
-    public async ValueTask VerifyHandlerFiresEvent()
+    public async Task VerifyHandlerFiresEvent()
     {
         var repositoryLocation = new DirectoryInfo(_repositoryLocation);
         repositoryLocation.Create();
@@ -76,7 +76,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     }
 
     [Fact]
-    public async ValueTask VerifyHandlerFiresFailureEventIfDirectoryDoesNotExist()
+    public async Task VerifyHandlerFiresFailureEventIfDirectoryDoesNotExist()
     {
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
         await activity.Handle(_eventEngine.Object);
@@ -87,7 +87,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     }
 
     [Fact]
-    public async ValueTask VerifyHandlerFiresFailureEventIfDirectoryIsNotGitInitialized()
+    public async Task VerifyHandlerFiresFailureEventIfDirectoryIsNotGitInitialized()
     {
         var repositoryLocation = new DirectoryInfo(_repositoryLocation);
         repositoryLocation.Create();

@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class CacheWasNotPreparedEventTest
 {
     [Fact]
-    public async ValueTask CorrectlyDispatchesPrepareCacheActivity()
+    public async Task CorrectlyDispatchesPrepareCacheActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var cacheManager = new Mock<ICacheManager>();

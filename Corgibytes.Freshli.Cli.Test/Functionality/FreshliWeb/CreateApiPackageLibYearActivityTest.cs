@@ -13,7 +13,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class CreateApiPackageLibYearActivityTest
 {
     [Fact]
-    public async ValueTask HandleCorrectlyCallsApiAndFiresApiPackageLibYearCreatedEvent()
+    public async Task HandleCorrectlyCallsApiAndFiresApiPackageLibYearCreatedEvent()
     {
         var analysisId = Guid.NewGuid();
         const int historyStopPointId = 12;

@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 public class CheckoutHistoryActivityTest
 {
     [Fact]
-    public async ValueTask Handle()
+    public async Task Handle()
     {
         const string commitId = "abcdef1";
         const string gitExecutablePath = "/path/to/git";

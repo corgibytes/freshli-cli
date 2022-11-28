@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class PackageLibYearCalculatorTest
 {
     [Fact]
-    public async ValueTask VerifyItCanCalculateTheLibYear()
+    public async Task VerifyItCanCalculateTheLibYear()
     {
         const string packageName = "pkg:maven/org.apache.maven/apache-maven";
         var currentlyInstalledPackageUrl = new PackageURL(packageName + "@1.3.4");

@@ -34,7 +34,7 @@ public class DetectAgentsForDetectManifestsActivityTest
     }
 
     [Fact]
-    public async ValueTask VerifyItDispatchesAgentDetectedForDetectManifestEvent()
+    public async Task VerifyItDispatchesAgentDetectedForDetectManifestEvent()
     {
         var agentPaths = new List<string>
         {
@@ -65,7 +65,7 @@ public class DetectAgentsForDetectManifestsActivityTest
     }
 
     [Fact]
-    public async ValueTask VerifyItDispatchesNoAgentsDetectedFailureEvent()
+    public async Task VerifyItDispatchesNoAgentsDetectedFailureEvent()
     {
         var agentPaths = new List<string>();
 

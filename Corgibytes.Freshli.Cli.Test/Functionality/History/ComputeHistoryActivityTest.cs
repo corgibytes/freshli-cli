@@ -43,7 +43,7 @@ public class ComputeHistoryActivityTest
     private Configuration Configuration { get; }
 
     [Fact]
-    public async ValueTask FiresHistoryIntervalStopFoundEvents()
+    public async Task FiresHistoryIntervalStopFoundEvents()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval,
             RevisionHistoryMode.AllRevisions);
@@ -75,7 +75,7 @@ public class ComputeHistoryActivityTest
     }
 
     [Fact]
-    public async ValueTask FiresHistoryIntervalStopFoundEventsForComputeHistory()
+    public async Task FiresHistoryIntervalStopFoundEventsForComputeHistory()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
             RevisionHistoryMode.AllRevisions);
@@ -103,7 +103,7 @@ public class ComputeHistoryActivityTest
     }
 
     [Fact]
-    public async ValueTask FiresHistoryIntervalStopFoundEventsForLatestOnly()
+    public async Task FiresHistoryIntervalStopFoundEventsForLatestOnly()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
             RevisionHistoryMode.OnlyLatestRevision);
@@ -131,7 +131,7 @@ public class ComputeHistoryActivityTest
     }
 
     [Fact]
-    public async ValueTask FiresInvalidHistoryIntervalStopEvent()
+    public async Task FiresInvalidHistoryIntervalStopEvent()
     {
         // This could happen when we run the analysis on a codebase that barely has any commits.
         // If we want to analyse it, we have to be wary of the interval not being bigger than the age of the first commit.
