@@ -15,7 +15,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class ComputeLibYearForPackageActivityTest
 {
     [Fact]
-    public async ValueTask HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
+    public async Task HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
     {
         var analysisId = Guid.NewGuid();
         var asOfDateTime = new DateTimeOffset(2021, 1, 29, 12, 30, 45, 0, TimeSpan.Zero);

@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 public class GitRepositoryInLocalDirectoryVerifiedEventTest
 {
     [Fact]
-    public async ValueTask VerifyItFiresComputeHistoryActivity()
+    public async Task VerifyItFiresComputeHistoryActivity()
     {
         var analysisId = Guid.NewGuid();
         var localDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());

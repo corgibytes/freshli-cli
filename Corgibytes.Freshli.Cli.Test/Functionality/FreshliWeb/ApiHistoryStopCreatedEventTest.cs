@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class ApiHistoryStopCreatedEventTest
 {
     [Fact]
-    public async ValueTask HandleDispatchesCheckoutHistoryActivity()
+    public async Task HandleDispatchesCheckoutHistoryActivity()
     {
         var cachedAnalysisId = Guid.NewGuid();
         const int historyStopPointId = 29;
