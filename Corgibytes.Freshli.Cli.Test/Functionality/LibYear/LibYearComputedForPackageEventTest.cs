@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class LibYearComputedForPackageEventTest
 {
     [Fact]
-    public async ValueTask HandleCorrectlyDispatchesCreateApiPackageLibYear()
+    public async Task HandleCorrectlyDispatchesCreateApiPackageLibYear()
     {
         var analysisId = Guid.NewGuid();
         const int historyStopPointId = 12;

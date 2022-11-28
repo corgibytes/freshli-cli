@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class AnalysisStartedEventTest
 {
     [Fact]
-    public async ValueTask HandleDispatchesCreateAnalysisApiActivity()
+    public async Task HandleDispatchesCreateAnalysisApiActivity()
     {
         var eventClient = new Mock<IApplicationActivityEngine>();
 
