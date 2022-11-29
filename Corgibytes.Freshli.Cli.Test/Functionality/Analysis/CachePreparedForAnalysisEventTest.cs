@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class CachePreparedForAnalysisEventTest
 {
     [Fact]
-    public async ValueTask CorrectlyDispatchesRestartAnalysisActivity()
+    public async Task CorrectlyDispatchesRestartAnalysisActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var configuration = new Mock<IConfiguration>();

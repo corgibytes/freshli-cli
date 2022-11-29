@@ -13,7 +13,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.BillOfMaterials;
 public class GenerateBillOfMaterialsActivityTest
 {
     [Fact]
-    public async ValueTask Handle()
+    public async Task Handle()
     {
         // Arrange
         var asOfDateTime = DateTimeOffset.Now;
