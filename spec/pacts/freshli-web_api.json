@@ -1,0 +1,157 @@
+{
+  "consumer": {
+    "name": "Freshli"
+  },
+  "provider": {
+    "name": "Web API"
+  },
+  "interactions": [
+    {
+      "description": "a request to create a new analysis",
+      "providerState": "a valid database",
+      "request": {
+        "method": "post",
+        "path": "/api/v0/analysis-request",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "name": "Freshli CLI User",
+          "email": "info@freshli.io",
+          "url": "https://github.com/this-repository-does-not-exist"
+        },
+        "matchingRules": {
+          "$.body.url": {
+            "match": "type"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8"
+        },
+        "body": {
+          "id": "eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+          "name": "Freshli CLI User",
+          "email": "info@freshli.io",
+          "url": "https://github.com/this-repository-does-not-exist"
+        }
+      }
+    },
+    {
+      "description": "a request to create a history point",
+      "providerState": "an analysis request with id eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+      "request": {
+        "method": "post",
+        "path": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "date": "2022-12-23T12:34:56.0000000Z"
+        },
+        "matchingRules": {
+          "$.body.date": {
+            "match": "regex",
+            "regex": "^\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{7}([+-][0-2]\\d:[0-5]\\d|Z)$"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8/2022-12-23T12:34:56.0000000Z"
+        },
+        "body": {
+          "requestId": "eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+          "date": "2022-12-23T12:34:56.0000000Z"
+        }
+      }
+    },
+    {
+      "description": "a request to create a package lib year result",
+      "providerState": "an analysis request with id eaf76637-8dcb-45fa-83c8-c17e9c6f2db8 and a history point for 2022-12-23T12:34:56.0000000Z",
+      "request": {
+        "method": "post",
+        "path": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8/2022-12-23T12:34:56.0000000Z",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "packageUrl": "pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?repository_url=repo.spring.io%2Frelease",
+          "publicationDate": "2021-11-12T12:34:56.0000000Z",
+          "libYear": 1.6
+        },
+        "matchingRules": {
+          "$.path": {
+            "match": "regex",
+            "regex": "^\n          \\/api\\/v0\\/analysis-request\\/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8\\/\n          \\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{7}([+-][0-2]\\d:[0-5]\\d|Z)$\n        /"
+          },
+          "$.body.packageUrl": {
+            "match": "regex",
+            "regex": "(?=(?-mix:pkg):)\n        ([a-zA-Z][\\-+.a-zA-Z\\d]*):                           (?# 1: scheme)\n        (?:\n           ((?:[\\-_.!~*'()a-zA-Z\\d;?:@&=+$,]|%[a-fA-F\\d]{2})(?:[\\-_.!~*'()a-zA-Z\\d;\\/?:@&=+$,\\[\\]]|%[a-fA-F\\d]{2})*)                    (?# 2: opaque)\n        |\n           (?:(?:\n             \\/\\/(?:\n                 (?:(?:((?:[\\-_.!~*'()a-zA-Z\\d;:&=+$,]|%[a-fA-F\\d]{2})*)@)?        (?# 3: userinfo)\n                   (?:((?:(?:[a-zA-Z0-9\\-.]|%\\h\\h)+|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}|\\[(?:(?:[a-fA-F\\d]{1,4}:)*(?:[a-fA-F\\d]{1,4}|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})|(?:(?:[a-fA-F\\d]{1,4}:)*[a-fA-F\\d]{1,4})?::(?:(?:[a-fA-F\\d]{1,4}:)*(?:[a-fA-F\\d]{1,4}|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}))?)\\]))(?::(\\d*))?))? (?# 4: host, 5: port)\n               |\n                 ((?:[\\-_.!~*'()a-zA-Z\\d$,;:@&=+]|%[a-fA-F\\d]{2})+)                 (?# 6: registry)\n               )\n             |\n             (?!\\/\\/))                           (?# XXX: '\\/\\/' is the mark for hostport)\n             (\\/(?:[\\-_.!~*'()a-zA-Z\\d:@&=+$,]|%[a-fA-F\\d]{2})*(?:;(?:[\\-_.!~*'()a-zA-Z\\d:@&=+$,]|%[a-fA-F\\d]{2})*)*(?:\\/(?:[\\-_.!~*'()a-zA-Z\\d:@&=+$,]|%[a-fA-F\\d]{2})*(?:;(?:[\\-_.!~*'()a-zA-Z\\d:@&=+$,]|%[a-fA-F\\d]{2})*)*)*)?                    (?# 7: path)\n           )(?:\\?((?:[\\-_.!~*'()a-zA-Z\\d;\\/?:@&=+$,\\[\\]]|%[a-fA-F\\d]{2})*))?                 (?# 8: query)\n        )\n        (?:\\#((?:[\\-_.!~*'()a-zA-Z\\d;\\/?:@&=+$,\\[\\]]|%[a-fA-F\\d]{2})*))?                  (?# 9: fragment)\n      /"
+          },
+          "$.body.publicationDate": {
+            "match": "regex",
+            "regex": "^\\d{4}-[01]\\d-[0-3]\\dT[0-2]\\d:[0-5]\\d:[0-5]\\d\\.\\d{7}([+-][0-2]\\d:[0-5]\\d|Z)$"
+          },
+          "$.body.libYear": {
+            "match": "type"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json",
+          "Location": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8/2022-12-23T12:34:56.0000000Z/pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?repository_url=repo.spring.io%2Frelease"
+        },
+        "body": {
+          "packageUrl": "pkg:maven/org.apache.xmlgraphics/batik-anim@1.9.1?repository_url=repo.spring.io%2Frelease",
+          "publicationDate": "2021-11-12T12:34:56.0000000Z",
+          "libYear": 1.6
+        }
+      }
+    },
+    {
+      "description": "a request to update the status of an analysis",
+      "providerState": "an analysis request with id eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+      "request": {
+        "method": "put",
+        "path": "/api/v0/analysis-request/eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "state": "success"
+        },
+        "matchingRules": {
+          "$.body.state": {
+            "match": "type"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "id": "eaf76637-8dcb-45fa-83c8-c17e9c6f2db8",
+          "name": "Freshli CLI User",
+          "email": "info@freshli.io",
+          "url": "https://github.com/this-repository-does-not-exist",
+          "state": "success"
+        }
+      }
+    }
+  ],
+  "metadata": {
+    "pactSpecification": {
+      "version": "2.0.0"
+    }
+  }
+}
