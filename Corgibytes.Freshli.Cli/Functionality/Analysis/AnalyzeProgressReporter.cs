@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
 using ShellProgressBar;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -30,7 +29,10 @@ public class AnalyzeProgressReporter : IAnalyzeProgressReporter, IDisposable
         _gitOperationProgressBar = _mainProgressBar.SpawnIndeterminate(progressMessage);
     }
 
-    public void ReportGitOperationFinished(GitOperation operation) => throw new NotImplementedException();
+    public void ReportGitOperationFinished(GitOperation _)
+    {
+        _gitOperationProgressBar?.Finished();
+    }
 
     public IProgress<int> ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation operation, int count) => throw new NotImplementedException();
 
