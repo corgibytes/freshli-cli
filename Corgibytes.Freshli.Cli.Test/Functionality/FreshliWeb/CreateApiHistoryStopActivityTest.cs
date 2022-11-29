@@ -13,7 +13,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class CreateApiHistoryStopActivityTest
 {
     [Fact]
-    public async ValueTask Handle()
+    public async Task Handle()
     {
         var cachedAnalysisId = Guid.NewGuid();
         var apiAnalysisId = Guid.NewGuid();

@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Cache;
 public class DestroyCacheActivityTest
 {
     [Fact]
-    public async ValueTask VerifyItFiresCacheDestroyedEvent()
+    public async Task VerifyItFiresCacheDestroyedEvent()
     {
         var cacheManager = new Mock<ICacheManager>();
         var serviceProvider = new Mock<IServiceProvider>();
@@ -32,7 +32,7 @@ public class DestroyCacheActivityTest
     }
 
     [Fact]
-    public async ValueTask VerifyItFiresCacheDestroyFailedEvent()
+    public async Task VerifyItFiresCacheDestroyFailedEvent()
     {
         var cacheManager = new Mock<ICacheManager>();
         var serviceProvider = new Mock<IServiceProvider>();

@@ -28,7 +28,7 @@ public class CacheManagerTest : IDisposable
     }
 
     [Fact]
-    public async ValueTask SavePersistsACachedAnalysisAndGeneratesAnId()
+    public async Task SavePersistsACachedAnalysisAndGeneratesAnId()
     {
         var cacheManager = new CacheManager(_configuration.Object);
         await cacheManager.Prepare();
