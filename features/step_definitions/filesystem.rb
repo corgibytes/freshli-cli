@@ -7,6 +7,16 @@ Given('a blank file named {string} exists') do |filename|
   FileUtils.touch filename
 end
 
+Given('an empty executable file named {string}') do |filename|
+  filename = resolve_path filename
+  FileUtils.touch filename
+  FileUtils.chmod('a=x', filename)
+end
+
+Given('a symbolic link from {string} to {string}') do |source, target|
+  FileUtils.ln_sf(resolve_path(source), resolve_path(target))
+end
+
 Given('I create a directory named {string}') do |dirname|
   dirname = resolve_path dirname
   Dir.mkdir dirname

@@ -28,9 +28,16 @@ public class AgentReader : IAgentReader
     {
         var cachedPackages = _cacheDb.RetrieveCachedReleaseHistory(packageUrl);
 
+        var isUsingCache = false;
         await foreach (var cachedPackage in cachedPackages)
         {
+            isUsingCache = true;
             yield return cachedPackage.ToPackage();
+        }
+
+        if (isUsingCache)
+        {
+            yield break;
         }
 
         var packages = new List<Package>();
