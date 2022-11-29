@@ -53,7 +53,7 @@ public class AnalyzeRunnerTest
     }
 
     [Fact]
-    public async ValueTask RunIndicatesThatAnalysisIsComplete()
+    public async Task RunIndicatesThatAnalysisIsComplete()
     {
         var apiAnalysisId = Guid.NewGuid();
 
@@ -69,7 +69,7 @@ public class AnalyzeRunnerTest
     }
 
     [Fact]
-    public async ValueTask RunIndicatesThatAnalysisFailed()
+    public async Task RunIndicatesThatAnalysisFailed()
     {
         var apiAnalysisId = Guid.NewGuid();
 
@@ -86,7 +86,7 @@ public class AnalyzeRunnerTest
     }
 
     [Fact]
-    public async ValueTask RunIndicatesThatCouldNotCallApi()
+    public async Task RunIndicatesThatCouldNotCallApi()
     {
         var exitCode = await _analyzeRunner.Run(_options, _console.Object);
 

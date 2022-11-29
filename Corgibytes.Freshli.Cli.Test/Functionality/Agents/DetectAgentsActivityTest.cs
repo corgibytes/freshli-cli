@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Agents;
 public class DetectAgentsActivityTest
 {
     [Fact]
-    public async ValueTask VerifyItFiresAgentsDetectedEvent()
+    public async Task VerifyItFiresAgentsDetectedEvent()
     {
         var eventClient = new Mock<IApplicationEventEngine>();
         var agentsDetector = new Mock<IAgentsDetector>();

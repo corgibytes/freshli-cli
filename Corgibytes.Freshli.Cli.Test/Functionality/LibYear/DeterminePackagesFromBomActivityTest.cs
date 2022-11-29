@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class DeterminePackagesFromBomActivityTest
 {
     [Fact]
-    public async ValueTask HandleCorrectlyFiresLibYearComputatitonForBomStartedEvent()
+    public async Task HandleCorrectlyFiresLibYearComputatitonForBomStartedEvent()
     {
         var analysisId = Guid.NewGuid();
         const string pathToBom = "/path/to/bom";
