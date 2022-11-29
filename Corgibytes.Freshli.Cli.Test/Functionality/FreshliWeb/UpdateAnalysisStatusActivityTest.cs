@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class UpdateAnalysisStatusActivityTest
 {
     [Fact]
-    public async ValueTask HandleSendsSuccessStatusToApi()
+    public async Task HandleSendsSuccessStatusToApi()
     {
         var apiAnalysisId = Guid.NewGuid();
         const string status = "success";

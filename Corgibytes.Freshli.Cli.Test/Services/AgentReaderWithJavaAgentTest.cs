@@ -15,7 +15,7 @@ public class AgentReaderWithJavaAgentTest
 {
 
     [Fact]
-    public async ValueTask DetectManifestsUsingProtobuf()
+    public async Task DetectManifestsUsingProtobuf()
     {
         SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
 
@@ -34,7 +34,7 @@ public class AgentReaderWithJavaAgentTest
     }
 
     [Fact]
-    public async ValueTask GenerateBillOfMaterialsUsingProtobuf()
+    public async Task GenerateBillOfMaterialsUsingProtobuf()
     {
         SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
 
@@ -49,7 +49,7 @@ public class AgentReaderWithJavaAgentTest
     }
 
     [Fact]
-    public async ValueTask AgentReaderReturnsEmptyListWhenNoManifestsFound()
+    public async Task AgentReaderReturnsEmptyListWhenNoManifestsFound()
     {
         var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);
         var reader = new AgentReader(new CacheManager(new Configuration(new Environment())), new CommandInvoker(),

@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class AgentDetectedForDetectManifestEventTest
 {
     [Fact]
-    public async ValueTask Handle()
+    public async Task Handle()
     {
         const string agentExecutablePath = "/path/to/agent";
         var analysisId = Guid.NewGuid();
