@@ -33,11 +33,18 @@ public class GitRepositoryClonedEventTest
 
         var engine = new Mock<IApplicationActivityEngine>();
 
+        var serviceProvider = new Mock<IServiceProvider>();
+        var progressReporter = new Mock<IAnalyzeProgressReporter>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(IAnalyzeProgressReporter)))
+            .Returns(progressReporter.Object);
+        engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+
         await clonedEvent.Handle(engine.Object);
 
         // Verify that it dispatches ComputeHistoryActivity
         engine.Verify(mock => mock.Dispatch(It.Is<ComputeHistoryActivity>(value =>
             value.AnalysisId == analysisId &&
             value.HistoryStopData == historyStopData)));
+        progressReporter.Verify(mock => mock.ReportGitOperationFinished(GitOperation.CreateNewClone));
     }
 }
