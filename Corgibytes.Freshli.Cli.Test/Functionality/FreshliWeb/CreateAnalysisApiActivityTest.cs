@@ -19,7 +19,7 @@ public class CreateAnalysisApiActivityTest
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
 
     [Fact]
-    public async ValueTask HandleSendsRequest()
+    public async Task HandleSendsRequest()
     {
         const string url = "anything";
         const string branch = "anythingelse";
