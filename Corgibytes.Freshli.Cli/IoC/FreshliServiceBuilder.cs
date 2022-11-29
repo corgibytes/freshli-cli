@@ -5,6 +5,7 @@ using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -56,6 +57,7 @@ public class FreshliServiceBuilder
 
     private void RegisterAnalyzeCommand()
     {
+        Services.AddScoped<IAnalyzeProgressReporter, AnalyzeProgressReporter>();
         Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
         Services.AddScoped<IResultsApi, ResultsApi>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
