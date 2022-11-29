@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 public class PackageFoundEventTest
 {
     [Fact]
-    public async ValueTask HandleCorrectlyDispatchesComputeLibYearForPackageActivity()
+    public async Task HandleCorrectlyDispatchesComputeLibYearForPackageActivity()
     {
         var analysisId = Guid.NewGuid();
         const string agentExecutablePath = "/path/to/agent";

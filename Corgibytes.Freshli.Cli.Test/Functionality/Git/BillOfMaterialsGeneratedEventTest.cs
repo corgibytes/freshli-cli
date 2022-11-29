@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 public class BillOfMaterialsGeneratedEventTest
 {
     [Fact]
-    public async ValueTask CorrectlyDispatchesComputeLibYearActivity()
+    public async Task CorrectlyDispatchesComputeLibYearActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         const string pathToBom = "/path/to/bom";

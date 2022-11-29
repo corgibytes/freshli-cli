@@ -4,7 +4,7 @@ Feature: Agents
     One line of output is created for each language agent that is detected.
     Scenario: Displays all language agents
         Given the directory named "~/bin"
-        And an empty file named "~/bin/freshli-agent-test"
+        And an empty executable file named "~/bin/freshli-agent-test"
         And the directory named "~/bin" is prepended to the PATH environment variable
         When I run `freshli agents detect`
         Then the output should contain:
@@ -15,3 +15,21 @@ Feature: Agents
         """
         /tmp/aruba/bin/freshli-agent-test
         """
+
+    Scenario: Correctly handles symbolic links in path
+        Given the directory named "~/not-bin"
+        And the directory named "~/bin"
+        And an empty executable file named "~/not-bin/freshli-agent-test"
+        And a symbolic link from "~/not-bin/freshli-agent-test" to "~/bin/freshli-agent-test"
+        And a symbolic link from "~/not-bin/invalid-file" to "~/bin/invalid-file"
+        And the directory named "~/bin" is prepended to the PATH environment variable
+        When I run `freshli agents detect`
+        Then the output should contain:
+        """
+        freshli-agent-test
+        """
+        And the output should contain:
+        """
+        /tmp/aruba/bin/freshli-agent-test
+        """
+
