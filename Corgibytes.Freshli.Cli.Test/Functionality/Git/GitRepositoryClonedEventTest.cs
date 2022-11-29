@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 public class GitRepositoryClonedEventTest
 {
     [Fact]
-    public async ValueTask CorrectlyDispatchesComputeHistoryActivity()
+    public async Task CorrectlyDispatchesComputeHistoryActivity()
     {
         const string gitPath = "test";
         const string cacheDir = "example";

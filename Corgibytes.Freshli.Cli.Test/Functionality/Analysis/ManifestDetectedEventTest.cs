@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class ManifestDetectedEventTest
 {
     [Fact]
-    public async ValueTask CorrectlyDispatchesGenerateBillOfMaterialsActivity()
+    public async Task CorrectlyDispatchesGenerateBillOfMaterialsActivity()
     {
         const string manifestPath = "/path/to/manifest";
         var engine = new Mock<IApplicationActivityEngine>();

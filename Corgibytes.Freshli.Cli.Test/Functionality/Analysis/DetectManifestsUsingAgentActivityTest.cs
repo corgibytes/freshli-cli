@@ -16,7 +16,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class DetectManifestsUsingAgentActivityTest
 {
     [Fact]
-    public async ValueTask Handle()
+    public async Task Handle()
     {
         const string localPath = "/path/to/repository";
         var agentReader = new Mock<IAgentReader>();
