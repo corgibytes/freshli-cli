@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class LogAnalysisFailureActivityTest
 {
     [Fact]
-    public async ValueTask VerifyItFiresAnalysisFailureLoggedEvent()
+    public async Task VerifyItFiresAnalysisFailureLoggedEvent()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var eventClient = new Mock<IApplicationEventEngine>();

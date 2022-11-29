@@ -53,7 +53,7 @@ public class AgentReaderTest
     }
 
     [Fact]
-    public async ValueTask RetrieveReleaseHistoryWritesToCache()
+    public async Task RetrieveReleaseHistoryWritesToCache()
     {
         const string agentExecutable = "/path/to/agent";
 
@@ -84,7 +84,7 @@ public class AgentReaderTest
     }
 
     [Fact]
-    public async ValueTask RetrieveReleaseHistoryReadsFromCache()
+    public async Task RetrieveReleaseHistoryReadsFromCache()
     {
         var initialCachedPackages = new List<CachedPackage>
         {

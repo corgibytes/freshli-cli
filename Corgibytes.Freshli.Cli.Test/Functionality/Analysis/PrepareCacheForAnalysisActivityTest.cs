@@ -42,7 +42,7 @@ public class PrepareCacheForAnalysisActivityTest
     }
 
     [Fact]
-    public async ValueTask VerifyItFiresCachePreparedEventWhenPrepareSucceeds()
+    public async Task VerifyItFiresCachePreparedEventWhenPrepareSucceeds()
     {
         _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(true);
 
@@ -58,7 +58,7 @@ public class PrepareCacheForAnalysisActivityTest
     }
 
     [Fact]
-    public async ValueTask VerifyItFiresCachePreparedEventWhenPrepareFails()
+    public async Task VerifyItFiresCachePreparedEventWhenPrepareFails()
     {
         _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(false);
 
@@ -68,7 +68,7 @@ public class PrepareCacheForAnalysisActivityTest
     }
 
     [Fact]
-    public async ValueTask VerifyItFiresCachePreparedEventWhenPrepareThrowsAnException()
+    public async Task VerifyItFiresCachePreparedEventWhenPrepareThrowsAnException()
     {
         _cacheManager.Setup(mock => mock.Prepare()).Throws(new Exception("failure message"));
 

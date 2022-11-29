@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class ErrorEventTest
 {
     [Fact]
-    public async ValueTask CorrectlyDispatchesLogAnalysisFailureActivity()
+    public async Task CorrectlyDispatchesLogAnalysisFailureActivity()
     {
         var errorEvent = new InvalidHistoryIntervalEvent { ErrorMessage = "Uh-oh!" };
         var engine = new Mock<IApplicationActivityEngine>();
