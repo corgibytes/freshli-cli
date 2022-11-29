@@ -30,6 +30,8 @@ public class CloneGitRepositoryActivity : IApplicationActivity
                 return;
             }
 
+            await eventClient.Fire(new GitRepositoryCloneStartedEvent { AnalysisId = CachedAnalysisId });
+
             var gitRepositoryService = eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>();
             var gitRepository = await gitRepositoryService.CloneOrPull(
                 cachedAnalysis.RepositoryUrl, cachedAnalysis.RepositoryBranch);

@@ -65,6 +65,8 @@ public class CloneGitRepositoryActivityTest
         await activity.Handle(_eventEngine.Object);
 
         _eventEngine.Verify(mock =>
+            mock.Fire(It.Is<GitRepositoryCloneStartedEvent>(value => value.AnalysisId == _analysisId)));
+        _eventEngine.Verify(mock =>
             mock.Fire(It.Is<GitRepositoryClonedEvent>(value => value.AnalysisId == _analysisId)));
     }
 
@@ -79,6 +81,8 @@ public class CloneGitRepositoryActivityTest
         var activity = new CloneGitRepositoryActivity(_analysisId);
         await activity.Handle(_eventEngine.Object);
 
+        _eventEngine.Verify(mock =>
+            mock.Fire(It.Is<GitRepositoryCloneStartedEvent>(value => value.AnalysisId == _analysisId)));
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<CloneGitRepositoryFailedEvent>(value => value.ErrorMessage == "Git clone failed")));
     }
