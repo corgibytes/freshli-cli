@@ -4,11 +4,15 @@ namespace Corgibytes.Freshli.Cli.Functionality;
 
 public interface IEnvironment
 {
-    public IList<string> DirectoriesInSearchPath { get; }
+    IList<string> DirectoriesInSearchPath { get; }
 
     public string HomeDirectory { get; }
+    bool IsWindows { get; }
+    IList<string> WindowsExecutableExtensions { get; }
+    string PathSeparator { get; }
 
-    public IList<string?> GetListOfFiles(string directory);
+    IList<string> GetListOfFiles(string directory);
 
-    public string? GetVariable(string variableName);
+    string? GetVariable(string variableName);
+    bool HasExecutableBit(string fileName);
 }
