@@ -69,6 +69,7 @@ flowchart TD;
     CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
     UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
+    CloneGitRepositoryActivity --> GitRepositoryCloneStartedEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
     CloneGitRepositoryActivity --> CloneGitRepositoryFailedEvent
     CloneGitRepositoryFailedEvent -.-> FailureEvent
@@ -78,6 +79,7 @@ flowchart TD;
     DirectoryIsNotGitInitializedFailureEvent -.-> FailureEvent
     DirectoryIsNotGitInitializedFailureEvent
     GitRepositoryClonedEvent --> ComputeHistoryActivity
+    GitRepositoryCloneStartedEvent
     GitRepositoryInLocalDirectoryVerifiedEvent --> ComputeHistoryActivity
     VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryDoesNotExistFailureEvent
     VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryIsNotGitInitializedFailureEvent
