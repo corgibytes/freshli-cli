@@ -213,7 +213,7 @@ public class AnalyzeProgressReporter : IAnalyzeProgressReporter, IDisposable
 
     public void Dispose()
     {
-        _gitOperationReporter.Dispose();
+        _gitOperationReporter?.Dispose();
         _historyStopPointDetectionReporter?.Dispose();
         _historyStopPointArchivingReporter?.Dispose();
         _historyStopPointProcessingReporter?.Dispose();
