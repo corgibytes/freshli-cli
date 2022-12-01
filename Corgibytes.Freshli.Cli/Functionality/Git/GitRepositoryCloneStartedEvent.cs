@@ -10,9 +10,11 @@ public class GitRepositoryCloneStartedEvent : IApplicationEvent
 {
     public required Guid AnalysisId { get; init; }
 
-    public async ValueTask Handle(IApplicationActivityEngine eventClient)
+    public ValueTask Handle(IApplicationActivityEngine eventClient)
     {
         var progressReporter = eventClient.ServiceProvider.GetRequiredService<IAnalyzeProgressReporter>();
         progressReporter.ReportGitOperationStarted(GitOperation.CreateNewClone);
+
+        return ValueTask.CompletedTask;
     }
 }
