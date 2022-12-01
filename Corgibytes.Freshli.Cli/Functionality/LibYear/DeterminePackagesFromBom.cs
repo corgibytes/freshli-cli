@@ -1,11 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
-public class DeterminePackagesFromBomActivity : IApplicationActivity
+public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
     public DeterminePackagesFromBomActivity(Guid analysisId, int historyStopPointId, string pathToBom,
         string agentExecutablePath)

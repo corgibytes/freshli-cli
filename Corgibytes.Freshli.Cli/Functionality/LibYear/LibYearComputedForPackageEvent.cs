@@ -2,10 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
+using Corgibytes.Freshli.Cli.Functionality.History;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
-public class LibYearComputedForPackageEvent : IApplicationEvent
+public class LibYearComputedForPackageEvent : IApplicationEvent, IHistoryStopPointProcessingTask
 {
     public Guid AnalysisId { get; init; }
     public int HistoryStopPointId { get; init; }

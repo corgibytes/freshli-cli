@@ -1,11 +1,12 @@
 using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
-public class BillOfMaterialsGeneratedEvent : IApplicationEvent
+public class BillOfMaterialsGeneratedEvent : IApplicationEvent, IHistoryStopPointProcessingTask
 {
     public BillOfMaterialsGeneratedEvent(Guid analysisId, int historyStopPointId,
         string pathToBillOfMaterials, string agentExecutablePath)
