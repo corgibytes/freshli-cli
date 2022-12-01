@@ -15,7 +15,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_historyPointSemaphores = new();
     public readonly string AgentExecutablePath;
     public readonly Guid AnalysisId;
-    public int HistoryStopPointId { get; };
+    public int HistoryStopPointId { get; }
     public readonly string ManifestPath;
 
     public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
