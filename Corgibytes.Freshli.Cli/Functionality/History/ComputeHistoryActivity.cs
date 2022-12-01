@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -23,6 +24,9 @@ public class ComputeHistoryActivity : IApplicationActivity
 
     public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
+        var progressReporter = eventClient.ServiceProvider.GetRequiredService<IAnalyzeProgressReporter>();
+        progressReporter.ReportHistoryStopPointDetectionStarted();
+
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
@@ -58,8 +62,17 @@ public class ComputeHistoryActivity : IApplicationActivity
             historyIntervalStops = computeHistoryService.ComputeCommitHistory(HistoryStopData);
         }
 
+        var historyIntervalStopsList = historyIntervalStops.ToList();
+
+        progressReporter.ReportHistoryStopPointDetectionFinished();
+
+        progressReporter.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Archive,
+            historyIntervalStopsList.Count);
+        progressReporter.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Process,
+            historyIntervalStopsList.Count);
+
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
-        foreach (var historyIntervalStop in historyIntervalStops)
+        foreach (var historyIntervalStop in historyIntervalStopsList)
         {
             var historyStop = new HistoryStopData(configuration, HistoryStopData.RepositoryId,
                 historyIntervalStop.GitCommitIdentifier, historyIntervalStop.AsOfDateTime);
