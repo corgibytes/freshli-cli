@@ -7,6 +7,9 @@ public interface IAnalyzeProgressReporter
     void ReportGitOperationStarted(GitOperation operation);
     void ReportGitOperationFinished(GitOperation operation);
 
-    IProgress<int> ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation operation, int count);
-    void ReportHistoryStopPointOperationFinished(HistoryStopPointOperation operation);
+    void ReportHistoryStopPointDetectionStarted();
+    void ReportHistoryStopPointDetectionFinished();
+
+    void ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation operation, int count);
+    void ReportSingleHistoryStopPointOperationFinished(HistoryStopPointOperation operation);
 }
