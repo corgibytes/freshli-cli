@@ -2,13 +2,14 @@ using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
 using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
-public class ComputeLibYearForPackageActivity : IApplicationActivity
+public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
     public Guid AnalysisId { get; init; }
     public int HistoryStopPointId { get; init; }

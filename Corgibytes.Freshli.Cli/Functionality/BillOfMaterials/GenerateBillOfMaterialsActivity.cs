@@ -4,17 +4,18 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
-public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchronized
+public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchronized, IHistoryStopPointProcessingTask
 {
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_historyPointSemaphores = new();
     public readonly string AgentExecutablePath;
     public readonly Guid AnalysisId;
-    public readonly int HistoryStopPointId;
+    public int HistoryStopPointId { get; };
     public readonly string ManifestPath;
 
     public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
