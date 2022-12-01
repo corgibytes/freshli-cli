@@ -2,10 +2,11 @@ using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class ManifestDetectedEvent : IApplicationEvent
+public class ManifestDetectedEvent : IApplicationEvent, IHistoryStopPointProcessingTask
 {
     public ManifestDetectedEvent(Guid analysisId, int historyStopPointId, string agentExecutablePath,
         string manifestPath)
