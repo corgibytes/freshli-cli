@@ -8,6 +8,7 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Test.Functionality.Git;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Moq;
 using Xunit;
 
@@ -21,6 +22,7 @@ public class ComputeHistoryActivityTest
     private readonly Mock<IComputeHistory> _computeHistory = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly Mock<IAnalyzeProgressReporter> _progressReporter = new();
 
     public ComputeHistoryActivityTest()
     {
@@ -31,6 +33,8 @@ public class ComputeHistoryActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(Configuration);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IAnalyzeProgressReporter)))
+            .Returns(_progressReporter.Object);
 
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
 
@@ -71,6 +75,7 @@ public class ComputeHistoryActivityTest
         await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         // Assert
+        VerifyProgressReporting(historyIntervalStops.Count);
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
@@ -99,6 +104,7 @@ public class ComputeHistoryActivityTest
         await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         // Assert
+        VerifyProgressReporting(historyIntervalStops.Count);
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
@@ -127,6 +133,7 @@ public class ComputeHistoryActivityTest
         await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
 
         // Assert
+        VerifyProgressReporting(historyIntervalStops.Count);
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
@@ -220,4 +227,13 @@ public class ComputeHistoryActivityTest
             stopPointId++;
         }
     }
+
+    private void VerifyProgressReporting(int count)
+    {
+        _progressReporter.Verify(mock => mock.ReportHistoryStopPointDetectionStarted());
+        _progressReporter.Verify(mock => mock.ReportHistoryStopPointDetectionFinished());
+        _progressReporter.Verify(mock => mock.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Archive, count));
+        _progressReporter.Verify(mock => mock.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Process, count));
+    }
+
 }
