@@ -7,15 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
 {
-    private readonly Guid _analysisId;
-    private readonly int _historyStopPointId;
+    public Guid AnalysisId { get; }
+    public int HistoryStopPointId { get; }
 
     public DetectAgentsForDetectManifestsActivity(Guid analysisId, int historyStopPointId)
     {
-        _analysisId = analysisId;
-        _historyStopPointId = historyStopPointId;
+        AnalysisId = analysisId;
+        HistoryStopPointId = historyStopPointId;
     }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient)
@@ -31,7 +30,7 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
 
         foreach (var agentPath in agents)
         {
-            await eventClient.Fire(new AgentDetectedForDetectManifestEvent(_analysisId, _historyStopPointId, agentPath));
+            await eventClient.Fire(new AgentDetectedForDetectManifestEvent(AnalysisId, HistoryStopPointId, agentPath));
         }
     }
 }
