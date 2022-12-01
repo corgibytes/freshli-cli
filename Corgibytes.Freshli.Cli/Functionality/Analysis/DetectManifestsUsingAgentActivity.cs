@@ -1,12 +1,13 @@
 using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class DetectManifestsUsingAgentActivity : IApplicationActivity
+public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
     public DetectManifestsUsingAgentActivity(Guid analysisId, int historyStopPointId,
         string agentExecutablePath)
