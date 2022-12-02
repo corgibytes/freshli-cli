@@ -16,6 +16,11 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
     public PackageURL Package { get; init; } = null!;
     public string AgentExecutablePath { get; init; } = null!;
 
+    public int Priority
+    {
+        get { return 100; }
+    }
+
     public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();

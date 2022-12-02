@@ -3,7 +3,7 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class CachePreparedForAnalysisEvent : IApplicationEvent
+public class CachePreparedForAnalysisEvent : ApplicationEventBase
 {
     public string RepositoryUrl { get; init; } = null!;
     public string? RepositoryBranch { get; init; }
@@ -11,7 +11,7 @@ public class CachePreparedForAnalysisEvent : IApplicationEvent
     public CommitHistory UseCommitHistory { get; init; }
     public RevisionHistoryMode RevisionHistoryMode { get; init; }
 
-    public async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient) =>
         await eventClient.Dispatch(new RestartAnalysisActivity
         {
             RepositoryUrl = RepositoryUrl,

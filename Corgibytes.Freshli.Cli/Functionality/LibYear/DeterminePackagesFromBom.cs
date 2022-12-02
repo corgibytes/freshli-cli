@@ -17,6 +17,11 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
         AgentExecutablePath = agentExecutablePath;
     }
 
+    public int Priority
+    {
+        get { return 100; }
+    }
+
     public Guid AnalysisId { get; }
     public int HistoryStopPointId { get; }
     public string PathToBom { get; }

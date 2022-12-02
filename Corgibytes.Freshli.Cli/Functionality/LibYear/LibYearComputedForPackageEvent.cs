@@ -6,14 +6,14 @@ using Corgibytes.Freshli.Cli.Functionality.History;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
-public class LibYearComputedForPackageEvent : IApplicationEvent, IHistoryStopPointProcessingTask
+public class LibYearComputedForPackageEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
     public Guid AnalysisId { get; init; }
     public int HistoryStopPointId { get; init; }
     public int PackageLibYearId { get; init; }
     public string AgentExecutablePath { get; init; } = null!;
 
-    public async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient) =>
         await eventClient.Dispatch(new CreateApiPackageLibYearActivity
         {
             AnalysisId = AnalysisId,
