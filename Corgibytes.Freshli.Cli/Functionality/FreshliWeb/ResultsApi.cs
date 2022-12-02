@@ -5,12 +5,14 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Polly;
 
 namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class ResultsApi : IResultsApi
 {
     private readonly IConfiguration _configuration;
+    private const int MaxRetries = 10;
 
     public ResultsApi(IConfiguration configuration) => _configuration = configuration;
 
@@ -19,9 +21,7 @@ public class ResultsApi : IResultsApi
 
     public async ValueTask<Guid> CreateAnalysis(string url)
     {
-        var client = new HttpClient();
-
-        var response = await client.PostAsync(
+        var response = await PostAsync(
             _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request",
             JsonContent.Create(
                 new
@@ -45,9 +45,7 @@ public class ResultsApi : IResultsApi
 
     public async ValueTask UpdateAnalysis(Guid apiAnalysisId, string status)
     {
-        var client = new HttpClient();
-
-        var response = await client.PutAsync(
+        var response = await PutAsync(
             _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId,
             JsonContent.Create(
                 new { state = status },
@@ -70,9 +68,7 @@ public class ResultsApi : IResultsApi
         var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
         var asOfDateTime = historyStopPoint!.AsOfDateTime;
 
-        var client = new HttpClient();
-
-        var response = await client.PostAsync(
+        var response = await PostAsync(
             _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId,
             JsonContent.Create(
                 new { date = asOfDateTime.ToString("o") },
@@ -98,9 +94,7 @@ public class ResultsApi : IResultsApi
         var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
         var asOfDateTime = historyStopPoint!.AsOfDateTime;
 
-        var client = new HttpClient();
-
-        var response = await client.PostAsync(
+        var response = await PostAsync(
             $"{_configuration.FreshliWebApiBaseUrl}/api/v0/analysis-request/{apiAnalysisId}/{asOfDateTime:o}",
             JsonContent.Create(
                 new
@@ -118,5 +112,33 @@ public class ResultsApi : IResultsApi
             throw new InvalidOperationException(
                 $"Failed to create package lib year for analysis '{apiAnalysisId}' and '{asOfDateTime:o}' with package URL '{packageLibYear.CurrentVersion!}' publication date '{packageLibYear.ReleaseDateCurrentVersion:o}' and LibYear '{packageLibYear.LibYear}'.");
         }
+    }
+
+    private static async Task<HttpResponseMessage> PostAsync(string? requestUri, HttpContent? content)
+    {
+        var client = new HttpClient();
+
+        return await RetryableRequest(async () =>
+            await client.PostAsync(requestUri, content));
+    }
+
+    private static async Task<HttpResponseMessage> PutAsync(string? requestUri, HttpContent? content)
+    {
+        var client = new HttpClient();
+
+        return await RetryableRequest(async () =>
+            await client.PutAsync(requestUri, content));
+    }
+
+    private static async Task<HttpResponseMessage> RetryableRequest(Func<Task<HttpResponseMessage>> action)
+    {
+        return await Policy
+            .Handle<Exception>()
+            .OrResult<HttpResponseMessage>(value => !value.IsSuccessStatusCode)
+            .WaitAndRetryAsync(
+                MaxRetries,
+                // delay progression: 200ms, 400ms, 800ms, 1.6s, 3.2s, 6.4s, 12.8s, 25.6s, 51.2s, 1.7m
+                retryAttempt => TimeSpan.FromMilliseconds(Math.Pow(2, retryAttempt) * 100))
+            .ExecuteAsync(async () => await action());
     }
 }
