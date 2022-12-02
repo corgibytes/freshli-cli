@@ -6,11 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
-public class GitRepositoryCloneStartedEvent : IApplicationEvent
+public class GitRepositoryCloneStartedEvent : ApplicationEventBase
 {
     public required Guid AnalysisId { get; init; }
 
-    public ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient)
     {
         var progressReporter = eventClient.ServiceProvider.GetRequiredService<IAnalyzeProgressReporter>();
         progressReporter.ReportGitOperationStarted(GitOperation.CreateNewClone);

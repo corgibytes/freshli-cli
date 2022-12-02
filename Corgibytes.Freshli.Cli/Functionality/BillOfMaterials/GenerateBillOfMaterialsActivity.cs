@@ -18,6 +18,11 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
     public int HistoryStopPointId { get; }
     public readonly string ManifestPath;
 
+    public int Priority
+    {
+        get { return 100; }
+    }
+
     public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
         int historyStopPointId, string manifestPath)
     {

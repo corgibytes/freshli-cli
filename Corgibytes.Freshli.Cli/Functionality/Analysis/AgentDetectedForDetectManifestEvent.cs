@@ -5,7 +5,7 @@ using Corgibytes.Freshli.Cli.Functionality.History;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class AgentDetectedForDetectManifestEvent : IApplicationEvent, IHistoryStopPointProcessingTask
+public class AgentDetectedForDetectManifestEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
     public AgentDetectedForDetectManifestEvent(Guid analysisId, int historyStopPointId,
         string agentExecutablePath)
@@ -19,7 +19,7 @@ public class AgentDetectedForDetectManifestEvent : IApplicationEvent, IHistorySt
     public int HistoryStopPointId { get; }
     public string AgentExecutablePath { get; }
 
-    public async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient) =>
         await eventClient.Dispatch(
             new DetectManifestsUsingAgentActivity(AnalysisId, HistoryStopPointId, AgentExecutablePath));
 }

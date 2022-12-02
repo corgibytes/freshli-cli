@@ -6,7 +6,7 @@ using Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
-public class BillOfMaterialsGeneratedEvent : IApplicationEvent, IHistoryStopPointProcessingTask
+public class BillOfMaterialsGeneratedEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
     public BillOfMaterialsGeneratedEvent(Guid analysisId, int historyStopPointId,
         string pathToBillOfMaterials, string agentExecutablePath)
@@ -22,7 +22,7 @@ public class BillOfMaterialsGeneratedEvent : IApplicationEvent, IHistoryStopPoin
     public string PathToBillOfMaterials { get; }
     public string AgentExecutablePath { get; }
 
-    public async ValueTask Handle(IApplicationActivityEngine eventClient) => await eventClient.Dispatch(
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient) => await eventClient.Dispatch(
         new DeterminePackagesFromBomActivity(
             AnalysisId,
             HistoryStopPointId,

@@ -13,6 +13,11 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity, IHistorySto
     public int PackageLibYearId { get; init; }
     public string AgentExecutablePath { get; init; } = null!;
 
+    public int Priority
+    {
+        get { return 100; }
+    }
+
     public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();

@@ -13,6 +13,11 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHis
     public Guid AnalysisId { get; }
     public int HistoryStopPointId { get; }
 
+    public int Priority
+    {
+        get { return 100; }
+    }
+
     public DetectAgentsForDetectManifestsActivity(Guid analysisId, int historyStopPointId)
     {
         AnalysisId = analysisId;

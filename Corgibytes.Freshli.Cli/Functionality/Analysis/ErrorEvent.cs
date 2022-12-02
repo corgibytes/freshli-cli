@@ -3,11 +3,11 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public abstract class ErrorEvent : IApplicationEvent
+public abstract class ErrorEvent : ApplicationEventBase
 {
     public string ErrorMessage { get; init; } = null!;
 
-    public virtual ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient)
     {
         return ValueTask.CompletedTask;
     }
