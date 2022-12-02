@@ -12,29 +12,36 @@ Here are some things to keep in mind when viewing the graph:
 
 ```mermaid
 flowchart TD;
+    AgentsDetectedEvent -.-> ApplicationEventBase
     AgentsDetectedEvent
     DetectAgentsActivity --> AgentsDetectedEvent
     NoAgentsDetectedFailureEvent -.-> FailureEvent
     NoAgentsDetectedFailureEvent
+    AgentDetectedForDetectManifestEvent -.-> ApplicationEventBase
     AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
+    AnalysisFailureLoggedEvent -.-> ApplicationEventBase
     AnalysisFailureLoggedEvent
     AnalysisIdNotFoundEvent -.-> FailureEvent
     AnalysisIdNotFoundEvent
+    AnalysisStartedEvent -.-> ApplicationEventBase
     AnalysisStartedEvent --> CreateAnalysisApiActivity
     CacheDoesNotExistEvent -.-> ErrorEvent
     CacheDoesNotExistEvent --> PrepareCacheForAnalysisActivity
+    CachePreparedForAnalysisEvent -.-> ApplicationEventBase
     CachePreparedForAnalysisEvent --> RestartAnalysisActivity
     CachePrepareFailedForAnalysisEvent -.-> FailureEvent
     CachePrepareFailedForAnalysisEvent
     DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
+    ErrorEvent -.-> ApplicationEventBase
     ErrorEvent
     FailureEvent -.-> ErrorEvent
     FailureEvent --> LogAnalysisFailureActivity
     InvalidHistoryIntervalEvent -.-> FailureEvent
     InvalidHistoryIntervalEvent
     LogAnalysisFailureActivity --> AnalysisFailureLoggedEvent
+    ManifestDetectedEvent -.-> ApplicationEventBase
     ManifestDetectedEvent --> GenerateBillOfMaterialsActivity
     PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
     PrepareCacheForAnalysisActivity --> CachePrepareFailedForAnalysisEvent
@@ -48,10 +55,14 @@ flowchart TD;
     UnableToRestartAnalysisEvent
     UnhandledExceptionEvent -.-> FailureEvent
     UnhandledExceptionEvent
+    BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
     BillOfMaterialsGeneratedEvent --> DeterminePackagesFromBomActivity
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
+    CacheDestroyedEvent -.-> ApplicationEventBase
     CacheDestroyedEvent
+    CacheDestroyFailedEvent -.-> ApplicationEventBase
     CacheDestroyFailedEvent
+    CachePreparedEvent -.-> ApplicationEventBase
     CachePreparedEvent
     CachePrepareFailedEvent -.-> FailureEvent
     CachePrepareFailedEvent
@@ -59,11 +70,16 @@ flowchart TD;
     DestroyCacheActivity --> CacheDestroyFailedEvent
     PrepareCacheActivity --> CachePreparedEvent
     PrepareCacheActivity --> CachePrepareFailedEvent
+    ApplicationEventBase
+    AnalysisApiCreatedEvent -.-> ApplicationEventBase
     AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
+    AnalysisApiStatusUpdatedEvent -.-> ApplicationEventBase
     AnalysisApiStatusUpdatedEvent
+    ApiHistoryStopCreatedEvent -.-> ApplicationEventBase
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
-    ApiPackageLibYearCreatedEvent
+    ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
+    ApiPackageLibYearCreatedEvent --> ReportHistoryStopPointProgressActivity
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
     CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
@@ -78,8 +94,11 @@ flowchart TD;
     DirectoryDoesNotExistFailureEvent
     DirectoryIsNotGitInitializedFailureEvent -.-> FailureEvent
     DirectoryIsNotGitInitializedFailureEvent
+    GitRepositoryClonedEvent -.-> ApplicationEventBase
     GitRepositoryClonedEvent --> ComputeHistoryActivity
+    GitRepositoryCloneStartedEvent -.-> ApplicationEventBase
     GitRepositoryCloneStartedEvent
+    GitRepositoryInLocalDirectoryVerifiedEvent -.-> ApplicationEventBase
     GitRepositoryInLocalDirectoryVerifiedEvent --> ComputeHistoryActivity
     VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryDoesNotExistFailureEvent
     VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryIsNotGitInitializedFailureEvent
@@ -88,12 +107,20 @@ flowchart TD;
     ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> InvalidHistoryIntervalEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
+    HistoryIntervalStopFoundEvent -.-> ApplicationEventBase
     HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
+    HistoryStopCheckedOutEvent -.-> ApplicationEventBase
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
+    HistoryStopPointProcessingCompletedEvent -.-> ApplicationEventBase
+    HistoryStopPointProcessingCompletedEvent
+    ReportHistoryStopPointProgressActivity --> HistoryStopPointProcessingCompletedEvent
     ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
     DeterminePackagesFromBomActivity --> PackageFoundEvent
+    LibYearComputationForBomStartedEvent -.-> ApplicationEventBase
     LibYearComputationForBomStartedEvent
+    LibYearComputedForPackageEvent -.-> ApplicationEventBase
     LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
+    PackageFoundEvent -.-> ApplicationEventBase
     PackageFoundEvent --> ComputeLibYearForPackageActivity
     LoadServiceProviderActivity
     ThrowExceptionActivity
