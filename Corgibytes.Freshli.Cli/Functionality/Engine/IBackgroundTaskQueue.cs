@@ -8,7 +8,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
 public interface IBackgroundTaskQueue
 {
-    ValueTask QueueBackgroundWorkItemAsync(Func<CancellationToken, ValueTask> workItem);
-    ValueTask<Func<CancellationToken, ValueTask>> DequeueAsync(CancellationToken cancellationToken);
+    ValueTask QueueBackgroundWorkItemAsync(WorkItem workItem, CancellationToken cancellationToken = default);
+    ValueTask<WorkItem> DequeueAsync(CancellationToken cancellationToken = default);
     QueueStatistics GetStatistics();
+    ValueTask<bool> ContainsUnprocessedWork<T>(Func<T, bool> query, CancellationToken cancellationToken = default);
 }
