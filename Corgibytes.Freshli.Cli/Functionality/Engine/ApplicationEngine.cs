@@ -21,15 +21,15 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private static bool s_isEventFiringInProgress;
     private readonly ILogger<ApplicationEngine> _logger;
 
-    public ApplicationEngine(IBackgroundTaskQueue jobClient, ILogger<ApplicationEngine> logger,
+    public ApplicationEngine(IBackgroundTaskQueue taskQueue, ILogger<ApplicationEngine> logger,
         IServiceProvider serviceProvider)
     {
-        JobClient = jobClient ?? throw new ArgumentNullException(nameof(jobClient));
+        TaskQueue = taskQueue ?? throw new ArgumentNullException(nameof(taskQueue));
         _logger = logger;
         ServiceProvider = serviceProvider;
     }
 
-    private IBackgroundTaskQueue JobClient { get; }
+    private IBackgroundTaskQueue TaskQueue { get; }
 
     public async ValueTask Dispatch(IApplicationActivity applicationActivity)
     {
@@ -39,7 +39,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         try
         {
             // TODO: Pass the cancellation token to HandleActivity
-            await JobClient.QueueBackgroundWorkItemAsync(_ => HandleActivity(applicationActivity));
+            await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationActivity,
+                _ => HandleActivity(applicationActivity)));
         }
         finally
         {
@@ -59,7 +60,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         {
             await Task.Delay(500);
 
-            var statistics = JobClient.GetStatistics();
+            var statistics = TaskQueue.GetStatistics();
             var length = statistics.Processing + statistics.Enqueued;
 
             // store the value of static boolean fields to avoid a race condition between the output of those values
@@ -77,6 +78,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public IServiceProvider ServiceProvider { get; }
 
+    public async ValueTask<bool> AreOperationsPending<T>(Func<T, bool> query)
+    {
+        return await TaskQueue.ContainsUnprocessedWork(query);
+    }
+
     public async ValueTask Fire(IApplicationEvent applicationEvent)
     {
         await s_fireSemaphore.WaitAsync();
@@ -84,7 +90,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         try
         {
             // TODO: pass cancellation token to FireEventAndHandler
-            await JobClient.QueueBackgroundWorkItemAsync(_ => FireEventAndHandler(applicationEvent));
+            await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationEvent,
+                _ => FireEventAndHandler(applicationEvent)));
         }
         finally
         {
@@ -128,7 +135,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         if (s_eventHandlers.Keys.Any(type => type.IsAssignableTo(applicationEvent.GetType())))
         {
             // TODO: Pass the cancellation token to TriggerHandler
-            await JobClient.QueueBackgroundWorkItemAsync(_ => TriggerHandler(applicationEvent));
+            await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationEvent,
+                _ => TriggerHandler(applicationEvent)));
         }
     }
 

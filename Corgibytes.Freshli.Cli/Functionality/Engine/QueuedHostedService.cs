@@ -34,7 +34,7 @@ public sealed class QueuedHostedService : BackgroundService
             {
                 var workItem = await _taskQueue.DequeueAsync(stoppingToken);
 
-                await workItem(stoppingToken);
+                await workItem.Invoker(stoppingToken);
             }
             catch (OperationCanceledException)
             {
