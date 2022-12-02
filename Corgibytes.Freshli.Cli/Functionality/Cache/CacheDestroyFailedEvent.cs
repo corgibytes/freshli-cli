@@ -3,11 +3,11 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 
-public class CacheDestroyFailedEvent : IApplicationEvent
+public class CacheDestroyFailedEvent : ApplicationEventBase
 {
     public string ResultMessage { get; init; } = null!;
 
-    public ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient)
     {
         return ValueTask.CompletedTask;
     }

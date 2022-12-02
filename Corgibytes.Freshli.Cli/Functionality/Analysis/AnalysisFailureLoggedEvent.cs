@@ -3,13 +3,13 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class AnalysisFailureLoggedEvent : IApplicationEvent
+public class AnalysisFailureLoggedEvent : ApplicationEventBase
 {
     public AnalysisFailureLoggedEvent(ErrorEvent errorEvent) => ErrorEvent = errorEvent;
 
     public ErrorEvent ErrorEvent { get; }
 
-    public ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient)
     {
         return ValueTask.CompletedTask;
     }

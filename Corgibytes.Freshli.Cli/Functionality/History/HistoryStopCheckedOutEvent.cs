@@ -6,12 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
-public class HistoryStopCheckedOutEvent : IApplicationEvent
+public class HistoryStopCheckedOutEvent : ApplicationEventBase
 {
     public Guid AnalysisId { get; init; }
     public int HistoryStopPointId { get; init; }
 
-    public async ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient)
     {
         var progressReporter = eventClient.ServiceProvider.GetRequiredService<IAnalyzeProgressReporter>();
         progressReporter.ReportSingleHistoryStopPointOperationFinished(HistoryStopPointOperation.Archive);

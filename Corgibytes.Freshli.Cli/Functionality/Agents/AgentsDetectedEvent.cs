@@ -4,11 +4,11 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Agents;
 
-public class AgentsDetectedEvent : IApplicationEvent
+public class AgentsDetectedEvent : ApplicationEventBase
 {
     public Dictionary<string, string>? AgentsAndLocations { get; init; }
 
-    public ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient)
     {
         return ValueTask.CompletedTask;
     }
