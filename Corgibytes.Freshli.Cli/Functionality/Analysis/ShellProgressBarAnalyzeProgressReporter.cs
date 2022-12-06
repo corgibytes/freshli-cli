@@ -4,7 +4,7 @@ using ShellProgressBar;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class AnalyzeProgressReporter : IAnalyzeProgressReporter, IDisposable
+public class ShellProgressBarAnalyzeProgressReporter : IAnalyzeProgressReporter, IDisposable
 {
     private readonly object _mainProgressBarLock = new();
     private ProgressBar? _mainProgressBar;
