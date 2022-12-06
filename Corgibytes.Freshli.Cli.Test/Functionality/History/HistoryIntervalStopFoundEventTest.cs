@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.History;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -19,6 +20,11 @@ public class HistoryIntervalStopFoundEventTest
         var appEvent = new HistoryIntervalStopFoundEvent(cachedAnalysisId, historyStopPointId);
 
         var eventClient = new Mock<IApplicationActivityEngine>();
+        var serviceProvider = new Mock<IServiceProvider>();
+        var logger = new Mock<ILogger<HistoryIntervalStopFoundEvent>>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<HistoryIntervalStopFoundEvent>)))
+            .Returns(logger.Object);
+        eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         await appEvent.Handle(eventClient.Object);
 
