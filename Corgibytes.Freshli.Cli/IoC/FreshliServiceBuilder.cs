@@ -131,6 +131,6 @@ public class FreshliServiceBuilder
         Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>();
         Services.AddSingleton<ICommandInvoker, CommandInvoker>();
 
-        Services.AddSingleton<IBackgroundTaskQueue, DefaultBackgroundTaskQueue>();
+        Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
     }
 }
