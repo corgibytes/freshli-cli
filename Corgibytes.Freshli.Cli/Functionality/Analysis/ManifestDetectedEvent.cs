@@ -22,11 +22,20 @@ public class ManifestDetectedEvent : ApplicationEventBase, IHistoryStopPointProc
     public string AgentExecutablePath { get; }
     public string ManifestPath { get; }
 
-    public override async ValueTask Handle(IApplicationActivityEngine eventClient) => await eventClient.Dispatch(
-        new GenerateBillOfMaterialsActivity(
-            AnalysisId,
-            AgentExecutablePath,
-            HistoryStopPointId,
-            ManifestPath
-        ));
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient)
+    {
+        try
+        {
+            await eventClient.Dispatch(new GenerateBillOfMaterialsActivity(
+                AnalysisId,
+                AgentExecutablePath,
+                HistoryStopPointId,
+                ManifestPath
+            ));
+        }
+        catch (Exception error)
+        {
+            await eventClient.Dispatch(new FireHistoryStopPointProcessingErrorActivity(HistoryStopPointId, error));
+        }
+    }
 }

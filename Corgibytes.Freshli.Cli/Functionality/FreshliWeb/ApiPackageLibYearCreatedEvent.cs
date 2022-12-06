@@ -14,7 +14,14 @@ public class ApiPackageLibYearCreatedEvent : ApplicationEventBase, IHistoryStopP
 
     public override async ValueTask Handle(IApplicationActivityEngine eventClient)
     {
-        await eventClient.Dispatch(
-            new ReportHistoryStopPointProgressActivity { HistoryStopPointId = HistoryStopPointId });
+        try
+        {
+            await eventClient.Dispatch(
+                new ReportHistoryStopPointProgressActivity {HistoryStopPointId = HistoryStopPointId});
+        }
+        catch (Exception error)
+        {
+            await eventClient.Dispatch(new FireHistoryStopPointProcessingErrorActivity(HistoryStopPointId, error));
+        }
     }
 }

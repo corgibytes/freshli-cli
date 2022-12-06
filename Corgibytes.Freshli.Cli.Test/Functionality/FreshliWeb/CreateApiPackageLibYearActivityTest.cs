@@ -4,6 +4,8 @@ using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
+using Corgibytes.Freshli.Cli.Functionality.History;
+using CycloneDX.Models;
 using Moq;
 using Xunit;
 
@@ -58,5 +60,33 @@ public class CreateApiPackageLibYearActivityTest
             value.PackageLibYearId == packageLibYearId &&
             value.AgentExecutablePath == agentExecutablePath
         )));
+    }
+
+    [Fact]
+    public async Task HandleFiresHistoryStopPointProcessingFailedEvent()
+    {
+        var analysisId = Guid.NewGuid();
+        const int historyStopPointId = 12;
+        const int packageLibYearId = 9;
+        const string agentExecutablePath = "/path/to/agent";
+
+        var activity = new CreateApiPackageLibYearActivity
+        {
+            AnalysisId = analysisId,
+            HistoryStopPointId = historyStopPointId,
+            PackageLibYearId = packageLibYearId,
+            AgentExecutablePath = agentExecutablePath
+        };
+
+        var eventClient = new Mock<IApplicationEventEngine>();
+
+        var exception = new InvalidOperationException();
+        eventClient.Setup(mock => mock.ServiceProvider).Throws(exception);
+
+        await activity.Handle(eventClient.Object);
+
+        eventClient.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
+            value.HistoryStopPointId == activity.HistoryStopPointId &&
+            value.Error == exception)));
     }
 }

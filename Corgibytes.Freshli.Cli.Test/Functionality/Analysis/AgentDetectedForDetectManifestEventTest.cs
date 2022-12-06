@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Moq;
 using Xunit;
 
@@ -28,5 +29,24 @@ public class AgentDetectedForDetectManifestEventTest
                 activity.AnalysisId == analysisId &&
                 activity.HistoryStopPointId == historyStopPointId &&
                 activity.AgentExecutablePath == agentExecutablePath)));
+    }
+
+    [Fact]
+    public async Task HandleCorrectlyDealsWithExceptions()
+    {
+        var appEvent = new AgentDetectedForDetectManifestEvent(Guid.NewGuid(), 29, "/path/to/agent");
+
+        var activityEngine = new Mock<IApplicationActivityEngine>();
+
+        var exception = new InvalidOperationException();
+        activityEngine.Setup(mock => mock.Dispatch(It.IsAny<DetectManifestsUsingAgentActivity>())).Throws(exception);
+
+        await appEvent.Handle(activityEngine.Object);
+
+        activityEngine.Verify(mock =>
+            mock.Dispatch(It.Is<FireHistoryStopPointProcessingErrorActivity>(activity =>
+                activity.HistoryStopPointId == 29 &&
+                activity.Error == exception)));
+
     }
 }

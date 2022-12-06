@@ -6,6 +6,7 @@ using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
 using Moq;
 using Xunit;
@@ -63,5 +64,23 @@ public class DetectManifestsUsingAgentActivityTest
             appEvent.HistoryStopPointId == historyStopPointId &&
             appEvent.AgentExecutablePath == agentExecutablePath &&
             appEvent.ManifestPath == "/path/to/second/manifest")));
+    }
+
+    [Fact]
+    public async Task HandleCorrectlyDealsWithExceptions()
+    {
+        var eventEngine = new Mock<IApplicationEventEngine>();
+
+        var exception = new InvalidOperationException();
+        eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
+
+        var activity = new DetectManifestsUsingAgentActivity(Guid.NewGuid(), 29, "/path/to/agent");
+
+        await activity.Handle(eventEngine.Object);
+
+        eventEngine.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(appEvent =>
+            appEvent.HistoryStopPointId == activity.HistoryStopPointId &&
+            appEvent.Error == exception
+        )));
     }
 }

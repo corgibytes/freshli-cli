@@ -34,24 +34,32 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
 
     public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
-        var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
-        var agentReader = agentManager.GetReader(AgentExecutablePath);
+        try
+        {
+            var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
+            var agentReader = agentManager.GetReader(AgentExecutablePath);
 
-        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
+            var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+            var cacheDb = cacheManager.GetCacheDb();
 
-        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
-        _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
+            var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+            _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {HistoryStopPointId}");
 
-        var historyPointPath = historyStopPoint.LocalPath;
-        var asOfDateTime = historyStopPoint.AsOfDateTime;
+            var historyPointPath = historyStopPoint.LocalPath;
+            var asOfDateTime = historyStopPoint.AsOfDateTime;
 
-        var fullManifestPath = Path.Combine(historyPointPath, ManifestPath);
-        var bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
-        var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
+            var fullManifestPath = Path.Combine(historyPointPath, ManifestPath);
+            var bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
+            await Console.Out.WriteLineAsync($"Storing {bomFilePath} in cache");
+            var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
 
-        await eventClient.Fire(new BillOfMaterialsGeneratedEvent(
-            AnalysisId, HistoryStopPointId, cachedBomFilePath, AgentExecutablePath));
+            await eventClient.Fire(new BillOfMaterialsGeneratedEvent(
+                AnalysisId, HistoryStopPointId, cachedBomFilePath, AgentExecutablePath));
+        }
+        catch (Exception error)
+        {
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(HistoryStopPointId, error));
+        }
     }
 
     public async ValueTask<SemaphoreSlim> GetSemaphore(IServiceProvider provider)

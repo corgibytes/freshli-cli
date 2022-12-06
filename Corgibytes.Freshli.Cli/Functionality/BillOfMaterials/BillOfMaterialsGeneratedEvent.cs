@@ -22,11 +22,20 @@ public class BillOfMaterialsGeneratedEvent : ApplicationEventBase, IHistoryStopP
     public string PathToBillOfMaterials { get; }
     public string AgentExecutablePath { get; }
 
-    public override async ValueTask Handle(IApplicationActivityEngine eventClient) => await eventClient.Dispatch(
-        new DeterminePackagesFromBomActivity(
-            AnalysisId,
-            HistoryStopPointId,
-            PathToBillOfMaterials,
-            AgentExecutablePath
-        ));
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient)
+    {
+        try
+        {
+            await eventClient.Dispatch(new DeterminePackagesFromBomActivity(
+                AnalysisId,
+                HistoryStopPointId,
+                PathToBillOfMaterials,
+                AgentExecutablePath
+            ));
+        }
+        catch (Exception error)
+        {
+            await eventClient.Dispatch(new FireHistoryStopPointProcessingErrorActivity(HistoryStopPointId, error));
+        }
+    }
 }

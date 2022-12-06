@@ -34,4 +34,22 @@ public class BillOfMaterialsGeneratedEventTest
             value.AgentExecutablePath == agentExecutablePath
         )));
     }
+
+    [Fact]
+    public async Task HandleCorrectlyDealsWithExceptions()
+    {
+        var appEvent = new BillOfMaterialsGeneratedEvent(Guid.NewGuid(), 29, "/path/to/bom", "/path/to/agent");
+
+        var engine = new Mock<IApplicationActivityEngine>();
+
+        var exception = new InvalidOperationException();
+        engine.Setup(mock => mock.Dispatch(It.IsAny<DeterminePackagesFromBomActivity>())).Throws(exception);
+
+        await appEvent.Handle(engine.Object);
+
+        engine.Verify(mock => mock.Dispatch(It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
+            value.HistoryStopPointId == 29 &&
+            value.Error == exception
+        )));
+    }
 }

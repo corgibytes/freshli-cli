@@ -28,16 +28,23 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
 
     public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
-        var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
-        var agentReader = agentManager.GetReader(AgentExecutablePath);
-
-        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
-        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
-        await foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint?.LocalPath!))
+        try
         {
-            await eventClient.Fire(new ManifestDetectedEvent(AnalysisId, HistoryStopPointId, AgentExecutablePath,
-                manifestPath));
+            var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
+            var agentReader = agentManager.GetReader(AgentExecutablePath);
+
+            var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+            var cacheDb = cacheManager.GetCacheDb();
+            var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+            await foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint?.LocalPath!))
+            {
+                await eventClient.Fire(new ManifestDetectedEvent(AnalysisId, HistoryStopPointId, AgentExecutablePath,
+                    manifestPath));
+            }
+        }
+        catch (Exception error)
+        {
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(HistoryStopPointId, error));
         }
     }
 }

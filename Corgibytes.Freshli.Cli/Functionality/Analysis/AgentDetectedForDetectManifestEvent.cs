@@ -19,7 +19,16 @@ public class AgentDetectedForDetectManifestEvent : ApplicationEventBase, IHistor
     public int HistoryStopPointId { get; }
     public string AgentExecutablePath { get; }
 
-    public override async ValueTask Handle(IApplicationActivityEngine eventClient) =>
-        await eventClient.Dispatch(
-            new DetectManifestsUsingAgentActivity(AnalysisId, HistoryStopPointId, AgentExecutablePath));
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient)
+    {
+        try
+        {
+            await eventClient.Dispatch(
+                new DetectManifestsUsingAgentActivity(AnalysisId, HistoryStopPointId, AgentExecutablePath));
+        }
+        catch (Exception error)
+        {
+            await eventClient.Dispatch(new FireHistoryStopPointProcessingErrorActivity(HistoryStopPointId, error));
+        }
+    }
 }
