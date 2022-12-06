@@ -83,7 +83,7 @@ public class DeterminePackagesFromBomActivityTest
 
         eventClient.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
             value.HistoryStopPointId == activity.HistoryStopPointId &&
-            value.Error == exception
+            value.Exception == exception
         )));
     }
 }

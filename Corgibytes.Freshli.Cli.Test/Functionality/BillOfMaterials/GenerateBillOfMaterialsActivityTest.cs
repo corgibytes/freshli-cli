@@ -81,6 +81,6 @@ public class GenerateBillOfMaterialsActivityTest
         eventEngine.Verify(mock =>
             mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
                 value.HistoryStopPointId == activity.HistoryStopPointId &&
-                value.Error == exception)));
+                value.Exception == exception)));
     }
 }

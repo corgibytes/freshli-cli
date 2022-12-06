@@ -21,6 +21,6 @@ public class FireHistoryStopPointProcessingErrorActivityTest
 
         eventClient.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
             value.HistoryStopPointId == activity.HistoryStopPointId &&
-            value.Error == activity.Error)));
+            value.Exception == activity.Error)));
     }
 }
