@@ -4,6 +4,7 @@ using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Json.Schema;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -22,6 +23,9 @@ public class HistoryStopPointProcessingCompletedEventTest
         activityClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IAnalyzeProgressReporter)))
             .Returns(progressReporter.Object);
+        var logger = new Mock<ILogger<HistoryStopPointProcessingCompletedEvent>>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<HistoryStopPointProcessingCompletedEvent>)))
+            .Returns(logger.Object);
 
         var appEvent = new HistoryStopPointProcessingCompletedEvent { HistoryStopPointId = 12 };
 

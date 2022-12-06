@@ -9,6 +9,7 @@ using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Test.Functionality.Git;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -23,6 +24,7 @@ public class ComputeHistoryActivityTest
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
     private readonly Mock<IAnalyzeProgressReporter> _progressReporter = new();
+    private readonly Mock<ILogger<ComputeHistoryActivity>> _logger = new();
 
     public ComputeHistoryActivityTest()
     {
@@ -35,6 +37,8 @@ public class ComputeHistoryActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IAnalyzeProgressReporter)))
             .Returns(_progressReporter.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<ComputeHistoryActivity>)))
+            .Returns(_logger.Object);
 
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
 

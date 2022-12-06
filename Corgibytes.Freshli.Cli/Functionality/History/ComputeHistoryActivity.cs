@@ -7,6 +7,7 @@ using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
@@ -70,6 +71,9 @@ public class ComputeHistoryActivity : IApplicationActivity
             historyIntervalStopsList.Count);
         progressReporter.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Process,
             historyIntervalStopsList.Count);
+
+        var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<ComputeHistoryActivity>>();
+        logger.LogDebug("Detected {count} history stop points", historyIntervalStopsList.Count);
 
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         foreach (var historyIntervalStop in historyIntervalStopsList)
