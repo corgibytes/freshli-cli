@@ -51,6 +51,11 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _eventEngine.On<AnalysisFailureLoggedEvent>(analysisFailure =>
         {
             console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
+            if (analysisFailure.ErrorEvent.Exception != null)
+            {
+                console.Out.WriteLine(analysisFailure.ErrorEvent.Exception.ToString());
+            }
+
             exitStatus = 1;
             return ValueTask.CompletedTask;
         });
