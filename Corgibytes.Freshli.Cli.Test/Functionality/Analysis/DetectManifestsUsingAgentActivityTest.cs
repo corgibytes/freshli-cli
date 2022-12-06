@@ -80,7 +80,7 @@ public class DetectManifestsUsingAgentActivityTest
 
         eventEngine.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(appEvent =>
             appEvent.HistoryStopPointId == activity.HistoryStopPointId &&
-            appEvent.Error == exception
+            appEvent.Exception == exception
         )));
     }
 }
