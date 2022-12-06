@@ -61,4 +61,28 @@ public class DeterminePackagesFromBomActivityTest
             value.Package == packageBeta
         )));
     }
+
+    [Fact]
+    public async Task HandleFiresHistoryStopPointProcessingFailedOnException()
+    {
+        var analysisId = Guid.NewGuid();
+        const string pathToBom = "/path/to/bom";
+        const string pathToAgentExecutable = "/path/to/agent";
+        const int historyStopPointId = 29;
+
+        var eventClient = new Mock<IApplicationEventEngine>();
+
+        var activity =
+            new DeterminePackagesFromBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
+
+        var exception = new InvalidOperationException();
+        eventClient.Setup(mock => mock.ServiceProvider).Throws(exception);
+
+        await activity.Handle(eventClient.Object);
+
+        eventClient.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
+            value.HistoryStopPointId == activity.HistoryStopPointId &&
+            value.Error == exception
+        )));
+    }
 }

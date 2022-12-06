@@ -26,18 +26,26 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHis
 
     public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
-        var agentsDetector = eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>();
-        var agents = agentsDetector.Detect();
-
-        if (agents.Count == 0)
+        try
         {
-            await eventClient.Fire(new NoAgentsDetectedFailureEvent { ErrorMessage = "Could not locate any agents" });
-            return;
+            var agentsDetector = eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>();
+            var agents = agentsDetector.Detect();
+
+            if (agents.Count == 0)
+            {
+                await eventClient.Fire(new NoAgentsDetectedFailureEvent {ErrorMessage = "Could not locate any agents"});
+                return;
+            }
+
+            foreach (var agentPath in agents)
+            {
+                await eventClient.Fire(
+                    new AgentDetectedForDetectManifestEvent(AnalysisId, HistoryStopPointId, agentPath));
+            }
         }
-
-        foreach (var agentPath in agents)
+        catch (Exception error)
         {
-            await eventClient.Fire(new AgentDetectedForDetectManifestEvent(AnalysisId, HistoryStopPointId, agentPath));
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(HistoryStopPointId, error));
         }
     }
 }

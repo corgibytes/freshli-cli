@@ -23,33 +23,40 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
 
     public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
-        var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
-        var agentReader = agentManager.GetReader(AgentExecutablePath);
-
-        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
-        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
-
-        var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
-        var packageLibYear = await calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
-
-        var packageLibYearId = await cacheDb.AddPackageLibYear(new CachedPackageLibYear
+        try
         {
-            PackageName = Package.Name,
-            CurrentVersion = packageLibYear.CurrentVersion?.ToString(),
-            ReleaseDateCurrentVersion = packageLibYear.ReleaseDateCurrentVersion,
-            LatestVersion = packageLibYear.LatestVersion?.ToString(),
-            ReleaseDateLatestVersion = packageLibYear.ReleaseDateLatestVersion,
-            LibYear = packageLibYear.LibYear,
-            HistoryStopPointId = HistoryStopPointId
-        });
+            var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
+            var agentReader = agentManager.GetReader(AgentExecutablePath);
 
-        await eventClient.Fire(new LibYearComputedForPackageEvent
+            var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+            var cacheDb = cacheManager.GetCacheDb();
+            var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+
+            var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
+            var packageLibYear = await calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
+
+            var packageLibYearId = await cacheDb.AddPackageLibYear(new CachedPackageLibYear
+            {
+                PackageName = Package.Name,
+                CurrentVersion = packageLibYear.CurrentVersion?.ToString(),
+                ReleaseDateCurrentVersion = packageLibYear.ReleaseDateCurrentVersion,
+                LatestVersion = packageLibYear.LatestVersion?.ToString(),
+                ReleaseDateLatestVersion = packageLibYear.ReleaseDateLatestVersion,
+                LibYear = packageLibYear.LibYear,
+                HistoryStopPointId = HistoryStopPointId
+            });
+
+            await eventClient.Fire(new LibYearComputedForPackageEvent
+            {
+                AnalysisId = AnalysisId,
+                HistoryStopPointId = HistoryStopPointId,
+                PackageLibYearId = packageLibYearId,
+                AgentExecutablePath = AgentExecutablePath
+            });
+        }
+        catch (Exception error)
         {
-            AnalysisId = AnalysisId,
-            HistoryStopPointId = HistoryStopPointId,
-            PackageLibYearId = packageLibYearId,
-            AgentExecutablePath = AgentExecutablePath
-        });
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(HistoryStopPointId, error));
+        }
     }
 }
