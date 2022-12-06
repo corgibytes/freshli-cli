@@ -4,6 +4,7 @@ using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
 using Moq;
 using Xunit;
@@ -64,5 +65,22 @@ public class GenerateBillOfMaterialsActivityTest
                 appEvent.AnalysisId == analysisId &&
                 appEvent.HistoryStopPointId == historyStopPointId &&
                 appEvent.PathToBillOfMaterials == "/path/to/bom/in/cache")));
+    }
+
+    [Fact]
+    public async Task HandleCorrectlyDealsWithExceptions()
+    {
+        var eventEngine = new Mock<IApplicationEventEngine>();
+
+        var exception = new InvalidOperationException();
+        eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
+
+        var activity = new GenerateBillOfMaterialsActivity(Guid.NewGuid(), "/path/to/agent", 29, "/path/to/manifest");
+        await activity.Handle(eventEngine.Object);
+
+        eventEngine.Verify(mock =>
+            mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
+                value.HistoryStopPointId == activity.HistoryStopPointId &&
+                value.Error == exception)));
     }
 }

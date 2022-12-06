@@ -20,18 +20,25 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity, IHistorySto
 
     public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
-        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
-
-        var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
-        await resultsApi.CreatePackageLibYear(cacheDb, AnalysisId, PackageLibYearId);
-
-        await eventClient.Fire(new ApiPackageLibYearCreatedEvent
+        try
         {
-            AnalysisId = AnalysisId,
-            HistoryStopPointId = HistoryStopPointId,
-            PackageLibYearId = PackageLibYearId,
-            AgentExecutablePath = AgentExecutablePath
-        });
+            var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+            var cacheDb = cacheManager.GetCacheDb();
+
+            var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
+            await resultsApi.CreatePackageLibYear(cacheDb, AnalysisId, PackageLibYearId);
+
+            await eventClient.Fire(new ApiPackageLibYearCreatedEvent
+            {
+                AnalysisId = AnalysisId,
+                HistoryStopPointId = HistoryStopPointId,
+                PackageLibYearId = PackageLibYearId,
+                AgentExecutablePath = AgentExecutablePath
+            });
+        }
+        catch (Exception error)
+        {
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(HistoryStopPointId, error));
+        }
     }
 }

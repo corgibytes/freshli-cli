@@ -7,6 +7,7 @@ using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Moq;
 using Xunit;
 
@@ -79,5 +80,20 @@ public class DetectAgentsForDetectManifestsActivityTest
         _eventEngine.Verify(mock => mock.Fire(It.Is<NoAgentsDetectedFailureEvent>(
             failEvent => failEvent.ErrorMessage == "Could not locate any agents"
         )));
+    }
+
+    [Fact]
+    public async Task HandleCorrectlyDealsWithExceptions()
+    {
+        var activity = new DetectAgentsForDetectManifestsActivity(Guid.NewGuid(), HistoryStopPointId);
+
+        var exception = new InvalidOperationException();
+        _eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
+
+        await activity.Handle(_eventEngine.Object);
+
+        _eventEngine.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
+            value.HistoryStopPointId == activity.HistoryStopPointId &&
+            value.Error == exception)));
     }
 }
