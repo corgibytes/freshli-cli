@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Moq;
 using Xunit;
@@ -37,5 +38,33 @@ public class LibYearComputedForPackageEventTest
             value.PackageLibYearId == packageLibYearId &&
             value.AgentExecutablePath == agentExecutablePath
         )));
+    }
+
+    [Fact]
+    public async Task HandleDispatchesFireHistoryStopPointProcessingErrorActivity()
+    {
+        var analysisId = Guid.NewGuid();
+        const int historyStopPointId = 12;
+        const int packageLibYearId = 9;
+        const string agentExecutablePath = "/path/to/agent";
+
+        var appEvent = new LibYearComputedForPackageEvent
+        {
+            AnalysisId = analysisId,
+            HistoryStopPointId = historyStopPointId,
+            PackageLibYearId = packageLibYearId,
+            AgentExecutablePath = agentExecutablePath
+        };
+
+        var activityClient = new Mock<IApplicationActivityEngine>();
+
+        var exception = new InvalidOperationException();
+        activityClient.Setup(mock => mock.Dispatch(It.IsAny<CreateApiPackageLibYearActivity>())).Throws(exception);
+
+        await appEvent.Handle(activityClient.Object);
+
+        activityClient.Verify(mock => mock.Dispatch(It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
+            value.HistoryStopPointId == appEvent.HistoryStopPointId &&
+            value.Error == exception)));
     }
 }

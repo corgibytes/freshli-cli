@@ -3,8 +3,10 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.Services;
+using CycloneDX.Models;
 using Moq;
 using PackageUrl;
 using Xunit;
@@ -78,5 +80,33 @@ public class ComputeLibYearForPackageActivityTest
             value.HistoryStopPointId == historyStopPointId &&
             value.PackageLibYearId == packageLibYearId &&
             value.AgentExecutablePath == agentExecutablePath)));
+    }
+
+    [Fact]
+    public async Task HandleFiresProcessingErrorEventOnException()
+    {
+        var analysisId = Guid.NewGuid();
+        const string agentExecutablePath = "/path/to/agent/smith";
+        var package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
+
+        const int historyStopPointId = 29;
+        var activity = new ComputeLibYearForPackageActivity
+        {
+            AnalysisId = analysisId,
+            HistoryStopPointId = historyStopPointId,
+            AgentExecutablePath = agentExecutablePath,
+            Package = package
+        };
+
+        var eventClient = new Mock<IApplicationEventEngine>();
+
+        var exception = new InvalidOperationException();
+        eventClient.Setup(mock => mock.ServiceProvider).Throws(exception);
+
+        await activity.Handle(eventClient.Object);
+
+        eventClient.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
+            value.HistoryStopPointId == activity.HistoryStopPointId &&
+            value.Error == exception)));
     }
 }

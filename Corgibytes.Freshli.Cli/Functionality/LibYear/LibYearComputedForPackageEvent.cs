@@ -13,12 +13,21 @@ public class LibYearComputedForPackageEvent : ApplicationEventBase, IHistoryStop
     public int PackageLibYearId { get; init; }
     public string AgentExecutablePath { get; init; } = null!;
 
-    public override async ValueTask Handle(IApplicationActivityEngine eventClient) =>
-        await eventClient.Dispatch(new CreateApiPackageLibYearActivity
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient)
+    {
+        try
         {
-            AnalysisId = AnalysisId,
-            HistoryStopPointId = HistoryStopPointId,
-            PackageLibYearId = PackageLibYearId,
-            AgentExecutablePath = AgentExecutablePath
-        });
+            await eventClient.Dispatch(new CreateApiPackageLibYearActivity
+            {
+                AnalysisId = AnalysisId,
+                HistoryStopPointId = HistoryStopPointId,
+                PackageLibYearId = PackageLibYearId,
+                AgentExecutablePath = AgentExecutablePath
+            });
+        }
+        catch (Exception error)
+        {
+            await eventClient.Dispatch(new FireHistoryStopPointProcessingErrorActivity(HistoryStopPointId, error));
+        }
+    }
 }

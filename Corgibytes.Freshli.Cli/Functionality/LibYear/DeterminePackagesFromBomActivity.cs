@@ -29,22 +29,29 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
 
     public async ValueTask Handle(IApplicationEventEngine eventClient)
     {
-        var bomReader = eventClient.ServiceProvider.GetRequiredService<IBomReader>();
-        var packageUrls = bomReader.AsPackageUrls(PathToBom);
-        foreach (var packageUrl in packageUrls)
+        try
         {
-            if (packageUrl == null)
+            var bomReader = eventClient.ServiceProvider.GetRequiredService<IBomReader>();
+            var packageUrls = bomReader.AsPackageUrls(PathToBom);
+            foreach (var packageUrl in packageUrls)
             {
-                throw new Exception($"Null package URL detected for in {PathToBom}");
-            }
+                if (packageUrl == null)
+                {
+                    throw new Exception($"Null package URL detected for in {PathToBom}");
+                }
 
-            await eventClient.Fire(new PackageFoundEvent
-            {
-                AnalysisId = AnalysisId,
-                HistoryStopPointId = HistoryStopPointId,
-                AgentExecutablePath = AgentExecutablePath,
-                Package = packageUrl
-            });
+                await eventClient.Fire(new PackageFoundEvent
+                {
+                    AnalysisId = AnalysisId,
+                    HistoryStopPointId = HistoryStopPointId,
+                    AgentExecutablePath = AgentExecutablePath,
+                    Package = packageUrl
+                });
+            }
+        }
+        catch (Exception error)
+        {
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(HistoryStopPointId, error));
         }
     }
 }
