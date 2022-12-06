@@ -58,6 +58,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         var shouldWait = true;
         while (shouldWait)
         {
+            // TODO: Make this delay configurable
             await Task.Delay(500);
 
             var statistics = TaskQueue.GetStatistics();
@@ -69,7 +70,13 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             var localIsActivityDispatching = s_isActivityDispatchingInProgress;
 
             LogWaitingStatus(statistics, length, localIsEventFiring, localIsActivityDispatching);
-            shouldWait = length > 0 || localIsActivityDispatching || localIsEventFiring;
+            shouldWait = length > 0 || localIsActivityDispatching || localIsEventFiring ||
+                         await TaskQueue.ContainsUnprocessedWork<IApplicationTask>(task => true);
+        }
+
+        if (await TaskQueue.ContainsUnprocessedWork<IApplicationTask>(task => true))
+        {
+            throw new Exception("Work queue not empty exception");
         }
 
         watch.Stop();
