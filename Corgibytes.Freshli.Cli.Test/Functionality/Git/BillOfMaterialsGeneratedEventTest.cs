@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Moq;
 using Xunit;
@@ -13,7 +14,6 @@ public class BillOfMaterialsGeneratedEventTest
     [Fact]
     public async Task CorrectlyDispatchesComputeLibYearActivity()
     {
-        var serviceProvider = new Mock<IServiceProvider>();
         const string pathToBom = "/path/to/bom";
         const string agentExecutablePath = "/path/to/agent";
 
@@ -23,7 +23,6 @@ public class BillOfMaterialsGeneratedEventTest
             new BillOfMaterialsGeneratedEvent(analysisId, historyStopPointId, pathToBom, agentExecutablePath);
 
         var engine = new Mock<IApplicationActivityEngine>();
-        engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         await billOfMaterialsGeneratedEvent.Handle(engine.Object);
 
