@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public sealed class DefaultBackgroundTaskQueue : IBackgroundTaskQueue
+public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
 {
     private readonly SemaphoreSlim _queueReaderSemaphore = new(0);
     private readonly SemaphoreSlim _queueWriterSemaphore = new(1);
