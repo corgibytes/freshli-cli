@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Moq;
 using PackageUrl;
@@ -19,10 +20,10 @@ public class DeterminePackagesFromBomActivityTest
         var analysisId = Guid.NewGuid();
         const string pathToBom = "/path/to/bom";
         const string pathToAgentExecutable = "/path/to/agent";
+        const int historyStopPointId = 29;
 
         var eventClient = new Mock<IApplicationEventEngine>();
 
-        const int historyStopPointId = 29;
         var activity =
             new DeterminePackagesFromBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
 
