@@ -19,6 +19,7 @@ flowchart TD;
     NoAgentsDetectedFailureEvent
     AgentDetectedForDetectManifestEvent -.-> ApplicationEventBase
     AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
+    AgentDetectedForDetectManifestEvent --> FireHistoryStopPointProcessingErrorActivity
     AnalysisFailureLoggedEvent -.-> ApplicationEventBase
     AnalysisFailureLoggedEvent
     AnalysisIdNotFoundEvent -.-> FailureEvent
@@ -33,7 +34,9 @@ flowchart TD;
     CachePrepareFailedForAnalysisEvent
     DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
+    DetectAgentsForDetectManifestsActivity --> HistoryStopPointProcessingFailedEvent
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
+    DetectManifestsUsingAgentActivity --> HistoryStopPointProcessingFailedEvent
     ErrorEvent -.-> ApplicationEventBase
     ErrorEvent
     FailureEvent -.-> ErrorEvent
@@ -43,6 +46,7 @@ flowchart TD;
     LogAnalysisFailureActivity --> AnalysisFailureLoggedEvent
     ManifestDetectedEvent -.-> ApplicationEventBase
     ManifestDetectedEvent --> GenerateBillOfMaterialsActivity
+    ManifestDetectedEvent --> FireHistoryStopPointProcessingErrorActivity
     PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
     PrepareCacheForAnalysisActivity --> CachePrepareFailedForAnalysisEvent
     RestartAnalysisActivity -.-> StartAnalysisActivityBase
@@ -57,7 +61,9 @@ flowchart TD;
     UnhandledExceptionEvent
     BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
     BillOfMaterialsGeneratedEvent --> DeterminePackagesFromBomActivity
+    BillOfMaterialsGeneratedEvent --> FireHistoryStopPointProcessingErrorActivity
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
+    GenerateBillOfMaterialsActivity --> HistoryStopPointProcessingFailedEvent
     CacheDestroyedEvent -.-> ApplicationEventBase
     CacheDestroyedEvent
     CacheDestroyFailedEvent -.-> ApplicationEventBase
@@ -80,9 +86,11 @@ flowchart TD;
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
     ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
     ApiPackageLibYearCreatedEvent --> ReportHistoryStopPointProgressActivity
+    ApiPackageLibYearCreatedEvent --> FireHistoryStopPointProcessingErrorActivity
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
     CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
+    CreateApiPackageLibYearActivity --> HistoryStopPointProcessingFailedEvent
     UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryCloneStartedEvent
@@ -107,19 +115,25 @@ flowchart TD;
     ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> InvalidHistoryIntervalEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
+    FireHistoryStopPointProcessingErrorActivity --> HistoryStopPointProcessingFailedEvent
     HistoryIntervalStopFoundEvent -.-> ApplicationEventBase
     HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
     HistoryStopCheckedOutEvent -.-> ApplicationEventBase
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
     HistoryStopPointProcessingCompletedEvent -.-> ApplicationEventBase
     HistoryStopPointProcessingCompletedEvent
+    HistoryStopPointProcessingFailedEvent -.-> UnhandledExceptionEvent
+    HistoryStopPointProcessingFailedEvent
     ReportHistoryStopPointProgressActivity --> HistoryStopPointProcessingCompletedEvent
     ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
+    ComputeLibYearForPackageActivity --> HistoryStopPointProcessingFailedEvent
     DeterminePackagesFromBomActivity --> PackageFoundEvent
+    DeterminePackagesFromBomActivity --> HistoryStopPointProcessingFailedEvent
     LibYearComputationForBomStartedEvent -.-> ApplicationEventBase
     LibYearComputationForBomStartedEvent
     LibYearComputedForPackageEvent -.-> ApplicationEventBase
     LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
+    LibYearComputedForPackageEvent --> FireHistoryStopPointProcessingErrorActivity
     PackageFoundEvent -.-> ApplicationEventBase
     PackageFoundEvent --> ComputeLibYearForPackageActivity
     LoadServiceProviderActivity
