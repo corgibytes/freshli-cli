@@ -57,7 +57,7 @@ public class FreshliServiceBuilder
 
     private void RegisterAnalyzeCommand()
     {
-        Services.AddScoped<IAnalyzeProgressReporter, AnalyzeProgressReporter>();
+        Services.AddScoped<IAnalyzeProgressReporter, PlainTextAnalyzeProgressReporter>();
         Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
         Services.AddScoped<IResultsApi, ResultsApi>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
