@@ -94,6 +94,6 @@ public class DetectAgentsForDetectManifestsActivityTest
 
         _eventEngine.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
             value.HistoryStopPointId == activity.HistoryStopPointId &&
-            value.Error == exception)));
+            value.Exception == exception)));
     }
 }

@@ -15,13 +15,10 @@ public class LogAnalysisFailureActivity : IApplicationActivity
     {
         var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<LogAnalysisFailureActivity>>();
 
-        if (ErrorEvent is UnhandledExceptionEvent exceptionEvent)
+        logger.LogError("{ErrorMessage}", ErrorEvent.ErrorMessage);
+        if (ErrorEvent.Exception != null)
         {
-            logger.LogError(exceptionEvent.Error, "Unhandled Exception");
-        }
-        else
-        {
-            logger.LogError("{ErrorMessage}", ErrorEvent.ErrorMessage);
+            logger.LogError("{Exception}", ErrorEvent.Exception);
         }
 
         await eventClient.Fire(new AnalysisFailureLoggedEvent(ErrorEvent));
