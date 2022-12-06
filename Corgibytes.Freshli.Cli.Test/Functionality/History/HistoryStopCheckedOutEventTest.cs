@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -23,6 +24,9 @@ public class HistoryStopCheckedOutEventTest
             .Returns(progressReporter.Object);
         var activityEngine = new Mock<IApplicationActivityEngine>();
         activityEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+        var logger = new Mock<ILogger<HistoryStopCheckedOutEvent>>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<HistoryStopCheckedOutEvent>)))
+            .Returns(logger.Object);
 
         var appEvent = new HistoryStopCheckedOutEvent
         {
