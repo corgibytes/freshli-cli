@@ -9,7 +9,7 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test;
 
 [IntegrationTest]
-public class ProgramTest
+public partial class ProgramTest
 {
     private readonly StringWriter _consoleOutput = new();
 
@@ -70,9 +70,7 @@ public class ProgramTest
         var task = Task.Run(() => Program.Main("fail"));
         task.Wait();
 
-        _consoleOutput.ToString().Should().MatchRegex(new Regex(
-            "^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
-        ));
+        _consoleOutput.ToString().Should().MatchRegex(SimulatedFailureMessageRegex());
     }
 
     [Fact]
@@ -86,4 +84,8 @@ public class ProgramTest
         _consoleOutput.ToString().Should()
             .NotContain("Simulating loading the service provider, but the provider is null.");
     }
+
+    [GeneratedRegex("^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline)]
+    private static partial Regex SimulatedFailureMessageRegex();
+
 }
