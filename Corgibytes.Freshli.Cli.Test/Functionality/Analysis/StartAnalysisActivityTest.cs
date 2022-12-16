@@ -16,7 +16,5 @@ public class StartAnalysisActivityTest : StartAnalysisActivityTestBase<StartAnal
 
     protected override Func<CacheDoesNotExistEvent, bool> EventValidator =>
         value =>
-            value.RepositoryUrl == "http://git.example.com" &&
-            value.RepositoryBranch == "main" &&
-            value.HistoryInterval == "1m";
+            value is { RepositoryUrl: "http://git.example.com", RepositoryBranch: "main", HistoryInterval: "1m" };
 }

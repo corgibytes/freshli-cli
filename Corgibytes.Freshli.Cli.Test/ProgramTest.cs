@@ -70,9 +70,7 @@ public class ProgramTest
         var task = Task.Run(() => Program.Main("fail"));
         task.Wait();
 
-        _consoleOutput.ToString().Should().MatchRegex(new Regex(
-            "^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
-        ));
+        _consoleOutput.ToString().Should().MatchRegex(SimulatedFailureMessageRegex());
     }
 
     [Fact]
@@ -86,4 +84,10 @@ public class ProgramTest
         _consoleOutput.ToString().Should()
             .NotContain("Simulating loading the service provider, but the provider is null.");
     }
+
+    private static Regex SimulatedFailureMessageRegex() =>
+#pragma warning disable SYSLIB1045
+        new("^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline);
+#pragma warning restore SYSLIB1045
+
 }
