@@ -9,7 +9,7 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test;
 
 [IntegrationTest]
-public partial class ProgramTest
+public class ProgramTest
 {
     private readonly StringWriter _consoleOutput = new();
 
@@ -85,7 +85,9 @@ public partial class ProgramTest
             .NotContain("Simulating loading the service provider, but the provider is null.");
     }
 
-    [GeneratedRegex("^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline)]
-    private static partial Regex SimulatedFailureMessageRegex();
+    private static Regex SimulatedFailureMessageRegex() =>
+#pragma warning disable SYSLIB1045
+        new("^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline);
+#pragma warning restore SYSLIB1045
 
 }
