@@ -67,4 +67,4 @@ jobs:
               .addTable(summary)
               .write();
         env:
-         project_tools: ${{ steps.project.outputs.tools }}
+          project_tools: ${{ steps.project.outputs.tools }}
