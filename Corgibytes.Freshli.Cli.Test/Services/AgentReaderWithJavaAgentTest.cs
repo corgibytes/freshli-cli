@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
@@ -83,6 +84,15 @@ public class AgentReaderWithJavaAgentTest
         checkoutDirectory = new DirectoryInfo(checkoutLocation);
         if (checkoutDirectory.Exists)
         {
+            foreach (var file in checkoutDirectory.EnumerateFileSystemInfos("*", SearchOption.AllDirectories))
+            {
+                file.Attributes = FileAttributes.Normal;
+            }
+            foreach (var file in checkoutDirectory.EnumerateFileSystemInfos(".*", SearchOption.AllDirectories))
+            {
+                file.Attributes = FileAttributes.Normal;
+            }
+
             checkoutDirectory.Delete(true);
         }
 
