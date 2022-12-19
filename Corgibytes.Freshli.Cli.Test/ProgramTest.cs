@@ -71,7 +71,7 @@ public class ProgramTest
         task.Wait();
 
         _consoleOutput.ToString().Should().MatchRegex(new Regex(
-            "^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
+            "ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
         ));
     }
 
