@@ -41,6 +41,7 @@ GEM
     expgen (0.1.1)
       parslet
     ffi (1.15.5)
+    ffi (1.15.5-x64-mingw32)
     filelock (1.1.1)
     find_a_port (1.0.1)
     json (2.6.3)
@@ -109,6 +110,7 @@ GEM
     ruby-progressbar (1.11.0)
     sqlite3 (1.5.4-aarch64-linux)
     sqlite3 (1.5.4-arm64-darwin)
+    sqlite3 (1.5.4-x64-mingw32)
     sqlite3 (1.5.4-x86_64-darwin)
     sqlite3 (1.5.4-x86_64-linux)
     sync (0.5.0)
@@ -125,6 +127,7 @@ GEM
 PLATFORMS
   aarch64-linux
   arm64-darwin-21
+  x64-mingw32
   x86_64-darwin-19
   x86_64-darwin-21
   x86_64-linux
