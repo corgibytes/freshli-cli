@@ -10,6 +10,17 @@ Aruba.configure do |config|
   config.exit_timeout = TWO_HOURS
 end
 
-Aruba.configure do |config|
-  puts %(The default value is "#{config.home_directory}")
+# Contains helper methods for coping with platform specific differences
+module Platform
+  def self.null_output_target
+    Gem.win_platform? ? 'NUL:' : '/dev/null'
+  end
+
+  def self.normalize_file_separators(value)
+    value.gsub('/', file_separator)
+  end
+
+  def self.file_separator
+    File::ALT_SEPARATOR || File::SEPARATOR
+  end
 end
