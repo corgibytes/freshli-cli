@@ -18,7 +18,7 @@ public class ProgramTest
     [Fact]
     public void Validate_Main_loglevel_debug()
     {
-        var task = Task.Run(() => Program.Main("--loglevel", "Debug"));
+        var task = Task.Run(async () => await Program.Main("--loglevel", "Debug"));
         task.Wait();
 
         _consoleOutput.ToString().Should()
@@ -28,7 +28,7 @@ public class ProgramTest
     [Fact]
     public void Validate_Main_loglevel_info()
     {
-        var task = Task.Run(() => Program.Main("--loglevel", "Info"));
+        var task = Task.Run(async () => await Program.Main("--loglevel", "Info"));
         task.Wait();
 
         _consoleOutput.ToString().Should()
@@ -39,7 +39,7 @@ public class ProgramTest
     [Fact]
     public void Validate_Main_loglevel_default()
     {
-        var task = Task.Run(() => Program.Main());
+        var task = Task.Run(async () => await Program.Main());
         task.Wait();
 
         _consoleOutput.ToString().Should()
@@ -53,7 +53,7 @@ public class ProgramTest
     {
         var testfile = "testlog.log";
 
-        var task = Task.Run(() => Program.Main("--loglevel", "Info", "--logfile", testfile));
+        var task = Task.Run(async () => await Program.Main("--loglevel", "Info", "--logfile", testfile));
         task.Wait();
 
         var logFileContent = File.ReadAllText(testfile);
@@ -67,7 +67,7 @@ public class ProgramTest
     {
         MainCommand.ShouldIncludeFailCommand = true;
 
-        var task = Task.Run(() => Program.Main("fail"));
+        var task = Task.Run(async () => await Program.Main("fail"));
         task.Wait();
 
         _consoleOutput.ToString().Should().MatchRegex(new Regex(
@@ -79,7 +79,7 @@ public class ProgramTest
     public void ValidateServiceProviderIsLoaded()
     {
         MainCommand.ShouldIncludeLoadServiceCommand = true;
-        var task = Task.Run(() => Program.Main("load-service"));
+        var task = Task.Run(async () => await Program.Main("load-service"));
         task.Wait();
 
         _consoleOutput.ToString().Should().Contain("All good! Service provider is not null.");
