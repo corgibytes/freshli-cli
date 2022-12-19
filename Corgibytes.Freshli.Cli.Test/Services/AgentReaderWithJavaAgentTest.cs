@@ -31,7 +31,7 @@ public class AgentReaderWithJavaAgentTest
         Assert.Equal(expectedManifests, actualManifests);
 
         // delete cloned files
-        checkoutDirectory.Delete(true);
+        RecursiveDelete(checkoutDirectory);
     }
 
     [Fact]
@@ -46,7 +46,7 @@ public class AgentReaderWithJavaAgentTest
         Assert.Equal(Path.Combine(repositoryLocation, "java", "target", "bom.json"), billOfMaterialsPath);
 
         // delete cloned files
-        checkoutDirectory.Delete(true);
+        RecursiveDelete(checkoutDirectory);
     }
 
     [Fact]
@@ -59,7 +59,7 @@ public class AgentReaderWithJavaAgentTest
 
         var actualManifests = await reader.DetectManifests(repositoryLocation).ToListAsync();
         Assert.Empty(actualManifests);
-        checkoutDirectory.Delete();
+        RecursiveDelete(checkoutDirectory);
     }
 
     private static void SetupDirectory(out string repositoryLocation, out AgentReader reader,
@@ -84,19 +84,25 @@ public class AgentReaderWithJavaAgentTest
         checkoutDirectory = new DirectoryInfo(checkoutLocation);
         if (checkoutDirectory.Exists)
         {
-            foreach (var file in checkoutDirectory.EnumerateFileSystemInfos("*", SearchOption.AllDirectories))
-            {
-                file.Attributes = FileAttributes.Normal;
-            }
-            foreach (var file in checkoutDirectory.EnumerateFileSystemInfos(".*", SearchOption.AllDirectories))
-            {
-                file.Attributes = FileAttributes.Normal;
-            }
-
-            checkoutDirectory.Delete(true);
+            RecursiveDelete(checkoutDirectory);
         }
 
         checkoutDirectory.Create();
         return checkoutLocation;
+    }
+
+    private static void RecursiveDelete(DirectoryInfo checkoutDirectory)
+    {
+        foreach (var file in checkoutDirectory.EnumerateFileSystemInfos("*", SearchOption.AllDirectories))
+        {
+            file.Attributes = FileAttributes.Normal;
+        }
+
+        foreach (var file in checkoutDirectory.EnumerateFileSystemInfos(".*", SearchOption.AllDirectories))
+        {
+            file.Attributes = FileAttributes.Normal;
+        }
+
+        checkoutDirectory.Delete(true);
     }
 }
