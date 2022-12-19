@@ -24,9 +24,9 @@ public class AgentReaderWithJavaAgentTest
 
         var expectedManifests = new List<string>
         {
-            "java/pom.xml",
-            "java/protoc/pom.xml",
-            "ruby/pom.xml"
+            Path.Combine("java","pom.xml"),
+            Path.Combine("java", "protoc", "pom.xml"),
+            Path.Combine("ruby", "pom.xml")
         };
         Assert.Equal(expectedManifests, actualManifests);
 
