@@ -58,7 +58,8 @@ public class Environment : IEnvironment
     public IList<string> DirectoriesInSearchPath =>
         System.Environment.GetEnvironmentVariable("PATH")!.Split(Path.PathSeparator).ToList();
 
-    public string HomeDirectory => System.Environment.GetEnvironmentVariable("HOME")!;
+    public string HomeDirectory => System.Environment.GetEnvironmentVariable("HOME") ??
+                                   System.Environment.GetFolderPath(System.Environment.SpecialFolder.UserProfile);
 
     public bool IsWindows
     {
