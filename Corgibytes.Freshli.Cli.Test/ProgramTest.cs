@@ -4,6 +4,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using FluentAssertions;
+using NLog;
+using NLog.Targets;
+using ServiceStack;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test;
@@ -56,7 +59,12 @@ public class ProgramTest
         var task = Task.Run(async () => await Program.Main("--loglevel", "Info", "--logfile", testfile));
         task.Wait();
 
-        var logFileContent = File.ReadAllText(testfile);
+        // force NLog to close the log file so that we can open it to read from
+        var target = LogManager.Configuration.FindTargetByName("file") as FileTarget;
+        target!.KeepFileOpen = false;
+
+        using var file = File.Open(testfile, FileMode.Open, FileAccess.Read);
+        var logFileContent = file.ReadToEnd();
         _consoleOutput.ToString().Should()
             .NotContain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
         logFileContent.Should().Contain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
