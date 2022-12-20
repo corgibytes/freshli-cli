@@ -172,17 +172,16 @@ Feature: analyze
         And a directory named "somewhere_else/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5" is not empty
         And a file named "somewhere_else/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5/f58c3f8773da4ea4f01d819b842e384b3a343d40/archive.zip" does not exist
 
-
     Scenario: Run the analysis for a local directory
-        When I run `git clone https://github.com/corgibytes/freshli-fixture-java-test /tmp/freshli-fixture-java-test`
-        When I run `freshli --loglevel Debug analyze --history-interval=1y /tmp/freshli-fixture-java-test`
-        Then the "~/.freshli/freshli.db" contains history stop point at "2022-01-01 00:00:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
-        And the "~/.freshli/freshli.db" contains history stop point at "2021-01-01 00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
-        And the "~/.freshli/freshli.db" contains history stop point at "2020-01-01 00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
-        And the output should contain:
+        When I clone "https://github.com/corgibytes/freshli-fixture-java-test" to "~/tmp/freshli-fixture-java-test"
+        When I run `freshli --loglevel Debug analyze --history-interval=1y ~/tmp/freshli-fixture-java-test` with resolved paths
+        Then it should pass with:
         """
         https://freshli.io/AnalysisRequests/
         """
+        And the "~/.freshli/freshli.db" contains history stop point at "2022-01-01 00:00:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
+        And the "~/.freshli/freshli.db" contains history stop point at "2021-01-01 00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
+        And the "~/.freshli/freshli.db" contains history stop point at "2020-01-01 00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
 
     Scenario: Run the analysis, trigger error event.
         When I run `freshli --loglevel Debug analyze https://github.com/this-repository-does-not-exist`

@@ -15,3 +15,7 @@ Then('a Git repository exists at {string} with a branch {string} checked out') d
   current_branch = run_from repo, 'git branch --show-current'
   expect(current_branch).to match(branch)
 end
+
+When('I clone {string} to {string}') do |repository_url, target_path|
+  `git clone #{repository_url} #{resolve_path(target_path)}`
+end
