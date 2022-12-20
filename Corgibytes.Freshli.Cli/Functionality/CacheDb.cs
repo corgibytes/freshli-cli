@@ -141,14 +141,15 @@ public class CacheDb : ICacheDb
 
     public async IAsyncEnumerable<CachedPackage> RetrieveCachedReleaseHistory(PackageURL packageUrl)
     {
+        await using var context = new CacheContext(_cacheDir);
         IAsyncEnumerable<CachedPackage> query;
+
         if (_releaseHistoryMemoryCache.TryGetValue(packageUrl.ToString(), out var cacheList))
         {
             query = cacheList.ToAsyncEnumerable();
         }
         else
         {
-            await using var context = new CacheContext(_cacheDir);
             query = context.CachedPackages
                 .Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString())
                 .AsAsyncEnumerable();
