@@ -12,6 +12,11 @@ public class Environment : IEnvironment
 
     public IList<string> GetListOfFiles(string directory)
     {
+        if (!Directory.Exists(directory))
+        {
+            return new List<string>();
+        }
+
         try
         {
             var files = Directory.GetFiles(directory)
