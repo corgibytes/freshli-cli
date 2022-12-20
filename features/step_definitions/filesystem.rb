@@ -51,3 +51,8 @@ Then('a directory named {string} is not empty') do |dirname|
   dirname = resolve_path dirname
   expect(Dir.empty?(dirname)).to match(false)
 end
+
+Then(/the freshli cache database located at "([^"]*)" is valid/) do |path|
+  step "a file named \"#{resolve_path(path)}\" should exist"
+  step "we can open a SQLite connection to \"#{resolve_path(path)}\""
+end
