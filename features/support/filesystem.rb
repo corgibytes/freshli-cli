@@ -9,7 +9,7 @@ def resolve_path(path)
   Aruba.configure do |config|
     if path.include? '~'
       path['~'] = Platform.normalize_file_separators(config.home_directory)
-    elsif path[0] != Platform.file_separator
+    elsif path[0] != Platform.file_separator && !path.start_with?(/[a-zA-Z]:/)
       path = Platform.normalize_file_separators("#{config.home_directory}/#{path}")
     end
   end
