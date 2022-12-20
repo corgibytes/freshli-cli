@@ -24,5 +24,7 @@ end
 # This version does _not_ sanitize the command, because that was causing `\t` to get replaced with a tab character
 When(/^I run `([^`]*)` with resolved paths$/) do |cmd|
   cmd = cmd.split(' ').map { |item| item.start_with?("~") ? resolve_path(item) : item }.join(' ')
+  # create escape sequences for any \ characters
+  cmd = cmd.gsub('\\', '\\\\\\')
   run_command_and_stop(cmd, fail_on_error: false)
 end
