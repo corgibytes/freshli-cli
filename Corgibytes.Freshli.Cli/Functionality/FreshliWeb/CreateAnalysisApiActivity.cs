@@ -26,7 +26,8 @@ public class CreateAnalysisApiActivity : IApplicationActivity
         await eventClient.Fire(new AnalysisApiCreatedEvent
         {
             AnalysisId = CachedAnalysisId,
-            ApiAnalysisId = apiAnalysisId
+            ApiAnalysisId = apiAnalysisId,
+            RepositoryUrl = cachedAnalysis.RepositoryUrl
         });
     }
 }
