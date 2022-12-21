@@ -14,17 +14,17 @@ Given('an empty executable file named {string}') do |filename|
   else
     FileUtils.touch filename
     FileUtils.chmod('a=x', filename)
-  end 
+  end
 end
 
 Given('a symbolic link from {string} to {string}') do |source, target|
   if Gem.win_platform?
     # Only attempt to create a link if the source exist. Since we're just copying a file on
-    # Windows to simulate symbolic links, the operation of creating a symbolic link without 
+    # Windows to simulate symbolic links, the operation of creating a symbolic link without
     # a valid source doesn't make sense on Windows.
     if (File.exist?(resolve_path(source)) || File.exist?(resolve_path("#{source}.bat")))
       begin
-        # The creation of symbolic links on Windows requires admin priveleges, 
+        # The creation of symbolic links on Windows requires admin priveleges,
         # so just copy the file instead
         FileUtils.cp(resolve_path(source), resolve_path(target))
       rescue
