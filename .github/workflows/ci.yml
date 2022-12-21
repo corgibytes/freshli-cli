@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [ main, release* ]
 
+env:
+  ECLINT_VERSION: 0.3.3
+
 jobs:
   build:
     strategy:
@@ -107,9 +110,8 @@ jobs:
         run: |
           dotnet build -o exe
 
-      - name: "[Lint] - Install eclint"
-        env:
-          ECLINT_VERSION: 0.3.3
+      - name: "[Lint] - Install eclint on Linux"
+        if: runner.os != 'Windows'
         run: |
           curl -L https://gitlab.com/greut/eclint/-/releases/v$ECLINT_VERSION/downloads/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz -o /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz && \
           mkdir -p $HOME/.local/opt/eclint && \
@@ -117,21 +119,38 @@ jobs:
           rm /tmp/eclint_${ECLINT_VERSION}_linux_x86_64.tar.gz
           echo "$HOME/.local/opt/eclint" >> $GITHUB_PATH
 
+      - name: "[Lint] - Install eclint on Windows"
+        if: runner.os == 'Windows'
+        run: |
+          New-Item -Type Directory -Force $HOME\.local\opt\eclint
+          Invoke-WebRequest -Uri https://gitlab.com/greut/eclint/-/releases/v$env:ECLINT_VERSION/downloads/eclint_${env:ECLINT_VERSION}_windows_x86_64.tar.gz -OutFile $HOME\.local\opt\eclint\eclint_${env:ECLINT_VERSION}_windows_x86_64.tar.gz
+          Set-Location $HOME\.local\opt\eclint
+          tar -zxvf .\eclint_${env:ECLINT_VERSION}_windows_x86_64.tar.gz
+          Write-Output "$HOME\.local\opt\eclint" | Out-File -Append $env:GITHUB_PATH
+
       - name: "[Lint] - Run all linters"
         run: |
           bin/lint.rb
 
-      - name: "[Test] - Install freshli-agent-java"
+      - name: "[Test] - Install freshli-agent-java on Linux"
+        if: runner.os != 'Windows'
         run: |
-          mkdir -p /tmp/freshli-agent-java && \
-          cd /tmp/freshli-agent-java && \
-          git clone https://github.com/corgibytes/freshli-agent-java && \
-          cd freshli-agent-java && \
-          ./gradlew installDist && \
-          sudo mkdir -p /usr/local/share/freshli-agent-java && \
-          sudo cp -r build/install/freshli-agent-java/* /usr/local/share/freshli-agent-java && \
-          ln -s /usr/local/share/freshli-agent-java/bin/freshli-agent-java /usr/local/bin/freshli-agent-java && \
-          rm -rf /tmp/freshli-agent-java
+          mkdir -p $HOME/.local/
+          cd $HOME/.local
+          git clone https://github.com/corgibytes/freshli-agent-java
+          cd freshli-agent-java
+          ./gradlew installDist
+          echo "$HOME/.local/opt/freshli-agent-java/build/install/freshli-agent-java/bin" >> $GITHUB_PATH
+
+      - name: "[Test] - Install freshli-agent-java on Windows"
+        if: runner.os != 'Windows'
+        run: |
+          New-Item -Type Directory -Force $HOME\.local\opt
+          Set-Location $HOME\.local\opt
+          git clone https://github.com/corgibytes/freshli-agent-java
+          Set-Location .\freshli-agent-java
+          .\gradlew installDist
+          Write-Output "$HOME\.local\opt\freshli-agent-java\build\install\freshli-agent-java\bin" | Out-File -Append $env:GITHUB_PATH
 
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
