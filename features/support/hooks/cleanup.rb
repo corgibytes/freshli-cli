@@ -3,7 +3,5 @@
 require 'fileutils'
 
 After do |scenario|
-  if scenario.status == :passed
-    FileUtils.rm_rf(aruba.config.home_directory)
-  end
+  FileUtils.rm_rf(aruba.config.home_directory) if scenario.status == :passed
 end
