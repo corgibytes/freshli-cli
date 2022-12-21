@@ -94,4 +94,10 @@ public class ProgramTest
         _consoleOutput.ToString().Should()
             .NotContain("Simulating loading the service provider, but the provider is null.");
     }
+
+    private static Regex SimulatedFailureMessageRegex() =>
+#pragma warning disable SYSLIB1045
+        new("^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline);
+#pragma warning restore SYSLIB1045
+
 }
