@@ -10,7 +10,7 @@ public class ConfigurationTest
 {
     private readonly Configuration _configuration;
     private readonly Mock<IEnvironment> _environment = new();
-    private string _homeRootPath = Path.Combine(Path.DirectorySeparatorChar.ToString(), "path", "to", "home", "dir");
+    private readonly string _homeRootPath = Path.Combine(Path.DirectorySeparatorChar.ToString(), "path", "to", "home", "dir");
 
     public ConfigurationTest()
     {
