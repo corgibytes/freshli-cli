@@ -102,7 +102,7 @@ public class Program
 
                 if (workerCount == 0)
                 {
-                    workerCount = System.Environment.ProcessorCount * 5;
+                    workerCount = System.Environment.ProcessorCount * 2;
                 }
 
                 Logger!.LogDebug("Starting workers. Worker count: {WorkerCount}", workerCount);
