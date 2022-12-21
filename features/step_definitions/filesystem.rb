@@ -17,12 +17,13 @@ Given('an empty executable file named {string}') do |filename|
   end
 end
 
+# rubocop:disable Style/RescueStandardError
 Given('a symbolic link from {string} to {string}') do |source, target|
   if Gem.win_platform?
     # Only attempt to create a link if the source exist. Since we're just copying a file on
     # Windows to simulate symbolic links, the operation of creating a symbolic link without
     # a valid source doesn't make sense on Windows.
-    if (File.exist?(resolve_path(source)) || File.exist?(resolve_path("#{source}.bat")))
+    if File.exist?(resolve_path(source)) || File.exist?(resolve_path("#{source}.bat"))
       begin
         # The creation of symbolic links on Windows requires admin priveleges,
         # so just copy the file instead
@@ -36,6 +37,7 @@ Given('a symbolic link from {string} to {string}') do |source, target|
     FileUtils.ln_sf(resolve_path(source), resolve_path(target))
   end
 end
+# rubocop:enable Style/RescueStandardError
 
 Given('I create a directory named {string}') do |dirname|
   dirname = resolve_path dirname
