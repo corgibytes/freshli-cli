@@ -140,6 +140,7 @@ jobs:
           git clone https://github.com/corgibytes/freshli-agent-java
           cd freshli-agent-java
           ./gradlew installDist
+          chmod a-x build/install/freshli-agent-java/bin/freshli-agent-java.bat
           echo "$HOME/.local/opt/freshli-agent-java/build/install/freshli-agent-java/bin" >> $GITHUB_PATH
 
       - name: "[Test] - Install freshli-agent-java on Windows"
