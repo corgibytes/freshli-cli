@@ -52,7 +52,7 @@ public class AgentReader : IAgentReader
             yield break;
         }
 
-        foreach (var packageUrlAndDate in packageUrlsWithDate.TrimEnd(System.Environment.NewLine.ToCharArray()).Split(System.Environment.NewLine))
+        foreach (var packageUrlAndDate in packageUrlsWithDate.Replace("\r", "").TrimEnd('\n').Split("\n"))
         {
             var separated = packageUrlAndDate.Split("\t");
 
