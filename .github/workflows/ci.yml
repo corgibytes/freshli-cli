@@ -152,6 +152,10 @@ jobs:
           .\gradlew installDist
           Write-Output "$HOME\.local\opt\freshli-agent-java\build\install\freshli-agent-java\bin" | Out-File -Append $env:GITHUB_PATH
 
+      - name: "[Test] - Confirm freshli-agent-java availability"
+        run: |
+          freshli-agent-java --help
+
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
           dotnet coverlet ./exe --target "dotnet" --targetargs "test exe/Corgibytes.Freshli.Cli.Test.dll" --format lcov
