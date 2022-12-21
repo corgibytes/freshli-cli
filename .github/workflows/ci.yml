@@ -135,8 +135,8 @@ jobs:
       - name: "[Test] - Install freshli-agent-java on Linux"
         if: runner.os != 'Windows'
         run: |
-          mkdir -p $HOME/.local/
-          cd $HOME/.local
+          mkdir -p $HOME/.local/opt
+          cd $HOME/.local/opt
           git clone https://github.com/corgibytes/freshli-agent-java
           cd freshli-agent-java
           ./gradlew installDist
