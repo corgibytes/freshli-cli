@@ -20,7 +20,7 @@ public class CacheDb : ICacheDb
     private readonly ConcurrentDictionary<int, CachedPackageLibYear> _packageLibYearMemoryCache = new();
     private readonly ConcurrentDictionary<string, IList<CachedPackage>> _releaseHistoryMemoryCache = new();
 
-    private string _cacheDir;
+    private readonly string _cacheDir;
 
     public CacheDb(string cacheDir) => _cacheDir = cacheDir;
 
