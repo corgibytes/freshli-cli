@@ -143,7 +143,7 @@ jobs:
           echo "$HOME/.local/opt/freshli-agent-java/build/install/freshli-agent-java/bin" >> $GITHUB_PATH
 
       - name: "[Test] - Install freshli-agent-java on Windows"
-        if: runner.os != 'Windows'
+        if: runner.os == 'Windows'
         run: |
           New-Item -Type Directory -Force $HOME\.local\opt
           Set-Location $HOME\.local\opt
