@@ -59,7 +59,7 @@ linter_failed = false
 if perform_eclint
   status = execute('eclint')
 
-  linter_failed = !status.success?
+  linter_failed ||= !status.success?
 end
 
 if perform_rubocop
@@ -68,13 +68,13 @@ if perform_rubocop
 
   status = execute('bundle exec rubocop --color') if status.success?
 
-  linter_failed = !status.success?
+  linter_failed ||= !status.success?
 end
 
 if perform_dotnet_format
   status = execute('dotnet format --verify-no-changes --severity info')
 
-  linter_failed = !status.success?
+  linter_failed ||= !status.success?
 end
 
 if perform_resharper
@@ -89,7 +89,7 @@ if perform_resharper
     end
   end
 
-  linter_failed = !status
+  linter_failed ||= !status
 end
 
 if linter_failed

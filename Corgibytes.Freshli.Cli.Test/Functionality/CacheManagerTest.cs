@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
+using Microsoft.Data.Sqlite;
 using Moq;
 using Xunit;
 
@@ -18,6 +19,10 @@ public class CacheManagerTest : IDisposable
 
     public void Dispose()
     {
+        SqliteConnection.ClearAllPools();
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+
         var tempCacheDirectory = new DirectoryInfo(_tempCacheDir);
         if (tempCacheDirectory.Exists)
         {
