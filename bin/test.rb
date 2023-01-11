@@ -39,6 +39,10 @@ rescue OptionParser::InvalidOption => e
   exit(-1)
 end
 
+# If not set already, then set the Java heap memory initial (10MB)
+# and maximum (1024MB) values
+ENV['_JAVA_OPTIONS'] = '-Xms10m -Xmx1024m' unless ENV['_JAVA_OPTIONS']
+
 status = execute("ruby #{File.dirname(__FILE__)}/build.rb") if perform_build
 
 if status.nil? || status.success?
