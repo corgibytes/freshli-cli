@@ -49,10 +49,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: "[Setup] - Confirm Java Memory Limits"
-        run: |
-          java -XshowSettings:vm
-
       - name: "[Versioning] - GitVersion Config"
         uses: gittools/actions/gitversion/execute@v0.9.15
         with:
