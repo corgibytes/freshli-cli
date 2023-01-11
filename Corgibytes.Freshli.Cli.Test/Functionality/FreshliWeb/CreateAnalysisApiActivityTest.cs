@@ -54,7 +54,9 @@ public class CreateAnalysisApiActivityTest
 
         _eventEngine.Verify(mock =>
             mock.Fire(It.Is<AnalysisApiCreatedEvent>(value =>
-                value.AnalysisId == cachedAnalysisId
+                value.AnalysisId == cachedAnalysisId &&
+                value.ApiAnalysisId == apiAnalysisId &&
+                value.RepositoryUrl == url
             )));
     }
 }

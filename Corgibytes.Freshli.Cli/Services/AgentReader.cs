@@ -52,7 +52,7 @@ public class AgentReader : IAgentReader
             yield break;
         }
 
-        foreach (var packageUrlAndDate in packageUrlsWithDate.TrimEnd('\n', '\r').Split("\n"))
+        foreach (var packageUrlAndDate in packageUrlsWithDate.Replace("\r", "").TrimEnd('\n').Split("\n"))
         {
             var separated = packageUrlAndDate.Split("\t");
 
@@ -72,7 +72,7 @@ public class AgentReader : IAgentReader
     {
         var rawManifests = await _commandInvoker.Run(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
 
-        var manifestList = rawManifests.IsEmpty() ? new List<string>() : rawManifests.TrimEnd('\n', '\r').Split("\n").ToList();
+        var manifestList = rawManifests.IsEmpty() ? new List<string>() : rawManifests.TrimEnd(System.Environment.NewLine.ToCharArray()).Split(System.Environment.NewLine).ToList();
         foreach (var manifest in manifestList)
         {
             yield return manifest;
@@ -84,6 +84,6 @@ public class AgentReader : IAgentReader
         var billOfMaterialsPath =
             await _commandInvoker.Run(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDateTime:o}", ".");
 
-        return billOfMaterialsPath.TrimEnd('\n', '\n');
+        return billOfMaterialsPath.TrimEnd(System.Environment.NewLine.ToCharArray());
     }
 }

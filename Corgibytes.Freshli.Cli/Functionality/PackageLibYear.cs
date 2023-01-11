@@ -22,17 +22,9 @@ public class PackageLibYear
         LibYear = libYear;
     }
 
-    public PackageLibYear(PackageURL packageUrl, string exceptionMessage)
-    {
-        PackageUrl = packageUrl;
-        ExceptionMessage = exceptionMessage;
-    }
-
     public PackageURL? CurrentVersion { get; }
-    public string? ExceptionMessage { get; }
     public PackageURL? LatestVersion { get; }
     public double LibYear { get; }
-    public PackageURL? PackageUrl { get; }
     public DateTimeOffset ReleaseDateCurrentVersion { get; }
     public DateTimeOffset ReleaseDateLatestVersion { get; }
     public DateTimeOffset AsOfDateTime { get; }
