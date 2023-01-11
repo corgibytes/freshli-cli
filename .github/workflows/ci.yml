@@ -9,6 +9,7 @@ on:
 
 env:
   ECLINT_VERSION: "0.3.3"
+  _JAVA_OPTIONS: "-Xms10m -Xmx1024m"
 
 jobs:
   build:
