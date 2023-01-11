@@ -8,7 +8,7 @@ on:
     branches: [ main, release* ]
 
 env:
-  ECLINT_VERSION: 0.3.3
+  ECLINT_VERSION: "0.3.3"
 
 jobs:
   build:
