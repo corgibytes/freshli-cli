@@ -23,6 +23,12 @@ jobs:
       BUILD_ARTIFACTS_FOLDER: build_artifacts
 
     steps:
+      - name: "[Setup] - Check null device status (Windows)"
+        if: runner.os != 'Windows'
+        shell: pwsh
+        run: |
+          sc query null
+
       - name: "[Setup] - Checkout code"
         uses: actions/checkout@v3
         with:
