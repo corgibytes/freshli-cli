@@ -1,6 +1,20 @@
 # frozen_string_literal: true
 
 require 'open3'
+require 'mkmf'
+
+def msbuild_dll_path
+  dotnet_exe_path = find_executable('dotnet')
+  dotnet_dir = File.dirname(dotnet_exe_path)
+  sdk_dir = File.join(dotnet_dir, 'sdk', Dir.children(File.join(dotnet_dir, 'sdk')).max)
+  result = File.join(sdk_dir, 'MSBuild.dll')
+  result = result.gsub('/', '\\') if Gem.win_platform?
+  result
+end
+
+def null_output_target
+  Gem.win_platform? ? 'NUL:' : '/dev/null'
+end
 
 def enable_dotnet_command_colors
   ENV['DOTNET_SYSTEM_CONSOLE_ALLOW_ANSI_COLOR_REDIRECTION'] = 'true'
