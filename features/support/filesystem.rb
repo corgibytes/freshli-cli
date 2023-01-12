@@ -26,14 +26,26 @@ def windows_safe_join(*paths)
   result
 end
 
+def expanded?(path)
+  path.start_with?('/') || path.start_with?('\\\\?')
+end
+
+def needs_unc_conversion?(path)
+  Gem.win_platform? && !path.start_with?('\\\\?')
+end
+
+def convert_to_unc(path)
+  windows_safe_join('\\\\?\\', path)
+end
+
 def normalize_and_expand_path(path)
-  unless path.start_with?('/') || path.start_with?('\\\\?')
+  unless expanded?(path)
     path = File.expand_path(path)
 
-    if Gem.win_platform? && !path.start_with?('\\\\?')
+    if needs_unc_conversion?(path)
       # Force path into UNC format. This works around issues with file names longer than the
       # default max on Windows, which is typically 260 characters
-      path = windows_safe_join('\\\\?\\', path)
+      path = convert_to_unc(path)
     end
   end
   path
