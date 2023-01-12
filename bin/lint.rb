@@ -81,7 +81,10 @@ if perform_resharper
   status = execute('dotnet tool restore')
 
   if status.success?
-    execute('dotnet jb inspectcode freshli-cli.sln --build -o=resharper.temp -f=text')
+    execute(
+      'dotnet jb inspectcode --build --output=resharper.temp --format=text ' \
+      "--toolset-path=\"#{msbuild_dll_path}\" freshli-cli.sln"
+    )
     File.open('resharper.temp', 'r') do |f|
       result = f.readlines
       status = result.length == 1
