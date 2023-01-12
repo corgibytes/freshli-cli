@@ -23,17 +23,17 @@ jobs:
       BUILD_ARTIFACTS_FOLDER: build_artifacts
 
     steps:
-      - name: "[Setup] - Set HOME env variable (Windows)"
-        if: ${{ runner.os == 'Windows' }}
-        shell: pwsh
-        run: |
-          Write-Output "HOME=$GITHUB_WORKSPACE" | Out-File -Append $env:GITHUB_ENV
-
       - name: "[Setup] - Checkout code"
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # Required for GitVersion
           submodules: 'recursive'
+
+      - name: "[Setup] - Set HOME env variable (Windows)"
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          Write-Output "HOME=$GITHUB_WORKSPACE" | Out-File -Append $env:GITHUB_ENV
 
       - name: "[Setup] - .NET Core"
         uses: actions/setup-dotnet@v3
