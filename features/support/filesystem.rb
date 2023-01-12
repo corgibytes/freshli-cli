@@ -73,7 +73,7 @@ end
 
 def windows_safe_recursive_delete(path)
   path = normalize_and_expand_path(path)
-  raise "#{path} is not a directory" unless File.directory?(path)
+  return unless File.directory?(path)
 
   windows_safe_delete_directory_contents(path)
 
