@@ -46,7 +46,7 @@ ENV['_JAVA_OPTIONS'] = '-Xms10m -Xmx1024m' unless ENV['_JAVA_OPTIONS']
 status = execute("ruby #{File.dirname(__FILE__)}/build.rb") if perform_build
 
 if status.nil? || status.success?
-  status = execute('bundle check > /dev/null')
+  status = execute("bundle check > #{null_output_target}")
   status = execute('bundle install') unless status.success?
 
   status = execute('dotnet test ./exe/Corgibytes.Freshli.Cli.Test.dll') if status.success?
