@@ -7,7 +7,7 @@ enable_dotnet_command_colors
 
 eclint_status = execute('eclint -fix')
 
-status = execute('bundle check > /dev/null')
+status = execute("bundle check > #{null_output_target}")
 status = execute('bundle install') unless status.success?
 
 resharper_status = execute('dotnet tool restore') if status.success?
