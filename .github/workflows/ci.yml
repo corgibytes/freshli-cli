@@ -131,7 +131,7 @@ jobs:
 
       - name: "[Lint] - Run all linters"
         run: |
-          bin/lint.rb
+          ruby bin/lint.rb
 
       - name: "[Test] - Install freshli-agent-java on Linux"
         if: runner.os != 'Windows'
