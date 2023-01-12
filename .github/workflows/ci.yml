@@ -33,7 +33,7 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         shell: pwsh
         run: |
-          Write-Output "HOME=$GITHUB_WORKSPACE" | Out-File -Append $env:GITHUB_ENV
+          Write-Output "HOME=$env:GITHUB_WORKSPACE" | Out-File -Append $env:GITHUB_ENV
 
       - name: "[Setup] - .NET Core"
         uses: actions/setup-dotnet@v3
