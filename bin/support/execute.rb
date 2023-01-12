@@ -13,7 +13,7 @@ def msbuild_dll_path
 end
 
 def null_output_target
-  Gem.win_platform? ? 'nul' : '/dev/null'
+  Gem.win_platform? ? '\\\\.\\nul' : '/dev/null'
 end
 
 def enable_dotnet_command_colors
