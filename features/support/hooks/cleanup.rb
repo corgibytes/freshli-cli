@@ -2,6 +2,6 @@
 
 require 'fileutils'
 
-After do |scenario|
-  FileUtils.rm_rf(aruba.config.home_directory) if scenario.status == :passed
+Before do
+  windows_safe_recursive_delete(aruba.config.home_directory)
 end
