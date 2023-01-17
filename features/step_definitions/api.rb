@@ -11,6 +11,8 @@ end
 
 # rubocop:disable Metrics/BlockLength
 Given('the Freshli Web API is available') do
+  raise 'API service does not have a valid port number' if api_service.port.nil?
+
   ENV['FRESHLI_WEB_API_BASE_URL'] = "http://localhost:#{api_service.port}"
 
   freshli_web_api
