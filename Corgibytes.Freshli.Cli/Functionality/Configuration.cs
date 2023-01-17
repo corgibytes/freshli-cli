@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
@@ -39,6 +40,9 @@ public class Configuration : IConfiguration
 
         set => _freshliWebApiBaseUrl = value != null! ? RemoveTrailingSlash(value) : value;
     }
+
+    public int WorkerCount { get; set; }
+    public int AgentServiceCount => Math.Max(WorkerCount / 4, 1);
 
     private static string RemoveTrailingSlash(string value) =>
         value.EndsWith("/") ? value.Remove(value.Length - 1, 1) : value;

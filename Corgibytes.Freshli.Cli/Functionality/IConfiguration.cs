@@ -7,4 +7,8 @@ public interface IConfiguration
 
     // ReSharper disable once UnusedMemberInSuper.Global
     public string FreshliWebApiBaseUrl { get; set; }
+
+    public int WorkerCount { get; set; }
+
+    public int AgentServiceCount { get; }
 }
