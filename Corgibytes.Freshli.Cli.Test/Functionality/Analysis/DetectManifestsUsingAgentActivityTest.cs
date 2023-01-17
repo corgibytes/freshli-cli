@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -29,7 +30,7 @@ public class DetectManifestsUsingAgentActivityTest
 
         const string agentExecutablePath = "/path/to/agent";
         var agentManager = new Mock<IAgentManager>();
-        agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(agentReader.Object);
+        agentManager.Setup(mock => mock.GetReader(agentExecutablePath, CancellationToken.None)).Returns(agentReader.Object);
 
         var cacheManager = new Mock<ICacheManager>();
         var cacheDb = new Mock<ICacheDb>();

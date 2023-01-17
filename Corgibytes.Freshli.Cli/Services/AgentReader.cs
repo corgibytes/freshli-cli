@@ -1,28 +1,29 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Agent;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using PackageUrl;
-using ServiceStack;
+using Package = Corgibytes.Freshli.Cli.Functionality.Package;
 
 namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentReader : IAgentReader
 {
     private readonly ICacheDb _cacheDb;
-    private readonly ICommandInvoker _commandInvoker;
+    private readonly Agent.Agent.AgentClient _client;
 
-    public AgentReader(ICacheManager cacheManager, ICommandInvoker commandInvoker, string agentExecutable)
+    public AgentReader(ICacheManager cacheManager, Agent.Agent.AgentClient client)
     {
         _cacheDb = cacheManager.GetCacheDb();
-        _commandInvoker = commandInvoker;
-        AgentExecutablePath = agentExecutable;
+        _client = client;
     }
-
-    public string AgentExecutablePath { get; }
 
     public async IAsyncEnumerable<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
@@ -41,28 +42,24 @@ public class AgentReader : IAgentReader
         }
 
         var packages = new List<Package>();
-        string packageUrlsWithDate;
-        try
-        {
-            packageUrlsWithDate = await _commandInvoker.Run(AgentExecutablePath,
-                $"retrieve-release-history {packageUrl.FormatWithoutVersion()}", ".", 3);
-        }
-        catch
-        {
-            yield break;
-        }
 
-        foreach (var packageUrlAndDate in packageUrlsWithDate.Replace("\r", "").TrimEnd('\n').Split("\n"))
+        var request = new Agent.Package { Purl = packageUrl.FormatWithoutVersion() };
+        var response = _client.RetrieveReleaseHistory(request);
+        await foreach (var responseItem in response.ResponseStream.ReadAllAsync())
         {
-            var separated = packageUrlAndDate.Split("\t");
-
             var package = new Package(
-                new PackageURL(packageUrl.Type, packageUrl.Namespace, packageUrl.Name, separated[0], null, null),
-                DateTimeOffset.ParseExact(separated[1], "yyyy'-'MM'-'dd'T'HH':'mm':'ssK", null)
+                new PackageURL(
+                    packageUrl.Type,
+                    packageUrl.Namespace,
+                    packageUrl.Name,
+                    responseItem.Version,
+                    packageUrl.Qualifiers,
+                    packageUrl.Subpath
+                ),
+                responseItem.ReleasedAt.ToDateTimeOffset()
             );
-
-            yield return package;
             packages.Add(package);
+            yield return package;
         }
 
         await _cacheDb.StoreCachedReleaseHistory(packages.Select(package => new CachedPackage(package)).ToList());
@@ -70,20 +67,21 @@ public class AgentReader : IAgentReader
 
     public async IAsyncEnumerable<string> DetectManifests(string projectPath)
     {
-        var rawManifests = await _commandInvoker.Run(AgentExecutablePath, $"detect-manifests {projectPath}", ".");
-
-        var manifestList = rawManifests.IsEmpty() ? new List<string>() : rawManifests.TrimEnd(System.Environment.NewLine.ToCharArray()).Split(System.Environment.NewLine).ToList();
-        foreach (var manifest in manifestList)
+        var request = new ProjectLocation() { Path = Path.GetFullPath(projectPath) };
+        await foreach (var responseItem in _client.DetectManifests(request).ResponseStream.ReadAllAsync())
         {
-            yield return manifest;
+            yield return responseItem.Path;
         }
     }
 
     public async ValueTask<string> ProcessManifest(string manifestPath, DateTimeOffset asOfDateTime)
     {
-        var billOfMaterialsPath =
-            await _commandInvoker.Run(AgentExecutablePath, $"process-manifest {manifestPath} {asOfDateTime:o}", ".");
-
-        return billOfMaterialsPath.TrimEnd(System.Environment.NewLine.ToCharArray());
+        var request = new ProcessingRequest
+        {
+            Manifest = new ManifestLocation() { Path = Path.GetFullPath(manifestPath) },
+            Moment = asOfDateTime.ToTimestamp()
+        };
+        var response = await _client.ProcessManifestAsync(request);
+        return response.Path;
     }
 }

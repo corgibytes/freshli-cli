@@ -1,5 +1,6 @@
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Services;
@@ -10,10 +11,13 @@ public class AgentManagerTest
     [Fact]
     public void GetReader()
     {
-        var manager = new AgentManager(new CacheManager(new Configuration(new Environment())), new CommandInvoker());
+        using var manager = new AgentManager(
+            new CacheManager(new Configuration(new Environment())),
+            new NullLogger<AgentManager>()
+        );
 
         var reader = manager.GetReader("freshli-agent-java");
 
-        Assert.Equal("freshli-agent-java", reader.AgentExecutablePath);
+        Assert.NotNull(reader);
     }
 }
