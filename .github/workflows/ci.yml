@@ -56,6 +56,12 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: "[Setup] - Set HOME env variable (Windows)"
+        if: ${{ runner.os == 'Windows' }}
+        shell: pwsh
+        run: |
+          "HOME=${env:GITHUB_WORKSPACE}" >> $env:GITHUB_ENV
+
       - name: "[Versioning] - GitVersion Config"
         uses: gittools/actions/gitversion/execute@v0.9.15
         with:
