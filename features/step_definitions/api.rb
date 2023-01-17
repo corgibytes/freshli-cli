@@ -2,17 +2,16 @@
 
 require 'uri'
 
+api_service = nil
 Pact.service_consumer 'Freshli' do
   has_pact_with 'Web API' do
-    mock_service :freshli_web_api do
-      port 52_077
-    end
+    service = mock_service :freshli_web_api
   end
 end
 
 # rubocop:disable Metrics/BlockLength
 Given('the Freshli Web API is available') do
-  ENV['FRESHLI_WEB_API_BASE_URL'] = 'http://localhost:52077'
+  ENV['FRESHLI_WEB_API_BASE_URL'] = "http://localhost:#{api_service.port}"
 
   freshli_web_api
     .upon_receiving('a request to create a new analysis')
