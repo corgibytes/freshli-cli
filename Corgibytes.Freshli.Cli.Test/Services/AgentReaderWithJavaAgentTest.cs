@@ -5,14 +5,23 @@ using System.Linq;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
+using Microsoft.Extensions.Logging.Abstractions;
 using Xunit;
 using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
 namespace Corgibytes.Freshli.Cli.Test.Services;
 
 [IntegrationTest]
-public class AgentReaderWithJavaAgentTest
+public class AgentReaderWithJavaAgentTest: IDisposable
 {
+    private AgentManager _agentManager;
+    public AgentReaderWithJavaAgentTest()
+    {
+        _agentManager = new AgentManager(
+            new CacheManager(new Configuration(new Environment())),
+            new NullLogger<AgentManager>()
+        );
+    }
 
     [Fact]
     public async Task DetectManifestsUsingProtobuf()
@@ -23,9 +32,9 @@ public class AgentReaderWithJavaAgentTest
 
         var expectedManifests = new List<string>
         {
-            Path.Combine("java","pom.xml"),
-            Path.Combine("java", "protoc", "pom.xml"),
-            Path.Combine("ruby", "pom.xml")
+            Path.GetFullPath(Path.Combine("java","pom.xml"), repositoryLocation),
+            Path.GetFullPath(Path.Combine("java", "protoc", "pom.xml"), repositoryLocation),
+            Path.GetFullPath(Path.Combine("ruby", "pom.xml"), repositoryLocation)
         };
         Assert.Equal(expectedManifests, actualManifests);
 
@@ -52,8 +61,8 @@ public class AgentReaderWithJavaAgentTest
     public async Task AgentReaderReturnsEmptyListWhenNoManifestsFound()
     {
         var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);
-        var reader = new AgentReader(new CacheManager(new Configuration(new Environment())), new CommandInvoker(),
-            "freshli-agent-java");
+
+        var reader = _agentManager.GetReader("freshli-agent-java");
         var repositoryLocation = Path.Combine(checkoutLocation, "invalid_repository");
 
         var actualManifests = await reader.DetectManifests(repositoryLocation).ToListAsync();
@@ -61,7 +70,7 @@ public class AgentReaderWithJavaAgentTest
         RecursiveDelete(checkoutDirectory);
     }
 
-    private static void SetupDirectory(out string repositoryLocation, out AgentReader reader,
+    private void SetupDirectory(out string repositoryLocation, out IAgentReader reader,
         out DirectoryInfo checkoutDirectory)
     {
         var checkoutLocation = CreateCheckoutLocation(out checkoutDirectory);
@@ -72,8 +81,7 @@ public class AgentReaderWithJavaAgentTest
 
         repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
 
-        reader = new AgentReader(new CacheManager(new Configuration(new Environment())), new CommandInvoker(),
-            "freshli-agent-java");
+        reader = _agentManager.GetReader("freshli-agent-java");
     }
 
     private static string CreateCheckoutLocation(out DirectoryInfo checkoutDirectory)
@@ -104,4 +112,6 @@ public class AgentReaderWithJavaAgentTest
 
         checkoutDirectory.Delete(true);
     }
+
+    public void Dispose() => _agentManager.Dispose();
 }

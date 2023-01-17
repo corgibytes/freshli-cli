@@ -44,6 +44,14 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <PackageReference Include="Google.Protobuf" Version="3.18.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.39.0" />
+    <PackageReference Include="Grpc.Net.ClientFactory" Version="2.39.0" />
+    <PackageReference Include="Grpc.Core.Api" Version="2.39.1" />
+    <PackageReference Include="Grpc.Tools" Version="2.40.0">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\CliOutput.resx">
@@ -57,5 +65,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>CliOutput.resx</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Protobuf Include="proto\freshli_agent.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>
