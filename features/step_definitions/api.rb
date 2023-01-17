@@ -5,7 +5,7 @@ require 'uri'
 api_service = nil
 Pact.service_consumer 'Freshli' do
   has_pact_with 'Web API' do
-    service = mock_service :freshli_web_api
+    api_service = mock_service :freshli_web_api
   end
 end
 
