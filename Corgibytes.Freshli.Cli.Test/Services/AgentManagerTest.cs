@@ -13,7 +13,8 @@ public class AgentManagerTest
     {
         using var manager = new AgentManager(
             new CacheManager(new Configuration(new Environment())),
-            new NullLogger<AgentManager>()
+            new NullLogger<AgentManager>(),
+            new Configuration(new Environment())
         );
 
         var reader = manager.GetReader("freshli-agent-java");

@@ -15,13 +15,13 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentManager : IAgentManager, IDisposable
 {
-    private const int MaxAgentReadersPerAgentExecutable = 5;
     private const int ServiceStartTimeoutInSeconds = 2;
 
     private readonly ICacheManager _cacheManager;
     private readonly ConcurrentDictionary<string, ConcurrentQueue<AgentDescriptor>> _agentsByExecutable = new();
 
     private readonly ILogger<AgentManager> _logger;
+    private readonly IConfiguration _configuration;
     private readonly PortFinder _portFinder = new();
 
     private static readonly List<Type> s_acceptableExceptions = new()
@@ -31,10 +31,11 @@ public class AgentManager : IAgentManager, IDisposable
         typeof(CommandExecutionException)
     };
 
-    public AgentManager(ICacheManager cacheManager, ILogger<AgentManager> logger)
+    public AgentManager(ICacheManager cacheManager, ILogger<AgentManager> logger, IConfiguration configuration)
     {
         _cacheManager = cacheManager;
         _logger = logger;
+        _configuration = configuration;
     }
 
     private ConcurrentQueue<AgentDescriptor> GetAgentsFor(string agentExecutablePath)
@@ -50,7 +51,7 @@ public class AgentManager : IAgentManager, IDisposable
         lock (agents)
         {
             AgentDescriptor agent;
-            if (agents.Count < MaxAgentReadersPerAgentExecutable)
+            if (agents.Count < _configuration.AgentServiceCount)
             {
                 _logger.LogDebug("Starting a new agent service");
                 var startAgentTask = StartAgentServiceOnAvailablePort(agentExecutablePath, cancellationToken);

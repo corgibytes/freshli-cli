@@ -19,7 +19,8 @@ public class AgentReaderWithJavaAgentTest : IDisposable
     {
         _agentManager = new AgentManager(
             new CacheManager(new Configuration(new Environment())),
-            new NullLogger<AgentManager>()
+            new NullLogger<AgentManager>(),
+            new Configuration(new Environment())
         );
     }
 
