@@ -245,3 +245,8 @@ max_line_length = unset
 [README.md]
 indent_size = unset
 max_line_length = unset
+
+[Corgibytes.Freshli.Cli/**/proto/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
+dotnet_diagnostic.CS8981.severity = none
