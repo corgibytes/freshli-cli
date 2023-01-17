@@ -8,11 +8,11 @@ using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
+using Corgibytes.Freshli.Cli.Test.Helpers;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Moq;
 using PackageUrl;
-using Tests.Client.Helpers;
 using Xunit;
 using Package = Corgibytes.Freshli.Cli.Functionality.Package;
 
