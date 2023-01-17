@@ -21,45 +21,45 @@
 
 #endregion
 
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Grpc.Core;
 
-namespace Tests.Client.Helpers
+namespace Corgibytes.Freshli.Cli.Test.Helpers;
+
+internal static class CallHelpers
 {
-    internal static class CallHelpers
+    // ReSharper disable once UnusedMember.Global
+    public static AsyncUnaryCall<TResponse> CreateAsyncUnaryCall<TResponse>(TResponse response)
     {
-        public static AsyncUnaryCall<TResponse> CreateAsyncUnaryCall<TResponse>(TResponse response)
-        {
-            return new AsyncUnaryCall<TResponse>(
-                Task.FromResult(response),
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => new Metadata(),
-                () => { });
-        }
+        return new AsyncUnaryCall<TResponse>(
+            Task.FromResult(response),
+            Task.FromResult(new Metadata()),
+            () => Status.DefaultSuccess,
+            () => new Metadata(),
+            () => { });
+    }
 
-        public static AsyncUnaryCall<TResponse> CreateAsyncUnaryCall<TResponse>(StatusCode statusCode)
-        {
-            var status = new Status(statusCode, string.Empty);
-            return new AsyncUnaryCall<TResponse>(
-                Task.FromException<TResponse>(new RpcException(status)),
-                Task.FromResult(new Metadata()),
-                () => status,
-                () => new Metadata(),
-                () => { });
-        }
+    // ReSharper disable once UnusedMember.Global
+    public static AsyncUnaryCall<TResponse> CreateAsyncUnaryCall<TResponse>(StatusCode statusCode)
+    {
+        var status = new Status(statusCode, string.Empty);
+        return new AsyncUnaryCall<TResponse>(
+            Task.FromException<TResponse>(new RpcException(status)),
+            Task.FromResult(new Metadata()),
+            () => status,
+            () => new Metadata(),
+            () => { });
+    }
 
-        public static AsyncServerStreamingCall<TResponse> CreateAsyncServerStreamingCall<TResponse>(
-            IAsyncStreamReader<TResponse> responses)
-        {
-            return new AsyncServerStreamingCall<TResponse>(
-                responses,
-                Task.FromResult(new Metadata()),
-                () => Status.DefaultSuccess,
-                () => new Metadata(),
-                () => { }
-            );
-        }
+    public static AsyncServerStreamingCall<TResponse> CreateAsyncServerStreamingCall<TResponse>(
+        IAsyncStreamReader<TResponse> responses)
+    {
+        return new AsyncServerStreamingCall<TResponse>(
+            responses,
+            Task.FromResult(new Metadata()),
+            () => Status.DefaultSuccess,
+            () => new Metadata(),
+            () => { }
+        );
     }
 }

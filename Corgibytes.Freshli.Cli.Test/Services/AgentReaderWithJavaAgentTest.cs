@@ -12,9 +12,9 @@ using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 namespace Corgibytes.Freshli.Cli.Test.Services;
 
 [IntegrationTest]
-public class AgentReaderWithJavaAgentTest: IDisposable
+public class AgentReaderWithJavaAgentTest : IDisposable
 {
-    private AgentManager _agentManager;
+    private readonly AgentManager _agentManager;
     public AgentReaderWithJavaAgentTest()
     {
         _agentManager = new AgentManager(
@@ -113,5 +113,10 @@ public class AgentReaderWithJavaAgentTest: IDisposable
         checkoutDirectory.Delete(true);
     }
 
-    public void Dispose() => _agentManager.Dispose();
+    public void Dispose()
+    {
+        _agentManager.Dispose();
+
+        GC.SuppressFinalize(this);
+    }
 }
