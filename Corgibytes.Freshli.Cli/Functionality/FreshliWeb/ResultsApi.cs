@@ -25,7 +25,8 @@ public class ResultsApi : IResultsApi, IDisposable
 
     private class UnexpectedStatusCode : Exception
     {
-        public UnexpectedStatusCode(HttpStatusCode expected, HttpStatusCode actual): base(BuildMessage(expected, actual))
+        public UnexpectedStatusCode(HttpStatusCode expected, HttpStatusCode actual) :
+            base(BuildMessage(expected, actual))
         {
         }
 
@@ -39,8 +40,10 @@ public class ResultsApi : IResultsApi, IDisposable
         HttpStatusCode expectedStatusCode, Func<HttpResponseMessage, Task<T>>? responseProcessor = null)
     {
         var uri = string.IsNullOrEmpty(url) ? null : new Uri(url, UriKind.RelativeOrAbsolute);
-        var request = new HttpRequestMessage(method, uri);
-        request.Content = content;
+        var request = new HttpRequestMessage(method, uri)
+        {
+            Content = content
+        };
 
         var response = await Policy
             .Handle<HttpRequestException>()
@@ -71,7 +74,8 @@ public class ResultsApi : IResultsApi, IDisposable
         });
     }
 
-    private async ValueTask ApiSendAsync(HttpMethod method, string url, JsonContent body, HttpStatusCode expectedStatusCode)
+    private async ValueTask ApiSendAsync(HttpMethod method, string url, JsonContent body,
+        HttpStatusCode expectedStatusCode)
     {
         await ApiSendAsync(method, url, body, expectedStatusCode, _ => true);
     }
@@ -88,7 +92,8 @@ public class ResultsApi : IResultsApi, IDisposable
 
         try
         {
-            return await ApiSendAsync(HttpMethod.Post, apiUrl, requestBody, HttpStatusCode.Created, async (response) =>
+            return await ApiSendAsync(HttpMethod.Post, apiUrl, requestBody, HttpStatusCode.Created,
+                async (response) =>
             {
                 var document = await response.Content.ReadFromJsonAsync<JsonNode>();
                 return document!["id"]!.GetValue<Guid>();
@@ -183,5 +188,10 @@ public class ResultsApi : IResultsApi, IDisposable
         }
     }
 
-    public void Dispose() => _client.Dispose();
+    public void Dispose()
+    {
+        _client.Dispose();
+
+        GC.SuppressFinalize(this);
+    }
 }

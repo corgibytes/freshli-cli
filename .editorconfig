@@ -21,6 +21,9 @@ tab_width = 8
 indent_size = 2
 insert_final_newline = unset
 
+[*.proto]
+indent_size = 2
+
 # Generated code
 [*{_AssemblyInfo.cs,.notsupported.cs}]
 generated_code = true
