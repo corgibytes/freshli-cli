@@ -11,7 +11,7 @@ Feature: Agents
         """
         freshli-agent-test
         """
-        And the output should contain:
+        And the output should contain file paths:
         """
         /tmp/aruba/bin/freshli-agent-test
         """
@@ -28,7 +28,7 @@ Feature: Agents
         """
         freshli-agent-test
         """
-        And the output should contain:
+        And the output should contain file paths:
         """
         /tmp/aruba/bin/freshli-agent-test
         """

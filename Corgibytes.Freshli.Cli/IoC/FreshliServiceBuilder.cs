@@ -1,4 +1,5 @@
 ﻿using System.CommandLine.Hosting;
+using System.Net.Http;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
 using Corgibytes.Freshli.Cli.CommandRunners.Cache;
@@ -34,10 +35,11 @@ public class FreshliServiceBuilder
         Services.AddSingleton(Configuration);
         Services.AddSingleton<IEnvironment, Environment>();
         Services.AddScoped<IExecutableFinder, ExecutableFinder>();
-        Services.AddScoped<ICacheManager, CacheManager>();
-        Services.AddScoped<IAgentManager, AgentManager>();
+        Services.AddSingleton<ICacheManager, CacheManager>();
+        Services.AddSingleton<IAgentManager, AgentManager>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
         Services.AddScoped<IRunner, Runner>();
+        Services.AddSingleton<HttpClient>();
         RegisterBaseCommand();
         RegisterAnalyzeCommand();
         RegisterFailCommand();
