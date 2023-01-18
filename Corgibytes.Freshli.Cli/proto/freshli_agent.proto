@@ -1,0 +1,47 @@
+﻿syntax = "proto3";
+
+package com.corgibytes.freshli.agent;
+
+option csharp_namespace = "Corgibytes.Freshli.Agent";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+service Agent {
+  rpc DetectManifests(ProjectLocation) returns (stream ManifestLocation);
+  rpc ProcessManifest(ProcessingRequest) returns (BomLocation);
+  rpc RetrieveReleaseHistory(Package) returns (stream PackageRelease);
+  rpc GetValidatingPackages(google.protobuf.Empty) returns (stream Package);
+  rpc GetValidatingRepositories(google.protobuf.Empty) returns (stream RepositoryLocation);
+  rpc Shutdown(google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+message ProjectLocation {
+  string path = 1;
+}
+
+message ManifestLocation {
+  string path = 1;
+}
+
+message ProcessingRequest {
+  ManifestLocation manifest = 1;
+  google.protobuf.Timestamp moment = 2;
+}
+
+message BomLocation {
+  string path = 1;
+}
+
+message Package {
+  string purl = 1;
+}
+
+message PackageRelease {
+  string version = 1;
+  google.protobuf.Timestamp released_at = 2;
+}
+
+message RepositoryLocation {
+  string url = 1;
+}

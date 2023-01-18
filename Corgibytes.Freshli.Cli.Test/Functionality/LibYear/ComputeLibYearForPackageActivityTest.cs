@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -49,7 +50,7 @@ public class ComputeLibYearForPackageActivityTest
         var cacheDb = new Mock<ICacheDb>();
         var historyStopPoint = new CachedHistoryStopPoint { AsOfDateTime = asOfDateTime };
 
-        agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(agentReader.Object);
+        agentManager.Setup(mock => mock.GetReader(agentExecutablePath, CancellationToken.None)).Returns(agentReader.Object);
         calculator.Setup(mock => mock.ComputeLibYear(agentReader.Object, package, asOfDateTime))
             .ReturnsAsync(packageLibYear);
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
