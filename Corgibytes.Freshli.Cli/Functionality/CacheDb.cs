@@ -9,6 +9,7 @@ using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using PackageUrl;
 using Polly;
+using Polly.Retry;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
@@ -21,6 +22,13 @@ public class CacheDb : ICacheDb
     private readonly ConcurrentDictionary<string, IList<CachedPackage>> _releaseHistoryMemoryCache = new();
 
     private readonly string _cacheDir;
+
+    private readonly AsyncRetryPolicy _sqliteRetryPolicy = Policy
+        .Handle<SqliteException>()
+        .WaitAndRetryAsync(6, retryAttempt =>
+            TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
+        );
+
 
     public CacheDb(string cacheDir) => _cacheDir = cacheDir;
 
@@ -41,7 +49,7 @@ public class CacheDb : ICacheDb
         await SaveChanges(context);
         await transaction.CommitAsync();
 
-        _analysisMemoryCache[analysis.Id] = analysis;
+        _analysisMemoryCache.TryAdd(analysis.Id, analysis);
         return analysis.Id;
     }
 
@@ -70,7 +78,7 @@ public class CacheDb : ICacheDb
         }
 
         await using var context = new CacheContext(_cacheDir);
-        value = await context.CachedGitSources.FindAsync(id.Id);
+        value = await _sqliteRetryPolicy.ExecuteAsync(async () => await context.CachedGitSources.FindAsync(id.Id));
         if (value != null)
         {
             _gitSourceMemoryCache.TryAdd(id.Id, value);
@@ -90,7 +98,7 @@ public class CacheDb : ICacheDb
 
     public async ValueTask AddCachedGitSource(CachedGitSource cachedGitSource)
     {
-        _gitSourceMemoryCache[cachedGitSource.Id] = cachedGitSource;
+        _gitSourceMemoryCache.TryAdd(cachedGitSource.Id, cachedGitSource);
 
         await using var context = new CacheContext(_cacheDir);
         await context.CachedGitSources.AddAsync(cachedGitSource);
@@ -105,7 +113,8 @@ public class CacheDb : ICacheDb
         }
 
         await using var context = new CacheContext(_cacheDir);
-        value = await context.CachedHistoryStopPoints.FindAsync(historyStopPointId);
+        value = await _sqliteRetryPolicy.ExecuteAsync(
+            async () => await context.CachedHistoryStopPoints.FindAsync(historyStopPointId));
         if (value != null)
         {
             _historyStopPointMemoryCache.TryAdd(historyStopPointId, value);
@@ -119,7 +128,7 @@ public class CacheDb : ICacheDb
         await using var context = new CacheContext(_cacheDir);
         var savedEntity = await context.CachedHistoryStopPoints.AddAsync(historyStopPoint);
         await SaveChanges(context);
-        _historyStopPointMemoryCache[savedEntity.Entity.Id] = savedEntity.Entity;
+        _historyStopPointMemoryCache.TryAdd(savedEntity.Entity.Id, savedEntity.Entity);
         return savedEntity.Entity.Id;
     }
 
@@ -131,7 +140,8 @@ public class CacheDb : ICacheDb
         }
 
         await using var context = new CacheContext(_cacheDir);
-        value = await context.CachedPackageLibYears.FindAsync(packageLibYearId);
+        value = await _sqliteRetryPolicy.ExecuteAsync(
+            async () => await context.CachedPackageLibYears.FindAsync(packageLibYearId));
         if (value != null)
         {
             _packageLibYearMemoryCache.TryAdd(packageLibYearId, value);
@@ -156,12 +166,15 @@ public class CacheDb : ICacheDb
         }
 
         var list = new List<CachedPackage>();
-        await foreach (var package in query)
+
+        await using var enumerator = query.GetAsyncEnumerator();
+        while (await _sqliteRetryPolicy.ExecuteAsync(async () => await enumerator.MoveNextAsync()))
         {
-            yield return package;
+            list.Add(enumerator.Current);
+            yield return enumerator.Current;
         }
 
-        _releaseHistoryMemoryCache[packageUrl.ToString()] = list;
+        _releaseHistoryMemoryCache.TryAdd(packageUrl.ToString(), list);
     }
 
     public async ValueTask StoreCachedReleaseHistory(List<CachedPackage> packages)
@@ -169,7 +182,7 @@ public class CacheDb : ICacheDb
         await using var context = new CacheContext(_cacheDir);
         await context.CachedPackages.AddRangeAsync(packages);
         var firstPackage = packages.First();
-        _releaseHistoryMemoryCache[firstPackage.PackageUrlWithoutVersion] = packages;
+        _releaseHistoryMemoryCache.TryAdd(firstPackage.PackageUrlWithoutVersion, packages);
         await SaveChanges(context);
     }
 
@@ -178,17 +191,12 @@ public class CacheDb : ICacheDb
         await using var context = new CacheContext(_cacheDir);
         var savedEntity = await context.CachedPackageLibYears.AddAsync(packageLibYear);
         await SaveChanges(context);
-        _packageLibYearMemoryCache[savedEntity.Entity.Id] = savedEntity.Entity;
+        _packageLibYearMemoryCache.TryAdd(savedEntity.Entity.Id, savedEntity.Entity);
         return savedEntity.Entity.Id;
     }
 
-    private static async ValueTask SaveChanges(DbContext context)
+    private async ValueTask SaveChanges(DbContext context)
     {
-        await Policy
-            .Handle<SqliteException>()
-            .WaitAndRetryAsync(6, retryAttempt =>
-                TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
-            )
-            .ExecuteAsync(async () => await context.SaveChangesAsync());
+        await _sqliteRetryPolicy.ExecuteAsync(async () => await context.SaveChangesAsync());
     }
 }

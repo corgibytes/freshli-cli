@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -23,7 +24,7 @@ public class GenerateBillOfMaterialsActivityTest
 
         const string agentExecutablePath = "/path/to/agent";
         var agentManager = new Mock<IAgentManager>();
-        agentManager.Setup(mock => mock.GetReader(agentExecutablePath)).Returns(javaAgentReader.Object);
+        agentManager.Setup(mock => mock.GetReader(agentExecutablePath, CancellationToken.None)).Returns(javaAgentReader.Object);
 
         var cacheManager = new Mock<ICacheManager>();
         var cacheDb = new Mock<ICacheDb>();
