@@ -13,31 +13,24 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
 {
     public async ValueTask<PackageLibYear> ComputeLibYear(IAgentReader agentReader, PackageURL packageUrl, DateTimeOffset asOfDateTime)
     {
-        try
+        var releaseHistory = new List<Package>();
+        await foreach (var package in agentReader.RetrieveReleaseHistory(packageUrl))
         {
-            var releaseHistory = new List<Package>();
-            await foreach (var package in agentReader.RetrieveReleaseHistory(packageUrl))
-            {
-                releaseHistory.Add(package);
-            }
-
-            var latestVersionPackageUrl = GetLatestVersion(releaseHistory, asOfDateTime);
-            var releaseDateCurrentVersion = GetReleaseDate(releaseHistory, packageUrl);
-            var releaseDateLatestVersion = GetReleaseDate(releaseHistory, latestVersionPackageUrl);
-
-            return new PackageLibYear(
-                releaseDateCurrentVersion,
-                packageUrl,
-                releaseDateLatestVersion,
-                latestVersionPackageUrl,
-                CalculateLibYear(releaseDateCurrentVersion, releaseDateLatestVersion),
-                asOfDateTime
-            );
+            releaseHistory.Add(package);
         }
-        catch (Exception exception)
-        {
-            return new PackageLibYear(packageUrl, exception.Message);
-        }
+
+        var latestVersionPackageUrl = GetLatestVersion(releaseHistory, asOfDateTime);
+        var releaseDateCurrentVersion = GetReleaseDate(releaseHistory, packageUrl);
+        var releaseDateLatestVersion = GetReleaseDate(releaseHistory, latestVersionPackageUrl);
+
+        return new PackageLibYear(
+            releaseDateCurrentVersion,
+            packageUrl,
+            releaseDateLatestVersion,
+            latestVersionPackageUrl,
+            CalculateLibYear(releaseDateCurrentVersion, releaseDateLatestVersion),
+            asOfDateTime
+        );
     }
 
     public static double CalculateLibYear(DateTimeOffset releaseDateCurrentVersion,

@@ -4,6 +4,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using FluentAssertions;
+using NLog;
+using NLog.Targets;
+using ServiceStack;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test;
@@ -18,7 +21,7 @@ public class ProgramTest
     [Fact]
     public void Validate_Main_loglevel_debug()
     {
-        var task = Task.Run(() => Program.Main("--loglevel", "Debug"));
+        var task = Task.Run(async () => await Program.Main("--loglevel", "Debug"));
         task.Wait();
 
         _consoleOutput.ToString().Should()
@@ -28,7 +31,7 @@ public class ProgramTest
     [Fact]
     public void Validate_Main_loglevel_info()
     {
-        var task = Task.Run(() => Program.Main("--loglevel", "Info"));
+        var task = Task.Run(async () => await Program.Main("--loglevel", "Info"));
         task.Wait();
 
         _consoleOutput.ToString().Should()
@@ -39,7 +42,7 @@ public class ProgramTest
     [Fact]
     public void Validate_Main_loglevel_default()
     {
-        var task = Task.Run(() => Program.Main());
+        var task = Task.Run(async () => await Program.Main());
         task.Wait();
 
         _consoleOutput.ToString().Should()
@@ -53,10 +56,15 @@ public class ProgramTest
     {
         var testfile = "testlog.log";
 
-        var task = Task.Run(() => Program.Main("--loglevel", "Info", "--logfile", testfile));
+        var task = Task.Run(async () => await Program.Main("--loglevel", "Info", "--logfile", testfile));
         task.Wait();
 
-        var logFileContent = File.ReadAllText(testfile);
+        // force NLog to close the log file so that we can open it to read from
+        var target = LogManager.Configuration.FindTargetByName("file") as FileTarget;
+        target!.KeepFileOpen = false;
+
+        using var file = File.Open(testfile, FileMode.Open, FileAccess.Read);
+        var logFileContent = file.ReadToEnd();
         _consoleOutput.ToString().Should()
             .NotContain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
         logFileContent.Should().Contain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
@@ -67,19 +75,21 @@ public class ProgramTest
     {
         MainCommand.ShouldIncludeFailCommand = true;
 
-        var task = Task.Run(() => Program.Main("fail"));
+        var task = Task.Run(async () => await Program.Main("fail"));
         task.Wait();
 
+#pragma warning disable SYSLIB1045
         _consoleOutput.ToString().Should().MatchRegex(new Regex(
-            "^ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
+            "ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
         ));
+#pragma warning restore SYSLIB1045
     }
 
     [Fact]
     public void ValidateServiceProviderIsLoaded()
     {
         MainCommand.ShouldIncludeLoadServiceCommand = true;
-        var task = Task.Run(() => Program.Main("load-service"));
+        var task = Task.Run(async () => await Program.Main("load-service"));
         task.Wait();
 
         _consoleOutput.ToString().Should().Contain("All good! Service provider is not null.");

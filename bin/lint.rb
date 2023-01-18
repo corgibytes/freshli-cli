@@ -59,29 +59,31 @@ linter_failed = false
 if perform_eclint
   status = execute('eclint')
 
-  linter_failed = !status.success?
+  linter_failed ||= !status.success?
 end
 
 if perform_rubocop
-  status = execute('bundle check > /dev/null')
-  status = execute('bundle install') unless status.success?
+  status = execute('bundle install')
 
   status = execute('bundle exec rubocop --color') if status.success?
 
-  linter_failed = !status.success?
+  linter_failed ||= !status.success?
 end
 
 if perform_dotnet_format
   status = execute('dotnet format --verify-no-changes --severity info')
 
-  linter_failed = !status.success?
+  linter_failed ||= !status.success?
 end
 
 if perform_resharper
   status = execute('dotnet tool restore')
 
   if status.success?
-    execute('dotnet jb inspectcode freshli-cli.sln --build -o=resharper.temp -f=text')
+    execute(
+      'dotnet jb inspectcode --build --output=resharper.temp --format=text ' \
+      "--toolset-path=\"#{msbuild_dll_path}\" freshli-cli.sln"
+    )
     File.open('resharper.temp', 'r') do |f|
       result = f.readlines
       status = result.length == 1
@@ -89,7 +91,7 @@ if perform_resharper
     end
   end
 
-  linter_failed = !status
+  linter_failed ||= !status
 end
 
 if linter_failed

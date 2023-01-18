@@ -11,12 +11,9 @@ public class CacheContext : DbContext
 
     public CacheContext(string cacheDir)
     {
-        CacheDir = new DirectoryInfo(cacheDir);
-        DbPath = Path.Join(CacheDir.ToString(), CacheDbName);
+        DbPath = Path.Join(cacheDir, CacheDbName);
     }
 
-    // ReSharper disable once UnusedMember.Global
-    private DirectoryInfo CacheDir { get; }
     private string DbPath { get; }
 
     // ReSharper disable once UnusedMember.Global
