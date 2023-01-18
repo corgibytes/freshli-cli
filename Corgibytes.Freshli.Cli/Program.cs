@@ -98,19 +98,14 @@ public class Program
             .AddMiddleware(async (context, next) => { await LogExecution(context, next); })
             .AddMiddleware(async (context, next) =>
             {
-                var workerCount = context.ParseResult.GetOptionValueByName<int>("workers");
+                ParseWorkersOption(context);
 
-                if (workerCount == 0)
-                {
-                    workerCount = System.Environment.ProcessorCount * 2;
-                }
-
-                Logger!.LogDebug("Starting workers. Worker count: {WorkerCount}", workerCount);
+                Logger!.LogDebug("Starting workers. Worker count: {WorkerCount}", Configuration.WorkerCount);
 
                 var host = context.BindingContext.GetRequiredService<IHost>();
 
                 var startTasks = new List<Task>();
-                while (Workers.Count < workerCount)
+                while (Workers.Count < Configuration.WorkerCount)
                 {
                     var worker = ActivatorUtilities.CreateInstance<QueuedHostedService>(host.Services);
                     Workers.Add(worker);
@@ -138,6 +133,18 @@ public class Program
             .UseHelp();
 
         return builder;
+    }
+
+    private static void ParseWorkersOption(InvocationContext context)
+    {
+        var workerCount = context.ParseResult.GetOptionValueByName<int>("workers");
+
+        if (workerCount == 0)
+        {
+            workerCount = System.Environment.ProcessorCount;
+        }
+
+        Configuration.WorkerCount = workerCount;
     }
 
     private static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)

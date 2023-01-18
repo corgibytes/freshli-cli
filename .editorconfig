@@ -21,6 +21,9 @@ tab_width = 8
 indent_size = 2
 insert_final_newline = unset
 
+[*.proto]
+indent_size = 2
+
 # Generated code
 [*{_AssemblyInfo.cs,.notsupported.cs}]
 generated_code = true
@@ -245,3 +248,8 @@ max_line_length = unset
 [README.md]
 indent_size = unset
 max_line_length = unset
+
+[Corgibytes.Freshli.Cli/**/proto/*.cs]
+generated_code = true
+dotnet_analyzer_diagnostic.severity = none
+dotnet_diagnostic.CS8981.severity = none

@@ -8,7 +8,6 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public interface IAgentReader
 {
-    public string AgentExecutablePath { get; }
     public IAsyncEnumerable<Package> RetrieveReleaseHistory(PackageURL packageUrl);
     public IAsyncEnumerable<string> DetectManifests(string projectPath);
     public ValueTask<string> ProcessManifest(string manifestPath, DateTimeOffset asOfDateTime);
