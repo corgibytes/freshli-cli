@@ -41,6 +41,14 @@ Data is sent to the [Freshli app website](https://freshli.io) via API calls. You
 >
 > A progress bar has not been [implemented yet](https://github.com/corgibytes/freshli-cli/issues/370).
 
+> :memo: Suggestion
+>
+> On Windows, you will see performance benefits if you exclude the cache directory (default `$HOME/.freshli`) from real-time security analysis by the malware engine that's built into Windows. You can do this by opening a PowerShell session as an administrator and running the following command:
+>
+>       Add-MpPreference -ExclusionPath $HOME/.freshli
+>
+> If you're working with this repository as a developer, then you'll also want to add an exclusion for the `./tmp` directory, which is used by the test suite.
+
 #### Analyzing a remote Git repository
 
 To analyze a remote Git repository, provide a Git URL that can be used to clone the repository, such as `https://github.com/corgibytes/freshli-fixture-java-test`.

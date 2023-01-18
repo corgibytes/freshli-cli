@@ -155,9 +155,9 @@ public class ComputeHistoryActivityTest
         listCommits.HasCommitsAvailable(new List<GitCommit>
         {
             new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
-                new DateTimeOffset(2022, 1, 29, 00, 00, 00, TimeSpan.Zero)),
+                new DateTimeOffset(DateTime.Now.Year, 1, 29, 00, 00, 00, TimeSpan.Zero)),
             new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
-                new DateTimeOffset(2022, 1, 30, 00, 00, 00, TimeSpan.Zero))
+                new DateTimeOffset(DateTime.Now.Year, 1, 30, 00, 00, 00, TimeSpan.Zero))
         });
 
         var computeHistory = new ComputeHistory(listCommits, new HistoryIntervalParser());

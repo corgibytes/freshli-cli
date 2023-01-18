@@ -24,13 +24,13 @@ public class AgentsVerifier
             ? Path.DirectorySeparatorChar + "repositories"
             : Path.DirectorySeparatorChar + languageName;
         var rawCommandOutput = await _commandInvoker.Run(agentFileAndPath, argument, ".");
-        var validatingRepositoriesUrl = rawCommandOutput.TrimEnd('\n', '\r');
+        var validatingRepositoriesUrl = rawCommandOutput.TrimEnd(System.Environment.NewLine.ToCharArray());
 
-        foreach (var url in validatingRepositoriesUrl.Split("\n"))
+        foreach (var url in validatingRepositoriesUrl.Split(System.Environment.NewLine))
         {
             try
             {
-                var lastIndexOf = url.LastIndexOf(Path.DirectorySeparatorChar) + 1;
+                var lastIndexOf = url.LastIndexOf("/", StringComparison.Ordinal) + 1;
                 var targetDirectory = Path.Join(cacheDir, languageName, url.Trim().Substring(lastIndexOf, url.Length - lastIndexOf));
 
                 if (await Task.Run(() => !targetDirectory.DirectoryExists()))

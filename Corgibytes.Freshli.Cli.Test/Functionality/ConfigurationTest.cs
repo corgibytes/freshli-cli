@@ -1,3 +1,4 @@
+using System.IO;
 using Corgibytes.Freshli.Cli.Functionality;
 using Moq;
 using Xunit;
@@ -9,10 +10,11 @@ public class ConfigurationTest
 {
     private readonly Configuration _configuration;
     private readonly Mock<IEnvironment> _environment = new();
+    private readonly string _homeRootPath = Path.Combine(Path.DirectorySeparatorChar.ToString(), "path", "to", "home", "dir");
 
     public ConfigurationTest()
     {
-        _environment.Setup(mock => mock.HomeDirectory).Returns("/path/to/home/dir");
+        _environment.Setup(mock => mock.HomeDirectory).Returns(_homeRootPath);
         _configuration = new Configuration(_environment.Object);
     }
 
@@ -22,20 +24,23 @@ public class ConfigurationTest
     [Fact]
     public void GitPathCanBeModified()
     {
-        _configuration.GitPath = "/new/git/path";
+        var newGitPath = Path.Combine(Path.DirectorySeparatorChar.ToString(), "new", "git", "path");
+        _configuration.GitPath = newGitPath;
 
-        Assert.Equal("/new/git/path", _configuration.GitPath);
+        Assert.Equal(newGitPath, _configuration.GitPath);
     }
 
     [Fact]
-    public void CacheDirHasADefaultValue() => Assert.Equal("/path/to/home/dir/.freshli", _configuration.CacheDir);
+    public void CacheDirHasADefaultValue() => Assert.Equal(
+        Path.Combine(_homeRootPath, ".freshli"), _configuration.CacheDir);
 
     [Fact]
     public void CacheDirValueCanBeModified()
     {
-        _configuration.CacheDir = "/new/cache/directory";
+        var newCacheDir = Path.Combine(Path.DirectorySeparatorChar.ToString(), "new", "cache", "directory");
+        _configuration.CacheDir = newCacheDir;
 
-        Assert.Equal("/new/cache/directory", _configuration.CacheDir);
+        Assert.Equal(newCacheDir, _configuration.CacheDir);
     }
 
     [Fact]
