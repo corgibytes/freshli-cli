@@ -95,7 +95,7 @@ public class CacheManager : ICacheManager
     {
         var bomFileInfo = new FileInfo(bomFilePath);
 
-        var bomCacheDirInfo = await GetDirectoryInCache("boms", analysisId.ToString(), asOfDateTime.ToString("u"));
+        var bomCacheDirInfo = await GetDirectoryInCache("boms", analysisId.ToString(), asOfDateTime.UtcDateTime.ToString("yyyyMMddTHHmmssZ"));
         var cachedBomFilePath = Path.Combine(bomCacheDirInfo.FullName, bomFileInfo.Name);
 
         // use Task.Run to wait for file IO to complete
