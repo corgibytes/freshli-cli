@@ -50,13 +50,29 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
             options.CacheDir);
         console.Out.WriteLine(strDestroyingCache);
 
-        await ActivityEngine.Dispatch(new DestroyCacheActivity());
+        var activity = new DestroyCacheActivity();
 
-        var exitCode = await WaitForCacheDestroyEvents(console);
+        var exitCode = true.ToExitCode();
+
+        EventEngine.On<CacheDestroyFailedEvent>(destroyEvent =>
+        {
+            console.Error.WriteLine(destroyEvent.ResultMessage);
+            exitCode = false.ToExitCode();
+            return ValueTask.CompletedTask;
+        });
+
+        EventEngine.On<CacheDestroyedEvent>(destroyEvent =>
+        {
+            exitCode = destroyEvent.ExitCode;
+            return ValueTask.CompletedTask;
+        });
+
+        await ActivityEngine.Dispatch(activity);
+        await ActivityEngine.Wait(activity);
         return exitCode;
     }
 
-    private async ValueTask<int> WaitForCacheDestroyEvents(IConsole console)
+    private async ValueTask<int> WaitForCacheDestroyEvents(IApplicationActivity activity, IConsole console)
     {
         var exitCode = true.ToExitCode();
 
@@ -73,7 +89,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
             return ValueTask.CompletedTask;
         });
 
-        await ActivityEngine.Wait();
+        await ActivityEngine.Wait(activity);
 
         return exitCode;
     }
