@@ -14,8 +14,10 @@ using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
+using CycloneDX.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
+using Spectre.Console;
 
 namespace Corgibytes.Freshli.Cli.IoC;
 
@@ -60,7 +62,7 @@ public class FreshliServiceBuilder
 
     private void RegisterAnalyzeCommand()
     {
-        Services.AddScoped<IAnalyzeProgressReporter, PlainTextAnalyzeProgressReporter>();
+        Services.AddScoped<IAnalyzeProgressReporter, SpectreConsoleAnalyzeProgressReporter>();
         Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
         Services.AddScoped<IResultsApi, ResultsApi>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
