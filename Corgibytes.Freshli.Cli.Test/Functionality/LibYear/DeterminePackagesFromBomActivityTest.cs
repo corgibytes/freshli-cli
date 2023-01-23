@@ -86,4 +86,36 @@ public class DeterminePackagesFromBomActivityTest
             value.Exception == exception
         )));
     }
+
+    [Fact]
+    public async Task HandleWhenNoPackagesAreFound()
+    {
+        var analysisId = Guid.NewGuid();
+        const string pathToBom = "/path/to/bom";
+        const string pathToAgentExecutable = "/path/to/agent";
+        const int historyStopPointId = 29;
+
+        var eventClient = new Mock<IApplicationEventEngine>();
+
+        var activity =
+            new DeterminePackagesFromBomActivity(analysisId, historyStopPointId, pathToBom, pathToAgentExecutable);
+
+        var serviceProvider = new Mock<IServiceProvider>();
+
+        var bomReader = new Mock<IBomReader>();
+
+        bomReader.Setup(mock => mock.AsPackageUrls(pathToBom)).Returns(new List<PackageURL>());
+
+        eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(IBomReader))).Returns(bomReader.Object);
+
+        await activity.Handle(eventClient.Object);
+
+        eventClient.Verify(mock =>
+            mock.Fire(It.Is<NoPackagesFoundEvent>(value =>
+                value.AnalysisId == analysisId &&
+                value.HistoryStopPointId == historyStopPointId
+            )
+        ));
+    }
 }
