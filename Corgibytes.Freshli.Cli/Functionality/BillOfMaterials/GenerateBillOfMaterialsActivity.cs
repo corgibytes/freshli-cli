@@ -50,7 +50,6 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
 
             var fullManifestPath = Path.Combine(historyPointPath, ManifestPath);
             var bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
-            await Console.Out.WriteLineAsync($"Storing {bomFilePath} in cache");
             var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
 
             await eventClient.Fire(new BillOfMaterialsGeneratedEvent(
