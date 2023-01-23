@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
@@ -36,10 +37,18 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb();
             var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+
+            var manifestsFound = false;
             await foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint?.LocalPath!))
             {
+                manifestsFound = true;
                 await eventClient.Fire(new ManifestDetectedEvent(AnalysisId, HistoryStopPointId, AgentExecutablePath,
                     manifestPath));
+            }
+
+            if (!manifestsFound)
+            {
+                await eventClient.Fire(new NoManifestsDetectedEvent(AnalysisId, HistoryStopPointId));
             }
         }
         catch (Exception error)
