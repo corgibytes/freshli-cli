@@ -129,8 +129,10 @@ public class FreshliServiceBuilder
     private void RegisterApplicationEngine()
     {
         Services.AddSingleton<ApplicationEngine>();
-        Services.AddSingleton<IApplicationActivityEngine, ApplicationEngine>();
-        Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>();
+        Services.AddSingleton<IApplicationActivityEngine, ApplicationEngine>(serviceProvider =>
+            serviceProvider.GetRequiredService<ApplicationEngine>());
+        Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>(serviceProvider =>
+            serviceProvider.GetRequiredService<ApplicationEngine>());
         Services.AddSingleton<ICommandInvoker, CommandInvoker>();
 
         Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
