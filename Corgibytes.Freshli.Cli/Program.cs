@@ -10,6 +10,7 @@ using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.IoC;
+using Corgibytes.Freshli.Cli.Logging;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,6 +19,7 @@ using NLog.Config;
 using NLog.Extensions.Hosting;
 using NLog.Extensions.Logging;
 using NLog.Targets;
+using Spectre.Console;
 using static System.String;
 using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 using LogLevel = NLog.LogLevel;
@@ -27,28 +29,32 @@ namespace Corgibytes.Freshli.Cli;
 public class Program
 {
     private const string DefaultLogLayout =
-        "${date}|${level:uppercase=true:padding=5}|${logger}:${callsite-linenumber}|${message} ${exception}";
+        "${date} | " +
+        "${level:uppercase=true:padding=5} | " +
+        "${logger}:${callsite-linenumber} | " +
+        "${message} ${exception}";
 
-    private static ILogger<Program>? Logger { get; set; }
-    private static IConfiguration Configuration { get; } = new Configuration(new Environment());
-    private static List<QueuedHostedService> Workers { get; } = new();
+    private ILogger<Program>? Logger { get; set; }
+    private IConfiguration Configuration { get; } = new Configuration(new Environment());
+    private List<QueuedHostedService> Workers { get; } = new();
 
     public static async Task<int> Main(params string[] args)
     {
-        var cmdBuilder = CreateCommandLineBuilder();
-        var parser = cmdBuilder.UseDefaults()
-            .Build();
+        var program = new Program();
+        var cmdBuilder = program.CreateCommandLineBuilder();
+        var parser = cmdBuilder.UseDefaults().Build();
         return await parser.InvokeAsync(args);
     }
 
-    private static void ConfigureLogging(string? consoleLogLevel, string? logfile)
+    private static void ConfigureLogging(IServiceProvider serviceProvider, string? consoleLogLevel, string? logfile)
     {
         var desiredLevel = LogLevel.FromString(consoleLogLevel);
 
         var config = new LoggingConfiguration();
         if (IsNullOrEmpty(logfile))
         {
-            var consoleTarget = new ColoredConsoleTarget();
+            var ansiConsole = serviceProvider.GetRequiredService<IAnsiConsole>();
+            var consoleTarget = new SpectreAnsiConsoleTarget(ansiConsole);
             config.AddTarget("console", consoleTarget);
             consoleTarget.Layout = DefaultLogLayout;
             config.LoggingRules.Add(new LoggingRule("*", desiredLevel, consoleTarget));
@@ -65,7 +71,7 @@ public class Program
         LogManager.Configuration = config;
     }
 
-    private static IHostBuilder CreateHostBuilder(string[] args)
+    private IHostBuilder CreateHostBuilder(string[] args)
     {
         return Host.CreateDefaultBuilder(args)
             .ConfigureLogging(logging =>
@@ -73,7 +79,6 @@ public class Program
                 logging.ClearProviders();
                 logging.AddNLog();
             })
-            .UseNLog()
             .ConfigureServices((_, services) =>
             {
                 new FreshliServiceBuilder(services, Configuration).Register();
@@ -82,13 +87,16 @@ public class Program
     }
 
 
-    public static CommandLineBuilder CreateCommandLineBuilder()
+    public CommandLineBuilder CreateCommandLineBuilder()
     {
         var builder = new CommandLineBuilder(new MainCommand(Configuration))
             .UseHost(CreateHostBuilder)
             .AddMiddleware(async (context, next) =>
             {
+                var host = context.BindingContext.GetRequiredService<IHost>();
+
                 await Task.Run(() => ConfigureLogging(
+                    host.Services,
                     context.ParseResult.GetOptionValueByName<string>("loglevel"),
                     context.ParseResult.GetOptionValueByName<string>("logfile"))
                 );
@@ -135,7 +143,7 @@ public class Program
         return builder;
     }
 
-    private static void ParseWorkersOption(InvocationContext context)
+    private void ParseWorkersOption(InvocationContext context)
     {
         var workerCount = context.ParseResult.GetOptionValueByName<int>("workers");
 
@@ -147,7 +155,7 @@ public class Program
         Configuration.WorkerCount = workerCount;
     }
 
-    private static async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
+    private async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
     {
         var commandLine = context.ParseResult.ToString();
 
@@ -167,7 +175,7 @@ public class Program
         }
     }
 
-    private static void LogException(Exception error)
+    private void LogException(Exception error)
     {
         Logger?.LogError("{ExceptionMessage}", error.Message);
         if (error.StackTrace != null)
