@@ -27,8 +27,9 @@ public class CachePrepareCommandRunner : CommandRunner<CacheCommand, CachePrepar
     {
         Configuration.CacheDir = options.CacheDir;
 
-        await ActivityEngine.Dispatch(new PrepareCacheActivity());
-        await ActivityEngine.Wait();
+        var activity = new PrepareCacheActivity();
+        await ActivityEngine.Dispatch(activity);
+        await ActivityEngine.Wait(activity);
         return 0;
     }
 }
