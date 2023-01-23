@@ -48,6 +48,11 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
                     Package = packageUrl
                 });
             }
+
+            if (packageUrls.Count == 0)
+            {
+                await eventClient.Fire(new NoPackagesFoundEvent(AnalysisId, HistoryStopPointId));
+            }
         }
         catch (Exception error)
         {
