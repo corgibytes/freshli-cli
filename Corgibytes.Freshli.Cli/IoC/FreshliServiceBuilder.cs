@@ -33,6 +33,7 @@ public class FreshliServiceBuilder
     public void Register()
     {
         Services.AddSingleton(Configuration);
+        Services.AddSingleton(AnsiConsole.Create(new AnsiConsoleSettings()));
         Services.AddSingleton<IEnvironment, Environment>();
         Services.AddScoped<IExecutableFinder, ExecutableFinder>();
         Services.AddSingleton<ICacheManager, CacheManager>();
