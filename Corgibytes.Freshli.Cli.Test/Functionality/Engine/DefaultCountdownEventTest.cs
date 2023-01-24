@@ -7,9 +7,9 @@ using Xunit;
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Engine;
 
 [IntegrationTest]
-public class DefaultCountdownEventTest
+public abstract class DefaultCountdownEventTest
 {
-    public class WithZeroInitialCount
+    public class WithZeroInitialCount : IDisposable
     {
         private readonly ICountdownEvent _countdownEvent = new DefaultCountdownEvent(0);
         private bool _wasEventHandlerCalled = false;
@@ -177,9 +177,16 @@ public class DefaultCountdownEventTest
             Assert.Equal(0, _countdownEvent.CurrentCount);
             Assert.False(_wasEventHandlerCalled);
         }
+
+        public void Dispose()
+        {
+            _countdownEvent.Dispose();
+
+            GC.SuppressFinalize(this);
+        }
     }
 
-    public class WithPositiveInitialCount
+    public class WithPositiveInitialCount : IDisposable
     {
         private readonly ICountdownEvent _countdownEvent = new DefaultCountdownEvent(1);
         private bool _wasEventHandlerCalled = false;
@@ -478,6 +485,12 @@ public class DefaultCountdownEventTest
             Assert.Equal(1, _countdownEvent.CurrentCount);
             Assert.False(_wasEventHandlerCalled);
         }
-    }
 
+        public void Dispose()
+        {
+            _countdownEvent.Dispose();
+
+            GC.SuppressFinalize(this);
+        }
+    }
 }
