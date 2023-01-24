@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
 public class BillOfMaterialsGeneratedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task CorrectlyDispatchesComputeLibYearActivity()
     {
         const string pathToBom = "/path/to/bom";
@@ -34,7 +34,7 @@ public class BillOfMaterialsGeneratedEventTest
         )));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var appEvent = new BillOfMaterialsGeneratedEvent(Guid.NewGuid(), 29, "/path/to/bom", "/path/to/agent");

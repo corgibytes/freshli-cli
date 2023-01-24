@@ -17,7 +17,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 [UnitTest]
 public class ComputeLibYearForPackageActivityTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
     {
         var analysisId = Guid.NewGuid();
@@ -83,7 +83,7 @@ public class ComputeLibYearForPackageActivityTest
             value.AgentExecutablePath == agentExecutablePath)));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleFiresProcessingErrorEventOnException()
     {
         var analysisId = Guid.NewGuid();

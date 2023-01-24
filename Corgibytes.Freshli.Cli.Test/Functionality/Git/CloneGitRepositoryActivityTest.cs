@@ -55,7 +55,7 @@ public class CloneGitRepositoryActivityTest
     private void SetupCachedAnalysis() =>
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(_cachedAnalysis);
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresGitRepositoryClonedEventWhenAnalysisStarted()
     {
         SetupCachedAnalysis();
@@ -70,7 +70,7 @@ public class CloneGitRepositoryActivityTest
             mock.Fire(It.Is<GitRepositoryClonedEvent>(value => value.AnalysisId == _analysisId)));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresCloneGitRepositoryFailedEventWhenGitCloneFails()
     {
         SetupCachedAnalysis();

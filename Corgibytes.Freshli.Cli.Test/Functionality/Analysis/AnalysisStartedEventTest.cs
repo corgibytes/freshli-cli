@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class AnalysisStartedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleDispatchesCreateAnalysisApiActivity()
     {
         var eventClient = new Mock<IApplicationActivityEngine>();

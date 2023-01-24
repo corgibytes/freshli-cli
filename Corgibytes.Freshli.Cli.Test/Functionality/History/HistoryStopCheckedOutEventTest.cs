@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 [UnitTest]
 public class HistoryStopCheckedOutEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Handle()
     {
         var analysisId = Guid.NewGuid();

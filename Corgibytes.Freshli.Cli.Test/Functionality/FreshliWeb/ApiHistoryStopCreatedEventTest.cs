@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 [UnitTest]
 public class ApiHistoryStopCreatedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleDispatchesCheckoutHistoryActivity()
     {
         var cachedAnalysisId = Guid.NewGuid();

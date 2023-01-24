@@ -366,7 +366,7 @@ public abstract class DefaultCountdownEventTest
             Assert.True(task.IsCompletedSuccessfully);
         }
 
-        [Fact(Timeout = 50)]
+        [Fact(Timeout = 500)]
         public async Task WaitWithMillisecondTimeout()
         {
             await Task.Run(() =>
@@ -378,7 +378,7 @@ public abstract class DefaultCountdownEventTest
             Assert.False(_wasEventHandlerCalled);
         }
 
-        [Fact(Timeout = 50)]
+        [Fact(Timeout = 500)]
         public async Task WaitWithCancellationToken()
         {
             var cancellationTokenSource = new CancellationTokenSource();
@@ -400,7 +400,7 @@ public abstract class DefaultCountdownEventTest
             Assert.False(_wasEventHandlerCalled);
         }
 
-        [Fact(Timeout = 50)]
+        [Fact(Timeout = 500)]
         public async Task WaitWithTimeSpanTimeout()
         {
             await Task.Run(() =>
@@ -412,7 +412,7 @@ public abstract class DefaultCountdownEventTest
             Assert.False(_wasEventHandlerCalled);
         }
 
-        [Fact(Timeout = 50)]
+        [Fact(Timeout = 500)]
         public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTokenIsCancelled()
         {
             var cancellationTokenSource = new CancellationTokenSource();
@@ -434,7 +434,7 @@ public abstract class DefaultCountdownEventTest
             Assert.False(_wasEventHandlerCalled);
         }
 
-        [Fact(Timeout = 50)]
+        [Fact(Timeout = 500)]
         public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTimeoutExpires()
         {
             var cancellationTokenSource = new CancellationTokenSource();
@@ -449,7 +449,7 @@ public abstract class DefaultCountdownEventTest
             Assert.False(_wasEventHandlerCalled);
         }
 
-        [Fact(Timeout = 50)]
+        [Fact(Timeout = 500)]
         public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTokenIsCancelled()
         {
             var cancellationTokenSource = new CancellationTokenSource();
@@ -471,7 +471,7 @@ public abstract class DefaultCountdownEventTest
             Assert.False(_wasEventHandlerCalled);
         }
 
-        [Fact(Timeout = 50)]
+        [Fact(Timeout = 500)]
         public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTimeoutExpires()
         {
             var cancellationTokenSource = new CancellationTokenSource();

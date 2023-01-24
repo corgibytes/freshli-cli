@@ -21,7 +21,7 @@ public class NoManifestsDetectedEventTest
         _appEvent = new NoManifestsDetectedEvent(_analysisId, HistoryStopPointId);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Handle()
     {
         await _appEvent.Handle(_activityClient.Object);
@@ -31,7 +31,7 @@ public class NoManifestsDetectedEventTest
                 value.HistoryStopPointId == HistoryStopPointId)));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyReportsExceptions()
     {
         var exception = new Exception();

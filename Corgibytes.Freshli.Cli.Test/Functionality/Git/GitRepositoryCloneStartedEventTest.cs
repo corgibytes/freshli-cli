@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class GitRepositoryCloneStartedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleSignalsProgressReporter()
     {
         var analysisId = Guid.NewGuid();
