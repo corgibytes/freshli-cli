@@ -31,7 +31,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
 
     protected virtual Func<TErrorEvent, bool> EventValidator => _ => true;
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresCacheWasNotPreparedEventWhenCacheIsMissing()
     {
         _configuration.Setup(mock => mock.CacheDir).Returns("example");
@@ -46,7 +46,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
                 EventValidator(value))));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresAnalysisStartedEventWhenCacheIsPresent()
     {
         var analysisId = Guid.NewGuid();
@@ -69,7 +69,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
             value.AnalysisId == analysisId)));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresInvalidHistoryIntervalEventWhenHistoryIntervalValueIsInvalid()
     {
         _configuration.Setup(mock => mock.CacheDir).Returns("example");

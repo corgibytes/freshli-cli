@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 [UnitTest]
 public class ApiPackageLibYearCreatedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Handle()
     {
         var activityClient = new Mock<IApplicationActivityEngine>();
@@ -24,7 +24,7 @@ public class ApiPackageLibYearCreatedEventTest
             value => value.HistoryStopPointId == appEvent.HistoryStopPointId)));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var activityClient = new Mock<IApplicationActivityEngine>();

@@ -34,7 +34,7 @@ public class DetectAgentsForDetectManifestsActivityTest
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItDispatchesAgentDetectedForDetectManifestEvent()
     {
         var agentPaths = new List<string>
@@ -65,7 +65,7 @@ public class DetectAgentsForDetectManifestsActivityTest
                 appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet")));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItDispatchesNoAgentsDetectedFailureEvent()
     {
         var agentPaths = new List<string>();
@@ -82,7 +82,7 @@ public class DetectAgentsForDetectManifestsActivityTest
         )));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var activity = new DetectAgentsForDetectManifestsActivity(Guid.NewGuid(), HistoryStopPointId);

@@ -20,7 +20,7 @@ public class NoPackagesFoundEventTest
         _appEvent = new NoPackagesFoundEvent(_analysisId, HistoryStopPointId);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Handle()
     {
         await _appEvent.Handle(_activityEngine.Object);
@@ -32,7 +32,7 @@ public class NoPackagesFoundEventTest
         ));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var exception = new Exception();

@@ -18,7 +18,7 @@ public class CreateAnalysisApiActivityTest
     public CreateAnalysisApiActivityTest() =>
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleSendsRequest()
     {
         const string url = "anything";

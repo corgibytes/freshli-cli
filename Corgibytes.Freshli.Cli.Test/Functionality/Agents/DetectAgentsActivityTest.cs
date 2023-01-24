@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Agents;
 [UnitTest]
 public class DetectAgentsActivityTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItFiresAgentsDetectedEvent()
     {
         var eventClient = new Mock<IApplicationEventEngine>();

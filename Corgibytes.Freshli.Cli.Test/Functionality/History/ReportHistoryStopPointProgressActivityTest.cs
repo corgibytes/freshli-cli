@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 [UnitTest]
 public class ReportHistoryStopPointProgressActivityTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleWhenOperationIsCompleted()
     {
         var eventClient = new Mock<IApplicationEventEngine>();
@@ -26,7 +26,7 @@ public class ReportHistoryStopPointProgressActivityTest
             value.HistoryStopPointId == activity.HistoryStopPointId)));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleWhenOperationIsStillInProgress()
     {
         var eventClient = new Mock<IApplicationEventEngine>();

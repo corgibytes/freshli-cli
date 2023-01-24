@@ -24,7 +24,7 @@ public class BackgroundTaskQueueTest
 
     private readonly BackgroundTaskQueue _queue = new();
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task EmptyQueueContainsNoUnprocessedWork()
     {
         Assert.False(await _queue.ContainsUnprocessedWork<IApplicationTask>(_ => true));
@@ -46,7 +46,7 @@ public class BackgroundTaskQueueTest
         Assert.Equal(succeeded, statistics.Succeeded);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task QueuedTasksGetAddedToUnprocessedWork()
     {
         await AddSingleItemToQueue<DefaultApplicationTask>();
@@ -64,7 +64,7 @@ public class BackgroundTaskQueueTest
         return new Tuple<IApplicationTask, WorkItem>(applicationTask, workItem);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task QueuedTasksGetAddedToStatistics()
     {
         await AddSingleItemToQueue<DefaultApplicationTask>();
@@ -74,7 +74,7 @@ public class BackgroundTaskQueueTest
         AssertQueueStatistics(enqueued: 1, processing: 0, failed: 0, succeeded: 0, statistics);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task DequeuedTasksRemainInUnprocessedWork()
     {
         var (expectedTask, _) = await AddSingleItemToQueue<DefaultApplicationTask>();
@@ -86,7 +86,7 @@ public class BackgroundTaskQueueTest
         Assert.True(await _queue.ContainsUnprocessedWork<DefaultApplicationTask>(_ => true));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task DequeueTasksShowUpAsInProgress()
     {
         var (expectedTask, _) = await AddSingleItemToQueue<DefaultApplicationTask>();
@@ -99,7 +99,7 @@ public class BackgroundTaskQueueTest
         AssertQueueStatistics(enqueued: 0, processing: 1, failed: 0, succeeded: 0, statistics);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task CompletedTasksRemovedFromUnprocessedWork()
     {
         var (expectedTask, _) = await AddSingleItemToQueue<DefaultApplicationTask>();
@@ -113,7 +113,7 @@ public class BackgroundTaskQueueTest
         Assert.False(await _queue.ContainsUnprocessedWork<DefaultApplicationTask>(_ => true));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task CompletedTasksShowUpInStatistics()
     {
         var (expectedTask, _) = await AddSingleItemToQueue<DefaultApplicationTask>();
@@ -128,7 +128,7 @@ public class BackgroundTaskQueueTest
         AssertQueueStatistics(enqueued: 0, processing: 0, failed: 0, succeeded: 1, statistics);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task FailedTasksRemovedFromUnprocessedWork()
     {
         var expectedException = new Exception();
@@ -150,7 +150,7 @@ public class BackgroundTaskQueueTest
         Assert.False(await _queue.ContainsUnprocessedWork<DefaultApplicationTask>(_ => true));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task FailedTasksShowUpInStatistics()
     {
         var expectedException = new Exception();
@@ -173,7 +173,7 @@ public class BackgroundTaskQueueTest
         AssertQueueStatistics(enqueued: 0, processing: 0, failed: 1, succeeded: 0, statistics);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task TasksWithTheSamePriorityReturnedInUndefinedOrder()
     {
         var (expectedFirstTask, _) = await AddSingleItemToQueue<DefaultApplicationTask>();
@@ -194,7 +194,7 @@ public class BackgroundTaskQueueTest
         Assert.Contains(expectedSecondTask, applicationTasks);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task TasksWithDifferentPriorityReturnedInCorrectOrder()
     {
         var (expectedFirstDefaultTask, _) = await AddSingleItemToQueue<DefaultApplicationTask>();

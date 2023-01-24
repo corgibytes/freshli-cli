@@ -9,7 +9,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class ErrorEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task CorrectlyDispatchesLogAnalysisFailureActivity()
     {
         var errorEvent = new InvalidHistoryIntervalEvent { ErrorMessage = "Uh-oh!" };

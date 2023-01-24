@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 [UnitTest]
 public class CreateApiPackageLibYearActivityTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyCallsApiAndFiresApiPackageLibYearCreatedEvent()
     {
         var analysisId = Guid.NewGuid();
@@ -62,7 +62,7 @@ public class CreateApiPackageLibYearActivityTest
         )));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleFiresHistoryStopPointProcessingFailedEvent()
     {
         var analysisId = Guid.NewGuid();
