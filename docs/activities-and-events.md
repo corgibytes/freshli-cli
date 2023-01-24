@@ -36,6 +36,7 @@ flowchart TD;
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
     DetectAgentsForDetectManifestsActivity --> HistoryStopPointProcessingFailedEvent
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
+    DetectManifestsUsingAgentActivity --> NoManifestsDetectedEvent
     DetectManifestsUsingAgentActivity --> HistoryStopPointProcessingFailedEvent
     ErrorEvent -.-> ApplicationEventBase
     ErrorEvent
@@ -47,6 +48,9 @@ flowchart TD;
     ManifestDetectedEvent -.-> ApplicationEventBase
     ManifestDetectedEvent --> GenerateBillOfMaterialsActivity
     ManifestDetectedEvent --> FireHistoryStopPointProcessingErrorActivity
+    NoManifestsDetectedEvent -.-> ApplicationEventBase
+    NoManifestsDetectedEvent --> ReportHistoryStopPointProgressActivity
+    NoManifestsDetectedEvent --> FireHistoryStopPointProcessingErrorActivity
     PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
     PrepareCacheForAnalysisActivity --> CachePrepareFailedForAnalysisEvent
     RestartAnalysisActivity -.-> StartAnalysisActivityBase
@@ -128,12 +132,16 @@ flowchart TD;
     ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
     ComputeLibYearForPackageActivity --> HistoryStopPointProcessingFailedEvent
     DeterminePackagesFromBomActivity --> PackageFoundEvent
+    DeterminePackagesFromBomActivity --> NoPackagesFoundEvent
     DeterminePackagesFromBomActivity --> HistoryStopPointProcessingFailedEvent
     LibYearComputationForBomStartedEvent -.-> ApplicationEventBase
     LibYearComputationForBomStartedEvent
     LibYearComputedForPackageEvent -.-> ApplicationEventBase
     LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
     LibYearComputedForPackageEvent --> FireHistoryStopPointProcessingErrorActivity
+    NoPackagesFoundEvent -.-> ApplicationEventBase
+    NoPackagesFoundEvent --> ReportHistoryStopPointProgressActivity
+    NoPackagesFoundEvent --> FireHistoryStopPointProcessingErrorActivity
     PackageFoundEvent -.-> ApplicationEventBase
     PackageFoundEvent --> ComputeLibYearForPackageActivity
     LoadServiceProviderActivity
