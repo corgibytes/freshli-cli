@@ -147,4 +147,10 @@
   <data name="PrepareCacheMessageHandler_Run_Preparing_cache" xml:space="preserve">
     <value>File {0} does not exist</value>
   </data>
+  <data name="BackgroundTaskQueue_QueueBackgroundWorkItemAsync_workItem_Argument_cannot_be_null" xml:space="preserve">
+    <value>workItem.Argument cannot be null</value>
+  </data>
+  <data name="BackgroundTaskQueue_QueueBackgroundWorkItemAsync_workItem_Invoker_cannot_be_null" xml:space="preserve">
+    <value>workItem.Invoker cannot be null</value>
+  </data>
 </root>
