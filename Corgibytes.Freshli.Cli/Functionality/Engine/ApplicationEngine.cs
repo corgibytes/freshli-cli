@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,17 +10,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEngine
+public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEngine, IDisposable
 {
     // TODO: Make this a configurable value
     private const int MutexWaitTimeoutInMilliseconds = 200;
-    private static readonly Dictionary<Type, Func<IApplicationEvent, ValueTask>> s_eventHandlers = new();
+    private readonly Dictionary<Type, Func<IApplicationEvent, ValueTask>> _eventHandlers = new();
 
-    private static readonly SemaphoreSlim s_dispatchSemaphore = new(1, 1);
-    private static readonly SemaphoreSlim s_fireSemaphore = new(1, 1);
-    private static bool s_isActivityDispatchingInProgress;
-    private static bool s_isEventFiringInProgress;
+    private readonly ICountdownEvent _queueModificationsCountdownEvent = new DefaultCountdownEvent(0);
     private readonly ILogger<ApplicationEngine> _logger;
+
+    private readonly ConcurrentDictionary<IApplicationTask, ICountdownEvent> _tasksAndCountdownEvents = new();
 
     public ApplicationEngine(IBackgroundTaskQueue taskQueue, ILogger<ApplicationEngine> logger,
         IServiceProvider serviceProvider)
@@ -31,10 +31,28 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private IBackgroundTaskQueue TaskQueue { get; }
 
+    private void RecordTask(IApplicationTask task)
+    {
+        lock (_queueModificationsCountdownEvent)
+        {
+            _tasksAndCountdownEvents.TryAdd(
+                task,
+                new ListeningCountdownEvent(_queueModificationsCountdownEvent, 1)
+            );
+        }
+    }
+
     public async ValueTask Dispatch(IApplicationActivity applicationActivity)
     {
-        await s_dispatchSemaphore.WaitAsync();
-        s_isActivityDispatchingInProgress = true;
+        lock (_queueModificationsCountdownEvent)
+        {
+            if (!_queueModificationsCountdownEvent.TryAddCount())
+            {
+                _queueModificationsCountdownEvent.Reset(1);
+            }
+        }
+
+        RecordTask(applicationActivity);
 
         try
         {
@@ -44,43 +62,32 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
         finally
         {
-            s_isActivityDispatchingInProgress = false;
-            s_dispatchSemaphore.Release();
+            lock (_queueModificationsCountdownEvent)
+            {
+                _queueModificationsCountdownEvent.Signal();
+            }
         }
     }
 
-    public async ValueTask Wait()
+    public ValueTask Wait(IApplicationTask task)
     {
-        var watch = new Stopwatch();
-        watch.Start();
-        LogWaitStart();
+        var timer = new Stopwatch();
+        timer.Start();
 
-        var shouldWait = true;
-        while (shouldWait)
+        LogWaitStart(task);
+        ICountdownEvent? countdownEvent;
+
+        while (!_tasksAndCountdownEvents.TryGetValue(task, out countdownEvent))
         {
-            // TODO: Make this delay configurable
-            await Task.Delay(500);
-
-            var statistics = TaskQueue.GetStatistics();
-            var length = statistics.Processing + statistics.Enqueued;
-
-            // store the value of static boolean fields to avoid a race condition between the output of those values
-            // and the assignment of the `shouldWait` variable
-            var localIsEventFiring = s_isEventFiringInProgress;
-            var localIsActivityDispatching = s_isActivityDispatchingInProgress;
-
-            LogWaitingStatus(statistics, length, localIsEventFiring, localIsActivityDispatching);
-            shouldWait = length > 0 || localIsActivityDispatching || localIsEventFiring ||
-                         await TaskQueue.ContainsUnprocessedWork<IApplicationTask>(task => true);
+            Task.Delay(TimeSpan.FromMilliseconds(10));
         }
 
-        if (await TaskQueue.ContainsUnprocessedWork<IApplicationTask>(task => true))
-        {
-            throw new Exception("Work queue not empty exception");
-        }
+        countdownEvent.Wait();
 
-        watch.Stop();
-        LogWaitStop(watch.ElapsedMilliseconds);
+        timer.Stop();
+        LogWaitStop(timer.ElapsedMilliseconds);
+
+        return ValueTask.CompletedTask;
     }
 
     public IServiceProvider ServiceProvider { get; }
@@ -92,8 +99,16 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public async ValueTask Fire(IApplicationEvent applicationEvent)
     {
-        await s_fireSemaphore.WaitAsync();
-        s_isEventFiringInProgress = true;
+        lock (_queueModificationsCountdownEvent)
+        {
+            if (!_queueModificationsCountdownEvent.TryAddCount())
+            {
+                _queueModificationsCountdownEvent.Reset(1);
+            }
+        }
+
+        RecordTask(applicationEvent);
+
         try
         {
             // TODO: pass cancellation token to FireEventAndHandler
@@ -102,15 +117,23 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
         finally
         {
-            s_isEventFiringInProgress = false;
-            s_fireSemaphore.Release();
+            lock (_queueModificationsCountdownEvent)
+            {
+                _queueModificationsCountdownEvent.Signal();
+            }
         }
     }
 
-    public void On<TEvent>(Func<TEvent, ValueTask> eventHandler) where TEvent : IApplicationEvent =>
-        s_eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
+    public void On<TEvent>(Func<TEvent, ValueTask> eventHandler) where TEvent : IApplicationEvent
+    {
+        lock (_eventHandlers)
+        {
+            _eventHandlers.Add(typeof(TEvent), boxedEvent => eventHandler((TEvent)boxedEvent));
+        }
+    }
 
-    private void LogWaitStart() => _logger.LogDebug("Starting to wait for an empty job queue...");
+    private void LogWaitStart(IApplicationTask task) =>
+        _logger.LogDebug("Starting to wait for {Task} to complete...", task);
 
     private void LogWaitStop(long durationInMilliseconds) =>
         _logger.LogDebug("Waited for {Duration} milliseconds", durationInMilliseconds);
@@ -134,21 +157,40 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             localIsEventFiring
         );
 
-    // ReSharper disable once MemberCanBePrivate.Global
-    public async ValueTask FireEventAndHandler(IApplicationEvent applicationEvent)
+    private async ValueTask FireEventAndHandler(IApplicationEvent applicationEvent)
     {
-        await HandleEvent(applicationEvent);
-
-        if (s_eventHandlers.Keys.Any(type => type.IsAssignableTo(applicationEvent.GetType())))
+        ICountdownEvent? countdownEvent;
+        while (!_tasksAndCountdownEvents.TryGetValue(applicationEvent, out countdownEvent))
         {
-            // TODO: Pass the cancellation token to TriggerHandler
-            await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationEvent,
-                _ => TriggerHandler(applicationEvent)));
+            await Task.Delay(10);
+        }
+
+        try
+        {
+            await HandleEvent(applicationEvent);
+
+            bool applicationEventHasHandlers;
+            lock (_eventHandlers)
+            {
+                applicationEventHasHandlers =
+                    _eventHandlers.Keys.Any(type => type.IsAssignableTo(applicationEvent.GetType()));
+            }
+            if (applicationEventHasHandlers)
+            {
+                countdownEvent.AddCount();
+
+                // TODO: Pass the cancellation token to TriggerHandler
+                await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationEvent,
+                    _ => TriggerHandler(applicationEvent)));
+            }
+        }
+        finally
+        {
+            countdownEvent.Signal();
         }
     }
 
-    // ReSharper disable once MemberCanBePrivate.Global
-    public async ValueTask HandleActivity(IApplicationActivity activity)
+    private async ValueTask HandleActivity(IApplicationActivity activity)
     {
         SemaphoreSlim? semaphore = null;
         if (activity is ISynchronized mutexSource)
@@ -168,6 +210,17 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             return;
         }
 
+        ChildTrackingApplicationEngine childTrackingEngine;
+        lock (_queueModificationsCountdownEvent)
+        {
+            childTrackingEngine = new ChildTrackingApplicationEngine(
+                this,
+                _tasksAndCountdownEvents,
+                _queueModificationsCountdownEvent,
+                activity
+            );
+        }
+
         try
         {
             _logger.LogDebug(
@@ -176,14 +229,20 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
                 // TODO: figure out how best to log activity specific values here
                 activity
             );
-            await activity.Handle(this);
+            await activity.Handle(childTrackingEngine);
         }
         catch (Exception error)
         {
-            await Fire(new UnhandledExceptionEvent(error));
+            await childTrackingEngine.Fire(new UnhandledExceptionEvent(error));
         }
         finally
         {
+            ICountdownEvent? countdownEvent;
+            while (!_tasksAndCountdownEvents.TryGetValue(activity, out countdownEvent))
+            {
+                await Task.Delay(10);
+            }
+            countdownEvent.Signal();
             if (semaphore != null && semaphoreEntered)
             {
                 semaphore.Release();
@@ -191,9 +250,19 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    // ReSharper disable once MemberCanBePrivate.Global
-    public async ValueTask HandleEvent(IApplicationEvent appEvent)
+    private async ValueTask HandleEvent(IApplicationEvent appEvent)
     {
+        ChildTrackingApplicationEngine childTrackingEngine;
+        lock (_queueModificationsCountdownEvent)
+        {
+            childTrackingEngine = new ChildTrackingApplicationEngine(
+                this,
+                _tasksAndCountdownEvents,
+                _queueModificationsCountdownEvent,
+                appEvent
+            );
+        }
+
         try
         {
             _logger.LogDebug(
@@ -202,31 +271,53 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
                 // TODO: figure out how best to log event specific values here
                 appEvent
             );
-            await appEvent.Handle(this);
+            await appEvent.Handle(childTrackingEngine);
         }
         catch (Exception error)
         {
-            await Fire(new UnhandledExceptionEvent(error));
+            await childTrackingEngine.Fire(new UnhandledExceptionEvent(error));
         }
     }
 
-    // TODO: see if these methods can be made private now
-    // ReSharper disable once MemberCanBePrivate.Global
-    public async ValueTask TriggerHandler(IApplicationEvent applicationEvent)
+    private async ValueTask TriggerHandler(IApplicationEvent applicationEvent)
     {
         var tasks = new List<Task>();
-        foreach (var type in s_eventHandlers.Keys)
+        ICollection<Type> keys;
+        lock (_eventHandlers)
+        {
+            keys = _eventHandlers.Keys;
+        }
+        foreach (var type in keys)
         {
             if (!type.IsAssignableTo(applicationEvent.GetType()))
             {
                 continue;
             }
 
-            var handler = s_eventHandlers[type];
+            Func<IApplicationEvent, ValueTask> handler;
+            lock (_eventHandlers)
+            {
+                handler = _eventHandlers[type];
+            }
             var task = handler(applicationEvent);
             tasks.Add(task.AsTask());
         }
 
         await Task.WhenAll(tasks);
+
+        ICountdownEvent? countdownEvent;
+        while (!_tasksAndCountdownEvents.TryGetValue(applicationEvent, out countdownEvent))
+        {
+            await Task.Delay(10);
+        }
+
+        countdownEvent.Signal();
+    }
+
+    public void Dispose()
+    {
+        _queueModificationsCountdownEvent.Dispose();
+
+        GC.SuppressFinalize(this);
     }
 }
