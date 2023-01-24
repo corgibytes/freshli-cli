@@ -20,8 +20,9 @@ public class FailCommandRunner : CommandRunner<FailCommand, EmptyCommandOptions>
 
     public override async ValueTask<int> Run(EmptyCommandOptions options, IConsole console)
     {
-        await ActivityEngine.Dispatch(new ThrowExceptionActivity());
-        await ActivityEngine.Wait();
+        var activity = new ThrowExceptionActivity();
+        await ActivityEngine.Dispatch(activity);
+        await ActivityEngine.Wait(activity);
 
         return 0;
     }

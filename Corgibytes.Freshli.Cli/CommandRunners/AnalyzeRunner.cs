@@ -6,8 +6,11 @@ using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
+using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
+using Corgibytes.Freshli.Cli.Functionality.History;
+using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Lib;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
@@ -36,7 +39,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
 
-        await _activityEngine.Dispatch(new StartAnalysisActivity
+        var startAnalysisActivity = new StartAnalysisActivity
         {
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,
@@ -44,7 +47,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             UseCommitHistory = options.CommitHistory ? CommitHistory.Full : CommitHistory.AtInterval,
             RevisionHistoryMode =
                 options.LatestOnly ? RevisionHistoryMode.OnlyLatestRevision : RevisionHistoryMode.AllRevisions
-        });
+        };
 
         var exitStatus = 0;
 
@@ -71,16 +74,17 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             return ValueTask.CompletedTask;
         });
 
-        await _activityEngine.Wait();
+        await _activityEngine.Dispatch(startAnalysisActivity);
+        await _activityEngine.Wait(startAnalysisActivity);
 
         if (apiAnalysisId != null)
         {
-            await _activityEngine.Dispatch(new UpdateAnalysisStatusActivity(
+            var updateStatusActivity = new UpdateAnalysisStatusActivity(
                 apiAnalysisId.Value,
                 exitStatus == 0 ? "success" : "error"
-            ));
-
-            await _activityEngine.Wait();
+            );
+            await _activityEngine.Dispatch(updateStatusActivity);
+            await _activityEngine.Wait(updateStatusActivity);
         }
         else
         {
