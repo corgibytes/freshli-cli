@@ -11,7 +11,7 @@ public abstract class ChildCountdownEventTest
 {
     public abstract class WithZeroInitialCount
     {
-        public class WithParentAtCountZero
+        public class WithParentAtCountZero : IDisposable
         {
             private readonly ICountdownEvent _parentCountdownEvent = new DefaultCountdownEvent(0);
             private readonly ICountdownEvent _countdownEvent;
@@ -185,9 +185,17 @@ public abstract class ChildCountdownEventTest
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
+
+            public void Dispose()
+            {
+                _parentCountdownEvent.Dispose();
+                _countdownEvent.Dispose();
+
+                GC.SuppressFinalize(this);
+            }
         }
 
-        public class WithParentAtPositiveCount
+        public class WithParentAtPositiveCount : IDisposable
         {
             private readonly ICountdownEvent _parentCountdownEvent = new DefaultCountdownEvent(1);
             private readonly ICountdownEvent _countdownEvent;
@@ -361,12 +369,20 @@ public abstract class ChildCountdownEventTest
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
             }
+
+            public void Dispose()
+            {
+                _parentCountdownEvent.Dispose();
+                _countdownEvent.Dispose();
+
+                GC.SuppressFinalize(this);
+            }
         }
     }
 
     public abstract class WithPositiveInitialCount
     {
-        public class WithParentAtCountZero
+        public class WithParentAtCountZero : IDisposable
         {
             private readonly ICountdownEvent _parentCountdownEvent = new DefaultCountdownEvent(0);
             private readonly ICountdownEvent _countdownEvent;
@@ -638,9 +654,17 @@ public abstract class ChildCountdownEventTest
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
+
+            public void Dispose()
+            {
+                _parentCountdownEvent.Dispose();
+                _countdownEvent.Dispose();
+
+                GC.SuppressFinalize(this);
+            }
         }
 
-        public class WithParentAtPositiveCount
+        public class WithParentAtPositiveCount : IDisposable
         {
             private readonly ICountdownEvent _parentCountdownEvent = new DefaultCountdownEvent(1);
             private readonly ICountdownEvent _countdownEvent;
@@ -919,6 +943,14 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
+            }
+
+            public void Dispose()
+            {
+                _parentCountdownEvent.Dispose();
+                _countdownEvent.Dispose();
+
+                GC.SuppressFinalize(this);
             }
         }
     }
