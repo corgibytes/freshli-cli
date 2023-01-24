@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
+public sealed class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
 {
     private readonly SemaphoreSlim _queueReaderSemaphore = new(0);
-    private readonly SemaphoreSlim _queueWriterSemaphore = new(1);
     private readonly PriorityQueue<WorkItem, int> _queue = new();
     private readonly SemaphoreSlim _pendingWorkItemsSemaphore = new(1);
     private readonly List<WorkItem> _pendingWorkItems = new();
@@ -21,14 +21,16 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
 
     public async ValueTask QueueBackgroundWorkItemAsync(WorkItem workItem, CancellationToken cancellationToken = default)
     {
+        _ = workItem.ApplicationTask ?? throw new ArgumentNullException(nameof(workItem), CliOutput.BackgroundTaskQueue_QueueBackgroundWorkItemAsync_workItem_Argument_cannot_be_null);
+        _ = workItem.Invoker ?? throw new ArgumentNullException(nameof(workItem), CliOutput.BackgroundTaskQueue_QueueBackgroundWorkItemAsync_workItem_Invoker_cannot_be_null);
         await IncrementEnqueuedCount(cancellationToken);
 
         await AddToPendingWorkItems(workItem, cancellationToken);
 
-        await WithSemaphoreLock(() =>
+        lock (_queue)
         {
             _queue.Enqueue(WrapWorkItem(workItem), workItem.ApplicationTask.Priority);
-        }, _queueWriterSemaphore, cancellationToken);
+        }
 
         _queueReaderSemaphore.Release();
     }
@@ -78,12 +80,33 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
 
     public async ValueTask<WorkItem> DequeueAsync(CancellationToken cancellationToken)
     {
-        await _queueReaderSemaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
-        var dequeueResult = _queue.TryDequeue(out var workItem, out var _);
+        await _queueReaderSemaphore.WaitAsync(cancellationToken).ConfigureAwait(true);
+        bool dequeueResult;
+        WorkItem workItem;
+
+        lock (_queue)
+        {
+            dequeueResult = _queue.TryDequeue(out workItem, out var _);
+        }
 
         if (!dequeueResult)
         {
             throw new InvalidOperationException("Failed to retrieve an item from the queue");
+        }
+
+        if (workItem.ApplicationTask == null && workItem.Invoker == null)
+        {
+            throw new InvalidOperationException("workItem ApplicationTask and Invoker are both null");
+        }
+
+        if (workItem.ApplicationTask == null)
+        {
+            throw new InvalidOperationException("workItem ApplicationTask is null");
+        }
+
+        if (workItem.Invoker == null)
+        {
+            throw new InvalidOperationException("workItem Invoker is null");
         }
 
         // this assumes that a work item is going to start processing after it has been removed from the queue
@@ -166,7 +189,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
     private async ValueTask WithSemaphoreLock(Action operation, SemaphoreSlim semaphore,
         CancellationToken cancellationToken = default)
     {
-        await semaphore.WaitAsync(cancellationToken).ConfigureAwait(false);
+        await semaphore.WaitAsync(cancellationToken).ConfigureAwait(true);
         try
         {
             operation();
@@ -177,4 +200,12 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue
         }
     }
 
+    public void Dispose()
+    {
+        _queueReaderSemaphore.Dispose();
+        _pendingWorkItemsSemaphore.Dispose();
+        _statisticsSemaphore.Dispose();
+
+        GC.SuppressFinalize(this);
+    }
 }

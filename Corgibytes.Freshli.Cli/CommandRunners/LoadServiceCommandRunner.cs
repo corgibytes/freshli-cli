@@ -20,8 +20,9 @@ public class LoadServiceCommandRunner : CommandRunner<LoadServiceCommand, EmptyC
 
     public override async ValueTask<int> Run(EmptyCommandOptions options, IConsole console)
     {
-        await ActivityEngine.Dispatch(new LoadServiceProviderActivity());
-        await ActivityEngine.Wait();
+        var activity = new LoadServiceProviderActivity();
+        await ActivityEngine.Dispatch(activity);
+        await ActivityEngine.Wait(activity);
         return 0;
     }
 }
