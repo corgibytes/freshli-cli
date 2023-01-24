@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 [UnitTest]
 public class LibYearComputedForPackageEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDispatchesCreateApiPackageLibYear()
     {
         var analysisId = Guid.NewGuid();
@@ -40,7 +40,7 @@ public class LibYearComputedForPackageEventTest
         )));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleDispatchesFireHistoryStopPointProcessingErrorActivity()
     {
         var analysisId = Guid.NewGuid();

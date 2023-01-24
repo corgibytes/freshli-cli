@@ -24,7 +24,10 @@ public class AgentReaderWithJavaAgentTest : IDisposable
         );
     }
 
-    [Fact]
+    private const int MillisecondsPerMinute = 60 * 1000;
+    private const int TenMinutes = 10 * MillisecondsPerMinute;
+
+    [Fact(Timeout = TenMinutes)]
     public async Task DetectManifestsUsingProtobuf()
     {
         SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
@@ -43,7 +46,7 @@ public class AgentReaderWithJavaAgentTest : IDisposable
         RecursiveDelete(checkoutDirectory);
     }
 
-    [Fact]
+    [Fact(Timeout = TenMinutes)]
     public async Task GenerateBillOfMaterialsUsingProtobuf()
     {
         SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
@@ -58,7 +61,7 @@ public class AgentReaderWithJavaAgentTest : IDisposable
         RecursiveDelete(checkoutDirectory);
     }
 
-    [Fact]
+    [Fact(Timeout = TenMinutes)]
     public async Task AgentReaderReturnsEmptyListWhenNoManifestsFound()
     {
         var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);

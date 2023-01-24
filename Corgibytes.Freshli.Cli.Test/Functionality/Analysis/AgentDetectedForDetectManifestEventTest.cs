@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class AgentDetectedForDetectManifestEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Handle()
     {
         const string agentExecutablePath = "/path/to/agent";
@@ -31,7 +31,7 @@ public class AgentDetectedForDetectManifestEventTest
                 activity.AgentExecutablePath == agentExecutablePath)));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var appEvent = new AgentDetectedForDetectManifestEvent(Guid.NewGuid(), 29, "/path/to/agent");

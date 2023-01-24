@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class CacheWasNotPreparedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task CorrectlyDispatchesPrepareCacheActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
