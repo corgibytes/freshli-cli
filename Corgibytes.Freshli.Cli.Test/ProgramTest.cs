@@ -40,7 +40,7 @@ public class ProgramTest
         MainCommand.ShouldIncludeFailCommand = true;
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Validate_Main_loglevel_debug()
     {
         await Task.Run(async () => await Program.Main("--loglevel", "Debug"));
@@ -50,7 +50,7 @@ public class ProgramTest
         cleanedOutput.Should().Contain(_hostShutdownLogMessageForConsole);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Validate_Main_loglevel_info()
     {
         await Task.Run(async () => await Program.Main("--loglevel", "Info", "load-service"));
@@ -61,7 +61,7 @@ public class ProgramTest
         cleanedOutput.Should().Contain(_applicationShutdownLogMessageForConsole);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Validate_Main_loglevel_default()
     {
         await Task.Run(async () => await Program.Main());
@@ -72,7 +72,7 @@ public class ProgramTest
         cleanedOutput.Should().NotContain(_applicationShutdownLogMessageForConsole);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Validate_Main_logfile()
     {
         var testfile = "testlog.log";
@@ -89,7 +89,7 @@ public class ProgramTest
         logFileContent.Should().Contain(_applicationShutdownLogMessageForFile);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task ValidateExceptionsInActivityHandlersWriteToLog()
     {
         await Task.Run(async () => await Program.Main("fail"));
@@ -101,7 +101,7 @@ public class ProgramTest
 #pragma warning restore SYSLIB1045
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task ValidateServiceProviderIsLoaded()
     {
         MainCommand.ShouldIncludeLoadServiceCommand = true;

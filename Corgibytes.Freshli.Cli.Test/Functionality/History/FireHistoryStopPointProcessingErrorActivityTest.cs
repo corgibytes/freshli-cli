@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 [UnitTest]
 public class FireHistoryStopPointProcessingErrorActivityTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Handle()
     {
         var activity = new FireHistoryStopPointProcessingErrorActivity(12, new InvalidOperationException());

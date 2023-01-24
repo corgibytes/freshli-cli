@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.BillOfMaterials;
 
 public class GenerateBillOfMaterialsActivityTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task Handle()
     {
         // Arrange
@@ -68,7 +68,7 @@ public class GenerateBillOfMaterialsActivityTest
                 appEvent.PathToBillOfMaterials == "/path/to/bom/in/cache")));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var eventEngine = new Mock<IApplicationEventEngine>();

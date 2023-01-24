@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 [UnitTest]
 public class DeterminePackagesFromBomActivityTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyFiresLibYearComputationForBomStartedEvent()
     {
         var analysisId = Guid.NewGuid();
@@ -63,7 +63,7 @@ public class DeterminePackagesFromBomActivityTest
         )));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleFiresHistoryStopPointProcessingFailedOnException()
     {
         var analysisId = Guid.NewGuid();
@@ -87,7 +87,7 @@ public class DeterminePackagesFromBomActivityTest
         )));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleWhenNoPackagesAreFound()
     {
         var analysisId = Guid.NewGuid();

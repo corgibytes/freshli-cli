@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class LogAnalysisFailureActivityTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItFiresAnalysisFailureLoggedEvent()
     {
         var serviceProvider = new Mock<IServiceProvider>();

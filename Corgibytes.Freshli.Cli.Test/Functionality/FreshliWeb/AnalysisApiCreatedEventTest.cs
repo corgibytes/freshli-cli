@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 [UnitTest]
 public class AnalysisApiCreatedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task CorrectlyDispatchesCloneGitRepositoryActivity()
     {
         var startedEvent = new AnalysisApiCreatedEvent
@@ -30,7 +30,7 @@ public class AnalysisApiCreatedEventTest
         )));
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task CorrectlyDispatchesVerifyGitRepositoryInLocalDirectoryActivity()
     {
         var temporaryLocation = new DirectoryInfo(Path.Combine(Path.GetTempPath(), new Guid().ToString()));
