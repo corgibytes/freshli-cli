@@ -26,6 +26,10 @@ public interface ICountdownEvent : IDisposable
     public void Wait(TimeSpan timeout, CancellationToken cancellationToken);
 
     public event EventHandler<CountChangedArgs>? CountChanged;
-    public record struct CountChangedArgs(int Delta);
+
+    public record struct CountChangedArgs(int Delta)
+    {
+        public int Delta { get; } = Delta;
+    }
 }
 
