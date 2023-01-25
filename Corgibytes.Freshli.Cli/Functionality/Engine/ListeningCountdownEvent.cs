@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Corgibytes.Freshli.Cli.Functionality.Engine;
+﻿namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
 public sealed class ListeningCountdownEvent : DefaultCountdownEvent
 {
@@ -52,7 +50,5 @@ public sealed class ListeningCountdownEvent : DefaultCountdownEvent
         _sourceCountdownEvent.Dispose();
 
         base.Dispose();
-
-        GC.SuppressFinalize(this);
     }
 }

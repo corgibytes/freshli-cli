@@ -27,7 +27,7 @@ public interface ICountdownEvent : IDisposable
 
     public event EventHandler<CountChangedArgs>? CountChanged;
 
-    public record struct CountChangedArgs(int Delta)
+    public readonly record struct CountChangedArgs(int Delta)
     {
         public int Delta { get; } = Delta;
     }

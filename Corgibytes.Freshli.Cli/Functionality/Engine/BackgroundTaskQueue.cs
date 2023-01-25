@@ -9,7 +9,7 @@ using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public sealed class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
+public class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
 {
     private readonly SemaphoreSlim _queueReaderSemaphore = new(0);
     private readonly PriorityQueue<WorkItem, int> _queue = new();
@@ -137,7 +137,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {
         await WithStatisticsLock(() =>
         {
-            _statistics = _statistics with {Enqueued = _statistics.Enqueued + 1};
+            _statistics = _statistics with { Enqueued = _statistics.Enqueued + 1 };
         }, cancellationToken);
     }
 
@@ -145,7 +145,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {
         await WithStatisticsLock(() =>
         {
-            _statistics = _statistics with {Enqueued = _statistics.Enqueued - 1};
+            _statistics = _statistics with { Enqueued = _statistics.Enqueued - 1 };
         }, cancellationToken);
     }
 
@@ -153,7 +153,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {
         await WithStatisticsLock(() =>
         {
-            _statistics = _statistics with {Processing = _statistics.Processing + 1};
+            _statistics = _statistics with { Processing = _statistics.Processing + 1 };
         }, cancellationToken);
     }
 
@@ -161,7 +161,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {
         await WithStatisticsLock(() =>
         {
-            _statistics = _statistics with {Processing = _statistics.Processing - 1};
+            _statistics = _statistics with { Processing = _statistics.Processing - 1 };
         }, cancellationToken);
     }
 
@@ -169,7 +169,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {
         await WithStatisticsLock(() =>
         {
-            _statistics = _statistics with {Failed = _statistics.Failed + 1};
+            _statistics = _statistics with { Failed = _statistics.Failed + 1 };
         }, cancellationToken);
     }
 
@@ -177,7 +177,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
     {
         await WithStatisticsLock(() =>
         {
-            _statistics = _statistics with {Succeeded = _statistics.Succeeded + 1};
+            _statistics = _statistics with { Succeeded = _statistics.Succeeded + 1 };
         }, cancellationToken);
     }
 
@@ -186,7 +186,7 @@ public sealed class BackgroundTaskQueue : IBackgroundTaskQueue, IDisposable
         await WithSemaphoreLock(operation, _statisticsSemaphore, cancellationToken);
     }
 
-    private async ValueTask WithSemaphoreLock(Action operation, SemaphoreSlim semaphore,
+    private static async ValueTask WithSemaphoreLock(Action operation, SemaphoreSlim semaphore,
         CancellationToken cancellationToken = default)
     {
         await semaphore.WaitAsync(cancellationToken).ConfigureAwait(true);

@@ -213,41 +213,31 @@ public class DefaultCountdownEvent : ICountdownEvent
         _innerCountdownEvent.Wait(timeout, cancellationToken);
     }
 
-    protected void NotifyAdd(int value = 1)
+    private void NotifyAdd(int value = 1)
     {
         NotifyChange(value);
     }
 
-    protected void NotifySignal(int value = 1)
+    private void NotifySignal(int value = 1)
     {
         NotifyChange(-value);
     }
 
-    protected void NotifyChange(int value)
+    private void NotifyChange(int value)
     {
         CountChanged?.Invoke(this, new ICountdownEvent.CountChangedArgs(value));
     }
 
-    protected void TrackAndNotifyChange(Action action)
-    {
-        TrackAndNotifyChange(() =>
-        {
-            action();
-            return true;
-        });
-    }
-
-    protected T TrackAndNotifyChange<T>(Func<T> action)
+    private void TrackAndNotifyChange(Action action)
     {
         // ReSharper disable once InconsistentlySynchronizedField
         var previousCount = _innerCountdownEvent.CurrentCount;
-        var result = action();
+        action();
         // ReSharper disable once InconsistentlySynchronizedField
         var change = _innerCountdownEvent.CurrentCount - previousCount;
         if (change != 0)
         {
             NotifyChange(change);
         }
-        return result;
     }
 }

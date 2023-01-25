@@ -53,7 +53,11 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
         }
         catch (Exception error)
         {
-            await eventClient.Fire(new CachePrepareFailedForAnalysisEvent { ErrorMessage = error.Message, Exception = error});
+            await eventClient.Fire(new CachePrepareFailedForAnalysisEvent
+            {
+                ErrorMessage = error.Message,
+                Exception = error
+            });
         }
     }
 }

@@ -33,7 +33,7 @@
   <data name="Help_CacheDestroyCommand_Description" xml:space="preserve">
     <value>Deletes the Freshli cache</value>
   </data>
-  <data name="Help_CacheDestoyCommand_Option_Force" xml:space="preserve">
+  <data name="Help_CacheDestroyCommand_Option_Force" xml:space="preserve">
     <value>Don't prompt to confirm destruction of cache</value>
   </data>
   <data name="Help_ScanCommand_Description" xml:space="preserve">
@@ -152,5 +152,11 @@
   </data>
   <data name="BackgroundTaskQueue_QueueBackgroundWorkItemAsync_workItem_Invoker_cannot_be_null" xml:space="preserve">
     <value>workItem.Invoker cannot be null</value>
+  </data>
+  <data name="SpectreConsoleAnalyzeProgressReporter_ReportHistoryStopPointsOperationStarted_Unexpected_HistoryStopPointOperation_value" xml:space="preserve">
+    <value>Unexpected HistoryStopPointOperation value</value>
+  </data>
+  <data name="ChildTrackingApplicationEngine_ChildTrackingApplicationEngine_must_implement__0_" xml:space="preserve">
+    <value>must implement {0}</value>
   </data>
 </root>

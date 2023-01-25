@@ -7,7 +7,6 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.Services;
-using CycloneDX.Models;
 using Moq;
 using PackageUrl;
 using Xunit;
