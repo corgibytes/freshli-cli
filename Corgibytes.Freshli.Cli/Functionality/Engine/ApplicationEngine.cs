@@ -138,25 +138,6 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private void LogWaitStop(long durationInMilliseconds) =>
         _logger.LogDebug("Waited for {Duration} milliseconds", durationInMilliseconds);
 
-    private void LogWaitingStatus(QueueStatistics statistics, long length, bool localIsEventFiring,
-        bool localIsActivityDispatching) =>
-        _logger.LogTrace(
-            "Queue length: {QueueLength} (" +
-            "Processing: {JobsProcessing}, " +
-            "Enqueued: {JobsEnqueued}, " +
-            "Succeeded: {JobsSucceeded}, " +
-            "Failed: {JobsFailed}), " +
-            "Activity Dispatch in Progress: {IsActivityDispatchInProgress}, " +
-            "Event Fire in Progress: {IsEventFireInProgress}",
-            length,
-            statistics.Processing,
-            statistics.Enqueued,
-            statistics.Succeeded,
-            statistics.Failed,
-            localIsActivityDispatching,
-            localIsEventFiring
-        );
-
     private async ValueTask FireEventAndHandler(IApplicationEvent applicationEvent)
     {
         ICountdownEvent? countdownEvent;

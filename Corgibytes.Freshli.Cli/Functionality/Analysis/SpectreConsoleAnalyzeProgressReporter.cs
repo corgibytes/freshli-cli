@@ -2,7 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
-using NLog;
+using Corgibytes.Freshli.Cli.Resources;
 using Spectre.Console;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -25,11 +25,10 @@ public class SpectreConsoleAnalyzeProgressReporter : IAnalyzeProgressReporter, I
 
     private readonly object _historyStopPointArchiveLock = new();
     private ProgressTask? _historyStopPointArchiveProgressTask;
-    private int _historyStopPointArchiveTickCount = 0;
 
     private readonly object _historyStopPointProcessingLock = new();
     private ProgressTask? _historyStopPointProcessingProgressTask;
-    private int _historyStopPointProcessingTickCount = 0;
+    private int _historyStopPointProcessingTickCount;
 
     public SpectreConsoleAnalyzeProgressReporter(IAnsiConsole console)
     {
@@ -44,14 +43,13 @@ public class SpectreConsoleAnalyzeProgressReporter : IAnalyzeProgressReporter, I
         lock (_mainProgressBarLock)
         {
             _mainProgressBar = _console.Progress();
-            _mainProgressBar.Columns(new ProgressColumn[]
-            {
+            _mainProgressBar.Columns(
                 new TaskDescriptionColumn(),
                 new ProgressBarColumn(),
                 new PercentageColumn(),
                 new ElapsedTimeColumn(),
                 new SpinnerColumn()
-            });
+            );
             _mainProgressBarTask = _mainProgressBar.StartAsync(async (context) =>
             {
                 _mainProgressBarContext = context;
@@ -185,7 +183,11 @@ public class SpectreConsoleAnalyzeProgressReporter : IAnalyzeProgressReporter, I
                 break;
 
             default:
-                throw new ArgumentOutOfRangeException(nameof(operation), operation, "Unexpected HistoryStopPointOperation value");
+                throw new ArgumentOutOfRangeException(
+                    nameof(operation),
+                    operation,
+                    CliOutput.SpectreConsoleAnalyzeProgressReporter_ReportHistoryStopPointsOperationStarted_Unexpected_HistoryStopPointOperation_value
+                );
         }
     }
 
@@ -196,7 +198,6 @@ public class SpectreConsoleAnalyzeProgressReporter : IAnalyzeProgressReporter, I
             case HistoryStopPointOperation.Archive:
                 lock (_historyStopPointArchiveLock)
                 {
-                    _historyStopPointArchiveTickCount++;
                     if (_historyStopPointArchiveProgressTask != null)
                     {
                         _historyStopPointArchiveProgressTask.Increment(1);
@@ -224,7 +225,11 @@ public class SpectreConsoleAnalyzeProgressReporter : IAnalyzeProgressReporter, I
                 break;
 
             default:
-                throw new ArgumentOutOfRangeException(nameof(operation), operation, "Unexpected HistoryStopPointOperation value");
+                throw new ArgumentOutOfRangeException(
+                    nameof(operation),
+                    operation,
+                    CliOutput.SpectreConsoleAnalyzeProgressReporter_ReportHistoryStopPointsOperationStarted_Unexpected_HistoryStopPointOperation_value
+                );
         }
     }
 

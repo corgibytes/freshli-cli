@@ -27,7 +27,11 @@ public class PrepareCacheActivity : IApplicationActivity
         }
         catch (Exception error)
         {
-            await eventClient.Fire(new CachePrepareFailedEvent { ErrorMessage = error.Message, Exception = error});
+            await eventClient.Fire(new CachePrepareFailedEvent
+            {
+                ErrorMessage = error.Message,
+                Exception = error
+            });
         }
     }
 }

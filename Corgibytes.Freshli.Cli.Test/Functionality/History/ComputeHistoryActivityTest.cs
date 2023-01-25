@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -8,7 +9,6 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Test.Functionality.Git;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
@@ -202,7 +202,7 @@ public class ComputeHistoryActivityTest
         var stopPointId = HistoryStopPointId;
         foreach (var stopPoint in historyIntervalStops)
         {
-            var path = System.IO.Path.Combine(Configuration.CacheDir, "histories", HistoryStopData.RepositoryId,
+            var path = Path.Combine(Configuration.CacheDir, "histories", HistoryStopData.RepositoryId,
                 stopPoint.GitCommitIdentifier);
 
             // Verifies that the expected data is being stored in the

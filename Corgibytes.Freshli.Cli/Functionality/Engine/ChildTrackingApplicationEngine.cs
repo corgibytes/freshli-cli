@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -19,10 +20,20 @@ public class ChildTrackingApplicationEngine : IApplicationActivityEngine, IAppli
         IApplicationTask parentTask)
     {
         _engine = engine;
-        _activityEngine = engine as IApplicationActivityEngine ?? throw new ArgumentException(nameof(engine),
-            $"{nameof(engine)} must implement {nameof(IApplicationActivityEngine)}");
-        _eventEngine = engine as IApplicationEventEngine ?? throw new ArgumentException(nameof(engine),
-            $"{nameof(engine)} must implement {nameof(IApplicationActivityEngine)}");
+        _activityEngine = engine as IApplicationActivityEngine ?? throw new ArgumentException(
+            string.Format(
+                CliOutput.ChildTrackingApplicationEngine_ChildTrackingApplicationEngine_must_implement__0_,
+                nameof(IApplicationActivityEngine)
+            ),
+            nameof(engine)
+        );
+        _eventEngine = engine as IApplicationEventEngine ?? throw new ArgumentException(
+            string.Format(
+                CliOutput.ChildTrackingApplicationEngine_ChildTrackingApplicationEngine_must_implement__0_,
+                nameof(IApplicationActivityEngine)
+            ),
+            nameof(engine)
+        );
         _tasksAndCountdownEvents = tasksAndCountdownEvents;
         _queueModificationsCountdownEvent = queueModificationsCountdownEvent;
         _parentTask = parentTask;
