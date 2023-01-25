@@ -9,9 +9,12 @@ public sealed class ListeningCountdownEvent : DefaultCountdownEvent
     {
         _sourceCountdownEvent = sourceCountdownEvent;
         _sourceCountdownEvent.CountChanged += OnSourceCountChanged;
-        if (_sourceCountdownEvent.CurrentCount > 0)
+        lock (_sourceCountdownSyncLock)
         {
-            TryAddCount(_sourceCountdownEvent.CurrentCount);
+            if (_sourceCountdownEvent.CurrentCount > 0)
+            {
+                TryAddCount(_sourceCountdownEvent.CurrentCount);
+            }
         }
     }
 
