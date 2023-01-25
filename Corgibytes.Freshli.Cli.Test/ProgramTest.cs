@@ -11,14 +11,6 @@ using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test;
 
-static class StringExtensions
-{
-    public static string StripAnsi(this string value)
-    {
-        return Regex.Replace (value, @"\e\[(\d+;)*(\d+)?[ABCDHJKfmsu]", "");
-    }
-}
-
 [IntegrationTest]
 public class ProgramTest
 {
