@@ -25,8 +25,9 @@ insert_final_newline = unset
 indent_size = 2
 
 # Generated code
-[*{_AssemblyInfo.cs,.notsupported.cs}]
+[*{_AssemblyInfo.cs,.notsupported.cs,.Designer.cs}]
 generated_code = true
+trim_trailing_whitespace = unset
 
 [*.sln]
 indent_style = tab
