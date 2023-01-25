@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public struct WorkItem
+public readonly struct WorkItem
 {
     public IApplicationTask ApplicationTask { get; }
     public Func<CancellationToken, ValueTask> Invoker { get; }

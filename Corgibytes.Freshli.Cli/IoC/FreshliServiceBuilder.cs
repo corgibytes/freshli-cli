@@ -14,7 +14,6 @@ using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
-using CycloneDX.Models;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
 using Spectre.Console;

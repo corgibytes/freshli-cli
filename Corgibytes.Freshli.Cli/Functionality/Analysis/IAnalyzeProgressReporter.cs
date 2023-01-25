@@ -1,5 +1,3 @@
-using System;
-
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public interface IAnalyzeProgressReporter

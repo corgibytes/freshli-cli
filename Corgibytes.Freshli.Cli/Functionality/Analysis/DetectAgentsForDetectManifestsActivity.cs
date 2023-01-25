@@ -33,7 +33,8 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHis
 
             if (agents.Count == 0)
             {
-                await eventClient.Fire(new NoAgentsDetectedFailureEvent {ErrorMessage = "Could not locate any agents"});
+                await eventClient.Fire(
+                    new NoAgentsDetectedFailureEvent { ErrorMessage = "Could not locate any agents" });
                 return;
             }
 

@@ -5,7 +5,6 @@ using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.History;
-using CycloneDX.Models;
 using Moq;
 using Xunit;
 

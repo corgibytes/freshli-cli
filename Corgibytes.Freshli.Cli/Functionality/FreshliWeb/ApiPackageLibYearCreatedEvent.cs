@@ -17,7 +17,7 @@ public class ApiPackageLibYearCreatedEvent : ApplicationEventBase, IHistoryStopP
         try
         {
             await eventClient.Dispatch(
-                new ReportHistoryStopPointProgressActivity {HistoryStopPointId = HistoryStopPointId});
+                new ReportHistoryStopPointProgressActivity { HistoryStopPointId = HistoryStopPointId });
         }
         catch (Exception error)
         {

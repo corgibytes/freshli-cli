@@ -3,7 +3,7 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
-public class ReportHistoryStopPointProgressActivity: IApplicationActivity
+public class ReportHistoryStopPointProgressActivity : IApplicationActivity
 {
     public required int HistoryStopPointId { get; init; }
 
@@ -18,7 +18,7 @@ public class ReportHistoryStopPointProgressActivity: IApplicationActivity
                 item.HistoryStopPointId == HistoryStopPointId))
         {
             await eventClient.Fire(
-                new HistoryStopPointProcessingCompletedEvent {HistoryStopPointId = HistoryStopPointId});
+                new HistoryStopPointProcessingCompletedEvent { HistoryStopPointId = HistoryStopPointId });
         }
     }
 }

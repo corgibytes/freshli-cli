@@ -46,7 +46,11 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         }
         catch (GitException error)
         {
-            await eventClient.Fire(new CloneGitRepositoryFailedEvent { ErrorMessage = error.Message, Exception = error});
+            await eventClient.Fire(new CloneGitRepositoryFailedEvent
+            {
+                ErrorMessage = error.Message,
+                Exception = error
+            });
         }
     }
 }

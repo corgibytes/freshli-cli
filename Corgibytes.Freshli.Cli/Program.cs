@@ -16,7 +16,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Config;
-using NLog.Extensions.Hosting;
 using NLog.Extensions.Logging;
 using NLog.Targets;
 using Spectre.Console;
