@@ -476,10 +476,21 @@ public abstract class ChildCountdownEventTest
             }
 
             [Fact]
-            public void Signal()
+            public void SignalReturningTrue()
             {
-                _countdownEvent.Signal();
+                Assert.True(_countdownEvent.Signal());
                 Assert.Equal(0, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-1, _lastChangeNotificationValue);
+                Assert.Equal(0, _parentCountdownEvent.CurrentCount);
+            }
+
+            [Fact]
+            public void SignalReturningFalse()
+            {
+                _countdownEvent.AddCount();
+                Assert.False(_countdownEvent.Signal());
+                Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-1, _lastChangeNotificationValue);
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
@@ -494,11 +505,22 @@ public abstract class ChildCountdownEventTest
             }
 
             [Fact]
-            public void SignalWithValidValueAfterAdd()
+            public void SignalReturningTrueWithValidValueAfterAdd()
             {
                 _countdownEvent.AddCount();
-                _countdownEvent.Signal(2);
+                Assert.True(_countdownEvent.Signal(2));
                 Assert.Equal(0, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-2, _lastChangeNotificationValue);
+                Assert.Equal(0, _parentCountdownEvent.CurrentCount);
+            }
+
+            [Fact]
+            public void SignalReturningFalseWithValidValueAfterAdd()
+            {
+                _countdownEvent.AddCount(2);
+                Assert.False(_countdownEvent.Signal(2));
+                Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-2, _lastChangeNotificationValue);
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
@@ -767,13 +789,24 @@ public abstract class ChildCountdownEventTest
             }
 
             [Fact]
-            public void Signal()
+            public void SignalReturningTrue()
             {
-                _countdownEvent.Signal();
+                Assert.True(_countdownEvent.Signal());
                 Assert.Equal(0, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-1, _lastChangeNotificationValue);
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
+            }
+
+            [Fact]
+            public void SignalReturningFalse()
+            {
+                _countdownEvent.AddCount();
+                Assert.False(_countdownEvent.Signal());
+                Assert.Equal(1, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-1, _lastChangeNotificationValue);
+                Assert.Equal(1, _parentCountdownEvent.CurrentCount);
             }
 
             [Fact]
@@ -785,14 +818,25 @@ public abstract class ChildCountdownEventTest
             }
 
             [Fact]
-            public void SignalWithValidValueAfterAdd()
+            public void SignalReturningTrueWithValidValueAfterAdd()
             {
                 _countdownEvent.AddCount();
-                _countdownEvent.Signal(2);
+                Assert.True(_countdownEvent.Signal(2));
                 Assert.Equal(0, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-2, _lastChangeNotificationValue);
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
+            }
+
+            [Fact]
+            public void SignalReturningFalseWithValidValueAfterAdd()
+            {
+                _countdownEvent.AddCount(2);
+                Assert.False(_countdownEvent.Signal(2));
+                Assert.Equal(1, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-2, _lastChangeNotificationValue);
+                Assert.Equal(1, _parentCountdownEvent.CurrentCount);
             }
 
             [Fact]
