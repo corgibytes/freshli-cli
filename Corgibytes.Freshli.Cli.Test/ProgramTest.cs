@@ -23,14 +23,20 @@ static class StringExtensions
 public class ProgramTest
 {
     private readonly StringWriter _consoleOutput = new();
-    private readonly string _applicationShutdownLogMessageForConsole =
-        $"INFO | Microsoft.Hosting.Lifetime:0 | Application is {Environment.NewLine}shutting down...";
-
-    private readonly string _hostShutdownLogMessageForConsole =
-        $"DEBUG | Microsoft.Extensions.Hosting.Internal.Host:0 |{Environment.NewLine}Hosting stopping";
-
-    private readonly string _applicationShutdownLogMessageForFile =
+    private const string ApplicationShutdownLogMessageForConsole =
         "INFO | Microsoft.Hosting.Lifetime:0 | Application is shutting down...";
+
+    private const string HostShutdownLogMessageForConsole =
+        "DEBUG | Microsoft.Extensions.Hosting.Internal.Host:0 | Hosting stopping";
+
+    private const string ApplicationShutdownLogMessageForFile =
+        "INFO | Microsoft.Hosting.Lifetime:0 | Application is shutting down...";
+
+#pragma warning disable SYSLIB1045
+    private readonly Regex _trailingWhitespaceRegex = new(@"\s+$", RegexOptions.Multiline);
+    private readonly Regex _logMessagesContainingNewlinesRegex =
+        new(@"(\r?\n)([^\r\n\d])", RegexOptions.Multiline);
+#pragma warning restore SYSLIB1045
 
     public ProgramTest()
     {
@@ -40,14 +46,21 @@ public class ProgramTest
         MainCommand.ShouldIncludeFailCommand = true;
     }
 
+    private string CleanupLogOutput(string logMessages)
+    {
+        var result = _trailingWhitespaceRegex.Replace(logMessages, "");
+        result = _logMessagesContainingNewlinesRegex.Replace(result, " $2");
+        return result;
+    }
+
     [Fact(Timeout = 500)]
     public async Task Validate_Main_loglevel_debug()
     {
         await Task.Run(async () => await Program.Main("--loglevel", "Debug"));
 
-        var cleanedOutput = _consoleOutput.ToString().StripAnsi();
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
 
-        cleanedOutput.Should().Contain(_hostShutdownLogMessageForConsole);
+        cleanedOutput.Should().Contain(HostShutdownLogMessageForConsole);
     }
 
     [Fact(Timeout = 500)]
@@ -55,10 +68,10 @@ public class ProgramTest
     {
         await Task.Run(async () => await Program.Main("--loglevel", "Info", "load-service"));
 
-        var cleanedOutput = _consoleOutput.ToString().StripAnsi();
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
 
-        cleanedOutput.Should().NotContain(_hostShutdownLogMessageForConsole);
-        cleanedOutput.Should().Contain(_applicationShutdownLogMessageForConsole);
+        cleanedOutput.Should().NotContain(HostShutdownLogMessageForConsole);
+        cleanedOutput.Should().Contain(ApplicationShutdownLogMessageForConsole);
     }
 
     [Fact(Timeout = 500)]
@@ -66,10 +79,10 @@ public class ProgramTest
     {
         await Task.Run(async () => await Program.Main());
 
-        var cleanedOutput = _consoleOutput.ToString().StripAnsi();
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
 
-        cleanedOutput.Should().NotContain(_hostShutdownLogMessageForConsole);
-        cleanedOutput.Should().NotContain(_applicationShutdownLogMessageForConsole);
+        cleanedOutput.Should().NotContain(HostShutdownLogMessageForConsole);
+        cleanedOutput.Should().NotContain(ApplicationShutdownLogMessageForConsole);
     }
 
     [Fact(Timeout = 500)]
@@ -84,9 +97,11 @@ public class ProgramTest
         target!.KeepFileOpen = false;
 
         await using var file = File.Open(testfile, FileMode.Open, FileAccess.Read);
-        var logFileContent = file.ReadToEnd();
-        _consoleOutput.ToString().StripAnsi().Should().NotContain(_applicationShutdownLogMessageForConsole);
-        logFileContent.Should().Contain(_applicationShutdownLogMessageForFile);
+        var logFileContent = await file.ReadToEndAsync();
+
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
+        cleanedOutput.Should().NotContain(ApplicationShutdownLogMessageForConsole);
+        logFileContent.Should().Contain(ApplicationShutdownLogMessageForFile);
     }
 
     [Fact(Timeout = 500)]
@@ -107,7 +122,7 @@ public class ProgramTest
         MainCommand.ShouldIncludeLoadServiceCommand = true;
         await Task.Run(async () => await Program.Main("load-service"));
 
-        var cleanedOutput = _consoleOutput.ToString().StripAnsi();
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
         cleanedOutput.Should().Contain("All good! Service provider is not null.");
         cleanedOutput.Should()
             .NotContain("Simulating loading the service provider, but the provider is null.");
