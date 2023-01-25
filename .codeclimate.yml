@@ -3,6 +3,7 @@ exclude_patterns:
   - "Corgibytes.Freshli.Cli/obj/**"
   - "Corgibytes.Freshli.Cli.Test/**"
   - "Corgibytes.Freshli.Cli/Migrations/**"
+  - "**/*.Designer.cs"
 
 checks:
   method-lines:
