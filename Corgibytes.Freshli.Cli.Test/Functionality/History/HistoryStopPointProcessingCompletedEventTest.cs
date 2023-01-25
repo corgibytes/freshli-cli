@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
-using Json.Schema;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;

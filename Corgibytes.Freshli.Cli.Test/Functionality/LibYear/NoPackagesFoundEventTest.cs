@@ -13,7 +13,7 @@ public class NoPackagesFoundEventTest
     private readonly Mock<IApplicationActivityEngine> _activityEngine = new();
     private readonly Guid _analysisId = Guid.NewGuid();
     private const int HistoryStopPointId = 33;
-    private NoPackagesFoundEvent _appEvent;
+    private readonly NoPackagesFoundEvent _appEvent;
 
     public NoPackagesFoundEventTest()
     {
