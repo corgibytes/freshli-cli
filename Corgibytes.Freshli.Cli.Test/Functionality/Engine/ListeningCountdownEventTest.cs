@@ -730,10 +730,21 @@ public abstract class ListeningCountdownEventTest
             }
 
             [Fact]
-            public void Signal()
+            public void SignalReturningTrue()
             {
-                _countdownEvent.Signal();
+                Assert.True(_countdownEvent.Signal());
                 Assert.Equal(0, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-1, _lastChangeNotificationValue);
+                Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
+            }
+
+            [Fact]
+            public void SignalReturningFalse()
+            {
+                _countdownEvent.AddCount();
+                Assert.False(_countdownEvent.Signal());
+                Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-1, _lastChangeNotificationValue);
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
@@ -773,11 +784,22 @@ public abstract class ListeningCountdownEventTest
             }
 
             [Fact]
-            public void SignalWithValueAfterAdd()
+            public void SignalReturningTrueWithValueAfterAdd()
             {
                 _countdownEvent.AddCount();
-                _countdownEvent.Signal(2);
+                Assert.True(_countdownEvent.Signal(2));
                 Assert.Equal(0, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-2, _lastChangeNotificationValue);
+                Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
+            }
+
+            [Fact]
+            public void SignalReturningFalseWithValueAfterAdd()
+            {
+                _countdownEvent.AddCount(2);
+                Assert.False(_countdownEvent.Signal(2));
+                Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-2, _lastChangeNotificationValue);
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
@@ -1168,9 +1190,20 @@ public abstract class ListeningCountdownEventTest
             }
 
             [Fact]
-            public void Signal()
+            public void SignalReturningTrue()
             {
                 _countdownEvent.Signal();
+                Assert.True(_countdownEvent.Signal());
+                Assert.Equal(0, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-1, _lastChangeNotificationValue);
+                Assert.Equal(1, _sourceCountdownEvent.CurrentCount);
+            }
+
+            [Fact]
+            public void SignalReturningFalse()
+            {
+                Assert.False(_countdownEvent.Signal());
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-1, _lastChangeNotificationValue);
@@ -1178,13 +1211,24 @@ public abstract class ListeningCountdownEventTest
             }
 
             [Fact]
-            public void SourceSignal()
+            public void SourceSignalReturningTrue()
             {
-                _sourceCountdownEvent.Signal();
+                Assert.True(_sourceCountdownEvent.Signal());
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-1, _lastChangeNotificationValue);
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
+            }
+
+            [Fact]
+            public void SourceSignalReturningFalse()
+            {
+                _sourceCountdownEvent.AddCount();
+                Assert.False(_sourceCountdownEvent.Signal());
+                Assert.Equal(2, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-1, _lastChangeNotificationValue);
+                Assert.Equal(1, _sourceCountdownEvent.CurrentCount);
             }
 
             [Fact]
@@ -1210,10 +1254,21 @@ public abstract class ListeningCountdownEventTest
             }
 
             [Fact]
-            public void SignalWithValueAfterAdd()
+            public void SignalReturningTrueWithValueAfterAdd()
             {
                 _countdownEvent.AddCount();
-                _countdownEvent.Signal(2);
+                Assert.True(_countdownEvent.Signal(3));
+                Assert.Equal(0, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-3, _lastChangeNotificationValue);
+                Assert.Equal(1, _sourceCountdownEvent.CurrentCount);
+            }
+
+            [Fact]
+            public void SignalReturningFalseWithValueAfterAdd()
+            {
+                _countdownEvent.AddCount();
+                Assert.False(_countdownEvent.Signal(2));
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-2, _lastChangeNotificationValue);
@@ -1221,11 +1276,21 @@ public abstract class ListeningCountdownEventTest
             }
 
             [Fact]
-            public void SourceSignalWithValueAfterAdd()
+            public void SourceSignalReturningTrueWithValueAfterAdd()
             {
                 _sourceCountdownEvent.AddCount();
-                _sourceCountdownEvent.Signal(2);
+                Assert.True(_sourceCountdownEvent.Signal(2));
                 Assert.Equal(1, _countdownEvent.CurrentCount);
+                Assert.True(_wasEventHandlerCalled);
+                Assert.Equal(-2, _lastChangeNotificationValue);
+            }
+
+            [Fact]
+            public void SourceSignalReturningFalseWithValueAfterAdd()
+            {
+                _sourceCountdownEvent.AddCount(2);
+                Assert.False(_sourceCountdownEvent.Signal(2));
+                Assert.Equal(2, _countdownEvent.CurrentCount);
                 Assert.True(_wasEventHandlerCalled);
                 Assert.Equal(-2, _lastChangeNotificationValue);
             }

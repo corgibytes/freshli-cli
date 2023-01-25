@@ -12,12 +12,12 @@ public abstract class DefaultCountdownEventTest
     public class WithZeroInitialCount : IDisposable
     {
         private readonly ICountdownEvent _countdownEvent = new DefaultCountdownEvent(0);
-        private bool _wasEventHandlerCalled = false;
-        private int _lastChangeNotificationValue = 0;
+        private bool _wasEventHandlerCalled;
+        private int _lastChangeNotificationValue;
 
         public WithZeroInitialCount()
         {
-            _countdownEvent.CountChanged += (sender, args) =>
+            _countdownEvent.CountChanged += (_, args) =>
             {
                 _wasEventHandlerCalled = true;
                 _lastChangeNotificationValue = args.Delta;
@@ -189,12 +189,12 @@ public abstract class DefaultCountdownEventTest
     public class WithPositiveInitialCount : IDisposable
     {
         private readonly ICountdownEvent _countdownEvent = new DefaultCountdownEvent(1);
-        private bool _wasEventHandlerCalled = false;
-        private int _lastChangeNotificationValue = 0;
+        private bool _wasEventHandlerCalled;
+        private int _lastChangeNotificationValue;
 
         public WithPositiveInitialCount()
         {
-            _countdownEvent.CountChanged += (sender, args) =>
+            _countdownEvent.CountChanged += (_, args) =>
             {
                 _wasEventHandlerCalled = true;
                 _lastChangeNotificationValue = args.Delta;
@@ -278,10 +278,20 @@ public abstract class DefaultCountdownEventTest
         }
 
         [Fact]
-        public void Signal()
+        public void SignalReturningTrue()
         {
-            _countdownEvent.Signal();
+            Assert.True(_countdownEvent.Signal());
             Assert.Equal(0, _countdownEvent.CurrentCount);
+            Assert.True(_wasEventHandlerCalled);
+            Assert.Equal(-1, _lastChangeNotificationValue);
+        }
+
+        [Fact]
+        public void SignalReturningFalse()
+        {
+            _countdownEvent.AddCount();
+            Assert.False(_countdownEvent.Signal());
+            Assert.Equal(1, _countdownEvent.CurrentCount);
             Assert.True(_wasEventHandlerCalled);
             Assert.Equal(-1, _lastChangeNotificationValue);
         }
@@ -297,11 +307,21 @@ public abstract class DefaultCountdownEventTest
         }
 
         [Fact]
-        public void SignalWithValidValueAfterAdd()
+        public void SignalReturningTrueWithValidValueAfterAdd()
         {
             _countdownEvent.AddCount();
-            _countdownEvent.Signal(2);
+            Assert.True(_countdownEvent.Signal(2));
             Assert.Equal(0, _countdownEvent.CurrentCount);
+            Assert.True(_wasEventHandlerCalled);
+            Assert.Equal(-2, _lastChangeNotificationValue);
+        }
+
+        [Fact]
+        public void SignalReturningFalseWithValidValueAfterAdd()
+        {
+            _countdownEvent.AddCount(2);
+            Assert.False(_countdownEvent.Signal(2));
+            Assert.Equal(1, _countdownEvent.CurrentCount);
             Assert.True(_wasEventHandlerCalled);
             Assert.Equal(-2, _lastChangeNotificationValue);
         }
