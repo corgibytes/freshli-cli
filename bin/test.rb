@@ -48,7 +48,7 @@ status = execute("ruby #{File.dirname(__FILE__)}/build.rb") if perform_build
 if status.nil? || status.success?
   status = execute('bundle install')
 
-  status = execute('dotnet test ./exe/Corgibytes.Freshli.Cli.Test.dll') if status.success?
+  status = execute('dotnet test --blame-hang-timeout 10min ./exe/Corgibytes.Freshli.Cli.Test.dll') if status.success?
   status = execute('bundle exec cucumber --color --backtrace') if status.success?
 end
 
