@@ -3,7 +3,7 @@
 public sealed class ListeningCountdownEvent : DefaultCountdownEvent
 {
     private readonly object _sourceCountdownSyncLock = new();
-    private ICountdownEvent _sourceCountdownEvent;
+    private ICountdownEvent? _sourceCountdownEvent;
 
     public ListeningCountdownEvent(ICountdownEvent sourceCountdownEvent, int initialCount) : base(initialCount)
     {
@@ -45,14 +45,20 @@ public sealed class ListeningCountdownEvent : DefaultCountdownEvent
     {
         lock (_sourceCountdownSyncLock)
         {
-            base.Reset(count + _sourceCountdownEvent.CurrentCount);
+            base.Reset(count + _sourceCountdownEvent!.CurrentCount);
         }
     }
 
     public override void Dispose()
     {
-        _sourceCountdownEvent.CountChanged -= OnSourceCountChanged;
-        _sourceCountdownEvent.Dispose();
+        lock (_sourceCountdownSyncLock)
+        {
+            if (_sourceCountdownEvent != null)
+            {
+                _sourceCountdownEvent.CountChanged -= OnSourceCountChanged;
+                _sourceCountdownEvent.Dispose();
+            }
+        }
 
         base.Dispose();
     }
