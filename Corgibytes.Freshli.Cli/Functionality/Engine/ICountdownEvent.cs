@@ -25,6 +25,8 @@ public interface ICountdownEvent : IDisposable
     public void Wait(int millisecondsTimeout, CancellationToken cancellationToken);
     public void Wait(TimeSpan timeout, CancellationToken cancellationToken);
 
+    public void Interlock(Action action);
+
     public event EventHandler<CountChangedArgs>? CountChanged;
 
     public readonly record struct CountChangedArgs(int Delta)

@@ -3,19 +3,21 @@
 public sealed class ListeningCountdownEvent : DefaultCountdownEvent
 {
     private readonly object _sourceCountdownSyncLock = new();
-    private readonly ICountdownEvent _sourceCountdownEvent;
+    private ICountdownEvent _sourceCountdownEvent;
 
     public ListeningCountdownEvent(ICountdownEvent sourceCountdownEvent, int initialCount) : base(initialCount)
     {
-        _sourceCountdownEvent = sourceCountdownEvent;
-        _sourceCountdownEvent.CountChanged += OnSourceCountChanged;
-        lock (_sourceCountdownSyncLock)
+        sourceCountdownEvent.Interlock(() =>
         {
-            if (_sourceCountdownEvent.CurrentCount > 0)
+            _sourceCountdownEvent = sourceCountdownEvent;
+            _sourceCountdownEvent.CountChanged += OnSourceCountChanged;
+
+            var sourceCount = _sourceCountdownEvent.CurrentCount;
+            if (sourceCount > 0)
             {
-                TryAddCount(_sourceCountdownEvent.CurrentCount);
+                TryAddCount(sourceCount);
             }
-        }
+        });
     }
 
     private void OnSourceCountChanged(object? _, ICountdownEvent.CountChangedArgs args)

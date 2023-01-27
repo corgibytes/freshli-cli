@@ -8,6 +8,14 @@ public class DefaultCountdownEvent : ICountdownEvent
     private readonly object _syncLock = new();
     private readonly CountdownEvent _innerCountdownEvent;
 
+    public void Interlock(Action action)
+    {
+        lock (_syncLock)
+        {
+            action();
+        }
+    }
+
     public event EventHandler<ICountdownEvent.CountChangedArgs>? CountChanged;
 
     public DefaultCountdownEvent(int initialCount)
