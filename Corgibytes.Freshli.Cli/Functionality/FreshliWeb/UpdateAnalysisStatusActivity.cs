@@ -1,0 +1,27 @@
+using System;
+using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Microsoft.Extensions.DependencyInjection;
+
+namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
+
+public class UpdateAnalysisStatusActivity : IApplicationActivity
+{
+    public UpdateAnalysisStatusActivity(Guid apiAnalysisId, string status)
+    {
+        ApiAnalysisId = apiAnalysisId;
+        Status = status;
+    }
+
+    public Guid ApiAnalysisId { get; }
+    public string Status { get; }
+
+    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    {
+        var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
+
+        await resultsApi.UpdateAnalysis(ApiAnalysisId, Status);
+
+        await eventClient.Fire(new AnalysisApiStatusUpdatedEvent(ApiAnalysisId, Status));
+    }
+}
