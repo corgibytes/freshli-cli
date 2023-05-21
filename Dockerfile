@@ -8,6 +8,26 @@ ARG TARGETARCH
 # Allow builder to builc from branches other than `main`
 ARG FRESHLI_AGENT_DOTNET_BRANCH=main
 
+FROM dotnet_build as dotnet_build_aarch64
+ENV DOTNET_RUNTIME_ID='linux-arm64'
+
+FROM dotnet_build as dotnet_build_arm64
+ENV DOTNET_RUNTIME_ID='linux-arm64'
+
+FROM dotnet_build as dotnet_build_armhf
+ENV DOTNET_RUNTIME_ID='linux-arm'
+
+FROM dotnet_build as dotnet_build_arm
+ENV DOTNET_RUNTIME_ID='linux-arm'
+
+FROM dotnet_build as dotnet_build_amd64
+ENV DOTNET_RUNTIME_ID='linux-x64'
+
+FROM dotnet_build as dotnet_build_x86-64
+ENV DOTNET_RUNTIME_ID='linux-x64'
+
+FROM dotnet_build_${TARGETARCH} as dotnet_build_platform_specific
+
 COPY . /app/freshli
 WORKDIR /app/freshli
 
@@ -15,23 +35,7 @@ RUN dotnet tool restore
 RUN dotnet gitversion /config GitVersion.yml /showconfig
 RUN dotnet gitversion /config GitVersion.yml /output json /output buildserver
 RUN dotnet gitversion /config GitVersion.yml /updateprojectfiles
-RUN set -eux; \
-    case "${TARGETARCH}" in \
-    aarch64|arm64) \
-    DOTNET_RUNTIME_ID='linux-arm64'; \
-    ;; \
-    armhf|arm) \
-    DOTNET_RUNTIME_ID='linux-arm'; \
-    ;; \
-    amd64|i386:x86-64) \
-    DOTNET_RUNTIME_ID='linux-x64'; \
-    ;; \
-    *) \
-    echo "Unsupported arch: ${TARGETARCH}"; \
-    exit 1; \
-    ;; \
-    esac; \
-    dotnet build Corgibytes.Freshli.Cli/Corgibytes.Freshli.Cli.csproj -c Release -o exe --self-contained --runtime ${DOTNET_RUNTIME_ID}
+RUN dotnet build Corgibytes.Freshli.Cli/Corgibytes.Freshli.Cli.csproj -c Release -o exe --self-contained --runtime ${DOTNET_RUNTIME_ID}
 
 
 ### Build `freshli-agent-dotnet` executable
@@ -40,23 +44,7 @@ RUN apt update -y && apt install git -y
 RUN git clone https://github.com/corgibytes/freshli-agent-dotnet
 WORKDIR /app/freshli-agent-dotnet
 RUN git checkout ${FRESHLI_AGENT_DOTNET_BRANCH}
-RUN set -eux; \
-    case "${TARGETARCH}" in \
-    aarch64|arm64) \
-    DOTNET_RUNTIME_ID='linux-arm64'; \
-    ;; \
-    armhf|arm) \
-    DOTNET_RUNTIME_ID='linux-arm'; \
-    ;; \
-    amd64|i386:x86-64) \
-    DOTNET_RUNTIME_ID='linux-x64'; \
-    ;; \
-    *) \
-    echo "Unsupported arch: ${TARGETARCH}"; \
-    exit 1; \
-    ;; \
-    esac; \
-    dotnet build Corgibytes.Freshli.Agent.DotNet/Corgibytes.Freshli.Agent.DotNet.csproj -c Release -o exe --self-contained --runtime ${DOTNET_RUNTIME_ID}
+RUN dotnet build Corgibytes.Freshli.Agent.DotNet/Corgibytes.Freshli.Agent.DotNet.csproj -c Release -o exe --self-contained --runtime ${DOTNET_RUNTIME_ID}
 
 ### The dotnet agent relies on CycloneDX to be install as a self-contained executable.
 ### It should not be necessary after https://github.com/corgibytes/freshli-agent-dotnet/issues/3
@@ -64,23 +52,7 @@ WORKDIR /app
 RUN git clone https://github.com/CycloneDX/cyclonedx-dotnet.git
 WORKDIR /app/cyclonedx-dotnet
 RUN git checkout "v2.7.0"
-RUN set -eux; \
-    case "${TARGETARCH}" in \
-    aarch64|arm64) \
-    DOTNET_RUNTIME_ID='linux-arm64'; \
-    ;; \
-    armhf|arm) \
-    DOTNET_RUNTIME_ID='linux-arm'; \
-    ;; \
-    amd64|i386:x86-64) \
-    DOTNET_RUNTIME_ID='linux-x64'; \
-    ;; \
-    *) \
-    echo "Unsupported arch: ${TARGETARCH}"; \
-    exit 1; \
-    ;; \
-    esac; \
-    dotnet publish -c Release -r ${DOTNET_RUNTIME_ID} --self-contained false -f net6.0
+RUN dotnet publish -c Release -r ${DOTNET_RUNTIME_ID} --self-contained false -f net6.0
 
 ### Build `freshli-agent-java` executable
 FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk-jammy AS java_build
@@ -131,20 +103,20 @@ RUN cd /root/bootstrap && \
     mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom && \
     mvn com.corgibytes:versions-maven-plugin:resolve-ranges-historical
 
-# Copy `freshli` executable from the `dotnet_build` image
+# Copy `freshli` executable from the `dotnet_build_platform_specific` image
 RUN mkdir -p /usr/local/share/freshli
-COPY --from=dotnet_build /app/freshli/exe/ /usr/local/share/freshli/
+COPY --from=dotnet_build_platform_specific /app/freshli/exe/ /usr/local/share/freshli/
 
 # Create the default cache-dir
 RUN mkdir -p /root/.freshli
 
 # Also, copy `freshli-agent-dotnet` from the `dotnet_build` image
 RUN mkdir -p /usr/local/share/freshli-agent-dotnet
-COPY --from=dotnet_build /app/freshli-agent-dotnet/exe/ /usr/local/share/freshli-agent-dotnet/
+COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/exe/ /usr/local/share/freshli-agent-dotnet/
 RUN ln -s /usr/local/share/freshli-agent-dotnet/Corgibytes.Freshli.Agent.DotNet /usr/local/bin/freshli-agent-dotnet
 
 RUN mkdir -p /usr/local/share/cyclonedx-dotnet
-COPY --from=dotnet_build /app/cyclonedx-dotnet/CycloneDX/bin/Release/net6.0/linux-x64/publish /usr/local/share/cyclonedx-dotnet
+COPY --from=dotnet_build_platform_specific /app/cyclonedx-dotnet/CycloneDX/bin/Release/net6.0/${DOTNET_RUNTIME_ID}/publish /usr/local/share/cyclonedx-dotnet
 RUN ln -s /usr/local/share/cyclonedx-dotnet/CycloneDX /usr/local/bin/cyclonedx
 
 # Install dotnet v6 runtime
