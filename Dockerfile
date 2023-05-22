@@ -5,7 +5,7 @@
 ### Build `freshli` executable
 FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0.100-bullseye-slim AS dotnet_build
 ARG TARGETARCH
-# Allow builder to builc from branches other than `main`
+# Allow builder to build from branches other than `main`
 ARG FRESHLI_AGENT_DOTNET_BRANCH=main
 
 FROM dotnet_build as dotnet_build_aarch64
@@ -53,6 +53,7 @@ RUN git clone https://github.com/CycloneDX/cyclonedx-dotnet.git
 WORKDIR /app/cyclonedx-dotnet
 RUN git checkout "v2.7.0"
 RUN dotnet publish -c Release -r ${DOTNET_RUNTIME_ID} --self-contained false -f net6.0
+RUN cp -r CycloneDX/bin/Release/net6.0/${DOTNET_RUNTIME_ID}/publish /app/cyclonedx-dotnet/CycloneDX/.
 
 ### Build `freshli-agent-java` executable
 FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk-jammy AS java_build
@@ -116,7 +117,7 @@ COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/exe/ /usr/l
 RUN ln -s /usr/local/share/freshli-agent-dotnet/Corgibytes.Freshli.Agent.DotNet /usr/local/bin/freshli-agent-dotnet
 
 RUN mkdir -p /usr/local/share/cyclonedx-dotnet
-COPY --from=dotnet_build_platform_specific /app/cyclonedx-dotnet/CycloneDX/bin/Release/net6.0/${DOTNET_RUNTIME_ID}/publish /usr/local/share/cyclonedx-dotnet
+COPY --from=dotnet_build_platform_specific /app/cyclonedx-dotnet/CycloneDX/publish /usr/local/share/cyclonedx-dotnet
 RUN ln -s /usr/local/share/cyclonedx-dotnet/CycloneDX /usr/local/bin/cyclonedx
 
 # Install dotnet v6 runtime
