@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CliWrap.EventStream;
@@ -164,16 +165,16 @@ public class AgentManager : IAgentManager, IDisposable
             // ReSharper disable once AccessToDisposedClosure
             await foreach (var commandEvent in commandEvents.WithCancellation(forcefulShutdown.Token))
             {
-                _logger.LogDebug("Received command event {event}", commandEvent);
+                _logger.LogDebug("Received command event {@Event}", commandEvent);
                 switch (commandEvent)
                 {
                     case StandardOutputCommandEvent output:
-                        isServiceListening = output.Text == $"Listening on {port}...";
+                        var pattern = $".*listening on.*{port}.*";
+                        isServiceListening = Regex.Match(output.Text, pattern, RegexOptions.IgnoreCase).Success;
                         _logger.LogDebug(
-                            "Agent {Agent} is listening on port {Port}",
-                            agentExecutablePath,
-                            port
-                        );
+                            "Agent {Agent} is listening on port {Port} {IsServiceListening}",
+                        agentExecutablePath,
+                        port, isServiceListening);
                         break;
                 }
             }
