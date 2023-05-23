@@ -72,7 +72,7 @@ RUN ./gradlew installDist
 FROM eclipse-temurin:17-jdk-jammy AS final
 
 # Install git
-RUN apt update -y && apt install git -y
+RUN apt update -y && apt install git lsof -y
 
 # Install maven
 # Copied from https://github.com/carlossg/docker-maven/blob/d2333e08a71fe120a0ac245157906e9b3507cee3/eclipse-temurin-17/Dockerfile
@@ -113,8 +113,9 @@ RUN mkdir -p /root/.freshli
 
 # Also, copy `freshli-agent-dotnet` from the `dotnet_build` image
 RUN mkdir -p /usr/local/share/freshli-agent-dotnet
-COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/exe/ /usr/local/share/freshli-agent-dotnet/
-RUN ln -s /usr/local/share/freshli-agent-dotnet/Corgibytes.Freshli.Agent.DotNet /usr/local/bin/freshli-agent-dotnet
+COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/exe /usr/local/share/freshli-agent-dotnet/bin
+COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/Corgibytes.Freshli.Agent.DotNet /usr/local/share/freshli-agent-dotnet/content
+RUN ln -s /usr/local/share/freshli-agent-dotnet/bin/Corgibytes.Freshli.Agent.DotNet /usr/local/bin/freshli-agent-dotnet
 
 RUN mkdir -p /usr/local/share/cyclonedx-dotnet
 COPY --from=dotnet_build_platform_specific /app/cyclonedx-dotnet/CycloneDX/publish /usr/local/share/cyclonedx-dotnet
@@ -134,9 +135,16 @@ COPY --from=java_build /app/freshli-agent-java/build/install/freshli-agent-java/
 
 RUN ln -s /usr/local/share/freshli-agent-java/bin/freshli-agent-java /usr/local/bin/freshli-agent-java
 
+# tool for helping diagnose gRPC services in the container when needed 
+RUN wget https://github.com/fullstorydev/grpcurl/releases/download/v1.8.7/grpcurl_1.8.7_linux_x86_64.tar.gz
+RUN tar -zxvf grpcurl_1.8.7_linux_x86_64.tar.gz
+RUN mv grpcurl /usr/local/bin/
+
 ENV PATH=/usr/local/share/freshli:/usr/local/bin:$PATH
 ENV DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+ENV FRESHLI_AGENT_DOTNET_CONTENT_ROOT=/usr/local/share/freshli-agent-dotnet/content
 
+EXPOSE 1-65535
 WORKDIR /
 ENTRYPOINT ["/usr/local/share/freshli/freshli"]
 CMD ["--help"]
