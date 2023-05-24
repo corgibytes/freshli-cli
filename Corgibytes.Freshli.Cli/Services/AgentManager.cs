@@ -167,7 +167,7 @@ public class AgentManager : IAgentManager, IDisposable
             // ReSharper disable once AccessToDisposedClosure
             await foreach (var commandEvent in commandEvents.WithCancellation(forcefulShutdown.Token))
             {
-                _logger.LogDebug("Received command event {event}", commandEvent);
+                _logger.LogDebug("Received command event {@Event}", commandEvent);
                 switch (commandEvent)
                 {
                     case StandardOutputCommandEvent output:
