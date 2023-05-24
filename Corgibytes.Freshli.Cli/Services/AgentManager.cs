@@ -172,7 +172,7 @@ public class AgentManager : IAgentManager, IDisposable
                         var pattern = $".*listening on.*{port}.*";
                         isServiceListening = Regex.Match(output.Text, pattern, RegexOptions.IgnoreCase).Success;
                         _logger.LogDebug(
-                            "Agent {Agent} is listening on port {Port} {IsServiceListening}",
+                            "Agent {Agent} is listening on port {Port}: {IsServiceListening}",
                         agentExecutablePath,
                         port, isServiceListening);
                         break;
