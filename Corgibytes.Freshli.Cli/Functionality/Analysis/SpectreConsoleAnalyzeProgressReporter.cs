@@ -42,6 +42,11 @@ public class SpectreConsoleAnalyzeProgressReporter : IAnalyzeProgressReporter, I
     {
         lock (_mainProgressBarLock)
         {
+            if (_mainProgressBar != null && _mainProgressBarTask != null && _mainProgressBarContext != null)
+            {
+                return;
+            }
+
             _mainProgressBar = _console.Progress();
             _mainProgressBar.Columns(
                 new TaskDescriptionColumn(),
