@@ -167,18 +167,18 @@ public class AgentManager : IAgentManager, IDisposable
             // ReSharper disable once AccessToDisposedClosure
             await foreach (var commandEvent in commandEvents.WithCancellation(forcefulShutdown.Token))
             {
-                _logger.LogDebug("Received command event {event}", commandEvent);
+                _logger.LogDebug("Received command event {@Event}", commandEvent);
                 switch (commandEvent)
                 {
                     case StandardOutputCommandEvent output:
-                        isServiceListening = listeningExpression.IsMatch(output.Text);
+                        var pattern = $".*listening on.*{port}.*";
+                        isServiceListening = Regex.Match(output.Text, pattern, RegexOptions.IgnoreCase).Success;
                         if (isServiceListening)
                         {
                             _logger.LogDebug(
                                 "Agent {Agent} is listening on port {Port}",
                                 agentExecutablePath,
-                                port
-                            );
+                                port);
                         }
                         break;
                 }
