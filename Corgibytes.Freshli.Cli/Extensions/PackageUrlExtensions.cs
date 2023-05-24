@@ -10,9 +10,11 @@ public static class PackageUrlExtensions
         return other.ToString();
     }
 
-    public static bool PackageUrlEquals(this PackageURL packageUrl, PackageURL other) =>
+    public static bool PackageUrlEquals(this PackageURL packageUrl, PackageURL? other) =>
         // Technically this isn't true equality but this what equals means to us.
-        packageUrl.Name.Equals(other.Name) &&
-        packageUrl.Namespace.Equals(other.Namespace) &&
-        packageUrl.Version.Equals(other.Version);
+        // it's not obvious, but the == compiles the same as string.Equals(str0, str1)
+        other != null &&
+        packageUrl.Name == other.Name &&
+        packageUrl.Namespace == other.Namespace &&
+        packageUrl.Version == other.Version;
 }
