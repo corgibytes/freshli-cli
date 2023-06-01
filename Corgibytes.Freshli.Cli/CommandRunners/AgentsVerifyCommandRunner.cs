@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CommandLine;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -22,7 +23,7 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
     private AgentsVerifier AgentsVerifier { get; }
 
     // TODO: This method should dispatch an activity
-    public override async ValueTask<int> Run(AgentsVerifyCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(AgentsVerifyCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
         var agents = _agentsDetector.Detect();
 

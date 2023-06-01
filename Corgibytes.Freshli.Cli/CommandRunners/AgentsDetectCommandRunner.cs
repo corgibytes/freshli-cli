@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -27,7 +28,7 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
-    public override async ValueTask<int> Run(EmptyCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(EmptyCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
         var activity = new DetectAgentsActivity(AgentsDetector);
 
@@ -37,8 +38,8 @@ public class AgentsDetectCommandRunner : CommandRunner<AgentsDetectCommand, Empt
             return ValueTask.CompletedTask;
         });
 
-        await ActivityEngine.Dispatch(activity);
-        await ActivityEngine.Wait(activity);
+        await ActivityEngine.Dispatch(activity, cancellationToken);
+        await ActivityEngine.Wait(activity, cancellationToken);
 
         return 0;
     }

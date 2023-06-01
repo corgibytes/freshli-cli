@@ -20,10 +20,18 @@ public class ApiHistoryStopCreatedEventTest
 
         var eventClient = new Mock<IApplicationActivityEngine>();
 
-        await appEvent.Handle(eventClient.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
 
-        eventClient.Verify(mock => mock.Dispatch(
-            It.Is<CheckoutHistoryActivity>(
-                value => value.HistoryStopPointId == historyStopPointId)));
+        await appEvent.Handle(eventClient.Object, cancellationToken);
+
+        eventClient.Verify(mock =>
+            mock.Dispatch(
+                It.Is<CheckoutHistoryActivity>(value =>
+                    value.HistoryStopPointId == historyStopPointId
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

@@ -53,8 +53,8 @@ public class ApplicationEngineTest : IDisposable
     public async Task WaitForTaskCompletion()
     {
         var activity = new FakeApplicationActivity();
-        await _engine.Dispatch(activity);
-        await _engine.Wait(activity);
+        await _engine.Dispatch(activity, CancellationToken.None);
+        await _engine.Wait(activity, CancellationToken.None);
 
         Assert.True(activity.WasHandleCalled);
     }
@@ -63,8 +63,8 @@ public class ApplicationEngineTest : IDisposable
     public async Task ActivityHandleMethodsAreOnlyCalledOnce()
     {
         var activity = new FakeApplicationActivityThatCountsCalls();
-        await _engine.Dispatch(activity);
-        await _engine.Wait(activity);
+        await _engine.Dispatch(activity, CancellationToken.None);
+        await _engine.Wait(activity, CancellationToken.None);
 
         Assert.Equal(1, activity.HandleCallCount);
     }
@@ -73,8 +73,8 @@ public class ApplicationEngineTest : IDisposable
     public async Task EventsAreOnlyFiredOnce()
     {
         var activity = new FakeApplicationActivityThatFiresAnEventThatCountsCalls();
-        await _engine.Dispatch(activity);
-        await _engine.Wait(activity);
+        await _engine.Dispatch(activity, CancellationToken.None);
+        await _engine.Wait(activity, CancellationToken.None);
 
         Assert.Equal(1, activity.ChildEvent.HandleCallCount);
     }
@@ -83,9 +83,8 @@ public class ApplicationEngineTest : IDisposable
     public async Task WaitForTaskCompletionWhenTaskHasChildren()
     {
         var activity = new FakeApplicationActivityThatFiresAnEvent();
-
-        await _engine.Dispatch(activity);
-        await _engine.Wait(activity);
+        await _engine.Dispatch(activity, CancellationToken.None);
+        await _engine.Wait(activity, CancellationToken.None);
 
         Assert.True(activity.WasHandleCalled);
     }
@@ -94,9 +93,8 @@ public class ApplicationEngineTest : IDisposable
     public async Task WaitForTaskCompletionWithTreeOfActivitiesAndEvents()
     {
         var activity = new FakeApplicationActivityTree();
-        await _engine.Dispatch(activity);
-
-        await _engine.Wait(activity);
+        await _engine.Dispatch(activity, CancellationToken.None);
+        await _engine.Wait(activity, CancellationToken.None);
 
         AssertHandled(activity);
     }
@@ -113,8 +111,8 @@ public class ApplicationEngineTest : IDisposable
             return ValueTask.CompletedTask;
         });
 
-        await _engine.Dispatch(activity);
-        await _engine.Wait(activity);
+        await _engine.Dispatch(activity, CancellationToken.None);
+        await _engine.Wait(activity, CancellationToken.None);
 
         Assert.True(wasEventHandlerCalled);
         Assert.True(activity.WasHandleCalled);
@@ -132,8 +130,8 @@ public class ApplicationEngineTest : IDisposable
             return ValueTask.CompletedTask;
         });
 
-        await _engine.Dispatch(activity);
-        await _engine.Wait(activity);
+        await _engine.Dispatch(activity, CancellationToken.None);
+        await _engine.Wait(activity, CancellationToken.None);
 
         Assert.Equal(1, eventHandlerCallCount);
         Assert.True(activity.WasHandleCalled);
@@ -151,8 +149,8 @@ public class ApplicationEngineTest : IDisposable
             return ValueTask.CompletedTask;
         });
 
-        await _engine.Dispatch(activity);
-        await _engine.Wait(activity);
+        await _engine.Dispatch(activity, CancellationToken.None);
+        await _engine.Wait(activity, CancellationToken.None);
 
         Assert.True(wasEventHandlerCalled);
         Assert.True(activity.WasHandleCalled);
@@ -170,8 +168,8 @@ public class ApplicationEngineTest : IDisposable
             return ValueTask.CompletedTask;
         });
 
-        await _engine.Dispatch(activity);
-        await _engine.Wait(activity);
+        await _engine.Dispatch(activity, CancellationToken.None);
+        await _engine.Wait(activity, CancellationToken.None);
 
         Assert.True(wasEventHandlerCalled);
         Assert.True(activity.WasHandleCalled);
@@ -199,12 +197,12 @@ public class ApplicationEngineTest : IDisposable
     {
         public FakeApplicationEventThatCountsCalls ChildEvent { get; private set; } = null!;
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient)
+        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
 
             ChildEvent = new FakeApplicationEventThatCountsCalls();
-            await eventClient.Fire(ChildEvent);
+            await eventClient.Fire(ChildEvent, cancellationToken);
         }
     }
 
@@ -212,9 +210,9 @@ public class ApplicationEngineTest : IDisposable
     {
         public int HandleCallCount;
 
-        public async ValueTask Handle(IApplicationActivityEngine eventClient)
+        public async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
 
             Interlocked.Increment(ref HandleCallCount);
         }
@@ -223,9 +221,9 @@ public class ApplicationEngineTest : IDisposable
     private class FakeApplicationActivityThatCountsCalls : IApplicationActivity
     {
         public int HandleCallCount;
-        public async ValueTask Handle(IApplicationEventEngine eventClient)
+        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
 
             Interlocked.Increment(ref HandleCallCount);
         }
@@ -235,9 +233,9 @@ public class ApplicationEngineTest : IDisposable
     {
         public bool WasHandleCalled { get; private set; }
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient)
+        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
 
             WasHandleCalled = true;
 
@@ -249,21 +247,21 @@ public class ApplicationEngineTest : IDisposable
     {
         public bool WasHandleCalled { get; private set; }
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient)
+        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
 
             WasHandleCalled = true;
 
-            await eventClient.Fire(new FakeApplicationEventThatThrows());
+            await eventClient.Fire(new FakeApplicationEventThatThrows(), cancellationToken);
         }
     }
 
     private class FakeApplicationEventThatThrows : IApplicationEvent
     {
-        public async ValueTask Handle(IApplicationActivityEngine eventClient)
+        public async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
 
             throw new Exception();
         }
@@ -272,9 +270,9 @@ public class ApplicationEngineTest : IDisposable
     private class FakeApplicationActivity : IApplicationActivity
     {
         public bool WasHandleCalled { get; private set; }
-        public async ValueTask Handle(IApplicationEventEngine eventClient)
+        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
 
             WasHandleCalled = true;
         }
@@ -284,13 +282,13 @@ public class ApplicationEngineTest : IDisposable
     {
         public bool WasHandleCalled { get; private set; }
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient)
+        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
 
             WasHandleCalled = true;
 
-            await eventClient.Fire(new FakeApplicationEvent());
+            await eventClient.Fire(new FakeApplicationEvent(), cancellationToken);
         }
     }
 
@@ -302,9 +300,9 @@ public class ApplicationEngineTest : IDisposable
         private const int MaxFanOut = 10;
         private static int s_count;
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient)
+        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(10));
+            await Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
 
             if (s_count < MaxFanOut)
             {
@@ -313,7 +311,7 @@ public class ApplicationEngineTest : IDisposable
 
                 foreach (var applicationEvent in Children)
                 {
-                    await eventClient.Fire(applicationEvent);
+                    await eventClient.Fire(applicationEvent, cancellationToken);
                 }
 
                 Interlocked.Increment(ref s_count);
@@ -330,9 +328,9 @@ public class ApplicationEngineTest : IDisposable
 
         private const int MaxFanOut = 10;
         private static int s_count;
-        public async ValueTask Handle(IApplicationActivityEngine activityClient)
+        public async ValueTask Handle(IApplicationActivityEngine activityClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(10));
+            await Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
 
             if (s_count < MaxFanOut)
             {
@@ -341,7 +339,7 @@ public class ApplicationEngineTest : IDisposable
 
                 foreach (var applicationActivity in Children)
                 {
-                    await activityClient.Dispatch(applicationActivity);
+                    await activityClient.Dispatch(applicationActivity, cancellationToken);
                 }
 
                 Interlocked.Increment(ref s_count);
@@ -353,9 +351,9 @@ public class ApplicationEngineTest : IDisposable
 
     private class FakeApplicationEvent : IApplicationEvent
     {
-        public async ValueTask Handle(IApplicationActivityEngine eventClient)
+        public async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
         {
-            await Task.Delay(TimeSpan.FromMilliseconds(100));
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -12,43 +13,20 @@ public class NoPackagesFoundEventTest
 {
     private readonly Mock<IApplicationActivityEngine> _activityEngine = new();
     private readonly Guid _analysisId = Guid.NewGuid();
-    private const int HistoryStopPointId = 33;
+    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly NoPackagesFoundEvent _appEvent;
+    private readonly CancellationToken _cancellationToken = new();
 
     public NoPackagesFoundEventTest()
     {
-        _appEvent = new NoPackagesFoundEvent(_analysisId, HistoryStopPointId);
+        _appEvent = new NoPackagesFoundEvent(_analysisId, _parent.Object);
     }
 
     [Fact(Timeout = 500)]
     public async Task Handle()
     {
-        await _appEvent.Handle(_activityEngine.Object);
+        await _appEvent.Handle(_activityEngine.Object, _cancellationToken);
 
-        _activityEngine.Verify(mock =>
-            mock.Dispatch(It.Is<ReportHistoryStopPointProgressActivity>(value =>
-                value.HistoryStopPointId == HistoryStopPointId
-            )
-        ));
-    }
-
-    [Fact(Timeout = 500)]
-    public async Task HandleCorrectlyDealsWithExceptions()
-    {
-        var exception = new Exception();
-
-        _activityEngine.Setup(mock =>
-            mock.Dispatch(It.IsAny<ReportHistoryStopPointProgressActivity>())
-        )
-        .Throws(exception);
-
-        await _appEvent.Handle(_activityEngine.Object);
-
-        _activityEngine.Verify(mock =>
-            mock.Dispatch(It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
-                    value.HistoryStopPointId == HistoryStopPointId &&
-                    value.Error == exception
-            )
-        ));
+        _activityEngine.VerifyNoOtherCalls();
     }
 }

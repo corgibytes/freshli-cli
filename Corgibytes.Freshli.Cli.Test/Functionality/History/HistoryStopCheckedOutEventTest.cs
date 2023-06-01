@@ -16,7 +16,6 @@ public class HistoryStopCheckedOutEventTest
     public async Task Handle()
     {
         var analysisId = Guid.NewGuid();
-        var historyStopPointId = 12;
 
         var progressReporter = new Mock<IAnalyzeProgressReporter>();
         var serviceProvider = new Mock<IServiceProvider>();
@@ -28,16 +27,25 @@ public class HistoryStopCheckedOutEventTest
         serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<HistoryStopCheckedOutEvent>)))
             .Returns(logger.Object);
 
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
         var appEvent = new HistoryStopCheckedOutEvent
         {
             AnalysisId = analysisId,
-            HistoryStopPointId = historyStopPointId
+            Parent = parent.Object
         };
 
-        await appEvent.Handle(activityEngine.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
+        await appEvent.Handle(activityEngine.Object, cancellationToken);
 
-        activityEngine.Verify(mock => mock.Dispatch(It.Is<DetectAgentsForDetectManifestsActivity>(value =>
-            value.AnalysisId == analysisId && value.HistoryStopPointId == historyStopPointId)));
+        activityEngine.Verify(
+            mock => mock.Dispatch(
+                It.Is<DetectAgentsForDetectManifestsActivity>(value =>
+                    value.AnalysisId == analysisId && value.Parent == parent.Object
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
 
         progressReporter.Verify(mock =>
             mock.ReportSingleHistoryStopPointOperationFinished(HistoryStopPointOperation.Archive));

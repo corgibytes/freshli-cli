@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
@@ -11,20 +12,20 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
     public Guid AnalysisId { get; }
-    public int HistoryStopPointId { get; }
+    public IHistoryStopPointProcessingTask Parent { get; }
 
     public int Priority
     {
         get { return 100; }
     }
 
-    public DetectAgentsForDetectManifestsActivity(Guid analysisId, int historyStopPointId)
+    public DetectAgentsForDetectManifestsActivity(Guid analysisId, IHistoryStopPointProcessingTask parent)
     {
         AnalysisId = analysisId;
-        HistoryStopPointId = historyStopPointId;
+        Parent = parent;
     }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {
@@ -34,19 +35,23 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHis
             if (agents.Count == 0)
             {
                 await eventClient.Fire(
-                    new NoAgentsDetectedFailureEvent { ErrorMessage = "Could not locate any agents" });
+                    new NoAgentsDetectedFailureEvent { ErrorMessage = "Could not locate any agents" },
+                    cancellationToken);
                 return;
             }
 
             foreach (var agentPath in agents)
             {
                 await eventClient.Fire(
-                    new AgentDetectedForDetectManifestEvent(AnalysisId, HistoryStopPointId, agentPath));
+                    new AgentDetectedForDetectManifestEvent(AnalysisId, Parent, agentPath),
+                    cancellationToken);
             }
         }
         catch (Exception error)
         {
-            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(HistoryStopPointId, error));
+            await eventClient.Fire(
+                new HistoryStopPointProcessingFailedEvent(Parent, error),
+                cancellationToken);
         }
     }
 }

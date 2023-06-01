@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -15,7 +16,7 @@ public class AnalysisApiStatusUpdatedEvent : ApplicationEventBase
     public Guid ApiAnalysisId { get; }
     public string Status { get; }
 
-    public override ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         return ValueTask.CompletedTask;
     }

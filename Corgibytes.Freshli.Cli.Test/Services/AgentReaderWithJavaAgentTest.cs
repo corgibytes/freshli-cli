@@ -86,7 +86,7 @@ public class AgentReaderWithJavaAgentTest : IDisposable
 
         var reader = _agentManager.GetReader("freshli-agent-java");
 
-        return (checkoutLocation, reader, checkoutDirectory);
+        return (repositoryLocation, reader, new DirectoryInfo(repositoryLocation));
     }
 
     private static (string, DirectoryInfo) CreateCheckoutLocation()

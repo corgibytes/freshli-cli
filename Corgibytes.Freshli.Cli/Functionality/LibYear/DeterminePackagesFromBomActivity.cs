@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -8,11 +9,11 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public DeterminePackagesFromBomActivity(Guid analysisId, int historyStopPointId, string pathToBom,
+    public DeterminePackagesFromBomActivity(Guid analysisId, IHistoryStopPointProcessingTask parent, string pathToBom,
         string agentExecutablePath)
     {
         AnalysisId = analysisId;
-        HistoryStopPointId = historyStopPointId;
+        Parent = parent;
         PathToBom = pathToBom;
         AgentExecutablePath = agentExecutablePath;
     }
@@ -23,11 +24,11 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
     }
 
     public Guid AnalysisId { get; }
-    public int HistoryStopPointId { get; }
+    public IHistoryStopPointProcessingTask Parent { get; }
     public string PathToBom { get; }
     public string AgentExecutablePath { get; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {
@@ -40,23 +41,25 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
                     throw new Exception($"Null package URL detected for in {PathToBom}");
                 }
 
-                await eventClient.Fire(new PackageFoundEvent
-                {
-                    AnalysisId = AnalysisId,
-                    HistoryStopPointId = HistoryStopPointId,
-                    AgentExecutablePath = AgentExecutablePath,
-                    Package = packageUrl
-                });
+                await eventClient.Fire(
+                    new PackageFoundEvent
+                    {
+                        AnalysisId = AnalysisId,
+                        Parent = Parent,
+                        AgentExecutablePath = AgentExecutablePath,
+                        Package = packageUrl
+                    },
+                    cancellationToken);
             }
 
             if (packageUrls.Count == 0)
             {
-                await eventClient.Fire(new NoPackagesFoundEvent(AnalysisId, HistoryStopPointId));
+                await eventClient.Fire(new NoPackagesFoundEvent(AnalysisId, Parent), cancellationToken);
             }
         }
         catch (Exception error)
         {
-            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(HistoryStopPointId, error));
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(Parent, error), cancellationToken);
         }
     }
 }

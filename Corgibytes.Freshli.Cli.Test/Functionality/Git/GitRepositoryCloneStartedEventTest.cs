@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -24,7 +25,8 @@ public class GitRepositoryCloneStartedEventTest
         activityClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         var appEvent = new GitRepositoryCloneStartedEvent { AnalysisId = analysisId };
-        await appEvent.Handle(activityClient.Object);
+        var cancellationToken = new CancellationToken(false);
+        await appEvent.Handle(activityClient.Object, cancellationToken);
 
         progressReporter.Verify(mock => mock.ReportGitOperationStarted(GitOperation.CreateNewClone));
     }

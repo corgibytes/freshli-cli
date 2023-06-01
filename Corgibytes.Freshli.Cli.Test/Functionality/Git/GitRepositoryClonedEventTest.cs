@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -39,12 +40,20 @@ public class GitRepositoryClonedEventTest
             .Returns(progressReporter.Object);
         engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        await clonedEvent.Handle(engine.Object);
+        var cancellationToken = new CancellationToken(false);
+        await clonedEvent.Handle(engine.Object, cancellationToken);
 
         // Verify that it dispatches ComputeHistoryActivity
-        engine.Verify(mock => mock.Dispatch(It.Is<ComputeHistoryActivity>(value =>
-            value.AnalysisId == analysisId &&
-            value.HistoryStopData == historyStopData)));
+        engine.Verify(mock =>
+            mock.Dispatch(
+                It.Is<ComputeHistoryActivity>(value =>
+                    value.AnalysisId == analysisId &&
+                    value.HistoryStopData == historyStopData
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
         progressReporter.Verify(mock => mock.ReportGitOperationFinished(GitOperation.CreateNewClone));
     }
 }

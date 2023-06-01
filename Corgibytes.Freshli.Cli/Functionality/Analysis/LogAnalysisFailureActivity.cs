@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +12,7 @@ public class LogAnalysisFailureActivity : IApplicationActivity
 
     public LogAnalysisFailureActivity(ErrorEvent errorEvent) => ErrorEvent = errorEvent;
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<LogAnalysisFailureActivity>>();
 
@@ -21,6 +22,6 @@ public class LogAnalysisFailureActivity : IApplicationActivity
             logger.LogError("{Exception}", ErrorEvent.Exception);
         }
 
-        await eventClient.Fire(new AnalysisFailureLoggedEvent(ErrorEvent));
+        await eventClient.Fire(new AnalysisFailureLoggedEvent(ErrorEvent), cancellationToken);
     }
 }
