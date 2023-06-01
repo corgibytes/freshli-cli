@@ -1,5 +1,6 @@
 using System;
 using System.CommandLine;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -23,13 +24,13 @@ public class CachePrepareCommandRunner : CommandRunner<CacheCommand, CachePrepar
     private IConfiguration Configuration { get; }
     private IApplicationActivityEngine ActivityEngine { get; }
 
-    public override async ValueTask<int> Run(CachePrepareCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(CachePrepareCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
         Configuration.CacheDir = options.CacheDir;
 
         var activity = new PrepareCacheActivity();
-        await ActivityEngine.Dispatch(activity);
-        await ActivityEngine.Wait(activity);
+        await ActivityEngine.Dispatch(activity, cancellationToken);
+        await ActivityEngine.Wait(activity, cancellationToken);
         return 0;
     }
 }

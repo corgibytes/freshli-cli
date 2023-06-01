@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -13,10 +14,10 @@ public class GitRepositoryClonedEvent : ApplicationEventBase
 
     public HistoryStopData HistoryStopData { get; init; } = null!;
 
-    public override async ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         var progressReporter = eventClient.ServiceProvider.GetRequiredService<IAnalyzeProgressReporter>();
         progressReporter.ReportGitOperationFinished(GitOperation.CreateNewClone);
-        await eventClient.Dispatch(new ComputeHistoryActivity(AnalysisId, HistoryStopData));
+        await eventClient.Dispatch(new ComputeHistoryActivity(AnalysisId, HistoryStopData), cancellationToken);
     }
 }

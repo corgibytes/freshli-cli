@@ -20,33 +20,54 @@ public class ManifestDetectedEventTest
 
         const string agentExecutablePath = "/path/to/agent";
         var analysisId = Guid.NewGuid();
-        const int historyStopPointId = 29;
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
+        var cancellationToken = new System.Threading.CancellationToken(false);
         var manifestEvent =
-            new ManifestDetectedEvent(analysisId, historyStopPointId, agentExecutablePath, manifestPath);
-        await manifestEvent.Handle(engine.Object);
+            new ManifestDetectedEvent(analysisId, parent.Object, agentExecutablePath, manifestPath);
+        await manifestEvent.Handle(engine.Object, cancellationToken);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<GenerateBillOfMaterialsActivity>(value =>
-            value.AnalysisId == analysisId &&
-            value.HistoryStopPointId == historyStopPointId &&
-            value.ManifestPath == manifestPath &&
-            value.AgentExecutablePath == agentExecutablePath
-        )));
+        engine.Verify(
+            mock => mock.Dispatch(
+                It.Is<GenerateBillOfMaterialsActivity>(value =>
+                    value.AnalysisId == analysisId &&
+                    value.Parent == parent.Object &&
+                    value.ManifestPath == manifestPath &&
+                    value.AgentExecutablePath == agentExecutablePath
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var engine = new Mock<IApplicationActivityEngine>();
-
-        var appEvent = new ManifestDetectedEvent(Guid.NewGuid(), 29, "/path/to/agent", "/path/to/manifest");
+        var cancellationToken = new System.Threading.CancellationToken(false);
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
+        var appEvent = new ManifestDetectedEvent(Guid.NewGuid(), parent.Object, "/path/to/agent", "/path/to/manifest");
 
         var exception = new InvalidOperationException();
-        engine.Setup(mock => mock.Dispatch(It.IsAny<GenerateBillOfMaterialsActivity>())).Throws(exception);
+        engine.Setup(
+            mock => mock.Dispatch(
+                It.IsAny<GenerateBillOfMaterialsActivity>(),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        ).Throws(exception);
 
-        await appEvent.Handle(engine.Object);
+        await appEvent.Handle(engine.Object, cancellationToken);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
-            value.HistoryStopPointId == appEvent.HistoryStopPointId &&
-            value.Error == exception)));
+        engine.Verify(
+            mock => mock.Dispatch(
+                It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
+                    value.Parent == appEvent.Parent &&
+                    value.Error == exception
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

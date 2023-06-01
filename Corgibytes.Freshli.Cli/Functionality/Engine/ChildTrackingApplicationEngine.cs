@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Resources;
 
@@ -40,7 +41,6 @@ public class ChildTrackingApplicationEngine : IApplicationActivityEngine, IAppli
     }
 
     public IServiceProvider ServiceProvider => _engine.ServiceProvider;
-    public ValueTask<bool> AreOperationsPending<T>(Func<T, bool> query) => _engine.AreOperationsPending(query);
 
     private void RecordChildTask(IApplicationTask childTask)
     {
@@ -52,20 +52,26 @@ public class ChildTrackingApplicationEngine : IApplicationActivityEngine, IAppli
         parentCountdownEvent.AddCount();
     }
 
-    public ValueTask Dispatch(IApplicationActivity applicationActivity)
+    public ValueTask Dispatch(IApplicationActivity applicationActivity, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
     {
-        RecordChildTask(applicationActivity);
+        if (mode == ApplicationTaskMode.Tracked)
+        {
+            RecordChildTask(applicationActivity);
+        }
 
-        return _activityEngine.Dispatch(applicationActivity);
+        return _activityEngine.Dispatch(applicationActivity, cancellationToken, mode);
     }
 
-    public ValueTask Wait(IApplicationTask task) => _engine.Wait(task);
+    public ValueTask Wait(IApplicationTask task, CancellationToken cancellationToken) => _engine.Wait(task, cancellationToken);
 
-    public ValueTask Fire(IApplicationEvent applicationEvent)
+    public ValueTask Fire(IApplicationEvent applicationEvent, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
     {
-        RecordChildTask(applicationEvent);
+        if (mode == ApplicationTaskMode.Tracked)
+        {
+            RecordChildTask(applicationEvent);
+        }
 
-        return _eventEngine.Fire(applicationEvent);
+        return _eventEngine.Fire(applicationEvent, cancellationToken, mode);
     }
 
     public void On<TEvent>(Func<TEvent, ValueTask> eventHandler) where TEvent : IApplicationEvent

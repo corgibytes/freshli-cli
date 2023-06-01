@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -8,24 +9,16 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 public class NoManifestsDetectedEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
     public Guid AnalysisId { get; }
-    public int HistoryStopPointId { get; }
+    public IHistoryStopPointProcessingTask Parent { get; }
 
-    public NoManifestsDetectedEvent(Guid analysisId, int historyStopPointId)
+    public NoManifestsDetectedEvent(Guid analysisId, IHistoryStopPointProcessingTask parent)
     {
         AnalysisId = analysisId;
-        HistoryStopPointId = historyStopPointId;
+        Parent = parent;
     }
 
-    public override async ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
-        try
-        {
-            await eventClient.Dispatch(
-                new ReportHistoryStopPointProgressActivity { HistoryStopPointId = HistoryStopPointId });
-        }
-        catch (Exception error)
-        {
-            await eventClient.Dispatch(new FireHistoryStopPointProcessingErrorActivity(HistoryStopPointId, error));
-        }
+        return ValueTask.CompletedTask;
     }
 }

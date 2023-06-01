@@ -1,5 +1,6 @@
 using System;
 using System.CommandLine;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -14,5 +15,5 @@ public class AgentsCommandRunner : CommandRunner<AgentsCommand, EmptyCommandOpti
     {
     }
 
-    public override ValueTask<int> Run(EmptyCommandOptions options, IConsole console) => ValueTask.FromResult(0);
+    public override ValueTask<int> Run(EmptyCommandOptions options, IConsole console, CancellationToken cancellationToken) => ValueTask.FromResult(0);
 }

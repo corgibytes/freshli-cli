@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -23,6 +24,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     private readonly Mock<ICachedGitSourceRepository> _repository = new();
     private readonly string _repositoryLocation;
     private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly CancellationToken _cancellationToken = new();
 
     public VerifyGitRepositoryInLocalDirectoryActivityTest()
     {
@@ -52,7 +54,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
             mock.IsGitRepositoryInitialized(_repositoryLocation)).ReturnsAsync(true);
 
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
-        await activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         var expectedCachedGitSource = new CachedGitSource(
             new CachedGitSourceId(repositoryLocation.FullName).Id, _repositoryLocation, null,
@@ -66,11 +68,17 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
             value.LocalPath == expectedCachedGitSource.LocalPath
         )));
 
-        _eventEngine.Verify(mock => mock.Fire(It.Is<GitRepositoryInLocalDirectoryVerifiedEvent>(value =>
-            value.AnalysisId == _analysisId &&
-            value.HistoryStopData.Path == _repositoryLocation &&
-            value.HistoryStopData.RepositoryId.IsEmpty() == false
-        )));
+        _eventEngine.Verify(mock =>
+            mock.Fire(
+                It.Is<GitRepositoryInLocalDirectoryVerifiedEvent>(value =>
+                    value.AnalysisId == _analysisId &&
+                    value.HistoryStopData.Path == _repositoryLocation &&
+                    value.HistoryStopData.RepositoryId.IsEmpty() == false
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
 
         repositoryLocation.Delete();
     }
@@ -79,11 +87,17 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     public async Task VerifyHandlerFiresFailureEventIfDirectoryDoesNotExist()
     {
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
-        await activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object, _cancellationToken);
 
-        _eventEngine.Verify(mock => mock.Fire(It.Is<DirectoryDoesNotExistFailureEvent>(value =>
-            value.ErrorMessage == $"Directory does not exist at {_repositoryLocation}"
-        )));
+        _eventEngine.Verify(mock =>
+            mock.Fire(
+                It.Is<DirectoryDoesNotExistFailureEvent>(value =>
+                    value.ErrorMessage == $"Directory does not exist at {_repositoryLocation}"
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     [Fact(Timeout = 500)]
@@ -96,11 +110,17 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
             .ReturnsAsync(false);
 
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
-        await activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object, _cancellationToken);
 
-        _eventEngine.Verify(mock => mock.Fire(It.Is<DirectoryIsNotGitInitializedFailureEvent>(value =>
-            value.ErrorMessage == $"Directory is not a git initialised directory at {_repositoryLocation}"
-        )));
+        _eventEngine.Verify(mock =>
+            mock.Fire(
+                It.Is<DirectoryIsNotGitInitializedFailureEvent>(value =>
+                    value.ErrorMessage == $"Directory is not a git initialised directory at {_repositoryLocation}"
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
 
         repositoryLocation.Delete();
     }

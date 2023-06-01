@@ -137,6 +137,7 @@ public class Program
                 Task.WaitAll(startTasks.ToArray(), context.GetCancellationToken());
             })
             .UseExceptionHandler()
+            .CancelOnProcessTermination()
             .UseHelp();
 
         return builder;

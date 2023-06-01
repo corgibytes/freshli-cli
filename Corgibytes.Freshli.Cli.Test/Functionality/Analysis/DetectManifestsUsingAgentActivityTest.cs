@@ -31,13 +31,18 @@ public class DetectManifestsUsingAgentActivityTest
 
         const string agentExecutablePath = "/path/to/agent";
         var agentManager = new Mock<IAgentManager>();
-        agentManager.Setup(mock => mock.GetReader(agentExecutablePath, CancellationToken.None)).Returns(agentReader.Object);
+        var cancellationToken = new CancellationToken(false);
+        agentManager.Setup(mock => mock.GetReader(agentExecutablePath, cancellationToken)).Returns(agentReader.Object);
 
         var cacheManager = new Mock<ICacheManager>();
         var cacheDb = new Mock<ICacheDb>();
         var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
 
         const int historyStopPointId = 29;
+
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
+        parent.Setup(mock => mock.HistoryStopPointId).Returns(historyStopPointId);
+
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
@@ -48,23 +53,39 @@ public class DetectManifestsUsingAgentActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
+
+
         var analysisId = Guid.NewGuid();
         var activity =
-            new DetectManifestsUsingAgentActivity(analysisId, historyStopPointId, agentExecutablePath);
+            new DetectManifestsUsingAgentActivity(analysisId, parent.Object, agentExecutablePath);
 
-        await activity.Handle(eventEngine.Object);
+        await activity.Handle(eventEngine.Object, cancellationToken);
 
-        eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
-            appEvent.AnalysisId == analysisId &&
-            appEvent.HistoryStopPointId == historyStopPointId &&
-            appEvent.AgentExecutablePath == agentExecutablePath &&
-            appEvent.ManifestPath == "/path/to/first/manifest")));
+        eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<ManifestDetectedEvent>(appEvent =>
+                    appEvent.AnalysisId == analysisId &&
+                    appEvent.Parent == parent.Object &&
+                    appEvent.AgentExecutablePath == agentExecutablePath &&
+                    appEvent.ManifestPath == "/path/to/first/manifest"
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
 
-        eventEngine.Verify(mock => mock.Fire(It.Is<ManifestDetectedEvent>(appEvent =>
-            appEvent.AnalysisId == analysisId &&
-            appEvent.HistoryStopPointId == historyStopPointId &&
-            appEvent.AgentExecutablePath == agentExecutablePath &&
-            appEvent.ManifestPath == "/path/to/second/manifest")));
+        eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<ManifestDetectedEvent>(appEvent =>
+                    appEvent.AnalysisId == analysisId &&
+                    appEvent.Parent == parent.Object &&
+                    appEvent.AgentExecutablePath == agentExecutablePath &&
+                    appEvent.ManifestPath == "/path/to/second/manifest"
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     [Fact(Timeout = 500)]
@@ -75,14 +96,22 @@ public class DetectManifestsUsingAgentActivityTest
         var exception = new InvalidOperationException();
         eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
 
-        var activity = new DetectManifestsUsingAgentActivity(Guid.NewGuid(), 29, "/path/to/agent");
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
+        var cancellationToken = new CancellationToken(false);
+        var activity = new DetectManifestsUsingAgentActivity(Guid.NewGuid(), parent.Object, "/path/to/agent");
 
-        await activity.Handle(eventEngine.Object);
+        await activity.Handle(eventEngine.Object, cancellationToken);
 
-        eventEngine.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(appEvent =>
-            appEvent.HistoryStopPointId == activity.HistoryStopPointId &&
-            appEvent.Exception == exception
-        )));
+        eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<HistoryStopPointProcessingFailedEvent>(appEvent =>
+                    appEvent.Parent == activity.Parent &&
+                    appEvent.Exception == exception
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     [Fact(Timeout = 500)]
@@ -102,6 +131,9 @@ public class DetectManifestsUsingAgentActivityTest
         var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
 
         const int historyStopPointId = 29;
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
+        parent.Setup(mock => mock.HistoryStopPointId).Returns(historyStopPointId);
+
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
@@ -113,14 +145,22 @@ public class DetectManifestsUsingAgentActivityTest
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         var analysisId = Guid.NewGuid();
+
+        var cancellationToken = new CancellationToken(false);
         var activity =
-            new DetectManifestsUsingAgentActivity(analysisId, historyStopPointId, agentExecutablePath);
+            new DetectManifestsUsingAgentActivity(analysisId, parent.Object, agentExecutablePath);
 
-        await activity.Handle(eventEngine.Object);
+        await activity.Handle(eventEngine.Object, cancellationToken);
 
-        eventEngine.Verify(mock => mock.Fire(It.Is<NoManifestsDetectedEvent>(appEvent =>
-            appEvent.AnalysisId == analysisId &&
-            appEvent.HistoryStopPointId == historyStopPointId
-        )));
+        eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<NoManifestsDetectedEvent>(appEvent =>
+                    appEvent.AnalysisId == analysisId &&
+                    appEvent.Parent == parent.Object
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }
