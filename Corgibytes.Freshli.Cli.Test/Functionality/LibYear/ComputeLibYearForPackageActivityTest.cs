@@ -21,9 +21,9 @@ public class ComputeLibYearForPackageActivityTest
     private readonly CancellationToken _cancellationToken = new(false);
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly Guid _analysisId = Guid.NewGuid();
-    private readonly PackageURL _package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
+    private readonly PackageURL _package = new("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
     private readonly ComputeLibYearForPackageActivity _activity;
-    private readonly Mock<IApplicationEventEngine> _eventClient = new Mock<IApplicationEventEngine>();
+    private readonly Mock<IApplicationEventEngine> _eventClient = new();
 
     public ComputeLibYearForPackageActivityTest()
     {

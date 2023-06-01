@@ -16,10 +16,10 @@ public class LibYearComputedForPackageEventTest
     private const int PackageLibYearId = 9;
     private const string AgentExecutablePath = "/path/to/agent";
     private readonly Guid _analysisId = Guid.NewGuid();
-    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new Mock<IHistoryStopPointProcessingTask>();
-    private readonly CancellationToken _cancellationToken = new System.Threading.CancellationToken(false);
+    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
+    private readonly CancellationToken _cancellationToken = new(false);
     private readonly LibYearComputedForPackageEvent _appEvent;
-    private readonly Mock<IApplicationActivityEngine> _activityClient = new Mock<IApplicationActivityEngine>();
+    private readonly Mock<IApplicationActivityEngine> _activityClient = new();
 
     public LibYearComputedForPackageEventTest()
     {

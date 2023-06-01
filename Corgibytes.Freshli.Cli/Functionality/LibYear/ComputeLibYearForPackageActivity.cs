@@ -27,7 +27,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
         try
         {
             var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
-            var agentReader = agentManager.GetReader(AgentExecutablePath);
+            var agentReader = agentManager.GetReader(AgentExecutablePath, cancellationToken);
 
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb();
