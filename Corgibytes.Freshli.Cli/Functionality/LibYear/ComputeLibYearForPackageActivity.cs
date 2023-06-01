@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -11,17 +12,17 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public Guid AnalysisId { get; init; }
-    public int HistoryStopPointId { get; init; }
-    public PackageURL Package { get; init; } = null!;
-    public string AgentExecutablePath { get; init; } = null!;
+    public required Guid AnalysisId { get; init; }
+    public required IHistoryStopPointProcessingTask Parent { get; init; }
+    public required PackageURL Package { get; init; }
+    public required string AgentExecutablePath { get; init; }
 
     public int Priority
     {
         get { return 100; }
     }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {
@@ -30,7 +31,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
 
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb();
-            var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
+            var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(Parent.HistoryStopPointId);
 
             var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
             var packageLibYear = await calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
@@ -43,20 +44,22 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
                 LatestVersion = packageLibYear.LatestVersion?.ToString(),
                 ReleaseDateLatestVersion = packageLibYear.ReleaseDateLatestVersion,
                 LibYear = packageLibYear.LibYear,
-                HistoryStopPointId = HistoryStopPointId
+                HistoryStopPointId = Parent.HistoryStopPointId
             });
 
-            await eventClient.Fire(new LibYearComputedForPackageEvent
-            {
-                AnalysisId = AnalysisId,
-                HistoryStopPointId = HistoryStopPointId,
-                PackageLibYearId = packageLibYearId,
-                AgentExecutablePath = AgentExecutablePath
-            });
+            await eventClient.Fire(
+                new LibYearComputedForPackageEvent
+                {
+                    AnalysisId = AnalysisId,
+                    Parent = Parent,
+                    PackageLibYearId = packageLibYearId,
+                    AgentExecutablePath = AgentExecutablePath
+                },
+                cancellationToken);
         }
         catch (Exception error)
         {
-            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(HistoryStopPointId, error));
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(Parent, error), cancellationToken);
         }
     }
 }

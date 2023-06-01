@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,7 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
     // TODO: Research how to use a value class here instead of a string
     public string HistoryInterval { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
 
@@ -34,30 +35,36 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
         {
             if (await cacheManager.Prepare())
             {
-                await eventClient.Fire(new CachePreparedForAnalysisEvent
-                {
-                    RepositoryUrl = RepositoryUrl,
-                    RepositoryBranch = RepositoryBranch,
-                    HistoryInterval = HistoryInterval,
-                    UseCommitHistory = UseCommitHistory,
-                    RevisionHistoryMode = RevisionHistoryMode
-                });
+                await eventClient.Fire(
+                    new CachePreparedForAnalysisEvent
+                    {
+                        RepositoryUrl = RepositoryUrl,
+                        RepositoryBranch = RepositoryBranch,
+                        HistoryInterval = HistoryInterval,
+                        UseCommitHistory = UseCommitHistory,
+                        RevisionHistoryMode = RevisionHistoryMode
+                    },
+                    cancellationToken);
             }
             else
             {
-                await eventClient.Fire(new CachePrepareFailedForAnalysisEvent
-                {
-                    ErrorMessage = "Failed to prepare the cache for an unknown reason"
-                });
+                await eventClient.Fire(
+                    new CachePrepareFailedForAnalysisEvent
+                    {
+                        ErrorMessage = "Failed to prepare the cache for an unknown reason"
+                    },
+                    cancellationToken);
             }
         }
         catch (Exception error)
         {
-            await eventClient.Fire(new CachePrepareFailedForAnalysisEvent
-            {
-                ErrorMessage = error.Message,
-                Exception = error
-            });
+            await eventClient.Fire(
+                new CachePrepareFailedForAnalysisEvent
+                {
+                    ErrorMessage = error.Message,
+                    Exception = error
+                },
+                cancellationToken);
         }
     }
 }

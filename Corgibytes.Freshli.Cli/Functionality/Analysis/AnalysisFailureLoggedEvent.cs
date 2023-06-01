@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -9,7 +10,7 @@ public class AnalysisFailureLoggedEvent : ApplicationEventBase
 
     public ErrorEvent ErrorEvent { get; }
 
-    public override ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         return ValueTask.CompletedTask;
     }

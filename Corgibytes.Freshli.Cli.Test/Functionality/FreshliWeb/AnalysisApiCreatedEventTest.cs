@@ -22,12 +22,20 @@ public class AnalysisApiCreatedEventTest
             RepositoryUrl = "https://github.com/corgibytes/freshli-fixture-java-test"
         };
 
-        var engine = new Mock<IApplicationActivityEngine>();
-        await startedEvent.Handle(engine.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<CloneGitRepositoryActivity>(value =>
-            value.CachedAnalysisId == startedEvent.AnalysisId
-        )));
+        var engine = new Mock<IApplicationActivityEngine>();
+        await startedEvent.Handle(engine.Object, cancellationToken);
+
+        engine.Verify(mock =>
+            mock.Dispatch(
+                It.Is<CloneGitRepositoryActivity>(value =>
+                    value.CachedAnalysisId == startedEvent.AnalysisId
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     [Fact(Timeout = 500)]
@@ -42,12 +50,20 @@ public class AnalysisApiCreatedEventTest
             RepositoryUrl = temporaryLocation.FullName
         };
 
-        var engine = new Mock<IApplicationActivityEngine>();
-        await startedEvent.Handle(engine.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<VerifyGitRepositoryInLocalDirectoryActivity>(value =>
-            value.AnalysisId == startedEvent.AnalysisId
-        )));
+        var engine = new Mock<IApplicationActivityEngine>();
+        await startedEvent.Handle(engine.Object, cancellationToken);
+
+        engine.Verify(mock =>
+            mock.Dispatch(
+                It.Is<VerifyGitRepositoryInLocalDirectoryActivity>(value =>
+                    value.AnalysisId == startedEvent.AnalysisId
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
 
         temporaryLocation.Delete();
     }

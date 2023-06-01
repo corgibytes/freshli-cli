@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.DataModel;
@@ -23,6 +24,8 @@ public class DetectAgentsForDetectManifestsActivityTest
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<CachedHistoryStopPoint> _historyStopPoint = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly CancellationToken _cancellationToken = new(false);
+    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
 
     public DetectAgentsForDetectManifestsActivityTest()
     {
@@ -46,23 +49,33 @@ public class DetectAgentsForDetectManifestsActivityTest
         _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
         var analysisId = Guid.NewGuid();
-        const int historyStopPointId = 29;
-        var activity =
-            new DetectAgentsForDetectManifestsActivity(analysisId, historyStopPointId);
+        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, _parent.Object);
 
-        await activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
-                appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopPointId == historyStopPointId &&
-                appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-java")));
+            mock.Fire(
+                It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
+                    appEvent.AnalysisId == analysisId &&
+                    appEvent.Parent == _parent.Object &&
+                    appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-java"
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
-                appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopPointId == historyStopPointId &&
-                appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet")));
+            mock.Fire(
+                It.Is<AgentDetectedForDetectManifestEvent>(appEvent =>
+                    appEvent.AnalysisId == analysisId &&
+                    appEvent.Parent == _parent.Object &&
+                    appEvent.AgentExecutablePath == "/usr/local/bin/freshli-agent-dotnet"
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     [Fact(Timeout = 500)]
@@ -73,27 +86,40 @@ public class DetectAgentsForDetectManifestsActivityTest
         _agentsDetector.Setup(mock => mock.Detect()).Returns(agentPaths);
 
         var analysisId = Guid.NewGuid();
-        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, HistoryStopPointId);
+        var activity = new DetectAgentsForDetectManifestsActivity(analysisId, _parent.Object);
 
-        await activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object, _cancellationToken);
 
-        _eventEngine.Verify(mock => mock.Fire(It.Is<NoAgentsDetectedFailureEvent>(
-            failEvent => failEvent.ErrorMessage == "Could not locate any agents"
-        )));
+        _eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<NoAgentsDetectedFailureEvent>(
+                    failEvent => failEvent.ErrorMessage == "Could not locate any agents"
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
-        var activity = new DetectAgentsForDetectManifestsActivity(Guid.NewGuid(), HistoryStopPointId);
+        var activity = new DetectAgentsForDetectManifestsActivity(Guid.NewGuid(), _parent.Object);
 
         var exception = new InvalidOperationException();
         _eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
 
-        await activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object, _cancellationToken);
 
-        _eventEngine.Verify(mock => mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
-            value.HistoryStopPointId == activity.HistoryStopPointId &&
-            value.Exception == exception)));
+        _eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<HistoryStopPointProcessingFailedEvent>(value =>
+                    value.Parent == activity.Parent &&
+                    value.Exception == exception
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

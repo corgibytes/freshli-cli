@@ -1,6 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -31,7 +32,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _resultsApi = resultsApi;
     }
 
-    public override async ValueTask<int> Run(AnalyzeCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(AnalyzeCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
@@ -71,8 +72,8 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             return ValueTask.CompletedTask;
         });
 
-        await _activityEngine.Dispatch(startAnalysisActivity);
-        await _activityEngine.Wait(startAnalysisActivity);
+        await _activityEngine.Dispatch(startAnalysisActivity, cancellationToken);
+        await _activityEngine.Wait(startAnalysisActivity, cancellationToken);
 
         if (apiAnalysisId != null)
         {
@@ -80,8 +81,8 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
                 apiAnalysisId.Value,
                 exitStatus == 0 ? "success" : "error"
             );
-            await _activityEngine.Dispatch(updateStatusActivity);
-            await _activityEngine.Wait(updateStatusActivity);
+            await _activityEngine.Dispatch(updateStatusActivity, cancellationToken);
+            await _activityEngine.Wait(updateStatusActivity, cancellationToken);
         }
         else
         {

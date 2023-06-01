@@ -17,6 +17,7 @@ public class CacheWasNotPreparedEventTest
         var serviceProvider = new Mock<IServiceProvider>();
         var cacheManager = new Mock<ICacheManager>();
         var historyIntervalParser = new Mock<IHistoryIntervalParser>();
+        var cancellationToken = new System.Threading.CancellationToken(false);
 
         var cacheEvent = new CacheDoesNotExistEvent
         {
@@ -33,12 +34,19 @@ public class CacheWasNotPreparedEventTest
         var engine = new Mock<IApplicationActivityEngine>();
         engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        await cacheEvent.Handle(engine.Object);
+        await cacheEvent.Handle(engine.Object, cancellationToken);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<PrepareCacheForAnalysisActivity>(value =>
-            value.RepositoryUrl == cacheEvent.RepositoryUrl &&
-            value.RepositoryBranch == cacheEvent.RepositoryBranch &&
-            value.HistoryInterval == cacheEvent.HistoryInterval &&
-            value.UseCommitHistory == cacheEvent.UseCommitHistory)));
+        engine.Verify(
+            mock => mock.Dispatch(
+                It.Is<PrepareCacheForAnalysisActivity>(value =>
+                    value.RepositoryUrl == cacheEvent.RepositoryUrl &&
+                    value.RepositoryBranch == cacheEvent.RepositoryBranch &&
+                    value.HistoryInterval == cacheEvent.HistoryInterval &&
+                    value.UseCommitHistory == cacheEvent.UseCommitHistory
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

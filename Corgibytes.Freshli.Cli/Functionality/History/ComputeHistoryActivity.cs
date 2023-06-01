@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -23,7 +24,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         HistoryStopData = historyStopData;
     }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var progressReporter = eventClient.ServiceProvider.GetRequiredService<IAnalyzeProgressReporter>();
         progressReporter.ReportHistoryStopPointDetectionStarted();
@@ -35,7 +36,7 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         if (cachedAnalysis == null)
         {
-            await eventClient.Fire(new AnalysisIdNotFoundEvent());
+            await eventClient.Fire(new AnalysisIdNotFoundEvent(), cancellationToken);
             return;
         }
 
@@ -54,7 +55,9 @@ public class ComputeHistoryActivity : IApplicationActivity
             }
             catch (InvalidHistoryIntervalException exception)
             {
-                await eventClient.Fire(new InvalidHistoryIntervalEvent { ErrorMessage = exception.Message });
+                await eventClient.Fire(
+                    new InvalidHistoryIntervalEvent { ErrorMessage = exception.Message },
+                    cancellationToken);
                 return;
             }
         }
@@ -91,7 +94,9 @@ public class ComputeHistoryActivity : IApplicationActivity
                     AsOfDateTime = historyStop.AsOfDateTime
                 });
 
-            await eventClient.Fire(new HistoryIntervalStopFoundEvent(AnalysisId, historyStopPointId));
+            await eventClient.Fire(
+                new HistoryIntervalStopFoundEvent(AnalysisId, historyStopPointId),
+                cancellationToken);
         }
     }
 }

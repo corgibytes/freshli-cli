@@ -26,9 +26,12 @@ public class HistoryStopPointProcessingCompletedEventTest
         serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<HistoryStopPointProcessingCompletedEvent>)))
             .Returns(logger.Object);
 
-        var appEvent = new HistoryStopPointProcessingCompletedEvent { HistoryStopPointId = 12 };
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
+        parent.Setup(mock => mock.HistoryStopPointId).Returns(12);
+        var appEvent = new HistoryStopPointProcessingCompletedEvent { Parent = parent.Object };
 
-        await appEvent.Handle(activityClient.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
+        await appEvent.Handle(activityClient.Object, cancellationToken);
 
         progressReporter.Verify(mock =>
             mock.ReportSingleHistoryStopPointOperationFinished(HistoryStopPointOperation.Process));

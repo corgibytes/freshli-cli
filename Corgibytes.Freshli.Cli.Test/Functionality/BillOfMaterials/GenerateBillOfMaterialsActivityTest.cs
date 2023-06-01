@@ -36,6 +36,8 @@ public class GenerateBillOfMaterialsActivityTest
         };
 
         const int historyStopPointId = 29;
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
+        parent.Setup(mock => mock.HistoryStopPointId).Returns(historyStopPointId);
 
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
 
@@ -54,18 +56,28 @@ public class GenerateBillOfMaterialsActivityTest
         cacheManager.Setup(mock => mock.StoreBomInCache("/path/to/bill-of-materials", analysisId, asOfDateTime))
             .ReturnsAsync("/path/to/bom/in/cache");
 
-        var activity =
-            new GenerateBillOfMaterialsActivity(analysisId, agentExecutablePath, historyStopPointId,
-                "/path/to/manifest");
-        await activity.Handle(eventEngine.Object);
+
+        var cancellationToken = new CancellationToken(false);
+        var activity = new GenerateBillOfMaterialsActivity(
+            analysisId,
+            agentExecutablePath,
+            parent.Object,
+            "/path/to/manifest");
+        await activity.Handle(eventEngine.Object, cancellationToken);
 
         // Assert
         eventEngine.Verify(mock =>
-            mock.Fire(It.Is<BillOfMaterialsGeneratedEvent>(appEvent =>
-                appEvent.AgentExecutablePath == agentExecutablePath &&
-                appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopPointId == historyStopPointId &&
-                appEvent.PathToBillOfMaterials == "/path/to/bom/in/cache")));
+            mock.Fire(
+                It.Is<BillOfMaterialsGeneratedEvent>(appEvent =>
+                    appEvent.AgentExecutablePath == agentExecutablePath &&
+                    appEvent.AnalysisId == analysisId &&
+                    appEvent.Parent == parent.Object &&
+                    appEvent.PathToBillOfMaterials == "/path/to/bom/in/cache"
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     [Fact(Timeout = 500)]
@@ -76,12 +88,21 @@ public class GenerateBillOfMaterialsActivityTest
         var exception = new InvalidOperationException();
         eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
 
-        var activity = new GenerateBillOfMaterialsActivity(Guid.NewGuid(), "/path/to/agent", 29, "/path/to/manifest");
-        await activity.Handle(eventEngine.Object);
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
+        var cancellationToken = new CancellationToken(false);
+        var activity = new GenerateBillOfMaterialsActivity(
+            Guid.NewGuid(), "/path/to/agent", parent.Object, "/path/to/manifest");
+        await activity.Handle(eventEngine.Object, cancellationToken);
 
         eventEngine.Verify(mock =>
-            mock.Fire(It.Is<HistoryStopPointProcessingFailedEvent>(value =>
-                value.HistoryStopPointId == activity.HistoryStopPointId &&
-                value.Exception == exception)));
+            mock.Fire(
+                It.Is<HistoryStopPointProcessingFailedEvent>(value =>
+                    value.Parent == activity.Parent &&
+                    value.Exception == exception
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

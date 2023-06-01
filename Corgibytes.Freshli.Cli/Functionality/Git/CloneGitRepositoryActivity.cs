@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -13,7 +14,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
     public CloneGitRepositoryActivity(Guid cachedAnalysisId) => CachedAnalysisId = cachedAnalysisId;
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
 
@@ -26,11 +27,13 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
             if (cachedAnalysis == null)
             {
-                await eventClient.Fire(new AnalysisIdNotFoundEvent());
+                await eventClient.Fire(new AnalysisIdNotFoundEvent(), cancellationToken);
                 return;
             }
 
-            await eventClient.Fire(new GitRepositoryCloneStartedEvent { AnalysisId = CachedAnalysisId });
+            await eventClient.Fire(
+                new GitRepositoryCloneStartedEvent { AnalysisId = CachedAnalysisId },
+                cancellationToken);
 
             var gitRepositoryService = eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>();
             var gitRepository = await gitRepositoryService.CloneOrPull(
@@ -38,19 +41,23 @@ public class CloneGitRepositoryActivity : IApplicationActivity
 
             var historyStopData = new HistoryStopData(configuration, gitRepository.Id);
 
-            await eventClient.Fire(new GitRepositoryClonedEvent
-            {
-                AnalysisId = CachedAnalysisId,
-                HistoryStopData = historyStopData
-            });
+            await eventClient.Fire(
+                new GitRepositoryClonedEvent
+                {
+                    AnalysisId = CachedAnalysisId,
+                    HistoryStopData = historyStopData
+                },
+                cancellationToken);
         }
         catch (GitException error)
         {
-            await eventClient.Fire(new CloneGitRepositoryFailedEvent
-            {
-                ErrorMessage = error.Message,
-                Exception = error
-            });
+            await eventClient.Fire(
+                new CloneGitRepositoryFailedEvent
+                {
+                    ErrorMessage = error.Message,
+                    Exception = error
+                },
+                cancellationToken);
         }
     }
 }

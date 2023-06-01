@@ -1,6 +1,9 @@
+using Corgibytes.Freshli.Cli.Functionality.Engine;
+
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
-public interface IHistoryStopPointProcessingTask
+public interface IHistoryStopPointProcessingTask: IApplicationTask
 {
-    int HistoryStopPointId { get; }
+    IHistoryStopPointProcessingTask Parent { get; }
+    int HistoryStopPointId => Parent.HistoryStopPointId;
 }

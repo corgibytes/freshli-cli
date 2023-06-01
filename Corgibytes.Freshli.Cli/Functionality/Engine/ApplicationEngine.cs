@@ -42,7 +42,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    public async ValueTask Dispatch(IApplicationActivity applicationActivity)
+    public async ValueTask Dispatch(IApplicationActivity applicationActivity, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
     {
         lock (_queueModificationsCountdownEvent)
         {
@@ -56,9 +56,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
         try
         {
-            // TODO: Pass the cancellation token to HandleActivity
             await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationActivity,
-                _ => HandleActivity(applicationActivity)));
+                _ => HandleActivity(applicationActivity, mode, cancellationToken)), cancellationToken);
         }
         finally
         {
@@ -69,7 +68,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    public ValueTask Wait(IApplicationTask task)
+    public ValueTask Wait(IApplicationTask task, CancellationToken cancellationToken)
     {
         var timer = new Stopwatch();
         timer.Start();
@@ -79,10 +78,10 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
         while (!_tasksAndCountdownEvents.TryGetValue(task, out countdownEvent))
         {
-            Task.Delay(TimeSpan.FromMilliseconds(10));
+            Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
         }
 
-        countdownEvent.Wait();
+        countdownEvent.Wait(cancellationToken);
 
         timer.Stop();
         LogWaitStop(timer.ElapsedMilliseconds);
@@ -92,12 +91,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     public IServiceProvider ServiceProvider { get; }
 
-    public async ValueTask<bool> AreOperationsPending<T>(Func<T, bool> query)
-    {
-        return await TaskQueue.ContainsUnprocessedWork(query);
-    }
-
-    public async ValueTask Fire(IApplicationEvent applicationEvent)
+    public async ValueTask Fire(IApplicationEvent applicationEvent, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
     {
         lock (_queueModificationsCountdownEvent)
         {
@@ -111,9 +105,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
         try
         {
-            // TODO: pass cancellation token to FireEventAndHandler
             await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationEvent,
-                _ => FireEventAndHandler(applicationEvent)));
+                _ => FireEventAndHandler(applicationEvent, mode, cancellationToken)), cancellationToken);
         }
         finally
         {
@@ -138,17 +131,17 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private void LogWaitStop(long durationInMilliseconds) =>
         _logger.LogDebug("Waited for {Duration} milliseconds", durationInMilliseconds);
 
-    private async ValueTask FireEventAndHandler(IApplicationEvent applicationEvent)
+    private async ValueTask FireEventAndHandler(IApplicationEvent applicationEvent, ApplicationTaskMode mode, CancellationToken cancellationToken)
     {
         ICountdownEvent? countdownEvent;
         while (!_tasksAndCountdownEvents.TryGetValue(applicationEvent, out countdownEvent))
         {
-            await Task.Delay(10);
+            await Task.Delay(10, cancellationToken);
         }
 
         try
         {
-            await HandleEvent(applicationEvent);
+            await HandleEvent(applicationEvent, mode, cancellationToken);
 
             bool applicationEventHasHandlers;
             lock (_eventHandlers)
@@ -162,7 +155,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
                 // TODO: Pass the cancellation token to TriggerHandler
                 await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationEvent,
-                    _ => TriggerHandler(applicationEvent)));
+                    _ => TriggerHandler(applicationEvent)), cancellationToken);
             }
         }
         finally
@@ -171,7 +164,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    private async ValueTask HandleActivity(IApplicationActivity activity)
+    private async ValueTask HandleActivity(IApplicationActivity activity, ApplicationTaskMode mode, CancellationToken cancellationToken)
     {
         SemaphoreSlim? semaphore = null;
         if (activity is ISynchronized mutexSource)
@@ -182,19 +175,19 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         var semaphoreEntered = true;
         if (semaphore != null)
         {
-            semaphoreEntered = await semaphore.WaitAsync(MutexWaitTimeoutInMilliseconds);
+            semaphoreEntered = await semaphore.WaitAsync(MutexWaitTimeoutInMilliseconds, cancellationToken);
         }
         if (!semaphoreEntered)
         {
             // place the activity back in the queue and free up the worker to make progress on a different activity
-            await Dispatch(activity);
+            await Dispatch(activity, cancellationToken, mode);
             return;
         }
 
-        ChildTrackingApplicationEngine childTrackingEngine;
+        IApplicationEventEngine eventEngine = this;
         lock (_queueModificationsCountdownEvent)
         {
-            childTrackingEngine = new ChildTrackingApplicationEngine(
+            eventEngine = new ChildTrackingApplicationEngine(
                 this,
                 _tasksAndCountdownEvents,
                 _queueModificationsCountdownEvent,
@@ -210,20 +203,22 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
                 // TODO: figure out how best to log activity specific values here
                 activity
             );
-            await activity.Handle(childTrackingEngine);
+            await activity.Handle(eventEngine, cancellationToken);
         }
         catch (Exception error)
         {
-            await childTrackingEngine.Fire(new UnhandledExceptionEvent(error));
+            await eventEngine.Fire(new UnhandledExceptionEvent(error), cancellationToken, mode);
         }
         finally
         {
             ICountdownEvent? countdownEvent;
             while (!_tasksAndCountdownEvents.TryGetValue(activity, out countdownEvent))
             {
-                await Task.Delay(10);
+                await Task.Delay(10, cancellationToken);
             }
+
             countdownEvent.Signal();
+
             if (semaphore != null && semaphoreEntered)
             {
                 semaphore.Release();
@@ -231,12 +226,12 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    private async ValueTask HandleEvent(IApplicationEvent appEvent)
+    private async ValueTask HandleEvent(IApplicationEvent appEvent, ApplicationTaskMode mode, CancellationToken cancellationToken)
     {
-        ChildTrackingApplicationEngine childTrackingEngine;
+        IApplicationActivityEngine eventEngine = this;
         lock (_queueModificationsCountdownEvent)
         {
-            childTrackingEngine = new ChildTrackingApplicationEngine(
+            eventEngine = new ChildTrackingApplicationEngine(
                 this,
                 _tasksAndCountdownEvents,
                 _queueModificationsCountdownEvent,
@@ -252,11 +247,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
                 // TODO: figure out how best to log event specific values here
                 appEvent
             );
-            await appEvent.Handle(childTrackingEngine);
+            await appEvent.Handle(eventEngine, cancellationToken);
         }
         catch (Exception error)
         {
-            await childTrackingEngine.Fire(new UnhandledExceptionEvent(error));
+            await ((IApplicationEventEngine) eventEngine).Fire(new UnhandledExceptionEvent(error), cancellationToken, mode);
         }
     }
 

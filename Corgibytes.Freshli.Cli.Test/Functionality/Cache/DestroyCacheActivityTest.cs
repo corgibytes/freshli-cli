@@ -23,12 +23,19 @@ public class DestroyCacheActivityTest
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         cacheManager.Setup(mock => mock.Destroy()).ReturnsAsync(true);
 
-        await activity.Handle(eventClient.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
 
-        eventClient.Verify(mock => mock.Fire(It.Is<CacheDestroyedEvent>(
-            value =>
-                value.ExitCode == 0
-        )));
+        await activity.Handle(eventClient.Object, cancellationToken);
+
+        eventClient.Verify(mock =>
+            mock.Fire(
+                It.Is<CacheDestroyedEvent>(value =>
+                    value.ExitCode == 0
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     [Fact(Timeout = 500)]
@@ -43,8 +50,15 @@ public class DestroyCacheActivityTest
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         cacheManager.Setup(mock => mock.Destroy()).Throws<CacheException>();
 
-        await activity.Handle(eventClient.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
+        await activity.Handle(eventClient.Object, cancellationToken);
 
-        eventClient.Verify(mock => mock.Fire(It.IsAny<CacheDestroyFailedEvent>()));
+        eventClient.Verify(mock =>
+            mock.Fire(
+                It.IsAny<CacheDestroyFailedEvent>(),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }
