@@ -184,7 +184,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             return;
         }
 
-        IApplicationEventEngine eventEngine = this;
+        ChildTrackingApplicationEngine eventEngine;
         lock (_queueModificationsCountdownEvent)
         {
             eventEngine = new ChildTrackingApplicationEngine(
@@ -228,7 +228,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private async ValueTask HandleEvent(IApplicationEvent appEvent, ApplicationTaskMode mode, CancellationToken cancellationToken)
     {
-        IApplicationActivityEngine eventEngine = this;
+        ChildTrackingApplicationEngine eventEngine;
         lock (_queueModificationsCountdownEvent)
         {
             eventEngine = new ChildTrackingApplicationEngine(
@@ -241,17 +241,17 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
         try
         {
+            // TODO: figure out how best to log event specific values here
             _logger.LogDebug(
                 "Handling activity {AppEventType}: {AppEvent}",
                 appEvent.GetType(),
-                // TODO: figure out how best to log event specific values here
                 appEvent
             );
             await appEvent.Handle(eventEngine, cancellationToken);
         }
         catch (Exception error)
         {
-            await ((IApplicationEventEngine) eventEngine).Fire(new UnhandledExceptionEvent(error), cancellationToken, mode);
+            await eventEngine.Fire(new UnhandledExceptionEvent(error), cancellationToken, mode);
         }
     }
 

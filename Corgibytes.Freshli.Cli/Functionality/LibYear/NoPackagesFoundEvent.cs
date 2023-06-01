@@ -3,8 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
-using Microsoft.Extensions.FileSystemGlobbing.Internal.PathSegments;
-using YamlDotNet.Core.Tokens;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
