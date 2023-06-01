@@ -5,7 +5,6 @@ using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Functionality.History;
 using Moq;
 using Xunit;
 
@@ -20,7 +19,6 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IHistoryIntervalParser> _intervalParser = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
-    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly CancellationToken _cancellationToken = new(false);
 
     protected StartAnalysisActivityTestBase()

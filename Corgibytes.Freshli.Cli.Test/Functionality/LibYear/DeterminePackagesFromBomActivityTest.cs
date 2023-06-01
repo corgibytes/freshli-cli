@@ -18,10 +18,10 @@ public class DeterminePackagesFromBomActivityTest
     private const string PathToBom = "/path/to/bom";
     private const string PathToAgentExecutable = "/path/to/agent";
     private readonly Guid _analysisId = Guid.NewGuid();
-    private readonly Mock<IApplicationEventEngine> _eventClient = new Mock<IApplicationEventEngine>();
-    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new Mock<IHistoryStopPointProcessingTask>();
+    private readonly Mock<IApplicationEventEngine> _eventClient = new();
+    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly DeterminePackagesFromBomActivity _activity;
-    private readonly CancellationToken _cancellationToken = new System.Threading.CancellationToken();
+    private readonly CancellationToken _cancellationToken = new();
 
     public DeterminePackagesFromBomActivityTest()
     {

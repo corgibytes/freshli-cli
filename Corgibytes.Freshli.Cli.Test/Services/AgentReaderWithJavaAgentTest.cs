@@ -76,7 +76,7 @@ public class AgentReaderWithJavaAgentTest : IDisposable
 
     private async ValueTask<(string, IAgentReader, DirectoryInfo)> SetupDirectory()
     {
-        var (checkoutLocation, checkoutDirectory) = CreateCheckoutLocation();
+        var (checkoutLocation, _) = CreateCheckoutLocation();
 
         // clone https://github.com/protocolbuffers/protobuf to a temp location
         await new CommandInvoker()
