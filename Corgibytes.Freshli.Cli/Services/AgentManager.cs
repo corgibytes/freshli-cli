@@ -171,15 +171,19 @@ public class AgentManager : IAgentManager, IDisposable
                 switch (commandEvent)
                 {
                     case StandardOutputCommandEvent output:
-                        var pattern = $".*listening on.*{port}.*";
-                        isServiceListening = Regex.Match(output.Text, pattern, RegexOptions.IgnoreCase).Success;
-                        if (isServiceListening)
+                        if (!isServiceListening)
                         {
-                            _logger.LogDebug(
-                                "Agent {Agent} is listening on port {Port}",
-                                agentExecutablePath,
-                                port);
+                            isServiceListening = listeningExpression.IsMatch(output.Text);
+                            if (isServiceListening)
+                            {
+                                _logger.LogDebug(
+                                    "Agent {Agent} is listening on port {Port}",
+                                    agentExecutablePath,
+                                    port
+                                );
+                            }
                         }
+
                         break;
                 }
             }

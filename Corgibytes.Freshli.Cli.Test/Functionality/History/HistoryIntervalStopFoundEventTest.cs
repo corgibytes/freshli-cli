@@ -26,11 +26,18 @@ public class HistoryIntervalStopFoundEventTest
             .Returns(logger.Object);
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        await appEvent.Handle(eventClient.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
+        await appEvent.Handle(eventClient.Object, cancellationToken);
 
-        eventClient.Verify(mock => mock.Dispatch(
-            It.Is<CreateApiHistoryStopActivity>(value =>
-                value.CachedAnalysisId == cachedAnalysisId &&
-                value.HistoryStopPointId == historyStopPointId)));
+        eventClient.Verify(mock =>
+            mock.Dispatch(
+                It.Is<CreateApiHistoryStopActivity>(value =>
+                    value.CachedAnalysisId == cachedAnalysisId &&
+                    value.HistoryStopPointId == historyStopPointId
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

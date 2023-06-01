@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
-public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized
+public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHistoryStopPointProcessingTask
 {
     public CheckoutHistoryActivity(Guid analysisId, int historyStopPointId)
     {
@@ -18,14 +18,13 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized
 
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new();
 
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     // ReSharper disable once MemberCanBePrivate.Global
-    public Guid AnalysisId { get; set; }
+    public Guid AnalysisId { get; }
 
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public int HistoryStopPointId { get; set; }
+    public IHistoryStopPointProcessingTask Parent => null!;
+    public int HistoryStopPointId { get; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
@@ -42,11 +41,24 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized
             gitManager.ParseCommitId(historyStopPoint.GitCommitId)
         );
 
-        await eventClient.Fire(new HistoryStopCheckedOutEvent
+        await eventClient.Fire(
+            new HistoryStopCheckedOutEvent
+            {
+                AnalysisId = AnalysisId,
+                Parent = this
+            },
+            cancellationToken);
+
+        new Thread(() =>
         {
-            AnalysisId = AnalysisId,
-            HistoryStopPointId = HistoryStopPointId
-        });
+            eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
+            eventClient.Fire(
+                new HistoryStopPointProcessingCompletedEvent { Parent = this },
+                cancellationToken,
+                ApplicationTaskMode.Untracked
+            ).AsTask().Wait(cancellationToken);
+        }).Start();
+
     }
 
     public async ValueTask<SemaphoreSlim> GetSemaphore(IServiceProvider serviceProvider)

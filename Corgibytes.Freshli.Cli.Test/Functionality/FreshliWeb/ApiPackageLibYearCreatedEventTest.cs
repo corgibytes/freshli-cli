@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
@@ -11,34 +12,31 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 [UnitTest]
 public class ApiPackageLibYearCreatedEventTest
 {
-    [Fact(Timeout = 500)]
-    public async Task Handle()
+    private const string AgentExecutablePath = "/path/to/agent";
+    private const int PackageLibYearId = 12;
+    private readonly Guid _analysisId = Guid.NewGuid();
+    private readonly CancellationToken _cancellationToken = new(false);
+    private readonly Mock<IApplicationActivityEngine> _activityClient = new();
+    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
+
+    private readonly ApiPackageLibYearCreatedEvent _appEvent;
+
+    public ApiPackageLibYearCreatedEventTest()
     {
-        var activityClient = new Mock<IApplicationActivityEngine>();
-
-        var appEvent = new ApiPackageLibYearCreatedEvent { HistoryStopPointId = 12 };
-
-        await appEvent.Handle(activityClient.Object);
-
-        activityClient.Verify(mock => mock.Dispatch(It.Is<ReportHistoryStopPointProgressActivity>(
-            value => value.HistoryStopPointId == appEvent.HistoryStopPointId)));
+        _appEvent = new ApiPackageLibYearCreatedEvent
+        {
+            AnalysisId = _analysisId,
+            Parent = _parent.Object,
+            AgentExecutablePath = AgentExecutablePath,
+            PackageLibYearId = PackageLibYearId
+        };
     }
 
     [Fact(Timeout = 500)]
-    public async Task HandleCorrectlyDealsWithExceptions()
+    public async Task Handle()
     {
-        var activityClient = new Mock<IApplicationActivityEngine>();
+        await _appEvent.Handle(_activityClient.Object, _cancellationToken);
 
-        var appEvent = new ApiPackageLibYearCreatedEvent { HistoryStopPointId = 12 };
-
-        var exception = new InvalidOperationException();
-        activityClient.Setup(mock => mock.Dispatch(It.IsAny<ReportHistoryStopPointProgressActivity>()))
-            .Throws(exception);
-
-        await appEvent.Handle(activityClient.Object);
-
-        activityClient.Verify(mock => mock.Dispatch(It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
-            value.HistoryStopPointId == appEvent.HistoryStopPointId &&
-            value.Error == exception)));
+        _activityClient.VerifyNoOtherCalls();
     }
 }

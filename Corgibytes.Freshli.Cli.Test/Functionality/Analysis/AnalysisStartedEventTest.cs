@@ -14,13 +14,20 @@ public class AnalysisStartedEventTest
     [Fact(Timeout = 500)]
     public async Task HandleDispatchesCreateAnalysisApiActivity()
     {
+        var cancellationToken = new System.Threading.CancellationToken(false);
         var eventClient = new Mock<IApplicationActivityEngine>();
 
         var analysisStartedEvent = new AnalysisStartedEvent { AnalysisId = Guid.NewGuid() };
-        await analysisStartedEvent.Handle(eventClient.Object);
+        await analysisStartedEvent.Handle(eventClient.Object, cancellationToken);
 
-        eventClient.Verify(mock => mock.Dispatch(It.Is<CreateAnalysisApiActivity>(value =>
-            value.CachedAnalysisId == analysisStartedEvent.AnalysisId
-        )));
+        eventClient.Verify(
+            mock => mock.Dispatch(
+                It.Is<CreateAnalysisApiActivity>(value =>
+                    value.CachedAnalysisId == analysisStartedEvent.AnalysisId
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

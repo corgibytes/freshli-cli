@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -8,5 +9,5 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 public class LibYearComputationForBomStartedEvent : ApplicationEventBase
 {
     // TODO: Determine if this class is used, since it's just throwing a not implemented exception
-    public override ValueTask Handle(IApplicationActivityEngine eventClient) => throw new NotImplementedException();
+    public override ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken) => throw new NotImplementedException();
 }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -8,7 +9,7 @@ public class AgentsDetectedEvent : ApplicationEventBase
 {
     public Dictionary<string, string>? AgentsAndLocations { get; init; }
 
-    public override ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         return ValueTask.CompletedTask;
     }

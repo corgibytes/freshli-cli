@@ -55,11 +55,18 @@ public class CheckoutHistoryActivityTest
             mock => mock.CreateArchive(repositoryId, parsedCommitId)
         ).ReturnsAsync(archiveLocation);
 
-        await activity.Handle(eventEngine.Object);
+        var cancellationToken = new System.Threading.CancellationToken();
+        await activity.Handle(eventEngine.Object, cancellationToken);
 
         eventEngine.Verify(
-            mock => mock.Fire(It.Is<HistoryStopCheckedOutEvent>(appEvent =>
-                appEvent.AnalysisId == analysisId &&
-                appEvent.HistoryStopPointId == historyStopPointId)));
+            mock => mock.Fire(
+                It.Is<HistoryStopCheckedOutEvent>(appEvent =>
+                    appEvent.AnalysisId == analysisId &&
+                    appEvent.Parent.HistoryStopPointId == historyStopPointId
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

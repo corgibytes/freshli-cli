@@ -1,4 +1,5 @@
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandRunners;
@@ -12,14 +13,18 @@ public abstract class RunnableCommand<TCommand, TCommandOptions> : Command where
 {
     protected RunnableCommand(string name, string? description = null) : base(name, description)
     {
-        Handler = CommandHandler.Create<IHost, IConsole, TCommandOptions>(
-            async (host, console, options) => await Run(host, console, options));
+        Handler = CommandHandler.Create<IHost, IConsole, InvocationContext, TCommandOptions>(
+            async (host, console, context, options) => await Run(host, console, context, options));
     }
 
-    protected virtual async ValueTask<int> Run(IHost host, IConsole console, TCommandOptions options)
+    protected virtual async ValueTask<int> Run(IHost host, IConsole console, InvocationContext context, TCommandOptions options)
     {
         using var scope = host.Services.CreateScope();
         var runner = scope.ServiceProvider.GetRequiredService<ICommandRunner<TCommand, TCommandOptions>>();
-        return await runner.Run(options, console);
+        var cancellationToken = context.GetCancellationToken();
+
+        cancellationToken.Register(() => console.WriteLine("Cancellation requested. Exiting..."));
+
+        return await runner.Run(options, console, cancellationToken);
     }
 }
