@@ -49,8 +49,7 @@ flowchart TD;
     ManifestDetectedEvent --> GenerateBillOfMaterialsActivity
     ManifestDetectedEvent --> FireHistoryStopPointProcessingErrorActivity
     NoManifestsDetectedEvent -.-> ApplicationEventBase
-    NoManifestsDetectedEvent --> ReportHistoryStopPointProgressActivity
-    NoManifestsDetectedEvent --> FireHistoryStopPointProcessingErrorActivity
+    NoManifestsDetectedEvent
     PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
     PrepareCacheForAnalysisActivity --> CachePrepareFailedForAnalysisEvent
     RestartAnalysisActivity -.-> StartAnalysisActivityBase
@@ -89,8 +88,7 @@ flowchart TD;
     ApiHistoryStopCreatedEvent -.-> ApplicationEventBase
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
     ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
-    ApiPackageLibYearCreatedEvent --> ReportHistoryStopPointProgressActivity
-    ApiPackageLibYearCreatedEvent --> FireHistoryStopPointProcessingErrorActivity
+    ApiPackageLibYearCreatedEvent
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
     CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
@@ -116,6 +114,7 @@ flowchart TD;
     VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryIsNotGitInitializedFailureEvent
     VerifyGitRepositoryInLocalDirectoryActivity --> GitRepositoryInLocalDirectoryVerifiedEvent
     CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
+    CheckoutHistoryActivity --> HistoryStopPointProcessingCompletedEvent
     ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> InvalidHistoryIntervalEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
@@ -128,7 +127,6 @@ flowchart TD;
     HistoryStopPointProcessingCompletedEvent
     HistoryStopPointProcessingFailedEvent -.-> UnhandledExceptionEvent
     HistoryStopPointProcessingFailedEvent
-    ReportHistoryStopPointProgressActivity --> HistoryStopPointProcessingCompletedEvent
     ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
     ComputeLibYearForPackageActivity --> HistoryStopPointProcessingFailedEvent
     DeterminePackagesFromBomActivity --> PackageFoundEvent
@@ -140,8 +138,7 @@ flowchart TD;
     LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
     LibYearComputedForPackageEvent --> FireHistoryStopPointProcessingErrorActivity
     NoPackagesFoundEvent -.-> ApplicationEventBase
-    NoPackagesFoundEvent --> ReportHistoryStopPointProgressActivity
-    NoPackagesFoundEvent --> FireHistoryStopPointProcessingErrorActivity
+    NoPackagesFoundEvent
     PackageFoundEvent -.-> ApplicationEventBase
     PackageFoundEvent --> ComputeLibYearForPackageActivity
     LoadServiceProviderActivity
