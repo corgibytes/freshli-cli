@@ -185,7 +185,7 @@ Feature: analyze
 
     Scenario: Run the analysis, trigger error event.
         When I run `freshli --loglevel Debug analyze https://github.com/this-repository-does-not-exist`
-        Then the output should contain:
+        Then the output should match:
         """
-        Command failed. No more retries. Command: git; Args: clone https://github.com/this-repository-does-not-exist
+Command[\s\R]failed\.[\s\R]No[\s\R]more[\s\R]+retries\.[\s\R]+Command:[\s\R]+git;[\s\R]+Args:[\s\R]+clone[\s\R]+https://github.com/this-repository-does-not-exist
         """
