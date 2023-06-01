@@ -37,7 +37,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
         try
         {
             var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
-            var agentReader = agentManager.GetReader(AgentExecutablePath);
+            var agentReader = agentManager.GetReader(AgentExecutablePath, cancellationToken);
 
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb();

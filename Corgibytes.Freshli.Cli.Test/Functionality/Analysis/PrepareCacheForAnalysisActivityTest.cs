@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Functionality.History;
 using Moq;
 using Xunit;
 
@@ -20,7 +19,6 @@ public class PrepareCacheForAnalysisActivityTest
     private readonly string _repositoryBranch;
     private readonly string _repositoryUrl;
     private readonly CancellationToken _cancellationToken = new(false);
-    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
 
     public PrepareCacheForAnalysisActivityTest()
     {
