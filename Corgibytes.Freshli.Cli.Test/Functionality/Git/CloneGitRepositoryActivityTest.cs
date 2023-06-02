@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Exceptions;
@@ -31,6 +32,8 @@ public class CloneGitRepositoryActivityTest
     private readonly Mock<ICachedGitSourceRepository> _gitSourceRepository = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
 
+    private readonly CancellationToken _cancellationToken = new();
+
     public CloneGitRepositoryActivityTest()
     {
         _configuration.Setup(mock => mock.CacheDir).Returns(CacheDir);
@@ -55,20 +58,36 @@ public class CloneGitRepositoryActivityTest
     private void SetupCachedAnalysis() =>
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(_cachedAnalysis);
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresGitRepositoryClonedEventWhenAnalysisStarted()
     {
         SetupCachedAnalysis();
         SetupCloneOrPullUsingDefaults();
 
         var activity = new CloneGitRepositoryActivity(_analysisId);
-        await activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<GitRepositoryClonedEvent>(value => value.AnalysisId == _analysisId)));
+            mock.Fire(
+                It.Is<GitRepositoryCloneStartedEvent>(value =>
+                    value.AnalysisId == _analysisId
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
+        _eventEngine.Verify(mock =>
+            mock.Fire(
+                It.Is<GitRepositoryClonedEvent>(value =>
+                    value.AnalysisId == _analysisId
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresCloneGitRepositoryFailedEventWhenGitCloneFails()
     {
         SetupCachedAnalysis();
@@ -77,9 +96,25 @@ public class CloneGitRepositoryActivityTest
             .Throws(new GitException("Git clone failed"));
 
         var activity = new CloneGitRepositoryActivity(_analysisId);
-        await activity.Handle(_eventEngine.Object);
+        await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<CloneGitRepositoryFailedEvent>(value => value.ErrorMessage == "Git clone failed")));
+            mock.Fire(
+                It.Is<GitRepositoryCloneStartedEvent>(value =>
+                    value.AnalysisId == _analysisId
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
+        _eventEngine.Verify(mock =>
+            mock.Fire(
+                It.Is<CloneGitRepositoryFailedEvent>(value =>
+                    value.ErrorMessage == "Git clone failed"
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

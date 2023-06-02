@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -8,6 +10,7 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Test.Functionality.Git;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
@@ -21,6 +24,9 @@ public class ComputeHistoryActivityTest
     private readonly Mock<IComputeHistory> _computeHistory = new();
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly Mock<IAnalyzeProgressReporter> _progressReporter = new();
+    private readonly Mock<ILogger<ComputeHistoryActivity>> _logger = new();
+    private readonly CancellationToken _cancellationToken = new();
 
     public ComputeHistoryActivityTest()
     {
@@ -31,6 +37,10 @@ public class ComputeHistoryActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(Configuration);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(_computeHistory.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IAnalyzeProgressReporter)))
+            .Returns(_progressReporter.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<ComputeHistoryActivity>)))
+            .Returns(_logger.Object);
 
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
 
@@ -42,7 +52,7 @@ public class ComputeHistoryActivityTest
     private HistoryStopData HistoryStopData { get; }
     private Configuration Configuration { get; }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task FiresHistoryIntervalStopFoundEvents()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval,
@@ -68,13 +78,14 @@ public class ComputeHistoryActivityTest
 
         // Act
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
+        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object, _cancellationToken);
 
         // Assert
+        VerifyProgressReporting(historyIntervalStops.Count);
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task FiresHistoryIntervalStopFoundEventsForComputeHistory()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
@@ -96,13 +107,14 @@ public class ComputeHistoryActivityTest
 
         // Act
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
+        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object, _cancellationToken);
 
         // Assert
+        VerifyProgressReporting(historyIntervalStops.Count);
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task FiresHistoryIntervalStopFoundEventsForLatestOnly()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
@@ -124,13 +136,14 @@ public class ComputeHistoryActivityTest
 
         // Act
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
+        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object, _cancellationToken);
 
         // Assert
+        VerifyProgressReporting(historyIntervalStops.Count);
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task FiresInvalidHistoryIntervalStopEvent()
     {
         // This could happen when we run the analysis on a codebase that barely has any commits.
@@ -154,13 +167,18 @@ public class ComputeHistoryActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IComputeHistory))).Returns(computeHistory);
 
         var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
-        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object);
+        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<InvalidHistoryIntervalEvent>(value =>
-                value.ErrorMessage ==
-                "Given range (1y) results in an invalid start date as it occurs before date of oldest commit")
-            ));
+            mock.Fire(
+                It.Is<InvalidHistoryIntervalEvent>(value =>
+                    value.ErrorMessage ==
+                    "Given range (1y) results in an invalid start date as it occurs before date of oldest commit"
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
     private void SetupCachedAnalysis(string repositoryUrl, string repositoryBranch, string historyInterval,
@@ -191,7 +209,7 @@ public class ComputeHistoryActivityTest
         var stopPointId = HistoryStopPointId;
         foreach (var stopPoint in historyIntervalStops)
         {
-            var path = System.IO.Path.Combine(Configuration.CacheDir, "histories", HistoryStopData.RepositoryId,
+            var path = Path.Combine(Configuration.CacheDir, "histories", HistoryStopData.RepositoryId,
                 stopPoint.GitCommitIdentifier);
 
             // Verifies that the expected data is being stored in the
@@ -209,15 +227,26 @@ public class ComputeHistoryActivityTest
 
             // Verifies that we get an event for each history stop point
             var id = stopPointId;
-            _eventEngine.Verify(
-                mock => mock.Fire(
-                    It.Is<HistoryIntervalStopFoundEvent>(
-                        value =>
-                            value.AnalysisId == analysisId &&
-                            value.HistoryStopPointId == id
-                    )));
+            _eventEngine.Verify(mock =>
+                mock.Fire(
+                    It.Is<HistoryIntervalStopFoundEvent>(value =>
+                        value.AnalysisId == analysisId &&
+                        value.HistoryStopPointId == id
+                    ),
+                    _cancellationToken,
+                    ApplicationTaskMode.Tracked
+                )
+            );
 
             stopPointId++;
         }
+    }
+
+    private void VerifyProgressReporting(int count)
+    {
+        _progressReporter.Verify(mock => mock.ReportHistoryStopPointDetectionStarted());
+        _progressReporter.Verify(mock => mock.ReportHistoryStopPointDetectionFinished());
+        _progressReporter.Verify(mock => mock.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Archive, count));
+        _progressReporter.Verify(mock => mock.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Process, count));
     }
 }

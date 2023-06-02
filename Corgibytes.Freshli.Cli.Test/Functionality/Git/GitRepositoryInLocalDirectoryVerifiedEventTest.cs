@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
 public class GitRepositoryInLocalDirectoryVerifiedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItFiresComputeHistoryActivity()
     {
         var analysisId = Guid.NewGuid();
@@ -20,11 +20,18 @@ public class GitRepositoryInLocalDirectoryVerifiedEventTest
         var verifyEvent = new GitRepositoryInLocalDirectoryVerifiedEvent();
 
         var engine = new Mock<IApplicationActivityEngine>();
-        await verifyEvent.Handle(engine.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
+        await verifyEvent.Handle(engine.Object, cancellationToken);
 
-        engine.Setup(mock => mock.Dispatch(It.Is<ComputeHistoryActivity>(value =>
-            value.AnalysisId == analysisId &&
-            value.HistoryStopData.Path == localDirectory
-        )));
+        engine.Setup(mock =>
+            mock.Dispatch(
+                It.Is<ComputeHistoryActivity>(value =>
+                    value.AnalysisId == analysisId &&
+                    value.HistoryStopData.Path == localDirectory
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

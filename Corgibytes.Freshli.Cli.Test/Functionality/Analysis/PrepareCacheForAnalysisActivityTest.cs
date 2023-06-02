@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -17,6 +18,7 @@ public class PrepareCacheForAnalysisActivityTest
     private readonly string _historyInterval;
     private readonly string _repositoryBranch;
     private readonly string _repositoryUrl;
+    private readonly CancellationToken _cancellationToken = new(false);
 
     public PrepareCacheForAnalysisActivityTest()
     {
@@ -41,40 +43,59 @@ public class PrepareCacheForAnalysisActivityTest
         };
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItFiresCachePreparedEventWhenPrepareSucceeds()
     {
         _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(true);
 
-        await _activity.Handle(_eventClient.Object);
+        await _activity.Handle(_eventClient.Object, _cancellationToken);
 
-        _eventClient.Verify(mock => mock.Fire(It.Is<CachePreparedForAnalysisEvent>(value =>
-            value.HistoryInterval == _historyInterval &&
-            value.RepositoryBranch == _repositoryBranch &&
-            value.RepositoryUrl == _repositoryUrl &&
-            value.RevisionHistoryMode == RevisionHistoryMode.OnlyLatestRevision &&
-            value.UseCommitHistory == CommitHistory.AtInterval
-        )));
+        _eventClient.Verify(
+            mock => mock.Fire(
+                It.Is<CachePreparedForAnalysisEvent>(value =>
+                    value.HistoryInterval == _historyInterval &&
+                    value.RepositoryBranch == _repositoryBranch &&
+                    value.RepositoryUrl == _repositoryUrl &&
+                    value.RevisionHistoryMode == RevisionHistoryMode.OnlyLatestRevision &&
+                    value.UseCommitHistory == CommitHistory.AtInterval
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItFiresCachePreparedEventWhenPrepareFails()
     {
         _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(false);
 
-        await _activity.Handle(_eventClient.Object);
+        await _activity.Handle(_eventClient.Object, _cancellationToken);
 
-        _eventClient.Verify(mock => mock.Fire(It.IsAny<CachePrepareFailedForAnalysisEvent>()));
+        _eventClient.Verify(mock =>
+            mock.Fire(
+                It.IsAny<CachePrepareFailedForAnalysisEvent>(),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItFiresCachePreparedEventWhenPrepareThrowsAnException()
     {
         _cacheManager.Setup(mock => mock.Prepare()).Throws(new Exception("failure message"));
 
-        await _activity.Handle(_eventClient.Object);
+        await _activity.Handle(_eventClient.Object, _cancellationToken);
 
-        _eventClient.Verify(mock => mock.Fire(It.Is<CachePrepareFailedForAnalysisEvent>(value =>
-            value.ErrorMessage == "failure message")));
+        _eventClient.Verify(
+            mock => mock.Fire(
+                It.Is<CachePrepareFailedForAnalysisEvent>(
+                    value => value.ErrorMessage == "failure message"
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

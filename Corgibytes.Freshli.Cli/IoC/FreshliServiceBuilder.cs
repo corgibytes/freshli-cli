@@ -6,6 +6,7 @@ using Corgibytes.Freshli.Cli.CommandRunners.Cache;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -15,6 +16,7 @@ using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
 using Microsoft.Extensions.DependencyInjection;
 using NamedServices.Microsoft.Extensions.DependencyInjection;
+using Spectre.Console;
 
 namespace Corgibytes.Freshli.Cli.IoC;
 
@@ -32,6 +34,7 @@ public class FreshliServiceBuilder
     public void Register()
     {
         Services.AddSingleton(Configuration);
+        Services.AddSingleton(AnsiConsole.Create(new AnsiConsoleSettings()));
         Services.AddSingleton<IEnvironment, Environment>();
         Services.AddScoped<IExecutableFinder, ExecutableFinder>();
         Services.AddSingleton<ICacheManager, CacheManager>();
@@ -58,6 +61,7 @@ public class FreshliServiceBuilder
 
     private void RegisterAnalyzeCommand()
     {
+        Services.AddScoped<IAnalyzeProgressReporter, SpectreConsoleAnalyzeProgressReporter>();
         Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
         Services.AddScoped<IResultsApi, ResultsApi>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
@@ -127,10 +131,12 @@ public class FreshliServiceBuilder
     private void RegisterApplicationEngine()
     {
         Services.AddSingleton<ApplicationEngine>();
-        Services.AddSingleton<IApplicationActivityEngine, ApplicationEngine>();
-        Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>();
+        Services.AddSingleton<IApplicationActivityEngine, ApplicationEngine>(serviceProvider =>
+            serviceProvider.GetRequiredService<ApplicationEngine>());
+        Services.AddSingleton<IApplicationEventEngine, ApplicationEngine>(serviceProvider =>
+            serviceProvider.GetRequiredService<ApplicationEngine>());
         Services.AddSingleton<ICommandInvoker, CommandInvoker>();
 
-        Services.AddSingleton<IBackgroundTaskQueue, DefaultBackgroundTaskQueue>();
+        Services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
     }
 }

@@ -67,7 +67,7 @@ public class AnalyzeCommandOptionsTest : FreshliTest
         string expectedHistoryInterval, bool expectedLatestOnly
     )
     {
-        var builder = Program.CreateCommandLineBuilder();
+        var builder = new Program().CreateCommandLineBuilder();
         var parser = new Parser(builder.Command);
 
         var result = parser.Parse(args);
@@ -94,7 +94,7 @@ public class AnalyzeCommandOptionsTest : FreshliTest
     [Fact]
     public void Send_Args_ReturnsAnalyzeArguments()
     {
-        var builder = Program.CreateCommandLineBuilder();
+        var builder = new Program().CreateCommandLineBuilder();
         var parser = new Parser(builder.Command);
 
         var result = parser.Parse(new[] { "analyze", "https://github.com/corgibytes/freshli-fixture-ruby-nokotest" });

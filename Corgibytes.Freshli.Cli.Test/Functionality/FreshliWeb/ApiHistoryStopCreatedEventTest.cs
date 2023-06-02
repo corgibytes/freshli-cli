@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 [UnitTest]
 public class ApiHistoryStopCreatedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandleDispatchesCheckoutHistoryActivity()
     {
         var cachedAnalysisId = Guid.NewGuid();
@@ -20,10 +20,18 @@ public class ApiHistoryStopCreatedEventTest
 
         var eventClient = new Mock<IApplicationActivityEngine>();
 
-        await appEvent.Handle(eventClient.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
 
-        eventClient.Verify(mock => mock.Dispatch(
-            It.Is<CheckoutHistoryActivity>(
-                value => value.HistoryStopPointId == historyStopPointId)));
+        await appEvent.Handle(eventClient.Object, cancellationToken);
+
+        eventClient.Verify(mock =>
+            mock.Dispatch(
+                It.Is<CheckoutHistoryActivity>(value =>
+                    value.HistoryStopPointId == historyStopPointId
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

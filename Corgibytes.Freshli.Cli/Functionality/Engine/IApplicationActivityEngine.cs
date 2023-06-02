@@ -1,12 +1,9 @@
-using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public interface IApplicationActivityEngine
+public interface IApplicationActivityEngine : IApplicationEngine
 {
-    public IServiceProvider ServiceProvider { get; }
-
-    public ValueTask Dispatch(IApplicationActivity applicationActivity);
-    public ValueTask Wait();
+    public ValueTask Dispatch(IApplicationActivity applicationActivity, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked);
 }

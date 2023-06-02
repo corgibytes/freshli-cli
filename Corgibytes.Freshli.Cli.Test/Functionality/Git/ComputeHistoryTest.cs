@@ -5,6 +5,7 @@ using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Test.Common;
+using FluentAssertions;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -43,17 +44,17 @@ public class ComputeHistoryTest : FreshliTest
         {
             new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
                 new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero)),
-            new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
-                new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
             new("ef14791d014431952aa721fa2a9b22afb8d4f144",
                 new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero)),
+            new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
+                new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
             new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
                 new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
         };
 
         var actualStops = _computeHistory.ComputeCommitHistory(_historyStopData.Object).ToList();
 
-        Assert.NotStrictEqual(expectedStops, actualStops);
+        Assert.Equal(expectedStops, actualStops);
         Assert.Equal(expectedStops.Count, actualStops.Count);
     }
 
@@ -69,7 +70,7 @@ public class ComputeHistoryTest : FreshliTest
 
         var actualStops = _computeHistory.ComputeLatestOnly(_historyStopData.Object).ToList();
 
-        Assert.NotStrictEqual(expectedStops, actualStops);
+        Assert.Equal(expectedStops, actualStops);
         Assert.Equal(expectedStops.Count, actualStops.Count);
     }
 
@@ -88,23 +89,23 @@ public class ComputeHistoryTest : FreshliTest
             interval,
             startAtDate
         ).ToList();
-        Assert.NotStrictEqual(expectedStops, actualStops);
+        actualStops.Should().Equal(expectedStops);
         Assert.Equal(expectedStops.Count, actualStops.Count);
     }
 
     private static List<GitCommit> AvailableCommits() =>
         new()
         {
-            // Friday week 4
+            // Friday week 4, 2021
             new GitCommit("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
                 new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero)),
-            // Tuesday week 2
-            new GitCommit("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
-                new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
-            // Wednesday week 2
+            // Wednesday week 2, 2021
             new GitCommit("ef14791d014431952aa721fa2a9b22afb8d4f144",
                 new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero)),
-            // Thursday week 53
+            // Tuesday week 2, 2021
+            new GitCommit("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
+                new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
+            // Thursday week 53, 2020
             new GitCommit("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
                 new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
         };
@@ -121,7 +122,7 @@ public class ComputeHistoryTest : FreshliTest
                     new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
                         new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero)),
                     // Monday week 4 (start of range)
-                    new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
+                    new("ef14791d014431952aa721fa2a9b22afb8d4f144",
                         new DateTimeOffset(2021, 1, 25, 00, 00, 00, TimeSpan.Zero)),
                     // Monday week 2
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",

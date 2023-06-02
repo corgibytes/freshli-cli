@@ -7,9 +7,6 @@ public class UnhandledExceptionEvent : FailureEvent
     public UnhandledExceptionEvent(Exception error)
     {
         ErrorMessage = error.Message;
-        Error = error;
+        Exception = error;
     }
-
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public Exception Error { get; set; }
 }
