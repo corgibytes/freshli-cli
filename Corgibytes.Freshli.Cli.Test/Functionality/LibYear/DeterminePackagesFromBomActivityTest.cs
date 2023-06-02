@@ -28,7 +28,7 @@ public class DeterminePackagesFromBomActivityTest
         _activity = new DeterminePackagesFromBomActivity(_analysisId, _parent.Object, PathToBom, PathToAgentExecutable);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyFiresLibYearComputationForBomStartedEvent()
     {
         var serviceProvider = new Mock<IServiceProvider>();
@@ -79,7 +79,7 @@ public class DeterminePackagesFromBomActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleFiresHistoryStopPointProcessingFailedOnException()
     {
         var exception = new InvalidOperationException();
@@ -99,7 +99,7 @@ public class DeterminePackagesFromBomActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleWhenNoPackagesAreFound()
     {
         var serviceProvider = new Mock<IServiceProvider>();

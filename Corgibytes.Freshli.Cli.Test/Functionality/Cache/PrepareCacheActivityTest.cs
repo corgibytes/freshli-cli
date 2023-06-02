@@ -29,7 +29,7 @@ public class PrepareCacheActivityTest
         _activity = new PrepareCacheActivity();
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyItFiresCachePreparedEventWhenPrepareReturnsTrue()
     {
         _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(true);
@@ -45,7 +45,7 @@ public class PrepareCacheActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyItFiresCachePreparedEventWhenPrepareReturnsFalse()
     {
         _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(false);
@@ -61,7 +61,7 @@ public class PrepareCacheActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyItFiresCachePreparedEventWhenPrepareThrowsAnException()
     {
         _cacheManager.Setup(mock => mock.Prepare()).Throws(new Exception("failure message"));

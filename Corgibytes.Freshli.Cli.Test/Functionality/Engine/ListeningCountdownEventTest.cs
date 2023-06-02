@@ -887,7 +887,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 2000)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task Wait()
             {
                 var task = Task.Run(() =>
@@ -903,7 +903,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeout()
             {
                 await Task.Run(() =>
@@ -916,7 +916,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithCancellationToken()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -939,7 +939,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeout()
             {
                 await Task.Run(() =>
@@ -952,7 +952,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -975,7 +975,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTimeoutExpires()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -991,7 +991,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -1014,7 +1014,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTimeoutExpires()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -1391,7 +1391,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(-2, _lastChangeNotificationValue);
             }
 
-            [Fact(Timeout = 2000)]
+            [Fact(Timeout = Constants.ExpandedTestTimeout)]
             public async Task Wait()
             {
                 var task = Task.Run(() =>
@@ -1408,7 +1408,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(0, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeout()
             {
                 await Task.Run(() =>
@@ -1421,7 +1421,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(1, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithCancellationToken()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -1444,7 +1444,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(1, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeout()
             {
                 await Task.Run(() =>
@@ -1457,7 +1457,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(1, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -1480,7 +1480,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(1, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTimeoutExpires()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -1496,7 +1496,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(1, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -1519,7 +1519,7 @@ public abstract class ListeningCountdownEventTest
                 Assert.Equal(1, _sourceCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTimeoutExpires()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
