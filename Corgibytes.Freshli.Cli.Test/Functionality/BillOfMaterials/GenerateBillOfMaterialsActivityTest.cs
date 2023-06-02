@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.BillOfMaterials;
 
 public class GenerateBillOfMaterialsActivityTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
         // Arrange
@@ -80,7 +80,7 @@ public class GenerateBillOfMaterialsActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var eventEngine = new Mock<IApplicationEventEngine>();
