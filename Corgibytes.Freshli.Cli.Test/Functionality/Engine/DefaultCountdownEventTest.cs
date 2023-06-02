@@ -9,6 +9,8 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Engine;
 [IntegrationTest]
 public abstract class DefaultCountdownEventTest
 {
+    private const int CancellationDelay = 100;
+
     public class WithZeroInitialCount : IDisposable
     {
         private readonly ICountdownEvent _countdownEvent = new DefaultCountdownEvent(0);
@@ -402,7 +404,7 @@ public abstract class DefaultCountdownEventTest
         public async Task WaitWithCancellationToken()
         {
             var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(10);
+            cancellationTokenSource.CancelAfter(CancellationDelay);
 
             // ReSharper disable once MethodSupportsCancellation
             await Task.Run(() =>
@@ -436,7 +438,7 @@ public abstract class DefaultCountdownEventTest
         public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTokenIsCancelled()
         {
             var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(10);
+            cancellationTokenSource.CancelAfter(CancellationDelay);
 
             // ReSharper disable once MethodSupportsCancellation
             await Task.Run(() =>
@@ -473,7 +475,7 @@ public abstract class DefaultCountdownEventTest
         public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTokenIsCancelled()
         {
             var cancellationTokenSource = new CancellationTokenSource();
-            cancellationTokenSource.CancelAfter(10);
+            cancellationTokenSource.CancelAfter(CancellationDelay);
 
             // ReSharper disable once MethodSupportsCancellation
             await Task.Run(() =>
