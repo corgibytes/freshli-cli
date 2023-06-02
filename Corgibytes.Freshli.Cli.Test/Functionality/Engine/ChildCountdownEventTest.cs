@@ -9,6 +9,8 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Engine;
 [IntegrationTest]
 public abstract class ChildCountdownEventTest
 {
+    private const int CancellationDelay = 100;
+
     public abstract class WithZeroInitialCount
     {
         public class WithParentAtCountZero : IDisposable
@@ -573,7 +575,7 @@ public abstract class ChildCountdownEventTest
             public async Task WaitWithCancellationToken()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -606,7 +608,7 @@ public abstract class ChildCountdownEventTest
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -642,7 +644,7 @@ public abstract class ChildCountdownEventTest
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -886,7 +888,7 @@ public abstract class ChildCountdownEventTest
             public async Task WaitWithCancellationToken()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -918,7 +920,7 @@ public abstract class ChildCountdownEventTest
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -954,7 +956,7 @@ public abstract class ChildCountdownEventTest
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
