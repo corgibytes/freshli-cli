@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -13,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class GitRepositoryClonedEventTest
 {
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task CorrectlyDispatchesComputeHistoryActivity()
     {
         const string gitPath = "test";
@@ -33,11 +34,26 @@ public class GitRepositoryClonedEventTest
 
         var engine = new Mock<IApplicationActivityEngine>();
 
-        await clonedEvent.Handle(engine.Object);
+        var serviceProvider = new Mock<IServiceProvider>();
+        var progressReporter = new Mock<IAnalyzeProgressReporter>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(IAnalyzeProgressReporter)))
+            .Returns(progressReporter.Object);
+        engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+
+        var cancellationToken = new CancellationToken(false);
+        await clonedEvent.Handle(engine.Object, cancellationToken);
 
         // Verify that it dispatches ComputeHistoryActivity
-        engine.Verify(mock => mock.Dispatch(It.Is<ComputeHistoryActivity>(value =>
-            value.AnalysisId == analysisId &&
-            value.HistoryStopData == historyStopData)));
+        engine.Verify(mock =>
+            mock.Dispatch(
+                It.Is<ComputeHistoryActivity>(value =>
+                    value.AnalysisId == analysisId &&
+                    value.HistoryStopData == historyStopData
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
+        progressReporter.Verify(mock => mock.ReportGitOperationFinished(GitOperation.CreateNewClone));
     }
 }

@@ -1,7 +1,9 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Moq;
 using Xunit;
@@ -11,31 +13,67 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 [UnitTest]
 public class LibYearComputedForPackageEventTest
 {
-    [Fact]
+    private const int PackageLibYearId = 9;
+    private const string AgentExecutablePath = "/path/to/agent";
+    private readonly Guid _analysisId = Guid.NewGuid();
+    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
+    private readonly CancellationToken _cancellationToken = new(false);
+    private readonly LibYearComputedForPackageEvent _appEvent;
+    private readonly Mock<IApplicationActivityEngine> _activityClient = new();
+
+    public LibYearComputedForPackageEventTest()
+    {
+        _appEvent = new LibYearComputedForPackageEvent
+        {
+            AnalysisId = _analysisId,
+            Parent = _parent.Object,
+            PackageLibYearId = PackageLibYearId,
+            AgentExecutablePath = AgentExecutablePath
+        };
+    }
+
+    [Fact(Timeout = 500)]
     public async Task HandleCorrectlyDispatchesCreateApiPackageLibYear()
     {
-        var analysisId = Guid.NewGuid();
-        const int historyStopPointId = 12;
-        const int packageLibYearId = 9;
-        const string agentExecutablePath = "/path/to/agent";
+        await _appEvent.Handle(_activityClient.Object, _cancellationToken);
 
-        var appEvent = new LibYearComputedForPackageEvent
-        {
-            AnalysisId = analysisId,
-            HistoryStopPointId = historyStopPointId,
-            PackageLibYearId = packageLibYearId,
-            AgentExecutablePath = agentExecutablePath
-        };
+        _activityClient.Verify(mock =>
+            mock.Dispatch(
+                It.Is<CreateApiPackageLibYearActivity>(value =>
+                    value.AnalysisId == _analysisId &&
+                    value.Parent == _parent.Object &&
+                    value.PackageLibYearId == PackageLibYearId &&
+                    value.AgentExecutablePath == AgentExecutablePath
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
+    }
 
-        var activityClient = new Mock<IApplicationActivityEngine>();
+    [Fact(Timeout = 500)]
+    public async Task HandleDispatchesFireHistoryStopPointProcessingErrorActivity()
+    {
+        var exception = new InvalidOperationException();
+        _activityClient.Setup(mock =>
+            mock.Dispatch(
+                It.IsAny<CreateApiPackageLibYearActivity>(),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        ).Throws(exception);
 
-        await appEvent.Handle(activityClient.Object);
+        await _appEvent.Handle(_activityClient.Object, _cancellationToken);
 
-        activityClient.Verify(mock => mock.Dispatch(It.Is<CreateApiPackageLibYearActivity>(value =>
-            value.AnalysisId == analysisId &&
-            value.HistoryStopPointId == historyStopPointId &&
-            value.PackageLibYearId == packageLibYearId &&
-            value.AgentExecutablePath == agentExecutablePath
-        )));
+        _activityClient.Verify(mock =>
+            mock.Dispatch(
+                It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
+                    value.Parent == _appEvent.Parent &&
+                    value.Error == exception
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

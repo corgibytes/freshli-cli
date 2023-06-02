@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -12,7 +13,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
 {
     public Guid AnalysisId { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
@@ -28,19 +29,23 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
 
         if (new DirectoryInfo(analysis.RepositoryUrl).Exists == false)
         {
-            await eventClient.Fire(new DirectoryDoesNotExistFailureEvent
-            {
-                ErrorMessage = $"Directory does not exist at {analysis.RepositoryUrl}"
-            });
+            await eventClient.Fire(
+                new DirectoryDoesNotExistFailureEvent
+                {
+                    ErrorMessage = $"Directory does not exist at {analysis.RepositoryUrl}"
+                },
+                cancellationToken);
             return;
         }
 
         if (await gitManager.IsGitRepositoryInitialized(analysis.RepositoryUrl) == false)
         {
-            await eventClient.Fire(new DirectoryIsNotGitInitializedFailureEvent
-            {
-                ErrorMessage = $"Directory is not a git initialised directory at {analysis.RepositoryUrl}"
-            });
+            await eventClient.Fire(
+                new DirectoryIsNotGitInitializedFailureEvent
+                {
+                    ErrorMessage = $"Directory is not a git initialised directory at {analysis.RepositoryUrl}"
+                },
+                cancellationToken);
             return;
         }
 
@@ -57,10 +62,12 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
         var historyStopData =
             new HistoryStopData(configuration, cachedGitSourceId.Id) { LocalDirectory = analysis.RepositoryUrl };
 
-        await eventClient.Fire(new GitRepositoryInLocalDirectoryVerifiedEvent
-        {
-            AnalysisId = analysis.Id,
-            HistoryStopData = historyStopData
-        });
+        await eventClient.Fire(
+            new GitRepositoryInLocalDirectoryVerifiedEvent
+            {
+                AnalysisId = analysis.Id,
+                HistoryStopData = historyStopData
+            },
+            cancellationToken);
     }
 }
