@@ -1,6 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.CommandRunners;
@@ -52,14 +53,14 @@ public class AnalyzeRunnerTest
         _console.Setup(mock => mock.Out).Returns(outputWriter.Object);
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task RunIndicatesThatAnalysisIsComplete()
     {
         var apiAnalysisId = Guid.NewGuid();
 
         SetupAnalysisApiCreatedEvent(apiAnalysisId);
 
-        var exitCode = await _analyzeRunner.Run(_options, _console.Object);
+        var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
 
         Assert.Equal(0, exitCode);
 
@@ -68,7 +69,7 @@ public class AnalyzeRunnerTest
         VerifyApiStatusUpdated(apiAnalysisId, "success");
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task RunIndicatesThatAnalysisFailed()
     {
         var apiAnalysisId = Guid.NewGuid();
@@ -76,7 +77,7 @@ public class AnalyzeRunnerTest
         SetupAnalysisFailureLoggedEvent();
         SetupAnalysisApiCreatedEvent(apiAnalysisId);
 
-        var exitCode = await _analyzeRunner.Run(_options, _console.Object);
+        var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
 
         Assert.Equal(1, exitCode);
 
@@ -85,10 +86,10 @@ public class AnalyzeRunnerTest
         VerifyApiStatusUpdated(apiAnalysisId, "error");
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task RunIndicatesThatCouldNotCallApi()
     {
-        var exitCode = await _analyzeRunner.Run(_options, _console.Object);
+        var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
 
         Assert.Equal(-1, exitCode);
 
@@ -97,19 +98,31 @@ public class AnalyzeRunnerTest
     }
 
     private void VerifyApiStatusUpdated(Guid apiAnalysisId, string status) =>
-        _activityEngine.Verify(mock => mock.Dispatch(It.Is<UpdateAnalysisStatusActivity>(value =>
-            value.ApiAnalysisId == apiAnalysisId &&
-            value.Status == status
-        )));
+        _activityEngine.Verify(mock =>
+            mock.Dispatch(
+                It.Is<UpdateAnalysisStatusActivity>(value =>
+                    value.ApiAnalysisId == apiAnalysisId &&
+                    value.Status == status
+                ),
+                It.IsAny<CancellationToken>(),
+                ApplicationTaskMode.Tracked
+            )
+        );
 
     private void VerifyStartAnalysisActivityDispatched() =>
-        _activityEngine.Verify(mock => mock.Dispatch(It.Is<StartAnalysisActivity>(value =>
-            value.HistoryInterval == _options.HistoryInterval &&
-            value.RepositoryBranch == _options.Branch &&
-            value.RepositoryUrl == _options.RepositoryLocation &&
-            value.RevisionHistoryMode == RevisionHistoryMode.AllRevisions &&
-            value.UseCommitHistory == CommitHistory.AtInterval
-        )));
+        _activityEngine.Verify(mock =>
+            mock.Dispatch(
+                It.Is<StartAnalysisActivity>(value =>
+                    value.HistoryInterval == _options.HistoryInterval &&
+                    value.RepositoryBranch == _options.Branch &&
+                    value.RepositoryUrl == _options.RepositoryLocation &&
+                    value.RevisionHistoryMode == RevisionHistoryMode.AllRevisions &&
+                    value.UseCommitHistory == CommitHistory.AtInterval
+                ),
+                It.IsAny<CancellationToken>(),
+                ApplicationTaskMode.Tracked
+            )
+        );
 
     private void VerifyConfigurationValuesSetCorrectly()
     {

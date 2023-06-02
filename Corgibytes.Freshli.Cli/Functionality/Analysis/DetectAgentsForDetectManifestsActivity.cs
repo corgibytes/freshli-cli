@@ -1,37 +1,57 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class DetectAgentsForDetectManifestsActivity : IApplicationActivity
+public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    private readonly Guid _analysisId;
-    private readonly int _historyStopPointId;
+    public Guid AnalysisId { get; }
+    public IHistoryStopPointProcessingTask Parent { get; }
 
-    public DetectAgentsForDetectManifestsActivity(Guid analysisId, int historyStopPointId)
+    public int Priority
     {
-        _analysisId = analysisId;
-        _historyStopPointId = historyStopPointId;
+        get { return 100; }
     }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public DetectAgentsForDetectManifestsActivity(Guid analysisId, IHistoryStopPointProcessingTask parent)
     {
-        var agentsDetector = eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>();
-        var agents = agentsDetector.Detect();
+        AnalysisId = analysisId;
+        Parent = parent;
+    }
 
-        if (agents.Count == 0)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    {
+        try
         {
-            await eventClient.Fire(new NoAgentsDetectedFailureEvent { ErrorMessage = "Could not locate any agents" });
-            return;
+            var agentsDetector = eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>();
+            var agents = agentsDetector.Detect();
+
+            if (agents.Count == 0)
+            {
+                await eventClient.Fire(
+                    new NoAgentsDetectedFailureEvent { ErrorMessage = "Could not locate any agents" },
+                    cancellationToken);
+                return;
+            }
+
+            foreach (var agentPath in agents)
+            {
+                await eventClient.Fire(
+                    new AgentDetectedForDetectManifestEvent(AnalysisId, Parent, agentPath),
+                    cancellationToken);
+            }
         }
-
-        foreach (var agentPath in agents)
+        catch (Exception error)
         {
-            await eventClient.Fire(new AgentDetectedForDetectManifestEvent(_analysisId, _historyStopPointId, agentPath));
+            await eventClient.Fire(
+                new HistoryStopPointProcessingFailedEvent(Parent, error),
+                cancellationToken);
         }
     }
 }

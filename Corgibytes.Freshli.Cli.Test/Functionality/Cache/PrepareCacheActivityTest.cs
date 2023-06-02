@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
@@ -14,6 +15,7 @@ public class PrepareCacheActivityTest
     private readonly PrepareCacheActivity _activity;
     private readonly Mock<ICacheManager> _cacheManager;
     private readonly Mock<IApplicationEventEngine> _eventClient;
+    private readonly CancellationToken _cancellationToken = new(false);
 
     public PrepareCacheActivityTest()
     {
@@ -27,34 +29,53 @@ public class PrepareCacheActivityTest
         _activity = new PrepareCacheActivity();
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItFiresCachePreparedEventWhenPrepareReturnsTrue()
     {
         _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(true);
 
-        await _activity.Handle(_eventClient.Object);
+        await _activity.Handle(_eventClient.Object, _cancellationToken);
 
-        _eventClient.Verify(mock => mock.Fire(It.IsAny<CachePreparedEvent>()));
+        _eventClient.Verify(mock =>
+            mock.Fire(
+                It.IsAny<CachePreparedEvent>(),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItFiresCachePreparedEventWhenPrepareReturnsFalse()
     {
         _cacheManager.Setup(mock => mock.Prepare()).ReturnsAsync(false);
 
-        await _activity.Handle(_eventClient.Object);
+        await _activity.Handle(_eventClient.Object, _cancellationToken);
 
-        _eventClient.Verify(mock => mock.Fire(It.IsAny<CachePrepareFailedEvent>()));
+        _eventClient.Verify(mock =>
+            mock.Fire(
+                It.IsAny<CachePrepareFailedEvent>(),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task VerifyItFiresCachePreparedEventWhenPrepareThrowsAnException()
     {
         _cacheManager.Setup(mock => mock.Prepare()).Throws(new Exception("failure message"));
 
-        await _activity.Handle(_eventClient.Object);
+        await _activity.Handle(_eventClient.Object, _cancellationToken);
 
-        _eventClient.Verify(mock => mock.Fire(It.Is<CachePrepareFailedEvent>(value =>
-            value.ErrorMessage == "failure message")));
+        _eventClient.Verify(mock =>
+            mock.Fire(
+                It.Is<CachePrepareFailedEvent>(value =>
+                    value.ErrorMessage == "failure message"
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

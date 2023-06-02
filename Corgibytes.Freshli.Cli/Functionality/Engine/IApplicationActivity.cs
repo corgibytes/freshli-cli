@@ -1,8 +1,9 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public interface IApplicationActivity
+public interface IApplicationActivity : IApplicationTask
 {
-    public ValueTask Handle(IApplicationEventEngine eventClient);
+    public ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken);
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -18,6 +19,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
     private readonly Mock<IApplicationEventEngine> _eventEngine = new();
     private readonly Mock<IHistoryIntervalParser> _intervalParser = new();
     private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly CancellationToken _cancellationToken = new(false);
 
     protected StartAnalysisActivityTestBase()
     {
@@ -31,22 +33,28 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
 
     protected virtual Func<TErrorEvent, bool> EventValidator => _ => true;
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresCacheWasNotPreparedEventWhenCacheIsMissing()
     {
         _configuration.Setup(mock => mock.CacheDir).Returns("example");
         _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
         _cacheManager.Setup(mock => mock.ValidateCacheDirectory()).ReturnsAsync(false);
 
-        await Activity.Handle(_eventEngine.Object);
+        await Activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<TErrorEvent>(value =>
-                value.ErrorMessage == "Unable to locate a valid cache directory at: 'example'." &&
-                EventValidator(value))));
+            mock.Fire(
+                It.Is<TErrorEvent>(value =>
+                    value.ErrorMessage == "Unable to locate a valid cache directory at: 'example'." &&
+                    EventValidator(value)
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresAnalysisStartedEventWhenCacheIsPresent()
     {
         var analysisId = Guid.NewGuid();
@@ -58,28 +66,41 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
         _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).ReturnsAsync(analysisId);
 
-        await Activity.Handle(_eventEngine.Object);
+        await Activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _cacheDb.Verify(mock => mock.SaveAnalysis(It.Is<CachedAnalysis>(value =>
             value.RepositoryUrl == "http://git.example.com" &&
             value.RepositoryBranch == "main" &&
             value.HistoryInterval == "1m"
         )));
-        _eventEngine.Verify(mock => mock.Fire(It.Is<AnalysisStartedEvent>(value =>
-            value.AnalysisId == analysisId)));
+        _eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<AnalysisStartedEvent>(
+                    value => value.AnalysisId == analysisId
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 
-    [Fact]
+    [Fact(Timeout = 500)]
     public async Task HandlerFiresInvalidHistoryIntervalEventWhenHistoryIntervalValueIsInvalid()
     {
         _configuration.Setup(mock => mock.CacheDir).Returns("example");
         _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(false);
         _cacheManager.Setup(mock => mock.ValidateCacheDirectory()).ReturnsAsync(true);
 
-        await Activity.Handle(_eventEngine.Object);
+        await Activity.Handle(_eventEngine.Object, _cancellationToken);
 
-        _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<InvalidHistoryIntervalEvent>(value =>
-                value.ErrorMessage == "The value '1m' is not a valid history interval.")));
+        _eventEngine.Verify(
+            mock => mock.Fire(
+                It.Is<InvalidHistoryIntervalEvent>(
+                    value => value.ErrorMessage == "The value '1m' is not a valid history interval."
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

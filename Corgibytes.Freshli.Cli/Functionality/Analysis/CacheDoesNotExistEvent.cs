@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
@@ -11,7 +12,7 @@ public class CacheDoesNotExistEvent : ErrorEvent
     public CommitHistory UseCommitHistory { get; init; }
     public RevisionHistoryMode RevisionHistoryMode { get; init; }
 
-    public override async ValueTask Handle(IApplicationActivityEngine eventClient) =>
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken) =>
         await eventClient.Dispatch(
             new PrepareCacheForAnalysisActivity(RepositoryUrl, RepositoryBranch, HistoryInterval, UseCommitHistory)
             {
@@ -20,5 +21,6 @@ public class CacheDoesNotExistEvent : ErrorEvent
                 HistoryInterval = HistoryInterval,
                 UseCommitHistory = UseCommitHistory,
                 RevisionHistoryMode = RevisionHistoryMode
-            });
+            },
+            cancellationToken);
 }
