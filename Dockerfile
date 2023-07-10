@@ -114,6 +114,8 @@ RUN mkdir -p /root/.freshli
 RUN mkdir -p /usr/local/share/freshli-agent-dotnet
 COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/exe /usr/local/share/freshli-agent-dotnet/bin
 RUN ln -s /usr/local/share/freshli-agent-dotnet/bin/freshli-agent-dotnet /usr/local/bin/freshli-agent-dotnet
+COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/Corgibytes.Freshli.Agent.DotNet/appsettings.json /usr/local/share/freshli-agent-dotnet/bin/appsettings.json
+RUN ln -s /usr/local/share/freshli-agent-dotnet/bin/freshli-agent-dotnet /usr/local/bin/freshli-agent-dotnet
 
 RUN mkdir -p /usr/local/share/cyclonedx-dotnet
 COPY --from=dotnet_build_platform_specific /app/cyclonedx-dotnet/CycloneDX/publish /usr/local/share/cyclonedx-dotnet
