@@ -10,6 +10,7 @@ using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using NLog;
 using PackageUrl;
 using Polly;
 using Package = Corgibytes.Freshli.Cli.Functionality.Package;
@@ -20,15 +21,18 @@ public class AgentReader : IAgentReader
 {
     private readonly ICacheDb _cacheDb;
     private readonly Agent.Agent.AgentClient _client;
+    private readonly Logger _logger;
 
     public AgentReader(ICacheManager cacheManager, Agent.Agent.AgentClient client)
     {
         _cacheDb = cacheManager.GetCacheDb();
         _client = client;
+        _logger = LogManager.GetCurrentClassLogger();
     }
 
     public async IAsyncEnumerable<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
+        _logger.Trace("RetrieveReleaseHistory({Purl})", packageUrl.ToString());
         var cachedPackages = _cacheDb.RetrieveCachedReleaseHistory(packageUrl);
 
         var isUsingCache = false;
@@ -40,8 +44,11 @@ public class AgentReader : IAgentReader
 
         if (isUsingCache)
         {
+            _logger.Trace("Using cached history of {PackageUrl}", packageUrl.ToString());
             yield break;
         }
+
+        _logger.Trace("Reading history of {PackageUrl} from Agent", packageUrl.ToString());
 
         var packages = new List<Package>();
 
@@ -51,6 +58,9 @@ public class AgentReader : IAgentReader
             () => _client.RetrieveReleaseHistory(request));
         await foreach (var responseItem in results)
         {
+            _logger.Trace("{Purl} received release = {Release}",
+                packageUrl.FormatWithoutVersion(), responseItem.ToString());
+
             var package = new Package(
                 new PackageURL(
                     packageUrl.Type,
@@ -98,7 +108,8 @@ public class AgentReader : IAgentReader
         private int _index;
         private readonly Func<AsyncServerStreamingCall<T>> _requester;
 
-        public RetryableAsyncEnumerator(IAsyncEnumerator<T> innerEnumerator, Func<AsyncServerStreamingCall<T>> requester)
+        public RetryableAsyncEnumerator(IAsyncEnumerator<T> innerEnumerator,
+            Func<AsyncServerStreamingCall<T>> requester)
         {
             _innerEnumerator = innerEnumerator;
             _requester = requester;
@@ -117,7 +128,7 @@ public class AgentReader : IAgentReader
                 result = await Policy
                     .Handle<RpcException>()
                     .WaitAndRetryAsync(6, retryAttempt =>
-                        TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0)),
+                            TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0)),
                         onRetryAsync: async (_, _) =>
                         {
                             await _innerEnumerator.DisposeAsync();
@@ -130,6 +141,7 @@ public class AgentReader : IAgentReader
             {
                 result = await _innerEnumerator.MoveNextAsync();
             }
+
             _index++;
             return result;
         }

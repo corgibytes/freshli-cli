@@ -28,4 +28,9 @@ public class PackageLibYear
     public DateTimeOffset ReleaseDateCurrentVersion { get; }
     public DateTimeOffset ReleaseDateLatestVersion { get; }
     public DateTimeOffset AsOfDateTime { get; }
+
+    public override string ToString()
+    {
+        return $"CurrentVersion = {CurrentVersion}, LatestVersion = {LatestVersion}, LibYear = {LibYear}, ReleaseDateCurrentVersion = {ReleaseDateCurrentVersion}, ReleaseDateLatestVersion = {ReleaseDateLatestVersion}, AsOfDateTime = {AsOfDateTime}";
+    }
 }

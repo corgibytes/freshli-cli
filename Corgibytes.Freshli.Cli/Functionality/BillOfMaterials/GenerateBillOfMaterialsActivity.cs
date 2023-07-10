@@ -7,6 +7,7 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
@@ -34,6 +35,10 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
+        var logger = eventClient.ServiceProvider.GetService<ILogger<GenerateBillOfMaterialsActivity>>();
+        logger?.LogDebug("Handling bom generation for HistoryStopPointId = {HistoryStopPointId} with agent = {Agent} and manifest path = {Path}",
+            Parent.HistoryStopPointId, AgentExecutablePath, ManifestPath);
+
         try
         {
             var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
@@ -49,7 +54,12 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
             var asOfDateTime = historyStopPoint.AsOfDateTime;
 
             var fullManifestPath = Path.Combine(historyPointPath, ManifestPath);
+            logger?.LogDebug("Preparing to process manifest for HistoryStopPointId = {HistoryStopPointId} with agent = {Agent} for {Path} and {FullManifestPath} on {AsOfDate}",
+                Parent.HistoryStopPointId, AgentExecutablePath, ManifestPath, fullManifestPath, asOfDateTime);
+
             var bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
+            logger?.LogDebug("BillOfMaterials is {BomFilePath} generated from {FullManifestPath}", bomFilePath, fullManifestPath);
+
             var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
 
             await eventClient.Fire(
