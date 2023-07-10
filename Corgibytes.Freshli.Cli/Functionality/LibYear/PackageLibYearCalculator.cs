@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Services;
 using NLog;
@@ -14,7 +13,8 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
 {
     private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
 
-    public async ValueTask<PackageLibYear> ComputeLibYear(IAgentReader agentReader, PackageURL packageUrl, DateTimeOffset asOfDateTime)
+    public async ValueTask<PackageLibYear?> ComputeLibYear(IAgentReader agentReader, PackageURL packageUrl,
+        DateTimeOffset asOfDateTime)
     {
         var releaseHistory = new List<Package>();
         await foreach (var package in agentReader.RetrieveReleaseHistory(packageUrl))
@@ -22,16 +22,36 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
             releaseHistory.Add(package);
         }
 
+        return ComputeLibYear(packageUrl, asOfDateTime, releaseHistory);
+    }
+
+    public static PackageLibYear? ComputeLibYear(PackageURL packageUrl, DateTimeOffset asOfDateTime,
+        List<Package> releaseHistory)
+    {
         var latestVersionPackageUrl = GetLatestVersion(releaseHistory, asOfDateTime);
+        if (latestVersionPackageUrl == null)
+        {
+            return null;
+        }
+
         var releaseDateCurrentVersion = GetReleaseDate(releaseHistory, packageUrl);
+        if (releaseDateCurrentVersion == null)
+        {
+            return null;
+        }
+
         var releaseDateLatestVersion = GetReleaseDate(releaseHistory, latestVersionPackageUrl);
+        if (releaseDateLatestVersion == null)
+        {
+            return null;
+        }
 
         return new PackageLibYear(
-            releaseDateCurrentVersion,
+            releaseDateCurrentVersion.Value,
             packageUrl,
-            releaseDateLatestVersion,
+            releaseDateLatestVersion.Value,
             latestVersionPackageUrl,
-            CalculateLibYear(releaseDateCurrentVersion, releaseDateLatestVersion),
+            CalculateLibYear(releaseDateCurrentVersion.Value, releaseDateLatestVersion.Value),
             asOfDateTime
         );
     }
@@ -67,27 +87,32 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
         return Math.Round(timeSpan.Days / averageNumberOfDaysPerYear, precision);
     }
 
-    private static DateTimeOffset GetReleaseDate(IEnumerable<Package> releaseHistory, PackageURL packageUrl)
+    private static DateTimeOffset? GetReleaseDate(IEnumerable<Package> releaseHistory, PackageURL packageUrl)
     {
-        foreach (var package in releaseHistory.Where(package => package.PackageUrl.PackageUrlEquals(packageUrl)))
+        // The problem is if the version of the packageUrl input parameter is no longer available, then the
+        // exception will be thrown even though a compatible version might be available
+        var enumerable = releaseHistory.ToList();
+        foreach (var package in enumerable.Where(package => package.PackageUrl.PackageUrlEquals(packageUrl)))
         {
             return package.ReleasedAt;
         }
+
         // only take the overhead hit for calculating this string if the
         // application is being debugged (i.e. trace enabled).
         if (s_logger.IsTraceEnabled)
         {
-            var versions = string.Join(", ", releaseHistory.Select(release =>
+            var versions = string.Join(", ", enumerable.Select(release =>
                 release.ReleasedAt.ToString("yyyy-MM-dd") + "@" + release.PackageUrl.Version));
             s_logger.Trace($"Failed to find Release date for {packageUrl} from history = {versions}");
         }
 
-        throw ReleaseDateNotFoundException.BecauseReturnedListDidNotContainReleaseDate(packageUrl.ToString());
+        return null;
     }
 
-    private static PackageURL GetLatestVersion(IEnumerable<Package> releaseHistory, DateTimeOffset asOfDate)
+    private static PackageURL? GetLatestVersion(IEnumerable<Package> releaseHistory, DateTimeOffset asOfDate)
     {
-        var latestPackage = releaseHistory
+        IEnumerable<Package> history = releaseHistory.ToList();
+        var latestPackage = history
             .OrderByDescending(package => package.ReleasedAt)
             .FirstOrDefault(package => package.ReleasedAt < asOfDate);
 
@@ -95,10 +120,11 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
         {
             return latestPackage.PackageUrl;
         }
-        var packageUrl = releaseHistory.First().PackageUrl;
+
+        var packageUrl = history.First().PackageUrl;
         s_logger.Debug("Failed to find latest version for package = {PackageUrl} asOfDate = {AsOfDate}",
             packageUrl, asOfDate);
 
-        throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList(packageUrl.ToString(), asOfDate);
+        return null;
     }
 }
