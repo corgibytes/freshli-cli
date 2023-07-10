@@ -59,6 +59,10 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
 
             var bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
             logger?.LogDebug("BillOfMaterials is {BomFilePath} generated from {FullManifestPath}", bomFilePath, fullManifestPath);
+            if (string.IsNullOrEmpty(bomFilePath))
+            {
+                return;
+            }
 
             var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
 

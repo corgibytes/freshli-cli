@@ -168,12 +168,23 @@ public class AgentReader : IAgentReader
             Manifest = new ManifestLocation() { Path = Path.GetFullPath(manifestPath) },
             Moment = asOfDateTime.ToTimestamp()
         };
-        var response = await Policy
-            .Handle<RpcException>()
-            .WaitAndRetryAsync(6, retryAttempt =>
+
+        try
+        {
+            var response = await Policy
+                .Handle<RpcException>()
+                .WaitAndRetryAsync(6, retryAttempt =>
                     TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
-            )
-            .ExecuteAsync(async () => await _client.ProcessManifestAsync(request));
-        return response.Path;
+                )
+                .ExecuteAsync(async () => await _client.ProcessManifestAsync(request));
+            return response.Path;
+        }
+        catch (Exception e)
+        {
+            // The application can actually continue in this case, so the exception is caught, noted
+            // and then ignored as the caller will be expected to handle an empty string correctly.
+            _logger.Trace($"Exception Processing manifest for {manifestPath}: {e.Message}");
+            return "";
+        }
     }
 }
