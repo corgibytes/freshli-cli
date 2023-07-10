@@ -99,7 +99,7 @@ public class CacheManager : ICacheManager
         var cachedBomFilePath = Path.Combine(bomCacheDirInfo.FullName, bomFileInfo.Name);
 
         // use Task.Run to wait for file IO to complete
-        await Task.Run(() => File.Copy(bomFilePath, cachedBomFilePath));
+        await Task.Run(() => File.Copy(bomFilePath, cachedBomFilePath, true));
 
         return cachedBomFilePath;
     }
