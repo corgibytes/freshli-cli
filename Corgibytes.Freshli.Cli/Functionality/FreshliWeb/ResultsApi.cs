@@ -135,6 +135,12 @@ public class ResultsApi : IResultsApi, IDisposable
         var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
 
         var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
+        if (historyStopPoint == null)
+        {
+            _logger.LogWarning("Could not find HistoryStopPoint for {HistoryStopPointId} in cache as expected",
+                historyStopPointId);
+            return;
+        }
         var asOfDateTime = historyStopPoint.AsOfDateTime;
 
         var apiUrl = _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
