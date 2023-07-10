@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
@@ -161,7 +162,7 @@ public class CacheDb : ICacheDb
         else
         {
             query = context.CachedPackages
-                .Where(value => value.PackageUrlWithoutVersion == packageUrl.ToString())
+                .Where(value => value.PackageUrlWithoutVersion == packageUrl.FormatWithoutVersion())
                 .AsAsyncEnumerable();
         }
 
