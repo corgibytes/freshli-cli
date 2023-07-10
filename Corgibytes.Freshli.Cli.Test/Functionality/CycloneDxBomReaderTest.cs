@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Test.Common;
+using Microsoft.Extensions.Logging.Abstractions;
 using PackageUrl;
 using Xunit;
 using Xunit.Abstractions;
@@ -18,7 +19,7 @@ public class CycloneDxBomReaderTest : FreshliTest
     public CycloneDxBomReaderTest(ITestOutputHelper output) : base(output)
     {
         _fileReaderService = new MockFileReader();
-        _cycloneDxBomReader = new CycloneDxBomReader(_fileReaderService);
+        _cycloneDxBomReader = new CycloneDxBomReader(_fileReaderService, new NullLogger<CycloneDxBomReader>());
     }
 
     [Fact]

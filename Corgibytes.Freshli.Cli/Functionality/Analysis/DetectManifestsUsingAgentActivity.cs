@@ -5,6 +5,7 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
@@ -29,6 +30,9 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
+        var logger = eventClient.ServiceProvider.GetService<ILogger<DetectManifestsUsingAgentActivity>>();
+        logger?.LogDebug("Handling manifest detection for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId} with agent = {Agent}",
+            AnalysisId, Parent.HistoryStopPointId, AgentExecutablePath);
         try
         {
             var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
@@ -37,6 +41,8 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = cacheManager.GetCacheDb();
             var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(Parent.HistoryStopPointId);
+            logger?.LogDebug("Manifest detection path for HistoryStopPointId = {HistoryStopPointId} is {Path}",
+                Parent.HistoryStopPointId, historyStopPoint?.LocalPath);
 
             var manifestsFound = false;
             await foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint?.LocalPath!).WithCancellation(cancellationToken))

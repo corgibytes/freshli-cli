@@ -5,12 +5,15 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Exceptions;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Services;
+using NLog;
 using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class PackageLibYearCalculator : IPackageLibYearCalculator
 {
+    private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+
     public async ValueTask<PackageLibYear> ComputeLibYear(IAgentReader agentReader, PackageURL packageUrl, DateTimeOffset asOfDateTime)
     {
         var releaseHistory = new List<Package>();
@@ -70,8 +73,16 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
         {
             return package.ReleasedAt;
         }
+        // only take the overhead hit for calculating this string if the
+        // application is being debugged (i.e. trace enabled).
+        if (s_logger.IsTraceEnabled)
+        {
+            var versions = string.Join(", ", releaseHistory.Select(release =>
+                release.ReleasedAt.ToString("yyyy-MM-dd") + "@" + release.PackageUrl.Version));
+            s_logger.Trace($"Failed to find Release date for {packageUrl} from history = {versions}");
+        }
 
-        throw ReleaseDateNotFoundException.BecauseReturnedListDidNotContainReleaseDate();
+        throw ReleaseDateNotFoundException.BecauseReturnedListDidNotContainReleaseDate(packageUrl.ToString());
     }
 
     private static PackageURL GetLatestVersion(IEnumerable<Package> releaseHistory, DateTimeOffset asOfDate)
@@ -84,7 +95,10 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
         {
             return latestPackage.PackageUrl;
         }
+        var packageUrl = releaseHistory.First().PackageUrl;
+        s_logger.Debug("Failed to find latest version for package = {PackageUrl} asOfDate = {AsOfDate}",
+            packageUrl, asOfDate);
 
-        throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList();
+        throw LatestVersionNotFoundException.BecauseLatestCouldNotBeFoundInList(packageUrl.ToString(), asOfDate);
     }
 }

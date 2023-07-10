@@ -129,7 +129,7 @@ public class AgentManager : IAgentManager, IDisposable
 
     private AgentReader CreateAgentReader(int port)
     {
-        _logger.LogDebug("Connecting to gRPC service on port {port}", port);
+        _logger.LogDebug("Connecting to gRPC service on port {Port}", port);
         var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
         var grpcClient = new Agent.Agent.AgentClient(channel);
         var agentReader = new AgentReader(_cacheManager, grpcClient);
