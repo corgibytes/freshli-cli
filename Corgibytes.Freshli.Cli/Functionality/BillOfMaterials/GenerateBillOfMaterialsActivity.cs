@@ -57,10 +57,23 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
             logger?.LogDebug("Preparing to process manifest for HistoryStopPointId = {HistoryStopPointId} with agent = {Agent} for {Path} and {FullManifestPath} on {AsOfDate}",
                 Parent.HistoryStopPointId, AgentExecutablePath, ManifestPath, fullManifestPath, asOfDateTime);
 
-            var bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
-            logger?.LogDebug("BillOfMaterials is {BomFilePath} generated from {FullManifestPath}", bomFilePath, fullManifestPath);
-            if (string.IsNullOrEmpty(bomFilePath))
+            string bomFilePath;
+            try
             {
+                bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
+                logger?.LogDebug("BillOfMaterials is {BomFilePath} generated from {FullManifestPath}",
+                    bomFilePath, fullManifestPath);
+                if (string.IsNullOrEmpty(bomFilePath) || File.Exists(bomFilePath))
+                {
+                    logger?.LogWarning("Processing manifest {ManifestPath} failed to generate BOM file for {AsOfDate}",
+                        fullManifestPath, asOfDateTime);
+                    return;
+                }
+            }
+            catch (Exception e)
+            {
+                logger?.LogWarning("Exception attempting to process manifest {ManifestPath} for {AsOfDate}: {Message}",
+                    fullManifestPath, asOfDateTime, e.Message);
                 return;
             }
 
