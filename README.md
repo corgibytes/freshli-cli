@@ -472,7 +472,7 @@ You should see output that looks similar to:
 
 ### Manually publishing to DockerHub
 
-Docker images are built and published to DockerHub by the CI process whenever a commit is added to the `main` or `release/*` branches.
+Docker images are built and published to DockerHub by the CI process whenever a commit is added to the `main` or `release/*` branches (assuming that all of the tests have passed).
 
 Follow these instructions if you need to produce a build manually.
 
