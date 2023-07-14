@@ -99,11 +99,11 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
 
         // only take the overhead hit for calculating this string if the
         // application is being debugged (i.e. trace enabled).
-        if (s_logger.IsTraceEnabled)
+        if (s_logger.IsWarnEnabled)
         {
             var versions = string.Join(", ", enumerable.Select(release =>
                 release.ReleasedAt.ToString("yyyy-MM-dd") + "@" + release.PackageUrl.Version));
-            s_logger.Trace($"Failed to find Release date for {packageUrl} from history = {versions}");
+            s_logger.Warn($"Failed to find Release date for {packageUrl} from history = {versions}");
         }
 
         return null;
