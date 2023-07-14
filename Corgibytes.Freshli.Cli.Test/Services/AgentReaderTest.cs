@@ -11,6 +11,7 @@ using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Cli.Test.Helpers;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using PackageUrl;
 using Xunit;
@@ -54,7 +55,7 @@ public class AgentReaderTest
 
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
         _agentClient = new Mock<Agent.Agent.AgentClient>();
-        _reader = new AgentReader(_cacheManager.Object, _agentClient.Object);
+        _reader = new AgentReader(_cacheManager.Object,  _agentClient.Object, NullLogger<AgentReader>.Instance);
     }
 
     [Fact(Timeout = 500)]
@@ -92,7 +93,7 @@ public class AgentReaderTest
         _cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(_packageUrl))
             .Returns(new List<CachedPackage>().ToAsyncEnumerable());
 
-        var reader = new AgentReader(_cacheManager.Object, _agentClient.Object);
+        var reader = new AgentReader(_cacheManager.Object, _agentClient.Object, NullLogger<AgentReader>.Instance);
 
         var retrievedPackages = reader.RetrieveReleaseHistory(_packageUrl);
 

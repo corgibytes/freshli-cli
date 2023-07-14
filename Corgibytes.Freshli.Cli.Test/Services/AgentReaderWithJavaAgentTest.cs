@@ -5,7 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using Xunit;
 using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
@@ -17,10 +19,14 @@ public class AgentReaderWithJavaAgentTest : IDisposable
     private readonly AgentManager _agentManager;
     public AgentReaderWithJavaAgentTest()
     {
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<AgentReader>)))
+            .Returns(NullLogger<AgentReader>.Instance);
         _agentManager = new AgentManager(
             new CacheManager(new Configuration(new Environment())),
             new NullLogger<AgentManager>(),
-            new Configuration(new Environment())
+            new Configuration(new Environment()),
+            serviceProvider.Object
         );
     }
 

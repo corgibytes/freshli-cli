@@ -10,7 +10,7 @@ using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
-using NLog;
+using Microsoft.Extensions.Logging;
 using PackageUrl;
 using Polly;
 using Package = Corgibytes.Freshli.Cli.Functionality.Package;
@@ -21,18 +21,18 @@ public class AgentReader : IAgentReader
 {
     private readonly ICacheDb _cacheDb;
     private readonly Agent.Agent.AgentClient _client;
-    private readonly Logger _logger;
+    private readonly ILogger<AgentReader> _logger;
 
-    public AgentReader(ICacheManager cacheManager, Agent.Agent.AgentClient client)
+    public AgentReader(ICacheManager cacheManager, Agent.Agent.AgentClient client, ILogger<AgentReader> logger)
     {
         _cacheDb = cacheManager.GetCacheDb();
         _client = client;
-        _logger = LogManager.GetCurrentClassLogger();
+        _logger = logger;
     }
 
     public async IAsyncEnumerable<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
-        _logger.Trace("RetrieveReleaseHistory({Purl})", packageUrl.ToString());
+        _logger.LogTrace("RetrieveReleaseHistory({Purl})", packageUrl.ToString());
         var cachedPackages = _cacheDb.RetrieveCachedReleaseHistory(packageUrl);
 
         var isUsingCache = false;
@@ -44,11 +44,11 @@ public class AgentReader : IAgentReader
 
         if (isUsingCache)
         {
-            _logger.Trace("Using cached history of {PackageUrl}", packageUrl.ToString());
+            _logger.LogTrace("Using cached history of {PackageUrl}", packageUrl.ToString());
             yield break;
         }
 
-        _logger.Trace("Reading history of {PackageUrl} from Agent", packageUrl.ToString());
+        _logger.LogTrace("Reading history of {PackageUrl} from Agent", packageUrl.ToString());
 
         var packages = new List<Package>();
 
@@ -58,7 +58,7 @@ public class AgentReader : IAgentReader
             () => _client.RetrieveReleaseHistory(request));
         await foreach (var responseItem in results)
         {
-            _logger.Trace("{Purl} received release = {Release}",
+            _logger.LogTrace("{Purl} received release = {Release}",
                 packageUrl.FormatWithoutVersion(), responseItem.ToString());
 
             var package = new Package(
