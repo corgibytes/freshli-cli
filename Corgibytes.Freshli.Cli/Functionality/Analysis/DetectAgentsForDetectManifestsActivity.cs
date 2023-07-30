@@ -6,6 +6,7 @@ using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
@@ -27,6 +28,9 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHis
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
+        var logger = eventClient.ServiceProvider.GetService<ILogger<DetectAgentsForDetectManifestsActivity>>();
+        logger?.LogTrace("Handling agents detection for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, Parent.HistoryStopPointId);
+
         try
         {
             var agentsDetector = eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>();
@@ -40,6 +44,8 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHis
                 return;
             }
 
+            logger?.LogTrace("Found {Count} agents to detect manifests of AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}",
+                agents.Count, AnalysisId, Parent.HistoryStopPointId);
             foreach (var agentPath in agents)
             {
                 await eventClient.Fire(

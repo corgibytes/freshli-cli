@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
@@ -26,6 +27,9 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
+        var logger = eventClient.ServiceProvider.GetService<ILogger<CheckoutHistoryActivity>>();
+        logger?.LogDebug("Handling history checkout for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, HistoryStopPointId);
+
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
         var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
@@ -33,6 +37,8 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
         {
             throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
         }
+        logger?.LogDebug("historyStopPoint = {@HistoryStopPoint} for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}",
+            historyStopPoint, AnalysisId, HistoryStopPointId);
 
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
@@ -41,6 +47,7 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
             gitManager.ParseCommitId(historyStopPoint.GitCommitId)
         );
 
+        logger?.LogDebug("Fire HistoryStopCheckedOutEvent for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, HistoryStopPointId);
         await eventClient.Fire(
             new HistoryStopCheckedOutEvent
             {

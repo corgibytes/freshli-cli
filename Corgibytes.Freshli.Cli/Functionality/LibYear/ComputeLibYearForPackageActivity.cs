@@ -35,6 +35,10 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
 
             var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
             var packageLibYear = await calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
+            if (packageLibYear == null)
+            {
+                return;
+            }
 
             var packageLibYearId = await cacheDb.AddPackageLibYear(new CachedPackageLibYear
             {
