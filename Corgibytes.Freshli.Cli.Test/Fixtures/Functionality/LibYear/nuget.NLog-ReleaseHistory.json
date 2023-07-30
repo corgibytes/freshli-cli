@@ -1,0 +1,754 @@
+[
+  {
+    "version": "1.0.0.505",
+    "released_at": "2011-01-07T07:57:35.043Z"
+  },
+  {
+    "version": "2.0.0.2000",
+    "released_at": "2011-07-18T14:20:06.540Z"
+  },
+  {
+    "version": "2.0.1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "2.0.1.1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "2.0.1.2",
+    "released_at": "2013-04-08T10:18:27.300Z"
+  },
+  {
+    "version": "2.1.0",
+    "released_at": "2013-10-10T22:26:20.613Z"
+  },
+  {
+    "version": "3.0.0",
+    "released_at": "2014-06-02T14:47:27.650Z"
+  },
+  {
+    "version": "3.1.0",
+    "released_at": "2014-06-24T18:42:54.117Z"
+  },
+  {
+    "version": "3.2.0",
+    "released_at": "2015-01-02T10:14:28.843Z"
+  },
+  {
+    "version": "3.2.1",
+    "released_at": "2015-04-24T21:15:30.340Z"
+  },
+  {
+    "version": "4.0.0-rc",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.0.0",
+    "released_at": "2015-06-09T19:41:48.923Z"
+  },
+  {
+    "version": "4.0.1",
+    "released_at": "2015-06-18T20:46:30.997Z"
+  },
+  {
+    "version": "4.1.0-alpha1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.1.0-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.1.0",
+    "released_at": "2015-08-31T17:29:28.263Z"
+  },
+  {
+    "version": "4.1.1-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.1.1",
+    "released_at": "2015-09-12T14:10:41.850Z"
+  },
+  {
+    "version": "4.1.2",
+    "released_at": "2015-09-20T19:49:25.110Z"
+  },
+  {
+    "version": "4.2.0-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.2.0",
+    "released_at": "2015-10-24T20:48:16.067Z"
+  },
+  {
+    "version": "4.2.1-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.2.1",
+    "released_at": "2015-11-21T14:35:27.680Z"
+  },
+  {
+    "version": "4.2.2",
+    "released_at": "2015-12-02T22:45:07.057Z"
+  },
+  {
+    "version": "4.2.3",
+    "released_at": "2015-12-20T22:21:32.393Z"
+  },
+  {
+    "version": "4.3.0-alpha1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0-alpha2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0-alpha3",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0-alpha4",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0-beta1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0-beta2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0-beta3",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0-rc2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0-rc3",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.0",
+    "released_at": "2016-04-16T12:06:14.047Z"
+  },
+  {
+    "version": "4.3.1-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.1",
+    "released_at": "2016-04-20T08:38:41Z"
+  },
+  {
+    "version": "4.3.2",
+    "released_at": "2016-04-26T20:20:30.510Z"
+  },
+  {
+    "version": "4.3.3",
+    "released_at": "2016-04-28T20:41:45.630Z"
+  },
+  {
+    "version": "4.3.4",
+    "released_at": "2016-05-16T21:30:35.150Z"
+  },
+  {
+    "version": "4.3.5-alpha1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.5",
+    "released_at": "2016-06-12T22:24:27.787Z"
+  },
+  {
+    "version": "4.3.6",
+    "released_at": "2016-07-23T22:39:36.957Z"
+  },
+  {
+    "version": "4.3.7",
+    "released_at": "2016-08-06T13:22:54.357Z"
+  },
+  {
+    "version": "4.3.8",
+    "released_at": "2016-09-05T19:24:50.107Z"
+  },
+  {
+    "version": "4.3.9-test-retry-archive",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.3.9",
+    "released_at": "2016-09-18T15:32:44.897Z"
+  },
+  {
+    "version": "4.3.10",
+    "released_at": "2016-10-11T20:03:23.587Z"
+  },
+  {
+    "version": "4.3.11",
+    "released_at": "2016-11-07T21:13:11.687Z"
+  },
+  {
+    "version": "4.4.0-alpha1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-alpha2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-alpha3",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-alpha4",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta-14",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta10",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta11",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta12",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta13",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta3",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta4",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta5",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta6",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta7",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta8",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-beta9",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-betaV14",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-betaV15",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0-rc2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.0",
+    "released_at": "2016-12-14T10:47:25.290Z"
+  },
+  {
+    "version": "4.4.1-dev-b4084",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.1-dev-b4085",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.1",
+    "released_at": "2016-12-24T00:50:07.050Z"
+  },
+  {
+    "version": "4.4.2-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.2-rc2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.2",
+    "released_at": "2017-02-06T21:38:25.163Z"
+  },
+  {
+    "version": "4.4.3",
+    "released_at": "2017-02-17T20:49:31.620Z"
+  },
+  {
+    "version": "4.4.4",
+    "released_at": "2017-03-10T22:09:53.593Z"
+  },
+  {
+    "version": "4.4.5-beta1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.5",
+    "released_at": "2017-03-28T20:33:59.553Z"
+  },
+  {
+    "version": "4.4.6-beta1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.6-beta2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.6-beta3",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.6-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.4.6",
+    "released_at": "2017-04-15T13:21:00.143Z"
+  },
+  {
+    "version": "4.4.7",
+    "released_at": "2017-04-25T21:25:50.540Z"
+  },
+  {
+    "version": "4.4.8",
+    "released_at": "2017-04-28T21:58:14.857Z"
+  },
+  {
+    "version": "4.4.9",
+    "released_at": "2017-05-05T21:27:55.517Z"
+  },
+  {
+    "version": "4.4.10",
+    "released_at": "2017-05-31T19:11:43Z"
+  },
+  {
+    "version": "4.4.11",
+    "released_at": "2017-06-17T11:53:19.870Z"
+  },
+  {
+    "version": "4.4.12",
+    "released_at": "2017-08-08T19:31:51.007Z"
+  },
+  {
+    "version": "4.4.13",
+    "released_at": "2018-02-27T23:49:22.210Z"
+  },
+  {
+    "version": "4.5.0-alpha01",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-alpha02",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-alpha03",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-alpha04",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-beta01",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-beta02",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-beta03",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-beta04",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-beta05",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-beta06",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-beta07",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-beta08",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-rc01",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-rc02",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-rc03",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-rc04",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-rc05",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-rc06",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0-rc07",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.5.0",
+    "released_at": "2018-03-25T21:56:07.213Z"
+  },
+  {
+    "version": "4.5.1",
+    "released_at": "2018-04-03T21:50:26.203Z"
+  },
+  {
+    "version": "4.5.2",
+    "released_at": "2018-04-06T22:56:43.503Z"
+  },
+  {
+    "version": "4.5.3",
+    "released_at": "2018-04-16T18:22:17.257Z"
+  },
+  {
+    "version": "4.5.4",
+    "released_at": "2018-05-05T22:53:27.540Z"
+  },
+  {
+    "version": "4.5.5",
+    "released_at": "2018-05-25T16:30:46.667Z"
+  },
+  {
+    "version": "4.5.6",
+    "released_at": "2018-05-29T21:25:14.857Z"
+  },
+  {
+    "version": "4.5.7",
+    "released_at": "2018-07-19T09:39:06.830Z"
+  },
+  {
+    "version": "4.5.8",
+    "released_at": "2018-08-05T11:38:58.573Z"
+  },
+  {
+    "version": "4.5.9",
+    "released_at": "2018-08-24T21:40:39.070Z"
+  },
+  {
+    "version": "4.5.10",
+    "released_at": "2018-09-17T21:58:18.610Z"
+  },
+  {
+    "version": "4.5.11",
+    "released_at": "2018-11-06T17:31:25.310Z"
+  },
+  {
+    "version": "4.6.0-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.6.0-rc2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.6.0-rc3",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.6.0",
+    "released_at": "2019-03-21T00:27:35.483Z"
+  },
+  {
+    "version": "4.6.1",
+    "released_at": "2019-03-29T23:23:40.613Z"
+  },
+  {
+    "version": "4.6.2",
+    "released_at": "2019-04-02T22:53:01.020Z"
+  },
+  {
+    "version": "4.6.3",
+    "released_at": "2019-04-30T20:12:12.640Z"
+  },
+  {
+    "version": "4.6.4",
+    "released_at": "2019-05-28T21:04:44.207Z"
+  },
+  {
+    "version": "4.6.5",
+    "released_at": "2019-06-14T00:20:11.710Z"
+  },
+  {
+    "version": "4.6.6",
+    "released_at": "2019-07-14T21:33:26.327Z"
+  },
+  {
+    "version": "4.6.7",
+    "released_at": "2019-08-25T19:22:57.470Z"
+  },
+  {
+    "version": "4.6.8",
+    "released_at": "2019-11-04T21:35:02.220Z"
+  },
+  {
+    "version": "4.7.0-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.7.0",
+    "released_at": "2020-03-20T17:10:34.303Z"
+  },
+  {
+    "version": "4.7.1",
+    "released_at": "2020-05-15T14:48:03.620Z"
+  },
+  {
+    "version": "4.7.2",
+    "released_at": "2020-05-18T20:46:15.073Z"
+  },
+  {
+    "version": "4.7.3",
+    "released_at": "2020-07-31T22:20:36.847Z"
+  },
+  {
+    "version": "4.7.4",
+    "released_at": "2020-08-22T10:49:00.993Z"
+  },
+  {
+    "version": "4.7.5",
+    "released_at": "2020-09-27T12:18:08.500Z"
+  },
+  {
+    "version": "4.7.6",
+    "released_at": "2020-12-06T19:28:28.133Z"
+  },
+  {
+    "version": "4.7.7",
+    "released_at": "2021-01-20T23:25:04.410Z"
+  },
+  {
+    "version": "4.7.8",
+    "released_at": "2021-02-25T23:59:55.453Z"
+  },
+  {
+    "version": "4.7.8.12846-PR4360",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.7.8.12898-PR4374",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "4.7.9",
+    "released_at": "2021-03-24T22:22:53.333Z"
+  },
+  {
+    "version": "4.7.10",
+    "released_at": "2021-05-14T12:44:55.480Z"
+  },
+  {
+    "version": "4.7.11",
+    "released_at": "2021-08-18T22:22:53.203Z"
+  },
+  {
+    "version": "4.7.12",
+    "released_at": "2021-10-24T18:41:38.117Z"
+  },
+  {
+    "version": "4.7.13",
+    "released_at": "2021-12-05T22:01:03.960Z"
+  },
+  {
+    "version": "4.7.14",
+    "released_at": "2022-02-23T07:04:46.477Z"
+  },
+  {
+    "version": "4.7.15",
+    "released_at": "2022-03-26T15:01:52.310Z"
+  },
+  {
+    "version": "5.0.0-beta01",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta02",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta03",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta03-tryoutMutex",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta04",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta05",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta05-test",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta06",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta07",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta08",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta09",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta10",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-beta11",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-preview.1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-preview.2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-preview.3",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-rc1",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0-rc2",
+    "released_at": "1900-01-01T00:00:00Z"
+  },
+  {
+    "version": "5.0.0",
+    "released_at": "2022-05-16T20:41:23.453Z"
+  },
+  {
+    "version": "5.0.1",
+    "released_at": "2022-06-12T13:52:12.477Z"
+  },
+  {
+    "version": "5.0.2",
+    "released_at": "2022-08-12T18:16:33.683Z"
+  },
+  {
+    "version": "5.0.3",
+    "released_at": "2022-08-31T20:28:55.717Z"
+  },
+  {
+    "version": "5.0.4",
+    "released_at": "2022-09-01T21:42:44.997Z"
+  },
+  {
+    "version": "5.0.5",
+    "released_at": "2022-10-25T22:42:21.667Z"
+  },
+  {
+    "version": "5.1.0",
+    "released_at": "2022-11-27T10:01:10.310Z"
+  },
+  {
+    "version": "5.1.1",
+    "released_at": "2022-12-29T23:17:37.140Z"
+  },
+  {
+    "version": "5.1.2",
+    "released_at": "2023-02-17T17:20:09.987Z"
+  },
+  {
+    "version": "5.1.3",
+    "released_at": "2023-03-28T19:35:24.350Z"
+  },
+  {
+    "version": "5.1.4",
+    "released_at": "2023-04-29T10:29:37.573Z"
+  },
+  {
+    "version": "5.1.5",
+    "released_at": "2023-05-25T17:34:31.737Z"
+  },
+  {
+    "version": "5.2.0",
+    "released_at": "2023-05-30T17:54:25.030Z"
+  }
+]
