@@ -138,7 +138,7 @@ public class AgentManager : IAgentManager, IDisposable
         var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
         var grpcClient = new Agent.Agent.AgentClient(channel);
         var agentReader = new AgentReader(
-            _cacheManager, grpcClient, _serviceProvider.GetService<ILogger<AgentReader>>()
+            _cacheManager, grpcClient, _serviceProvider.GetRequiredService<ILogger<AgentReader>>()
         );
         return agentReader;
     }
