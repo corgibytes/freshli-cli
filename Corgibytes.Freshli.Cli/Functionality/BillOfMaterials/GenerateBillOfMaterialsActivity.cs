@@ -63,7 +63,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
                 bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
                 logger?.LogDebug("BillOfMaterials is {BomFilePath} generated from {FullManifestPath}",
                     bomFilePath, fullManifestPath);
-                if (string.IsNullOrEmpty(bomFilePath) || File.Exists(bomFilePath))
+                if (string.IsNullOrEmpty(bomFilePath) || !File.Exists(bomFilePath))
                 {
                     logger?.LogWarning("Processing manifest {ManifestPath} failed to generate BOM file for {AsOfDate}",
                         fullManifestPath, asOfDateTime);
