@@ -20,11 +20,11 @@ public static class PackageUrlExtensions
         try
         {
             return other != null &&
-                   packageUrl.Name == other.Name &&
-                   packageUrl.Namespace == other.Namespace &&
-                   // the SemVerVersionInfo safely parses even non-SemanticVersion compliant values
-                   new SemVerVersionInfo(packageUrl.Version)
-                       .CompareTo(new SemVerVersionInfo(other.Version)) == 0;
+                packageUrl.Name == other.Name &&
+                packageUrl.Namespace == other.Namespace &&
+                // the SemVerVersionInfo safely parses even non-SemanticVersion compliant values
+                new SemVerVersionInfo(packageUrl.Version)
+                    .CompareTo(new SemVerVersionInfo(other.Version)) == 0;
         }
         catch (Exception e)
         {

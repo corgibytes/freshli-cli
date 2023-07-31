@@ -212,8 +212,8 @@ public class AgentManager : IAgentManager, IDisposable
         CancellationToken cancellationToken)
     {
         return isServiceListening ||
-               cancellationToken.IsCancellationRequested ||
-               forcefulShutdown.IsCancellationRequested;
+            cancellationToken.IsCancellationRequested ||
+            forcefulShutdown.IsCancellationRequested;
     }
 
     private static async ValueTask WithAcceptableExceptionsAsync(Func<ValueTask> action)
