@@ -26,10 +26,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         var cacheDb = CacheManager.GetCacheDb();
         var entry = await cacheDb.RetrieveCachedGitSource(new CachedGitSourceId(repositoryId));
-        if (entry == null)
-        {
-            throw new CacheException(CliOutput.CachedGitSourceRepository_No_Repository_Found_In_Cache);
-        }
+        _ = entry ?? throw new CacheException(CliOutput.CachedGitSourceRepository_No_Repository_Found_In_Cache);
 
         return entry;
     }
