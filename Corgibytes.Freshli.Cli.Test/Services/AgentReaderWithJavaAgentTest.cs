@@ -42,7 +42,7 @@ public class AgentReaderWithJavaAgentTest : IDisposable
 
         var expectedManifests = new List<string>
         {
-            Path.GetFullPath(Path.Combine("java","pom.xml"), repositoryLocation),
+            Path.GetFullPath(Path.Combine("java", "pom.xml"), repositoryLocation),
             Path.GetFullPath(Path.Combine("java", "protoc", "pom.xml"), repositoryLocation),
             Path.GetFullPath(Path.Combine("ruby", "pom.xml"), repositoryLocation)
         };
