@@ -64,7 +64,7 @@ public class PackageLibYearCalculatorTest
         );
 
         var actualPackageLibYear =
-            await calculator.ComputeLibYear(agentReader.Object, currentlyInstalledPackageUrl, asOfDateTime);
+            (await calculator.ComputeLibYear(agentReader.Object, currentlyInstalledPackageUrl, asOfDateTime))!;
 
         Assert.Equivalent(expectedPackageLibYear.CurrentVersion!, actualPackageLibYear.CurrentVersion!);
         Assert.Equivalent(expectedPackageLibYear.LatestVersion!, actualPackageLibYear.LatestVersion!);
@@ -102,14 +102,15 @@ public class PackageLibYearCalculatorTest
 
     private static List<Package> LoadReleaseHistory(string releaseHistoryDataFile)
     {
+        var assemblyPath = Assembly.GetExecutingAssembly().Location;
+        var assemblyDirectory = Path.GetDirectoryName(assemblyPath)!;
         var releaseHistoryFilename = Path.Combine(
-            Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-            "Fixtures", "Functionality", "LibYear", releaseHistoryDataFile);
+            assemblyDirectory, "Fixtures", "Functionality", "LibYear", releaseHistoryDataFile);
 
         var readAllText = File.ReadAllText(releaseHistoryFilename);
 
         var releaseHistory = new List<Package>();
-        var json = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(readAllText);
+        var json = JsonSerializer.Deserialize<List<Dictionary<string, string>>>(readAllText)!;
         foreach (var historyJson in json)
         {
             var purl = new PackageURL("pkg:nuget/NLog@" + historyJson["version"]);
