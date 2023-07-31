@@ -55,7 +55,7 @@ public class AgentReaderTest
 
         _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
         _agentClient = new Mock<Agent.Agent.AgentClient>();
-        _reader = new AgentReader(_cacheManager.Object,  _agentClient.Object, NullLogger<AgentReader>.Instance);
+        _reader = new AgentReader(_cacheManager.Object, _agentClient.Object, NullLogger<AgentReader>.Instance);
     }
 
     [Fact(Timeout = 500)]
