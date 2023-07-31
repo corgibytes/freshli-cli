@@ -106,8 +106,8 @@ public class DetectAgentsForDetectManifestsActivityTest
     {
         var activity = new DetectAgentsForDetectManifestsActivity(Guid.NewGuid(), _parent.Object);
 
-        var exception = new InvalidOperationException();
-        _eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
+        var exception = new InvalidOperationException("Simulated exception");
+        _agentsDetector.Setup(mock => mock.Detect()).Throws(exception);
 
         await activity.Handle(_eventEngine.Object, _cancellationToken);
 
