@@ -82,8 +82,15 @@ public class DeterminePackagesFromBomActivityTest
     [Fact(Timeout = 500)]
     public async Task HandleFiresHistoryStopPointProcessingFailedOnException()
     {
-        var exception = new InvalidOperationException();
-        _eventClient.Setup(mock => mock.ServiceProvider).Throws(exception);
+        var serviceProvider = new Mock<IServiceProvider>();
+
+        var exception = new InvalidOperationException("Simulated exception");
+
+        var bomReader = new Mock<IBomReader>();
+        bomReader.Setup(mock => mock.AsPackageUrls(PathToBom)).Throws(exception);
+
+        _eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(IBomReader))).Returns(bomReader.Object);
 
         await _activity.Handle(_eventClient.Object, _cancellationToken);
 

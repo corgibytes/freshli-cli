@@ -53,8 +53,6 @@ public class DetectManifestsUsingAgentActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-
-
         var analysisId = Guid.NewGuid();
         var activity =
             new DetectManifestsUsingAgentActivity(analysisId, parent.Object, agentExecutablePath);
@@ -93,12 +91,18 @@ public class DetectManifestsUsingAgentActivityTest
     {
         var eventEngine = new Mock<IApplicationEventEngine>();
 
-        var exception = new InvalidOperationException();
-        eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
-
         var parent = new Mock<IHistoryStopPointProcessingTask>();
         var cancellationToken = new CancellationToken(false);
         var activity = new DetectManifestsUsingAgentActivity(Guid.NewGuid(), parent.Object, "/path/to/agent");
+
+        var agentManager = new Mock<IAgentManager>();
+        var exception = new InvalidOperationException("Simulated exception");
+        agentManager.Setup(mock => mock.GetReader(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws(exception);
+
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+
+        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         await activity.Handle(eventEngine.Object, cancellationToken);
 

@@ -85,8 +85,15 @@ public class GenerateBillOfMaterialsActivityTest
     {
         var eventEngine = new Mock<IApplicationEventEngine>();
 
-        var exception = new InvalidOperationException();
-        eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
+        var exception = new InvalidOperationException("Simulated exception");
+
+        var agentManager = new Mock<IAgentManager>();
+        agentManager.Setup(mock => mock.GetReader(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws(exception);
+
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+
 
         var parent = new Mock<IHistoryStopPointProcessingTask>();
         var cancellationToken = new CancellationToken(false);
