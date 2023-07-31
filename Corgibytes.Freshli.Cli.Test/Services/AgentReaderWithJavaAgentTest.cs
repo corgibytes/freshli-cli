@@ -46,7 +46,7 @@ public class AgentReaderWithJavaAgentTest : IDisposable
             Path.GetFullPath(Path.Combine("java", "protoc", "pom.xml"), repositoryLocation),
             Path.GetFullPath(Path.Combine("ruby", "pom.xml"), repositoryLocation)
         };
-        Assert.Equal(expectedManifests, actualManifests);
+        actualManifests.Should().Equal(expectedManifests);
 
         // delete cloned files
         RecursiveDelete(checkoutDirectory);
