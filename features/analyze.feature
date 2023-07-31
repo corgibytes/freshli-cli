@@ -155,7 +155,6 @@ Feature: analyze
         And a directory named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5" is not empty
         And a file named "~/.freshli/histories/08e8926bfb81cd10b2d0584f025da4f1b81788504c5f0ca0e1b8c9d0de7f26e5/f58c3f8773da4ea4f01d819b842e384b3a343d40/archive.zip" does not exist
 
-
     Scenario: Run the analysis with specific cache-dir location.
         Given the Freshli Web API is available
         And a directory named "somewhere_else" does not exist
