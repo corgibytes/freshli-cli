@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
@@ -85,10 +86,11 @@ public class AgentReaderWithJavaAgentTest : IDisposable
         var (checkoutLocation, _) = CreateCheckoutLocation();
 
         // clone https://github.com/protocolbuffers/protobuf to a temp location
-        await new CommandInvoker()
-            .Run("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
+        var commandInvoker = new CommandInvoker();
+        await commandInvoker.Run("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
 
         var repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
+        await commandInvoker.Run("git", "checkout v23.0", repositoryLocation);
 
         var reader = _agentManager.GetReader("freshli-agent-java");
 
