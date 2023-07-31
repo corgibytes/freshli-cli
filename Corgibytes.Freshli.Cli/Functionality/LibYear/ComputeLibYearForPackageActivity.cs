@@ -6,6 +6,7 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
@@ -26,6 +27,8 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
     {
         try
         {
+            var logger = eventClient.ServiceProvider.GetService<ILogger<ComputeLibYearForPackageActivity>>();
+
             var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
             var agentReader = agentManager.GetReader(AgentExecutablePath, cancellationToken);
 
@@ -37,6 +40,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
             var packageLibYear = await calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
             if (packageLibYear == null)
             {
+                logger?.LogWarning($"Failed to compute libyear for {Package} as of {historyStopPoint!.AsOfDateTime}");
                 return;
             }
 
