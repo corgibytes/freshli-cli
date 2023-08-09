@@ -43,9 +43,13 @@ public class GenerateBillOfMaterialsActivityTest
 
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
+        var fileValidator = new Mock<IFileValidator>();
+        fileValidator.Setup(mock => mock.IsValidFilePath("/path/to/bill-of-materials")).Returns(true);
+
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(IFileValidator))).Returns(fileValidator.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
