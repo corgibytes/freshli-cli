@@ -42,6 +42,7 @@ public class FreshliServiceBuilder
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
         Services.AddScoped<IRunner, Runner>();
         Services.AddSingleton<HttpClient>();
+        Services.AddSingleton<IFileValidator, FileValidator>();
         RegisterBaseCommand();
         RegisterAnalyzeCommand();
         RegisterFailCommand();
