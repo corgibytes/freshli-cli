@@ -40,7 +40,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
             var packageLibYear = await calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
             if (packageLibYear == null)
             {
-                logger?.LogWarning($"Failed to compute libyear for {Package} as of {historyStopPoint!.AsOfDateTime}");
+                logger?.LogWarning($"Failed to compute libyear for {Package} as of {historyStopPoint.AsOfDateTime}");
                 return;
             }
 
