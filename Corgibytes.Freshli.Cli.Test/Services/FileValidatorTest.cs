@@ -1,8 +1,6 @@
 using System.IO;
-
-using Xunit;
-
 using Corgibytes.Freshli.Cli.Services;
+using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Services;
 
