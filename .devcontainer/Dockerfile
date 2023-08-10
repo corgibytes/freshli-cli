@@ -319,24 +319,22 @@ RUN echo Verifying install ... \
 
 
 ### Install maven
-# Copied from https://github.com/carlossg/docker-maven/blob/6523434661ddd84d697f469af98935cea75c053d/eclipse-temurin-17/Dockerfile
+# Copied from https://github.com/carlossg/docker-maven/blob/bf26cb4c3e1ed8df8d4bb903e2d7587824cc3e6f/eclipse-temurin-17/Dockerfile
 RUN apt-get update \
-    && apt-get install -y git \
+    && apt-get install -y ca-certificates curl git --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
-ARG MAVEN_VERSION=3.8.7
-ARG SHA=21c2be0a180a326353e8f6d12289f74bc7cd53080305f05358936f3a1b6dd4d91203f4cc799e81761cf5c53c5bbe9dcc13bdb27ec8f57ecf21b2f9ceec3c8d27
-ARG BASE_URL=https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
-
-RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
-    && curl -fsSL -o /tmp/apache-maven.tar.gz ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
-    && echo "${SHA}  /tmp/apache-maven.tar.gz" | sha512sum -c - \
-    && tar -xzf /tmp/apache-maven.tar.gz -C /usr/share/maven --strip-components=1 \
-    && rm -f /tmp/apache-maven.tar.gz \
-    && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
-
 ENV MAVEN_HOME /usr/share/maven
-ENV MAVEN_CONFIG "$HOME/.m2"
+
+COPY --from=maven:3.9.3-eclipse-temurin-11 ${MAVEN_HOME} ${MAVEN_HOME}
+COPY --from=maven:3.9.3-eclipse-temurin-11 /usr/local/bin/mvn-entrypoint.sh /usr/local/bin/mvn-entrypoint.sh
+COPY --from=maven:3.9.3-eclipse-temurin-11 /usr/share/maven/ref/settings-docker.xml /usr/share/maven/ref/settings-docker.xml
+
+RUN ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
+
+ARG MAVEN_VERSION=3.9.3
+ARG USER_HOME_DIR="/root"
+ENV MAVEN_CONFIG "$USER_HOME_DIR/.m2"
 
 ### Install CycloneDX CLI
 ENV CYCLONEDX_CLI_VERSION v0.24.0
