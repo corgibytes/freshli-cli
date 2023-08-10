@@ -132,7 +132,7 @@ RUN set -ex; \
 
 
 ### Install Ruby
-# Copied from https://github.com/docker-library/ruby/blob/ac24ae0a894606d3ac91c28095db39e69771cac4/3.1/bullseye/Dockerfile
+# Copied from https://github.com/docker-library/ruby/blob/ac24ae0a894606d3ac91c28095db39e69771cac4/3.0/bullseye/Dockerfile
 
 # skip installing gem documentation
 RUN set -eux; \
@@ -143,9 +143,9 @@ RUN set -eux; \
     } >> /usr/local/etc/gemrc
 
 ENV LANG C.UTF-8
-ENV RUBY_MAJOR 3.1
-ENV RUBY_VERSION 3.1.2
-ENV RUBY_DOWNLOAD_SHA256 ca10d017f8a1b6d247556622c841fc56b90c03b1803f87198da1e4fd3ec3bf2a
+ENV RUBY_MAJOR 3.0
+ENV RUBY_VERSION 3.0.4
+ENV RUBY_DOWNLOAD_SHA256 8e22fc7304520435522253210ed0aa9a50545f8f13c959fe01a05aea06bef2f0
 
 # some of ruby's build scripts are written in ruby
 #   we purge system ruby later to make sure our final image uses what we just built
@@ -217,13 +217,11 @@ ENV GEM_HOME /usr/local/bundle
 ENV BUNDLE_SILENCE_ROOT_WARNING=1 \
     BUNDLE_APP_CONFIG="$GEM_HOME"
 ENV PATH $GEM_HOME/bin:$PATH
-
 # adjust permissions of a few directories for running "gem install" as an arbitrary user
 RUN mkdir -p "$GEM_HOME" && chmod 777 "$GEM_HOME"
 
-
 ### Install bundler (required to install Cucumber/Aruba testing tools)
-RUN gem install bundler
+RUN gem install bundler --version 2.3.26
 
 
 ### Install [eclint](https://gitlab.com/greut/eclint)
