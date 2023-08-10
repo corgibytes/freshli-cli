@@ -1,0 +1,7 @@
+{
+  "id": "bundler",
+  "name": "Install Correct Bundler Version",
+  "installsAfter": [
+		"ghcr.io/devcontainers/features/ruby"
+	]
+}
