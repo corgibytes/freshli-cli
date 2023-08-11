@@ -53,7 +53,7 @@ public class AnalyzeRunnerTest
         _console.Setup(mock => mock.Out).Returns(outputWriter.Object);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RunIndicatesThatAnalysisIsComplete()
     {
         var apiAnalysisId = Guid.NewGuid();
@@ -69,7 +69,7 @@ public class AnalyzeRunnerTest
         VerifyApiStatusUpdated(apiAnalysisId, "success");
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RunIndicatesThatAnalysisFailed()
     {
         var apiAnalysisId = Guid.NewGuid();
@@ -86,7 +86,7 @@ public class AnalyzeRunnerTest
         VerifyApiStatusUpdated(apiAnalysisId, "error");
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RunIndicatesThatCouldNotCallApi()
     {
         var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);

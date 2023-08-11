@@ -9,6 +9,8 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Engine;
 [IntegrationTest]
 public abstract class ChildCountdownEventTest
 {
+    private const int CancellationDelay = 100;
+
     public abstract class WithZeroInitialCount
     {
         public class WithParentAtCountZero : IDisposable
@@ -546,7 +548,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 2000)]
+            [Fact(Timeout = Constants.ExpandedTestTimeout)]
             public async Task Wait()
             {
                 var task = Task.Run(() => { _countdownEvent.Wait(); });
@@ -559,7 +561,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeout()
             {
                 await Task.Run(() => { _countdownEvent.Wait(10); });
@@ -569,11 +571,11 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithCancellationToken()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -592,7 +594,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeout()
             {
                 await Task.Run(() => { _countdownEvent.Wait(TimeSpan.FromMicroseconds(10)); });
@@ -602,11 +604,11 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -625,7 +627,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTimeoutExpires()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -638,11 +640,11 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -661,7 +663,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTimeoutExpires()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -859,7 +861,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(3, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 2000)]
+            [Fact(Timeout = Constants.ExpandedTestTimeout)]
             public async Task Wait()
             {
                 var task = Task.Run(() => { _countdownEvent.Wait(); });
@@ -872,7 +874,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeout()
             {
                 await Task.Run(() => { _countdownEvent.Wait(10); });
@@ -882,11 +884,11 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithCancellationToken()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -905,7 +907,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeout()
             {
                 await Task.Run(() => { _countdownEvent.Wait(TimeSpan.FromMicroseconds(10)); });
@@ -914,11 +916,11 @@ public abstract class ChildCountdownEventTest
                 Assert.False(_wasEventHandlerCalled);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -937,7 +939,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTimeoutExpires()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
@@ -950,11 +952,11 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
-                cancellationTokenSource.CancelAfter(10);
+                cancellationTokenSource.CancelAfter(CancellationDelay);
 
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
@@ -973,7 +975,7 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = 500)]
+            [Fact(Timeout = Constants.DefaultTestTimeout)]
             public async Task WaitWithTimeSpanTimeoutAndCancellationTokenWhenTimeoutExpires()
             {
                 var cancellationTokenSource = new CancellationTokenSource();

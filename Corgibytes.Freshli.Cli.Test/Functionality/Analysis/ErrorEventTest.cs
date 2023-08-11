@@ -9,7 +9,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class ErrorEventTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task CorrectlyDispatchesLogAnalysisFailureActivity()
     {
         var cancellationToken = new System.Threading.CancellationToken(false);

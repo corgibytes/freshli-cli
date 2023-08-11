@@ -16,7 +16,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 
 public class PackageLibYearCalculatorTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyItCanCalculateTheLibYear()
     {
         const string packageName = "pkg:maven/org.apache.maven/apache-maven";
