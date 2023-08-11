@@ -1,3 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
 ### Install CycloneDX CLI
 export CYCLONEDX_CLI_VERSION=v0.24.0
 ARCH="$(dpkg --print-architecture)"; \
