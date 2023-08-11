@@ -577,6 +577,7 @@ public abstract class ChildCountdownEventTest
                 var cancellationTokenSource = new CancellationTokenSource();
                 cancellationTokenSource.CancelAfter(CancellationDelay);
 
+                var operationCancelled = false;
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
                 {
@@ -586,12 +587,14 @@ public abstract class ChildCountdownEventTest
                     }
                     catch (OperationCanceledException)
                     {
+                        operationCancelled = true;
                     }
                 });
 
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
+                Assert.True(operationCancelled);
             }
 
             [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -604,36 +607,39 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = Constants.DefaultTestTimeout)]
+            [Fact(Timeout = Constants.ExpandedTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTokenIsCancelled()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
                 cancellationTokenSource.CancelAfter(CancellationDelay);
 
+                var operationCancelled = false;
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
                 {
                     try
                     {
-                        _countdownEvent.Wait(1000, cancellationTokenSource.Token);
+                        _countdownEvent.Wait(Constants.ExpandedTestTimeout * 2, cancellationTokenSource.Token);
                     }
                     catch (OperationCanceledException)
                     {
+                        operationCancelled = true;
                     }
                 });
 
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
+                Assert.True(operationCancelled);
             }
 
-            [Fact(Timeout = Constants.DefaultTestTimeout)]
+            [Fact(Timeout = Constants.ExpandedTestTimeout)]
             public async Task WaitWithMillisecondTimeoutAndCancellationTokenWhenTimeoutExpires()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
 
                 // ReSharper disable once MethodSupportsCancellation
-                await Task.Run(() => { _countdownEvent.Wait(10, cancellationTokenSource.Token); });
+                await Task.Run(() => { _countdownEvent.Wait(100, cancellationTokenSource.Token); });
 
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.False(_wasEventHandlerCalled);
@@ -646,6 +652,7 @@ public abstract class ChildCountdownEventTest
                 var cancellationTokenSource = new CancellationTokenSource();
                 cancellationTokenSource.CancelAfter(CancellationDelay);
 
+                var operationCancelled = false;
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
                 {
@@ -655,12 +662,14 @@ public abstract class ChildCountdownEventTest
                     }
                     catch (OperationCanceledException)
                     {
+                        operationCancelled = true;
                     }
                 });
 
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(0, _parentCountdownEvent.CurrentCount);
+                Assert.True(operationCancelled);
             }
 
             [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -884,12 +893,13 @@ public abstract class ChildCountdownEventTest
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
             }
 
-            [Fact(Timeout = Constants.DefaultTestTimeout)]
+            [Fact(Timeout = Constants.ExpandedTestTimeout)]
             public async Task WaitWithCancellationToken()
             {
                 var cancellationTokenSource = new CancellationTokenSource();
                 cancellationTokenSource.CancelAfter(CancellationDelay);
 
+                var operationCancelled = false;
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
                 {
@@ -899,12 +909,14 @@ public abstract class ChildCountdownEventTest
                     }
                     catch (OperationCanceledException)
                     {
+                        operationCancelled = true;
                     }
                 });
 
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
+                Assert.True(operationCancelled);
             }
 
             [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -922,6 +934,7 @@ public abstract class ChildCountdownEventTest
                 var cancellationTokenSource = new CancellationTokenSource();
                 cancellationTokenSource.CancelAfter(CancellationDelay);
 
+                var operationCancelled = false;
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
                 {
@@ -931,12 +944,14 @@ public abstract class ChildCountdownEventTest
                     }
                     catch (OperationCanceledException)
                     {
+                        operationCancelled = true;
                     }
                 });
 
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
+                Assert.True(operationCancelled);
             }
 
             [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -958,6 +973,7 @@ public abstract class ChildCountdownEventTest
                 var cancellationTokenSource = new CancellationTokenSource();
                 cancellationTokenSource.CancelAfter(CancellationDelay);
 
+                var operationCancelled = false;
                 // ReSharper disable once MethodSupportsCancellation
                 await Task.Run(() =>
                 {
@@ -967,12 +983,14 @@ public abstract class ChildCountdownEventTest
                     }
                     catch (OperationCanceledException)
                     {
+                        operationCancelled = true;
                     }
                 });
 
                 Assert.Equal(1, _countdownEvent.CurrentCount);
                 Assert.False(_wasEventHandlerCalled);
                 Assert.Equal(1, _parentCountdownEvent.CurrentCount);
+                Assert.True(operationCancelled);
             }
 
             [Fact(Timeout = Constants.DefaultTestTimeout)]
