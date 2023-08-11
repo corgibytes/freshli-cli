@@ -35,7 +35,7 @@
         },
         "ghcr.io/devcontainers/features/node:1": {
         },
-        "ghcr.io/devcontainers/features/ruby:1": {
+        "./local-features/rbenv-ruby": {
             "version": "3.0.4"
         },
         "./local-features/bundler": "latest",
