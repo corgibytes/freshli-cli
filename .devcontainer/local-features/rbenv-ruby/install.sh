@@ -151,10 +151,10 @@ fi
 
 updaterc
 
+# Figure out correct version of a three part version number is not passed
 find_version_from_git_tags RUBY_VERSION "https://github.com/ruby/ruby" "tags/v" "_"
 
 eval "$(/usr/local/share/rbenv/bin/rbenv init - bash)"
 
-# Figure out correct version of a three part version number is not passed
 su --login ${USERNAME} rbenv install ${RUBY_VERSION}
 su --login ${USERNAME} rbenv global ${RUBY_VERSION}
