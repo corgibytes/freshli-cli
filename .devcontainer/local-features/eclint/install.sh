@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 ### Install [eclint](https://gitlab.com/greut/eclint)
 ECLINT_VERSION=0.3.3

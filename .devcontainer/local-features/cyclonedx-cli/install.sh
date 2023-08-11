@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 ### Install CycloneDX CLI
 CYCLONEDX_CLI_VERSION=v0.24.0

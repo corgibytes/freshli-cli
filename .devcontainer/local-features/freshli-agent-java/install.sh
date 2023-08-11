@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -e
+set -ex
 
 ### Install freshli-agent-java
 mkdir -p /tmp/freshli-agent-java
