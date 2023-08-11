@@ -58,7 +58,7 @@ public class AgentReaderTest
         _reader = new AgentReader(_cacheManager.Object, _agentClient.Object, NullLogger<AgentReader>.Instance);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RetrieveReleaseHistoryWritesToCache()
     {
         var serverResponse = new List<PackageRelease>()
@@ -107,7 +107,7 @@ public class AgentReaderTest
         )));
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RetrieveReleaseHistoryReadsFromCache()
     {
         var initialCachedPackages = new List<CachedPackage>

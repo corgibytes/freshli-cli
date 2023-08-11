@@ -17,7 +17,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class DetectManifestsUsingAgentActivityTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
         const string localPath = "/path/to/repository";
@@ -86,7 +86,7 @@ public class DetectManifestsUsingAgentActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var eventEngine = new Mock<IApplicationEventEngine>();
@@ -118,7 +118,7 @@ public class DetectManifestsUsingAgentActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyFiresNoManifestsDetectedEvent()
     {
         const string localPath = "/path/to/repository";

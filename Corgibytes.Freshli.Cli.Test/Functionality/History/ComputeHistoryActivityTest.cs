@@ -52,7 +52,7 @@ public class ComputeHistoryActivityTest
     private HistoryStopData HistoryStopData { get; }
     private Configuration Configuration { get; }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task FiresHistoryIntervalStopFoundEvents()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval,
@@ -85,7 +85,7 @@ public class ComputeHistoryActivityTest
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task FiresHistoryIntervalStopFoundEventsForComputeHistory()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
@@ -114,7 +114,7 @@ public class ComputeHistoryActivityTest
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task FiresHistoryIntervalStopFoundEventsForLatestOnly()
     {
         SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
@@ -143,7 +143,7 @@ public class ComputeHistoryActivityTest
         VerifyHistoryStopPoints(analysisId, historyIntervalStops);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task FiresInvalidHistoryIntervalStopEvent()
     {
         // This could happen when we run the analysis on a codebase that barely has any commits.

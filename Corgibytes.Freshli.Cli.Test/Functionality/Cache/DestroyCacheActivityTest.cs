@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Cache;
 [UnitTest]
 public class DestroyCacheActivityTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyItFiresCacheDestroyedEvent()
     {
         var cacheManager = new Mock<ICacheManager>();
@@ -38,7 +38,7 @@ public class DestroyCacheActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyItFiresCacheDestroyFailedEvent()
     {
         var cacheManager = new Mock<ICacheManager>();
