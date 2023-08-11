@@ -145,6 +145,7 @@ if [ "${USERNAME}" != "root" ]; then
     fi
 
     chmod -R g+r+w "/home/${USERNAME}/.rbenv"
+    chown -R ${USERNAME}:${USERNAME} "/home/${USERNAME}/.rbenv"
     find "/home/${USERNAME}/.rbenv" -type d | xargs -n 1 chmod g+s
 fi
 
