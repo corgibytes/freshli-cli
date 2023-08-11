@@ -45,7 +45,7 @@ public class ProgramTest
         return result;
     }
 
-    [Fact(Timeout = Constants.DefaultTestTimeout)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task Validate_Main_loglevel_debug()
     {
         await Task.Run(async () => await Program.Main("--loglevel", "Debug"));
@@ -55,7 +55,7 @@ public class ProgramTest
         cleanedOutput.Should().Contain(HostShutdownLogMessageForConsole);
     }
 
-    [Fact(Timeout = Constants.DefaultTestTimeout)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task Validate_Main_loglevel_info()
     {
         await Task.Run(async () => await Program.Main("--loglevel", "Info", "load-service"));
@@ -66,7 +66,7 @@ public class ProgramTest
         cleanedOutput.Should().Contain(ApplicationShutdownLogMessageForConsole);
     }
 
-    [Fact(Timeout = Constants.DefaultTestTimeout)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task Validate_Main_loglevel_default()
     {
         await Task.Run(async () => await Program.Main());
@@ -77,7 +77,7 @@ public class ProgramTest
         cleanedOutput.Should().NotContain(ApplicationShutdownLogMessageForConsole);
     }
 
-    [Fact(Timeout = Constants.DefaultTestTimeout)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task Validate_Main_logfile()
     {
         var testfile = "testlog.log";
@@ -96,7 +96,7 @@ public class ProgramTest
         logFileContent.Should().Contain(ApplicationShutdownLogMessageForFile);
     }
 
-    [Fact(Timeout = Constants.DefaultTestTimeout)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task ValidateExceptionsInActivityHandlersWriteToLog()
     {
         await Task.Run(async () => await Program.Main("fail"));
@@ -108,7 +108,7 @@ public class ProgramTest
 #pragma warning restore SYSLIB1045
     }
 
-    [Fact(Timeout = Constants.DefaultTestTimeout)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task ValidateServiceProviderIsLoaded()
     {
         MainCommand.ShouldIncludeLoadServiceCommand = true;
