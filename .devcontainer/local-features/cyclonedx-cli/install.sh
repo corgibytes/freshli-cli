@@ -3,7 +3,7 @@
 set -e
 
 ### Install CycloneDX CLI
-export CYCLONEDX_CLI_VERSION=v0.24.0
+CYCLONEDX_CLI_VERSION=v0.24.0
 ARCH="$(dpkg --print-architecture)"; \
 case "${ARCH}" in \
     aarch64|arm64) \
@@ -19,6 +19,6 @@ case "${ARCH}" in \
         echo "Unsupported arch: ${ARCH}"; \
         exit 1; \
         ;; \
-esac; \
-curl -sSL "https://github.com/CycloneDX/cyclonedx-cli/releases/download/${CYCLONEDX_CLI_VERSION}/cyclonedx-linux-${CYCLONEDX_ARCH}" -o /usr/local/bin/cyclonedx \
-    && chmod +x /usr/local/bin/cyclonedx
+esac;
+curl -sSL "https://github.com/CycloneDX/cyclonedx-cli/releases/download/${CYCLONEDX_CLI_VERSION}/cyclonedx-linux-${CYCLONEDX_ARCH}" -o /usr/local/bin/cyclonedx
+chmod +x /usr/local/bin/cyclonedx
