@@ -42,8 +42,8 @@ fi
 updaterc() {
     if [ "${UPDATE_RC}" = "true" ]; then
         echo "Updating /etc/bash.bashrc and /etc/zsh/zshrc..."
-        eval "$(/usr/local/share/rbenv/bin/rbenv init - bash)" >> /etc/bash.bashrc
-        eval "$(/usr/local/share/rbenv/bin/rbenv init - zsh)" >> /etc/zsh/zshrc
+        echo 'eval "$(/usr/local/share/rbenv/bin/rbenv init - bash)"' >> /etc/bash.bashrc
+        echo 'eval "$(/usr/local/share/rbenv/bin/rbenv init - zsh)"' >> /etc/zsh/zshrc
     fi
 }
 
