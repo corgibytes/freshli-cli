@@ -58,7 +58,7 @@ public class ResultsApi : IResultsApi, IDisposable
                 };
                 
                 // TODO: pass in a cancellation token
-                await _client.SendAsync(request);
+                return await _client.SendAsync(request);
             });
 
         if (response.StatusCode != expectedStatusCode)
