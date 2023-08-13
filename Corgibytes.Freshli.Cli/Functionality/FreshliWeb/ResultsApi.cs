@@ -43,10 +43,6 @@ public class ResultsApi : IResultsApi, IDisposable
         HttpStatusCode expectedStatusCode, Func<HttpResponseMessage, Task<T>>? responseProcessor = null)
     {
         var uri = string.IsNullOrEmpty(url) ? null : new Uri(url, UriKind.RelativeOrAbsolute);
-        var request = new HttpRequestMessage(method, uri)
-        {
-            Content = content
-        };
 
         var response = await Policy
             .Handle<HttpRequestException>()
@@ -55,8 +51,15 @@ public class ResultsApi : IResultsApi, IDisposable
                 TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
             )
             .ExecuteAsync(async () =>
+            {
+                var request = new HttpRequestMessage(method, uri)
+                {
+                    Content = content
+                };
+                
                 // TODO: pass in a cancellation token
-                await _client.SendAsync(request));
+                await _client.SendAsync(request)
+            });
 
         if (response.StatusCode != expectedStatusCode)
         {
