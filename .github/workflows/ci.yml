@@ -103,7 +103,7 @@ jobs:
 
       - name: "[Build, Docker] - Build and push"
         if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           platforms: linux/amd64,linux/arm64
