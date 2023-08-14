@@ -32,7 +32,7 @@ public class ApiPackageLibYearCreatedEventTest
         };
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
         await _appEvent.Handle(_activityClient.Object, _cancellationToken);

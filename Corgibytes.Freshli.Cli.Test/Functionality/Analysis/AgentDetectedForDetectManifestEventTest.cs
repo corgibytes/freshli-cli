@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class AgentDetectedForDetectManifestEventTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
         const string agentExecutablePath = "/path/to/agent";
@@ -39,7 +39,7 @@ public class AgentDetectedForDetectManifestEventTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var parent = new Mock<IHistoryStopPointProcessingTask>();
