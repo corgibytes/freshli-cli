@@ -56,7 +56,7 @@ public class ResultsApi : IResultsApi, IDisposable
                 {
                     Content = content
                 };
-                
+
                 // TODO: pass in a cancellation token
                 return await _client.SendAsync(request);
             });
