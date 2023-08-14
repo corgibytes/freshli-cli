@@ -155,7 +155,7 @@ public class CacheDb : ICacheDb
         await using var context = new CacheContext(_cacheDir);
         IAsyncEnumerable<CachedPackage> query;
 
-        if (_releaseHistoryMemoryCache.TryGetValue(packageUrl.ToString(), out var cacheList))
+        if (_releaseHistoryMemoryCache.TryGetValue(packageUrl.ToString()!, out var cacheList))
         {
             query = cacheList.ToAsyncEnumerable();
         }
@@ -175,7 +175,7 @@ public class CacheDb : ICacheDb
             yield return enumerator.Current;
         }
 
-        _releaseHistoryMemoryCache.TryAdd(packageUrl.ToString(), list);
+        _releaseHistoryMemoryCache.TryAdd(packageUrl.ToString()!, list);
     }
 
     public async ValueTask StoreCachedReleaseHistory(List<CachedPackage> packages)

@@ -38,10 +38,7 @@ public class ExecutableFinder : IExecutableFinder
                 var fullPath = $"{searchPath}{_environment.PathSeparator}{file}";
                 if (IsExecutable(fullPath))
                 {
-                    if (!executables.ContainsKey(file))
-                    {
-                        executables.Add(file, fullPath);
-                    }
+                    executables.TryAdd(file, fullPath);
                 }
             }
         }
