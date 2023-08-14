@@ -58,7 +58,7 @@ public class CloneGitRepositoryActivityTest
     private void SetupCachedAnalysis() =>
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(_cachedAnalysis);
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandlerFiresGitRepositoryClonedEventWhenAnalysisStarted()
     {
         SetupCachedAnalysis();
@@ -87,7 +87,7 @@ public class CloneGitRepositoryActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandlerFiresCloneGitRepositoryFailedEventWhenGitCloneFails()
     {
         SetupCachedAnalysis();

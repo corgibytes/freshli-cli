@@ -44,7 +44,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyHandlerFiresEvent()
     {
         var repositoryLocation = new DirectoryInfo(_repositoryLocation);
@@ -83,7 +83,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         repositoryLocation.Delete();
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyHandlerFiresFailureEventIfDirectoryDoesNotExist()
     {
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
@@ -100,7 +100,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyHandlerFiresFailureEventIfDirectoryIsNotGitInitialized()
     {
         var repositoryLocation = new DirectoryInfo(_repositoryLocation);

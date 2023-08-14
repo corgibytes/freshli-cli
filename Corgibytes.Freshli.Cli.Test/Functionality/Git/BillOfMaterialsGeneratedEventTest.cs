@@ -25,7 +25,7 @@ public class BillOfMaterialsGeneratedEventTest
         _appEvent = new BillOfMaterialsGeneratedEvent(_analysisId, _parent.Object, PathToBom, AgentExecutablePath);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task CorrectlyDispatchesComputeLibYearActivity()
     {
         await _appEvent.Handle(_engine.Object, _cancellationToken);
@@ -44,7 +44,7 @@ public class BillOfMaterialsGeneratedEventTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var exception = new InvalidOperationException();

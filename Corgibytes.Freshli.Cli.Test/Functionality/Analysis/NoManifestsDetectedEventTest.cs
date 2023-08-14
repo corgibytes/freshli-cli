@@ -22,7 +22,7 @@ public class NoManifestsDetectedEventTest
         _appEvent = new NoManifestsDetectedEvent(_analysisId, _parent.Object);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
         await _appEvent.Handle(_activityClient.Object, _cancellationToken);
