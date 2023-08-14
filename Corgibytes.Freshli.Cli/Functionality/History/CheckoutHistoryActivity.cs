@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.Extensions.DependencyInjection;
@@ -58,12 +59,26 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
 
         new Thread(() =>
         {
-            eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
-            eventClient.Fire(
-                new HistoryStopPointProcessingCompletedEvent { Parent = this },
-                cancellationToken,
-                ApplicationTaskMode.Untracked
-            ).AsTask().Wait(cancellationToken);
+            try {
+                eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
+                eventClient.Fire(
+                    new HistoryStopPointProcessingCompletedEvent { Parent = this },
+                    cancellationToken,
+                    ApplicationTaskMode.Untracked
+                ).AsTask().Wait(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Don't do anything, we're just exiting
+            }
+            catch (Exception error)
+            {
+                eventClient.Fire(
+                    new UnhandledExceptionEvent(error),
+                    cancellationToken,
+                    ApplicationTaskMode.Untracked
+                ).AsTask().Wait(cancellationToken);
+            }
         }).Start();
 
     }

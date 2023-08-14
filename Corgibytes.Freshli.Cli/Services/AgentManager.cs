@@ -274,13 +274,17 @@ public class AgentManager : IAgentManager, IDisposable
         _logger.LogDebug("Signaling service runner tasks to stop (forcefully)");
         foreach (var agentDescriptor in GetAllAgentDescriptors())
         {
-            agentDescriptor.ForcefulShutdown.Cancel();
+            agentDescriptor.ForcefulShutdown?.Cancel();
         }
 
         _logger.LogDebug("Waiting for service runner tasks to stop");
         try
         {
-            Task.WaitAll(GetAllAgentDescriptors().Select(agent => agent.AgentServiceRunner).ToArray());
+            var tasks = GetAllAgentDescriptors()
+                .Select(agent => agent.AgentServiceRunner)
+                .Where(value => value != null)
+                .ToArray();
+            Task.WaitAll(tasks);
         }
         catch (TaskCanceledException)
         {
@@ -298,8 +302,8 @@ public class AgentManager : IAgentManager, IDisposable
         _logger.LogDebug("Disposing service runner tasks");
         foreach (var agent in GetAllAgentDescriptors())
         {
-            agent.AgentServiceRunner.Dispose();
-            agent.ForcefulShutdown.Dispose();
+            agent.AgentServiceRunner?.Dispose();
+            agent.ForcefulShutdown?.Dispose();
         }
 
         _logger.LogDebug("Dispose complete");

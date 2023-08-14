@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -14,6 +15,11 @@ public class LogAnalysisFailureActivity : IApplicationActivity
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
+        if (IsCancellationException(ErrorEvent))
+        {
+            return;
+        }
+
         var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<LogAnalysisFailureActivity>>();
 
         logger.LogError("{ErrorMessage}", ErrorEvent.ErrorMessage);
@@ -24,4 +30,7 @@ public class LogAnalysisFailureActivity : IApplicationActivity
 
         await eventClient.Fire(new AnalysisFailureLoggedEvent(ErrorEvent), cancellationToken);
     }
+
+    private bool IsCancellationException(ErrorEvent errorEvent) =>
+        errorEvent.Exception is TaskCanceledException or OperationCanceledException;
 }
