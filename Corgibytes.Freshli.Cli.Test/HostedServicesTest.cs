@@ -9,8 +9,6 @@ public abstract class HostedServicesTest
 {
     private static IHost? s_host;
 
-    protected HostedServicesTest() => ServiceScope = Host.Services.CreateScope();
-
     private static IHost Host =>
         s_host ??= new HostBuilder()
             .UseDefaultServiceProvider((_, options) =>
@@ -21,5 +19,5 @@ public abstract class HostedServicesTest
             .ConfigureServices((_, services) =>
                 new FreshliServiceBuilder(services, new Configuration(new Environment())).Register()).Build();
 
-    protected IServiceScope ServiceScope { get; }
+    protected IServiceScope ServiceScope { get; } = Host.Services.CreateScope();
 }
