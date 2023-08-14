@@ -3,7 +3,7 @@
 
 require 'English'
 
-require_relative './support/execute'
+require_relative 'support/execute'
 
 enable_dotnet_command_colors
 
