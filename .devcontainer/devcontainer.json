@@ -1,13 +1,6 @@
 {
     "name": "C# (.NET)",
-    "build": {
-        "dockerfile": "Dockerfile",
-        "args": {
-            "VARIANT": "7.0.100-bullseye-slim",
-            "NODE_VERSION": "lts/*"
-        }
-    },
-
+    "image": "mcr.microsoft.com/devcontainers/dotnet:7.0-bullseye",
     "customizations": {
         "vscode": {
             // Set *default* container specific settings.json values on container create.
@@ -23,7 +16,8 @@
                 "ms-azuretools.vscode-docker",
                 "cucumberopen.cucumber-official",
                 "editorconfig.editorconfig",
-                "formulahendry.dotnet-test-explorer"
+                "formulahendry.dotnet-test-explorer",
+                "shopify.ruby-lsp"
             ]
         }
     },
@@ -32,6 +26,21 @@
     "features": {
         "ghcr.io/devcontainers/features/sshd:1": {
             "version": "latest"
-        }
+        },
+        "ghcr.io/devcontainers/features/java:1": {
+            "jdkDistro": "tem",
+            "version": "17",
+            "installMaven": true,
+            "mavenVesion": "3.9.3"
+        },
+        "ghcr.io/devcontainers/features/node:1": {
+        },
+        "./local-features/rbenv-ruby": {
+            "version": "3.0.4"
+        },
+        "./local-features/bundler": "latest",
+        "./local-features/eclint": "latest",
+        "./local-features/cyclonedx-cli": "latest",
+        "./local-features/freshli-agent-java": "latest"
     }
 }

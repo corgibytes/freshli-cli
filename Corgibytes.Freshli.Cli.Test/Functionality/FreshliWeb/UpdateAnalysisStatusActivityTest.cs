@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 [UnitTest]
 public class UpdateAnalysisStatusActivityTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleSendsSuccessStatusToApi()
     {
         var apiAnalysisId = Guid.NewGuid();

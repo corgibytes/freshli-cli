@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 [UnitTest]
 public class HistoryIntervalStopFoundEventTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleFiresCreateApiHistoryIntervalStop()
     {
         var cachedAnalysisId = Guid.NewGuid();

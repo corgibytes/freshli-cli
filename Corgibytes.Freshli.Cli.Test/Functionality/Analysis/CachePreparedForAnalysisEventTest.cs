@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class CachePreparedForAnalysisEventTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task CorrectlyDispatchesRestartAnalysisActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
