@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.BillOfMaterials;
 
 public class GenerateBillOfMaterialsActivityTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
         // Arrange
@@ -43,9 +43,13 @@ public class GenerateBillOfMaterialsActivityTest
 
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
+        var fileValidator = new Mock<IFileValidator>();
+        fileValidator.Setup(mock => mock.IsValidFilePath("/path/to/bill-of-materials")).Returns(true);
+
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(IFileValidator))).Returns(fileValidator.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
@@ -80,13 +84,20 @@ public class GenerateBillOfMaterialsActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var eventEngine = new Mock<IApplicationEventEngine>();
 
-        var exception = new InvalidOperationException();
-        eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
+        var exception = new InvalidOperationException("Simulated exception");
+
+        var agentManager = new Mock<IAgentManager>();
+        agentManager.Setup(mock => mock.GetReader(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws(exception);
+
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+
 
         var parent = new Mock<IHistoryStopPointProcessingTask>();
         var cancellationToken = new CancellationToken(false);

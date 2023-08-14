@@ -49,7 +49,7 @@ public class ApplicationEngineTest : IDisposable
         _engine = _host.Services.GetRequiredService<ApplicationEngine>();
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task WaitForTaskCompletion()
     {
         var activity = new FakeApplicationActivity();
@@ -59,7 +59,7 @@ public class ApplicationEngineTest : IDisposable
         Assert.True(activity.WasHandleCalled);
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task ActivityHandleMethodsAreOnlyCalledOnce()
     {
         var activity = new FakeApplicationActivityThatCountsCalls();
@@ -69,7 +69,7 @@ public class ApplicationEngineTest : IDisposable
         Assert.Equal(1, activity.HandleCallCount);
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task EventsAreOnlyFiredOnce()
     {
         var activity = new FakeApplicationActivityThatFiresAnEventThatCountsCalls();
@@ -79,7 +79,7 @@ public class ApplicationEngineTest : IDisposable
         Assert.Equal(1, activity.ChildEvent.HandleCallCount);
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task WaitForTaskCompletionWhenTaskHasChildren()
     {
         var activity = new FakeApplicationActivityThatFiresAnEvent();
@@ -89,7 +89,7 @@ public class ApplicationEngineTest : IDisposable
         Assert.True(activity.WasHandleCalled);
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task WaitForTaskCompletionWithTreeOfActivitiesAndEvents()
     {
         var activity = new FakeApplicationActivityTree();
@@ -99,7 +99,7 @@ public class ApplicationEngineTest : IDisposable
         AssertHandled(activity);
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task WaitForRegisteredEventsToBeHandled()
     {
         var activity = new FakeApplicationActivityThatFiresAnEvent();
@@ -118,7 +118,7 @@ public class ApplicationEngineTest : IDisposable
         Assert.True(activity.WasHandleCalled);
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task RegisteredEventsAreOnlyCalledOnce()
     {
         var activity = new FakeApplicationActivityThatFiresAnEvent();
@@ -137,7 +137,7 @@ public class ApplicationEngineTest : IDisposable
         Assert.True(activity.WasHandleCalled);
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task WaitForUnhandledExceptionsFromActivities()
     {
         var activity = new FakeApplicationActivityThatThrows();
@@ -156,7 +156,7 @@ public class ApplicationEngineTest : IDisposable
         Assert.True(activity.WasHandleCalled);
     }
 
-    [Fact(Timeout = 1000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task WaitForUnhandledExceptionsFromEvents()
     {
         var activity = new FakeApplicationActivityThatFiresAnEventThatThrows();

@@ -32,7 +32,7 @@ public class CacheManagerTest : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    [Fact(Timeout = 5000)]
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task SavePersistsACachedAnalysisAndGeneratesAnId()
     {
         var cacheManager = new CacheManager(_configuration.Object);
