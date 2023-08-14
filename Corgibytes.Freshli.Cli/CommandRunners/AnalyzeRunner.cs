@@ -1,6 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -31,12 +32,12 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _resultsApi = resultsApi;
     }
 
-    public override async ValueTask<int> Run(AnalyzeCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(AnalyzeCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
 
-        await _activityEngine.Dispatch(new StartAnalysisActivity
+        var startAnalysisActivity = new StartAnalysisActivity
         {
             HistoryInterval = options.HistoryInterval,
             RepositoryBranch = options.Branch,
@@ -44,13 +45,18 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             UseCommitHistory = options.CommitHistory ? CommitHistory.Full : CommitHistory.AtInterval,
             RevisionHistoryMode =
                 options.LatestOnly ? RevisionHistoryMode.OnlyLatestRevision : RevisionHistoryMode.AllRevisions
-        });
+        };
 
         var exitStatus = 0;
 
         _eventEngine.On<AnalysisFailureLoggedEvent>(analysisFailure =>
         {
             console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
+            if (analysisFailure.ErrorEvent.Exception != null)
+            {
+                console.Out.WriteLine(analysisFailure.ErrorEvent.Exception.ToString());
+            }
+
             exitStatus = 1;
             return ValueTask.CompletedTask;
         });
@@ -66,16 +72,17 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             return ValueTask.CompletedTask;
         });
 
-        await _activityEngine.Wait();
+        await _activityEngine.Dispatch(startAnalysisActivity, cancellationToken);
+        await _activityEngine.Wait(startAnalysisActivity, cancellationToken);
 
         if (apiAnalysisId != null)
         {
-            await _activityEngine.Dispatch(new UpdateAnalysisStatusActivity(
+            var updateStatusActivity = new UpdateAnalysisStatusActivity(
                 apiAnalysisId.Value,
                 exitStatus == 0 ? "success" : "error"
-            ));
-
-            await _activityEngine.Wait();
+            );
+            await _activityEngine.Dispatch(updateStatusActivity, cancellationToken);
+            await _activityEngine.Wait(updateStatusActivity, cancellationToken);
         }
         else
         {

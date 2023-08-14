@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
+using System.CommandLine.Invocation;
 using System.CommandLine.IO;
 using System.IO;
 using System.Threading.Tasks;
@@ -45,10 +46,10 @@ public class ScanCommand : RunnableCommand<ScanCommand, ScanCommandOptions>
     }
 
 
-    protected override ValueTask<int> Run(IHost host, IConsole console, ScanCommandOptions options)
+    protected override ValueTask<int> Run(IHost host, IConsole console, InvocationContext context, ScanCommandOptions options)
     {
         _ = options ?? throw new ArgumentNullException(nameof(options));
         console.Out.WriteLine(CliOutput.ScanCommand_ScanCommand_Executing_scan_command_handler);
-        return base.Run(host, console, options);
+        return base.Run(host, console, context, options);
     }
 }

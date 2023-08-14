@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
-public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized
+public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHistoryStopPointProcessingTask
 {
     public CheckoutHistoryActivity(Guid analysisId, int historyStopPointId)
     {
@@ -18,15 +19,17 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized
 
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new();
 
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     // ReSharper disable once MemberCanBePrivate.Global
-    public Guid AnalysisId { get; set; }
+    public Guid AnalysisId { get; }
 
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public int HistoryStopPointId { get; set; }
+    public IHistoryStopPointProcessingTask Parent => null!;
+    public int HistoryStopPointId { get; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient)
+    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
+        var logger = eventClient.ServiceProvider.GetService<ILogger<CheckoutHistoryActivity>>();
+        logger?.LogDebug("Handling history checkout for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, HistoryStopPointId);
+
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = cacheManager.GetCacheDb();
         var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
@@ -34,6 +37,8 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized
         {
             throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
         }
+        logger?.LogDebug("historyStopPoint = {@HistoryStopPoint} for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}",
+            historyStopPoint, AnalysisId, HistoryStopPointId);
 
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
@@ -42,11 +47,25 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized
             gitManager.ParseCommitId(historyStopPoint.GitCommitId)
         );
 
-        await eventClient.Fire(new HistoryStopCheckedOutEvent
+        logger?.LogDebug("Fire HistoryStopCheckedOutEvent for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, HistoryStopPointId);
+        await eventClient.Fire(
+            new HistoryStopCheckedOutEvent
+            {
+                AnalysisId = AnalysisId,
+                Parent = this
+            },
+            cancellationToken);
+
+        new Thread(() =>
         {
-            AnalysisId = AnalysisId,
-            HistoryStopPointId = HistoryStopPointId
-        });
+            eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
+            eventClient.Fire(
+                new HistoryStopPointProcessingCompletedEvent { Parent = this },
+                cancellationToken,
+                ApplicationTaskMode.Untracked
+            ).AsTask().Wait(cancellationToken);
+        }).Start();
+
     }
 
     public async ValueTask<SemaphoreSlim> GetSemaphore(IServiceProvider serviceProvider)

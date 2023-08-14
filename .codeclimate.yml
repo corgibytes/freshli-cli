@@ -1,13 +1,20 @@
 version: "2"
 exclude_patterns:
   - "Corgibytes.Freshli.Cli/obj/**"
-  - "Corgibytes.Freshli.Cli.Test/obj/**"
+  - "Corgibytes.Freshli.Cli.Test/**"
   - "Corgibytes.Freshli.Cli/Migrations/**"
+  - "**/*.Designer.cs"
 
 checks:
   method-lines:
     config:
       threshold: 65
+  file-lines:
+    config:
+      threshold: 300
+  method-count:
+    config:
+      threshold: 25
   argument-count:
     enabled: true
     config:

@@ -5,7 +5,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Services;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Moq;
 using Xunit;
 using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
@@ -17,36 +20,43 @@ public class AgentReaderWithJavaAgentTest : IDisposable
     private readonly AgentManager _agentManager;
     public AgentReaderWithJavaAgentTest()
     {
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<AgentReader>)))
+            .Returns(NullLogger<AgentReader>.Instance);
         _agentManager = new AgentManager(
             new CacheManager(new Configuration(new Environment())),
             new NullLogger<AgentManager>(),
-            new Configuration(new Environment())
+            new Configuration(new Environment()),
+            serviceProvider.Object
         );
     }
 
-    [Fact]
+    private const int MillisecondsPerMinute = 60 * 1000;
+    private const int TenMinutes = 10 * MillisecondsPerMinute;
+
+    [Fact(Timeout = TenMinutes)]
     public async Task DetectManifestsUsingProtobuf()
     {
-        SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
+        var (repositoryLocation, reader, checkoutDirectory) = await SetupDirectory();
 
         var actualManifests = await reader.DetectManifests(repositoryLocation).ToListAsync();
 
         var expectedManifests = new List<string>
         {
-            Path.GetFullPath(Path.Combine("java","pom.xml"), repositoryLocation),
+            Path.GetFullPath(Path.Combine("java", "pom.xml"), repositoryLocation),
             Path.GetFullPath(Path.Combine("java", "protoc", "pom.xml"), repositoryLocation),
             Path.GetFullPath(Path.Combine("ruby", "pom.xml"), repositoryLocation)
         };
-        Assert.Equal(expectedManifests, actualManifests);
+        actualManifests.Should().Equal(expectedManifests);
 
         // delete cloned files
         RecursiveDelete(checkoutDirectory);
     }
 
-    [Fact]
+    [Fact(Timeout = TenMinutes)]
     public async Task GenerateBillOfMaterialsUsingProtobuf()
     {
-        SetupDirectory(out var repositoryLocation, out var reader, out var checkoutDirectory);
+        var (repositoryLocation, reader, checkoutDirectory) = await SetupDirectory();
 
         // java/pom.xml is detected by detect manifest, see also DetectManifestsUsingProtobuf()
         var billOfMaterialsPath =
@@ -58,10 +68,10 @@ public class AgentReaderWithJavaAgentTest : IDisposable
         RecursiveDelete(checkoutDirectory);
     }
 
-    [Fact]
+    [Fact(Timeout = TenMinutes)]
     public async Task AgentReaderReturnsEmptyListWhenNoManifestsFound()
     {
-        var checkoutLocation = CreateCheckoutLocation(out var checkoutDirectory);
+        var (checkoutLocation, checkoutDirectory) = CreateCheckoutLocation();
 
         var reader = _agentManager.GetReader("freshli-agent-java");
         var repositoryLocation = Path.Combine(checkoutLocation, "invalid_repository");
@@ -71,32 +81,34 @@ public class AgentReaderWithJavaAgentTest : IDisposable
         RecursiveDelete(checkoutDirectory);
     }
 
-    private void SetupDirectory(out string repositoryLocation, out IAgentReader reader,
-        out DirectoryInfo checkoutDirectory)
+    private async ValueTask<(string, IAgentReader, DirectoryInfo)> SetupDirectory()
     {
-        var checkoutLocation = CreateCheckoutLocation(out checkoutDirectory);
+        var (checkoutLocation, _) = CreateCheckoutLocation();
 
         // clone https://github.com/protocolbuffers/protobuf to a temp location
-        new CommandInvoker()
-            .Run("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation).AsTask().Wait();
+        var commandInvoker = new CommandInvoker();
+        await commandInvoker.Run("git", "clone https://github.com/protocolbuffers/protobuf", checkoutLocation);
 
-        repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
+        var repositoryLocation = Path.Combine(checkoutLocation, "protobuf");
+        await commandInvoker.Run("git", "checkout v23.0", repositoryLocation);
 
-        reader = _agentManager.GetReader("freshli-agent-java");
+        var reader = _agentManager.GetReader("freshli-agent-java");
+
+        return (repositoryLocation, reader, new DirectoryInfo(repositoryLocation));
     }
 
-    private static string CreateCheckoutLocation(out DirectoryInfo checkoutDirectory)
+    private static (string, DirectoryInfo) CreateCheckoutLocation()
     {
         var checkoutLocation = Path.Combine(Path.GetTempPath(), "repositories");
 
-        checkoutDirectory = new DirectoryInfo(checkoutLocation);
+        var checkoutDirectory = new DirectoryInfo(checkoutLocation);
         if (checkoutDirectory.Exists)
         {
             RecursiveDelete(checkoutDirectory);
         }
 
         checkoutDirectory.Create();
-        return checkoutLocation;
+        return (checkoutLocation, checkoutDirectory);
     }
 
     private static void RecursiveDelete(DirectoryInfo checkoutDirectory)

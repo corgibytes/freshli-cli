@@ -26,7 +26,7 @@
   <data name="Help_CacheDestroyCommand_Description" xml:space="preserve">
     <value>Eliminación del directorio de cache.</value>
   </data>
-  <data name="Help_CacheDestoyCommand_Option_Force" xml:space="preserve">
+  <data name="Help_CacheDestroyCommand_Option_Force" xml:space="preserve">
     <value>Eliminación del directorio de cache sin preguntar por confirmación.</value>
   </data>
   <data name="Help_ScanCommand_Description" xml:space="preserve">
@@ -139,5 +139,17 @@
   </data>
   <data name="AgentsVerifier_VerifyFiles_File__0__does_not_exist" xml:space="preserve">
     <value>El archivo {0} no existe.</value>
+  </data>
+  <data name="BackgroundTaskQueue_QueueBackgroundWorkItemAsync_workItem_Argument_cannot_be_null" xml:space="preserve">
+    <value>workItem.Argument no puede ser null</value>
+  </data>
+  <data name="BackgroundTaskQueue_QueueBackgroundWorkItemAsync_workItem_Invoker_cannot_be_null" xml:space="preserve">
+    <value>workItem.Invoker no puede ser null</value>
+  </data>
+  <data name="SpectreConsoleAnalyzeProgressReporter_ReportHistoryStopPointsOperationStarted_Unexpected_HistoryStopPointOperation_value" xml:space="preserve">
+    <value>Valor inesperado de HistoryStopPointOperation</value>
+  </data>
+  <data name="ChildTrackingApplicationEngine_ChildTrackingApplicationEngine_must_implement__0_" xml:space="preserve">
+    <value>debe implementar {0}</value>
   </data>
 </root>

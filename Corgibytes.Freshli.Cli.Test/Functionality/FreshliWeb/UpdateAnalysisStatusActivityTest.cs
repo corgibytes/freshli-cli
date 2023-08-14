@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 [UnitTest]
 public class UpdateAnalysisStatusActivityTest
 {
-    [Fact]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleSendsSuccessStatusToApi()
     {
         var apiAnalysisId = Guid.NewGuid();
@@ -26,13 +26,20 @@ public class UpdateAnalysisStatusActivityTest
         var resultsApi = new Mock<IResultsApi>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(resultsApi.Object);
 
-        await activity.Handle(eventClient.Object);
+        var cancellationToken = new System.Threading.CancellationToken(false);
+        await activity.Handle(eventClient.Object, cancellationToken);
 
         resultsApi.Verify(mock => mock.UpdateAnalysis(apiAnalysisId, status));
 
-        eventClient.Verify(mock => mock.Fire(It.Is<AnalysisApiStatusUpdatedEvent>(value =>
-            value.ApiAnalysisId == apiAnalysisId &&
-            value.Status == status
-        )));
+        eventClient.Verify(mock =>
+            mock.Fire(
+                It.Is<AnalysisApiStatusUpdatedEvent>(value =>
+                    value.ApiAnalysisId == apiAnalysisId &&
+                    value.Status == status
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

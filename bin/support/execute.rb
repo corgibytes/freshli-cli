@@ -4,7 +4,7 @@ require 'open3'
 require 'mkmf'
 
 def msbuild_dll_path
-  dotnet_exe_path = find_executable('dotnet')
+  dotnet_exe_path = File.realpath(find_executable('dotnet'))
   dotnet_dir = File.dirname(dotnet_exe_path)
   sdk_dir = File.join(dotnet_dir, 'sdk', Dir.children(File.join(dotnet_dir, 'sdk')).max)
   result = File.join(sdk_dir, 'MSBuild.dll')
