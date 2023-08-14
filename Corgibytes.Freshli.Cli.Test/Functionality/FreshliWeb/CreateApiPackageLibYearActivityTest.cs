@@ -21,7 +21,7 @@ public class CreateApiPackageLibYearActivityTest
     private readonly Mock<IApplicationEventEngine> _eventClient = new();
     private readonly CancellationToken _cancellationToken = new(false);
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyCallsApiAndFiresApiPackageLibYearCreatedEvent()
     {
         var apiAnalysisId = Guid.NewGuid();
@@ -71,7 +71,7 @@ public class CreateApiPackageLibYearActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleFiresHistoryStopPointProcessingFailedEvent()
     {
         var activity = new CreateApiPackageLibYearActivity

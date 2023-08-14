@@ -36,7 +36,7 @@ public class ComputeLibYearForPackageActivityTest
         };
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleComputesLibYearAndFiresLibYearComputedForPackageEvent()
     {
         var asOfDateTime = new DateTimeOffset(2021, 1, 29, 12, 30, 45, 0, TimeSpan.Zero);
@@ -99,7 +99,7 @@ public class ComputeLibYearForPackageActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleFiresProcessingErrorEventOnException()
     {
         var exception = new InvalidOperationException();

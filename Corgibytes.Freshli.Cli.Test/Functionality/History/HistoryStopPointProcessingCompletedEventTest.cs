@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.History;
 [UnitTest]
 public class HistoryStopPointProcessingCompletedEventTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
         var activityClient = new Mock<IApplicationActivityEngine>();
