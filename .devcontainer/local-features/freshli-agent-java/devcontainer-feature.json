@@ -1,0 +1,7 @@
+{
+  "id": "freshli-agent-java",
+  "name": "Install freshli-agent-java",
+  "installsAfter": [
+    "ghcr.io/devcontainers/features/java"
+  ]
+}
