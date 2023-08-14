@@ -14,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 [UnitTest]
 public class GitRepositoryClonedEventTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task CorrectlyDispatchesComputeHistoryActivity()
     {
         const string gitPath = "test";

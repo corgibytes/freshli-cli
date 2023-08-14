@@ -17,7 +17,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class DetectManifestsUsingAgentActivityTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
         const string localPath = "/path/to/repository";
@@ -53,8 +53,6 @@ public class DetectManifestsUsingAgentActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-
-
         var analysisId = Guid.NewGuid();
         var activity =
             new DetectManifestsUsingAgentActivity(analysisId, parent.Object, agentExecutablePath);
@@ -88,17 +86,23 @@ public class DetectManifestsUsingAgentActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDealsWithExceptions()
     {
         var eventEngine = new Mock<IApplicationEventEngine>();
 
-        var exception = new InvalidOperationException();
-        eventEngine.Setup(mock => mock.ServiceProvider).Throws(exception);
-
         var parent = new Mock<IHistoryStopPointProcessingTask>();
         var cancellationToken = new CancellationToken(false);
         var activity = new DetectManifestsUsingAgentActivity(Guid.NewGuid(), parent.Object, "/path/to/agent");
+
+        var agentManager = new Mock<IAgentManager>();
+        var exception = new InvalidOperationException("Simulated exception");
+        agentManager.Setup(mock => mock.GetReader(It.IsAny<string>(), It.IsAny<CancellationToken>())).Throws(exception);
+
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+
+        eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         await activity.Handle(eventEngine.Object, cancellationToken);
 
@@ -114,7 +118,7 @@ public class DetectManifestsUsingAgentActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyFiresNoManifestsDetectedEvent()
     {
         const string localPath = "/path/to/repository";

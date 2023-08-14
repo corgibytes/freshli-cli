@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 [UnitTest]
 public class PackageFoundEventTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDispatchesComputeLibYearForPackageActivity()
     {
         var analysisId = Guid.NewGuid();

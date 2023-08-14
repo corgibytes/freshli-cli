@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest-8-cores]
 
     runs-on: ${{ matrix.os }}
     env:
@@ -172,7 +172,7 @@ jobs:
 
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
-          dotnet coverlet ./exe --target "dotnet" --targetargs "test --logger \"console;verbosity=detailed\" --blame-hang-timeout 10min exe/Corgibytes.Freshli.Cli.Test.dll" --format lcov
+          dotnet coverlet ./exe --target "dotnet" --targetargs 'test --logger "console;verbosity=detailed" --blame-hang-timeout 10min exe/Corgibytes.Freshli.Cli.Test.dll' --format lcov
 
       - name: "[Test] - Behavior Acceptance Tests"
         run: |

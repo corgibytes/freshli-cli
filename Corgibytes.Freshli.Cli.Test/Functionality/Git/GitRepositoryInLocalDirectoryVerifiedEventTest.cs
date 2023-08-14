@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
 public class GitRepositoryInLocalDirectoryVerifiedEventTest
 {
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyItFiresComputeHistoryActivity()
     {
         var analysisId = Guid.NewGuid();

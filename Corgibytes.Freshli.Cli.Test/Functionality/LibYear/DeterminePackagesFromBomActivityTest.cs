@@ -28,7 +28,7 @@ public class DeterminePackagesFromBomActivityTest
         _activity = new DeterminePackagesFromBomActivity(_analysisId, _parent.Object, PathToBom, PathToAgentExecutable);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyFiresLibYearComputationForBomStartedEvent()
     {
         var serviceProvider = new Mock<IServiceProvider>();
@@ -79,11 +79,18 @@ public class DeterminePackagesFromBomActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleFiresHistoryStopPointProcessingFailedOnException()
     {
-        var exception = new InvalidOperationException();
-        _eventClient.Setup(mock => mock.ServiceProvider).Throws(exception);
+        var serviceProvider = new Mock<IServiceProvider>();
+
+        var exception = new InvalidOperationException("Simulated exception");
+
+        var bomReader = new Mock<IBomReader>();
+        bomReader.Setup(mock => mock.AsPackageUrls(PathToBom)).Throws(exception);
+
+        _eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
+        serviceProvider.Setup(mock => mock.GetService(typeof(IBomReader))).Returns(bomReader.Object);
 
         await _activity.Handle(_eventClient.Object, _cancellationToken);
 
@@ -99,7 +106,7 @@ public class DeterminePackagesFromBomActivityTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleWhenNoPackagesAreFound()
     {
         var serviceProvider = new Mock<IServiceProvider>();
