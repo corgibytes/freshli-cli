@@ -32,7 +32,7 @@ public class LibYearComputedForPackageEventTest
         };
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDispatchesCreateApiPackageLibYear()
     {
         await _appEvent.Handle(_activityClient.Object, _cancellationToken);
@@ -51,7 +51,7 @@ public class LibYearComputedForPackageEventTest
         );
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleDispatchesFireHistoryStopPointProcessingErrorActivity()
     {
         var exception = new InvalidOperationException();

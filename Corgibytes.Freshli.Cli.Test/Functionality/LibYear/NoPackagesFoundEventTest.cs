@@ -22,7 +22,7 @@ public class NoPackagesFoundEventTest
         _appEvent = new NoPackagesFoundEvent(_analysisId, _parent.Object);
     }
 
-    [Fact(Timeout = 500)]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
         await _appEvent.Handle(_activityEngine.Object, _cancellationToken);
