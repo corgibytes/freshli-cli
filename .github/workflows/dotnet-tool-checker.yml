@@ -26,7 +26,7 @@ jobs:
           echo $_tools >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
       - name: Dispatch events
-        uses: actions/github-script@v6.3.3
+        uses: actions/github-script@v6.4.1
         with:
           github-token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           script: |

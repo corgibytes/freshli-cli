@@ -81,7 +81,7 @@ jobs:
             .NET
       - name: Job summary (updated)
         if: steps.meta.outputs.updated == 'true'
-        uses: actions/github-script@v6.3.3
+        uses: actions/github-script@v6.4.1
         with:
           script: |
             await core
@@ -120,7 +120,7 @@ jobs:
               .write();
       - name: Job summary (not updated)
         if: steps.meta.outputs.updated != 'true'
-        uses: actions/github-script@v6.3.3
+        uses: actions/github-script@v6.4.1
         with:
           script: |
             await core
