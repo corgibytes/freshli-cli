@@ -1,5 +1,6 @@
 using System;
 using System.CommandLine;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -18,10 +19,11 @@ public class FailCommandRunner : CommandRunner<FailCommand, EmptyCommandOptions>
 
     private IApplicationActivityEngine ActivityEngine { get; }
 
-    public override async ValueTask<int> Run(EmptyCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(EmptyCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
-        await ActivityEngine.Dispatch(new ThrowExceptionActivity());
-        await ActivityEngine.Wait();
+        var activity = new ThrowExceptionActivity();
+        await ActivityEngine.Dispatch(activity, cancellationToken);
+        await ActivityEngine.Wait(activity, cancellationToken);
 
         return 0;
     }

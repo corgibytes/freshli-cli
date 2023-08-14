@@ -11,13 +11,14 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class CachePreparedForAnalysisEventTest
 {
-    [Fact]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task CorrectlyDispatchesRestartAnalysisActivity()
     {
         var serviceProvider = new Mock<IServiceProvider>();
         var configuration = new Mock<IConfiguration>();
         var cacheManager = new Mock<ICacheManager>();
         var historyIntervalParser = new Mock<IHistoryIntervalParser>();
+        var cancellationToken = new System.Threading.CancellationToken(false);
 
         var cacheEvent = new CachePreparedForAnalysisEvent
         {
@@ -34,11 +35,18 @@ public class CachePreparedForAnalysisEventTest
         var engine = new Mock<IApplicationActivityEngine>();
         engine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        await cacheEvent.Handle(engine.Object);
+        await cacheEvent.Handle(engine.Object, cancellationToken);
 
-        engine.Verify(mock => mock.Dispatch(It.Is<RestartAnalysisActivity>(value =>
-            value.RepositoryUrl == "https://git.example.com" &&
-            value.RepositoryBranch == "main" &&
-            value.HistoryInterval == "1m")));
+        engine.Verify(
+            mock => mock.Dispatch(
+                It.Is<RestartAnalysisActivity>(value =>
+                    value.RepositoryUrl == "https://git.example.com" &&
+                    value.RepositoryBranch == "main" &&
+                    value.HistoryInterval == "1m"
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

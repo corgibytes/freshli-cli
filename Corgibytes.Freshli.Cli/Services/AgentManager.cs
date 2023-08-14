@@ -3,18 +3,21 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CliWrap.EventStream;
 using CliWrap.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality;
 using Grpc.Net.Client;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentManager : IAgentManager, IDisposable
 {
+    // TODO: Make this a configurable value
     private const int ServiceStartTimeoutInSeconds = 2;
 
     private readonly ICacheManager _cacheManager;
@@ -22,6 +25,7 @@ public class AgentManager : IAgentManager, IDisposable
 
     private readonly ILogger<AgentManager> _logger;
     private readonly IConfiguration _configuration;
+    private readonly IServiceProvider _serviceProvider;
     private readonly PortFinder _portFinder = new();
 
     private static readonly List<Type> s_acceptableExceptions = new()
@@ -31,11 +35,14 @@ public class AgentManager : IAgentManager, IDisposable
         typeof(CommandExecutionException)
     };
 
-    public AgentManager(ICacheManager cacheManager, ILogger<AgentManager> logger, IConfiguration configuration)
+    public AgentManager(
+        ICacheManager cacheManager, ILogger<AgentManager> logger,
+        IConfiguration configuration, IServiceProvider serviceProvider)
     {
         _cacheManager = cacheManager;
         _logger = logger;
         _configuration = configuration;
+        _serviceProvider = serviceProvider;
     }
 
     private ConcurrentQueue<AgentDescriptor> GetAgentsFor(string agentExecutablePath)
@@ -127,16 +134,19 @@ public class AgentManager : IAgentManager, IDisposable
 
     private AgentReader CreateAgentReader(int port)
     {
-        _logger.LogDebug("Connecting to gRPC service on port {port}", port);
+        _logger.LogDebug("Connecting to gRPC service on port {Port}", port);
         var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
         var grpcClient = new Agent.Agent.AgentClient(channel);
-        var agentReader = new AgentReader(_cacheManager, grpcClient);
+        var agentReader = new AgentReader(
+            _cacheManager, grpcClient, _serviceProvider.GetRequiredService<ILogger<AgentReader>>()
+        );
         return agentReader;
     }
 
     private (Task, bool) AttemptToStartAgentRunner(string agentExecutablePath, int port,
         CancellationTokenSource forcefulShutdown, CancellationToken cancellationToken)
     {
+        var listeningExpression = new Regex($"[L|l]istening on(:)? (http://0\\.0\\.0\\.0:)?{port}");
         var isServiceListening = false;
 
         var command = CliWrap.Cli.Wrap(agentExecutablePath).WithArguments(new List<string>
@@ -164,32 +174,33 @@ public class AgentManager : IAgentManager, IDisposable
             // ReSharper disable once AccessToDisposedClosure
             await foreach (var commandEvent in commandEvents.WithCancellation(forcefulShutdown.Token))
             {
-                _logger.LogDebug("Received command event {event}", commandEvent);
+                _logger.LogDebug("Received command event {@Event}", commandEvent);
                 switch (commandEvent)
                 {
                     case StandardOutputCommandEvent output:
-                        isServiceListening = output.Text == $"Listening on {port}...";
-                        _logger.LogDebug(
-                            "Agent {Agent} is listening on port {Port}",
-                            agentExecutablePath,
-                            port
-                        );
+                        if (!isServiceListening)
+                        {
+                            isServiceListening = listeningExpression.IsMatch(output.Text);
+                            if (isServiceListening)
+                            {
+                                _logger.LogDebug(
+                                    "Agent {Agent} is listening on port {Port}",
+                                    agentExecutablePath,
+                                    port
+                                );
+                            }
+                        }
+
                         break;
                 }
             }
-
         }, cancellationToken);
 
         _logger.LogDebug("Waiting for agent service to start listening");
         var waitForStartTask = Task.Run(async () =>
         {
-            while (true)
+            while (!ShouldStopWaiting(isServiceListening, forcefulShutdown, cancellationToken))
             {
-                if (ShouldStopWaiting(isServiceListening, forcefulShutdown, cancellationToken))
-                {
-                    break;
-                }
-
                 await Task.Delay(10, cancellationToken);
             }
         }, cancellationToken);
@@ -198,8 +209,12 @@ public class AgentManager : IAgentManager, IDisposable
     }
 
     private static bool ShouldStopWaiting(bool isServiceListening, CancellationTokenSource forcefulShutdown,
-        CancellationToken cancellationToken) =>
-        cancellationToken.IsCancellationRequested || forcefulShutdown.IsCancellationRequested || isServiceListening;
+        CancellationToken cancellationToken)
+    {
+        return isServiceListening ||
+            cancellationToken.IsCancellationRequested ||
+            forcefulShutdown.IsCancellationRequested;
+    }
 
     private static async ValueTask WithAcceptableExceptionsAsync(Func<ValueTask> action)
     {

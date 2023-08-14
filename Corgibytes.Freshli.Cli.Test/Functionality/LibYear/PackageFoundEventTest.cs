@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Moq;
 using PackageUrl;
@@ -11,29 +12,37 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 [UnitTest]
 public class PackageFoundEventTest
 {
-    [Fact]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDispatchesComputeLibYearForPackageActivity()
     {
         var analysisId = Guid.NewGuid();
         const string agentExecutablePath = "/path/to/agent";
         var activityEngine = new Mock<IApplicationActivityEngine>();
+        var cancellationToken = new System.Threading.CancellationToken(false);
+        var parent = new Mock<IHistoryStopPointProcessingTask>();
 
-        const int historyStopPointId = 29;
         var package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
         var packageEvent = new PackageFoundEvent
         {
             AnalysisId = analysisId,
-            HistoryStopPointId = historyStopPointId,
+            Parent = parent.Object,
             AgentExecutablePath = agentExecutablePath,
             Package = package
         };
 
-        await packageEvent.Handle(activityEngine.Object);
+        await packageEvent.Handle(activityEngine.Object, cancellationToken);
 
-        activityEngine.Verify(mock => mock.Dispatch(It.Is<ComputeLibYearForPackageActivity>(value =>
-            value.AnalysisId == analysisId &&
-            value.HistoryStopPointId == historyStopPointId &&
-            value.AgentExecutablePath == agentExecutablePath &&
-            value.Package == package)));
+        activityEngine.Verify(
+            mock => mock.Dispatch(
+                It.Is<ComputeLibYearForPackageActivity>(value =>
+                    value.AnalysisId == analysisId &&
+                    value.Parent == parent.Object &&
+                    value.AgentExecutablePath == agentExecutablePath &&
+                    value.Package == package
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

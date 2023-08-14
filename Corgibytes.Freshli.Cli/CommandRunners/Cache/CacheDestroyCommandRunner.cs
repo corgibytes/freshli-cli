@@ -1,6 +1,7 @@
 using System;
 using System.CommandLine;
 using System.CommandLine.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Commands;
@@ -28,7 +29,7 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
     private IApplicationActivityEngine ActivityEngine { get; }
     private IApplicationEventEngine EventEngine { get; }
 
-    public override async ValueTask<int> Run(CacheDestroyCommandOptions options, IConsole console)
+    public override async ValueTask<int> Run(CacheDestroyCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
         Configuration.CacheDir = options.CacheDir;
 
@@ -50,14 +51,8 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
             options.CacheDir);
         console.Out.WriteLine(strDestroyingCache);
 
-        await ActivityEngine.Dispatch(new DestroyCacheActivity());
+        var activity = new DestroyCacheActivity();
 
-        var exitCode = await WaitForCacheDestroyEvents(console);
-        return exitCode;
-    }
-
-    private async ValueTask<int> WaitForCacheDestroyEvents(IConsole console)
-    {
         var exitCode = true.ToExitCode();
 
         EventEngine.On<CacheDestroyFailedEvent>(destroyEvent =>
@@ -73,8 +68,8 @@ public class CacheDestroyCommandRunner : CommandRunner<CacheCommand, CacheDestro
             return ValueTask.CompletedTask;
         });
 
-        await ActivityEngine.Wait();
-
+        await ActivityEngine.Dispatch(activity, cancellationToken);
+        await ActivityEngine.Wait(activity, cancellationToken);
         return exitCode;
     }
 }

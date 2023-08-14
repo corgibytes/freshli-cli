@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Polly;
 
 namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
@@ -13,11 +14,13 @@ public class ResultsApi : IResultsApi, IDisposable
 {
     private readonly IConfiguration _configuration;
     private readonly HttpClient _client;
+    private readonly ILogger<ResultsApi> _logger;
 
-    public ResultsApi(IConfiguration configuration, HttpClient client)
+    public ResultsApi(IConfiguration configuration, HttpClient client, ILogger<ResultsApi> logger)
     {
         _configuration = configuration;
         _client = client;
+        _logger = logger;
     }
 
     // TODO: the results URL should use the base URL from the configuration
@@ -40,10 +43,6 @@ public class ResultsApi : IResultsApi, IDisposable
         HttpStatusCode expectedStatusCode, Func<HttpResponseMessage, Task<T>>? responseProcessor = null)
     {
         var uri = string.IsNullOrEmpty(url) ? null : new Uri(url, UriKind.RelativeOrAbsolute);
-        var request = new HttpRequestMessage(method, uri)
-        {
-            Content = content
-        };
 
         var response = await Policy
             .Handle<HttpRequestException>()
@@ -52,8 +51,15 @@ public class ResultsApi : IResultsApi, IDisposable
                 TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
             )
             .ExecuteAsync(async () =>
+            {
+                var request = new HttpRequestMessage(method, uri)
+                {
+                    Content = content
+                };
+
                 // TODO: pass in a cancellation token
-                await _client.SendAsync(request));
+                return await _client.SendAsync(request);
+            });
 
         if (response.StatusCode != expectedStatusCode)
         {
@@ -132,7 +138,13 @@ public class ResultsApi : IResultsApi, IDisposable
         var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
 
         var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
-        var asOfDateTime = historyStopPoint!.AsOfDateTime;
+        if (historyStopPoint == null)
+        {
+            _logger.LogWarning("Could not find HistoryStopPoint for {HistoryStopPointId} in cache as expected",
+                historyStopPointId);
+            return;
+        }
+        var asOfDateTime = historyStopPoint.AsOfDateTime;
 
         var apiUrl = _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
         var requestBody = JsonContent.Create(
@@ -155,6 +167,7 @@ public class ResultsApi : IResultsApi, IDisposable
 
     public async ValueTask CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, int packageLibYearId)
     {
+        _logger.LogTrace("CreatePackageLibYear({AnalysisId}, {PackageLibYearId})", analysisId, packageLibYearId);
         var cachedAnalysis = await cacheDb.RetrieveAnalysis(analysisId);
         var packageLibYear = await cacheDb.RetrievePackageLibYear(packageLibYearId);
 
@@ -174,6 +187,7 @@ public class ResultsApi : IResultsApi, IDisposable
             },
             new MediaTypeHeaderValue("application/json")
         );
+        _logger.LogDebug("Sending HistoryPoint to Freshli.Web endpoint {Endpoint}: {@Payload}", apiUrl, requestContent);
 
         try
         {

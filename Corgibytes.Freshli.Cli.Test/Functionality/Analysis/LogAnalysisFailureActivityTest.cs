@@ -11,7 +11,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 [UnitTest]
 public class LogAnalysisFailureActivityTest
 {
-    [Fact]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyItFiresAnalysisFailureLoggedEvent()
     {
         var serviceProvider = new Mock<IServiceProvider>();
@@ -23,12 +23,19 @@ public class LogAnalysisFailureActivityTest
             .Returns(logger);
 
         var errorEvent = new AnalysisIdNotFoundEvent();
+        var cancellationToken = new System.Threading.CancellationToken(false);
         var activity = new LogAnalysisFailureActivity(errorEvent);
 
-        await activity.Handle(eventClient.Object);
+        await activity.Handle(eventClient.Object, cancellationToken);
 
-        eventClient.Setup(mock => mock.Fire(It.Is<AnalysisFailureLoggedEvent>(value =>
-            value.ErrorEvent == errorEvent
-        )));
+        eventClient.Setup(
+            mock => mock.Fire(
+                It.Is<AnalysisFailureLoggedEvent>(value =>
+                    value.ErrorEvent == errorEvent
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }

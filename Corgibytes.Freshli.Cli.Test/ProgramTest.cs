@@ -15,85 +15,108 @@ namespace Corgibytes.Freshli.Cli.Test;
 public class ProgramTest
 {
     private readonly StringWriter _consoleOutput = new();
+    private const string ApplicationShutdownLogMessageForConsole =
+        "INFO | Microsoft.Hosting.Lifetime:0 | Application is shutting down...";
 
-    public ProgramTest() => Console.SetOut(_consoleOutput);
+    private const string HostShutdownLogMessageForConsole =
+        "DEBUG | Microsoft.Extensions.Hosting.Internal.Host:0 | Hosting stopping";
 
-    [Fact]
-    public void Validate_Main_loglevel_debug()
+    private const string ApplicationShutdownLogMessageForFile =
+        "INFO | Microsoft.Hosting.Lifetime:0 | Application is shutting down...";
+
+#pragma warning disable SYSLIB1045
+    private readonly Regex _trailingWhitespaceRegex = new(@"\s+$", RegexOptions.Multiline);
+    private readonly Regex _logMessagesContainingNewlinesRegex =
+        new(@"(\r?\n)([^\r\n\d])", RegexOptions.Multiline);
+#pragma warning restore SYSLIB1045
+
+    public ProgramTest()
     {
-        var task = Task.Run(async () => await Program.Main("--loglevel", "Debug"));
-        task.Wait();
+        Console.SetOut(_consoleOutput);
 
-        _consoleOutput.ToString().Should()
-            .Contain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
+        MainCommand.ShouldIncludeLoadServiceCommand = true;
+        MainCommand.ShouldIncludeFailCommand = true;
     }
 
-    [Fact]
-    public void Validate_Main_loglevel_info()
+    private string CleanupLogOutput(string logMessages)
     {
-        var task = Task.Run(async () => await Program.Main("--loglevel", "Info"));
-        task.Wait();
-
-        _consoleOutput.ToString().Should()
-            .NotContain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
-        _consoleOutput.ToString().Should().Contain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
+        var result = _trailingWhitespaceRegex.Replace(logMessages, "");
+        result = _logMessagesContainingNewlinesRegex.Replace(result, " $2");
+        return result;
     }
 
-    [Fact]
-    public void Validate_Main_loglevel_default()
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
+    public async Task Validate_Main_loglevel_debug()
     {
-        var task = Task.Run(async () => await Program.Main());
-        task.Wait();
+        await Task.Run(async () => await Program.Main("--loglevel", "Debug"));
 
-        _consoleOutput.ToString().Should()
-            .NotContain("DEBUG|Microsoft.Extensions.Hosting.Internal.Host:0|Hosting stopping");
-        _consoleOutput.ToString().Should()
-            .NotContain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
+
+        cleanedOutput.Should().Contain(HostShutdownLogMessageForConsole);
     }
 
-    [Fact]
-    public void Validate_Main_logfile()
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
+    public async Task Validate_Main_loglevel_info()
+    {
+        await Task.Run(async () => await Program.Main("--loglevel", "Info", "load-service"));
+
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
+
+        cleanedOutput.Should().NotContain(HostShutdownLogMessageForConsole);
+        cleanedOutput.Should().Contain(ApplicationShutdownLogMessageForConsole);
+    }
+
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
+    public async Task Validate_Main_loglevel_default()
+    {
+        await Task.Run(async () => await Program.Main());
+
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
+
+        cleanedOutput.Should().NotContain(HostShutdownLogMessageForConsole);
+        cleanedOutput.Should().NotContain(ApplicationShutdownLogMessageForConsole);
+    }
+
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
+    public async Task Validate_Main_logfile()
     {
         var testfile = "testlog.log";
 
-        var task = Task.Run(async () => await Program.Main("--loglevel", "Info", "--logfile", testfile));
-        task.Wait();
+        await Task.Run(async () => await Program.Main("--loglevel", "Info", "--logfile", testfile));
 
         // force NLog to close the log file so that we can open it to read from
         var target = LogManager.Configuration.FindTargetByName("file") as FileTarget;
         target!.KeepFileOpen = false;
 
-        using var file = File.Open(testfile, FileMode.Open, FileAccess.Read);
-        var logFileContent = file.ReadToEnd();
-        _consoleOutput.ToString().Should()
-            .NotContain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
-        logFileContent.Should().Contain("INFO|Microsoft.Hosting.Lifetime:0|Application is shutting down...");
+        await using var file = File.Open(testfile, FileMode.Open, FileAccess.Read);
+        var logFileContent = await file.ReadToEndAsync();
+
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
+        cleanedOutput.Should().NotContain(ApplicationShutdownLogMessageForConsole);
+        logFileContent.Should().Contain(ApplicationShutdownLogMessageForFile);
     }
 
-    [Fact]
-    public void ValidateExceptionsInActivityHandlersWriteToLog()
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
+    public async Task ValidateExceptionsInActivityHandlersWriteToLog()
     {
-        MainCommand.ShouldIncludeFailCommand = true;
-
-        var task = Task.Run(async () => await Program.Main("fail"));
-        task.Wait();
+        await Task.Run(async () => await Program.Main("fail"));
 
 #pragma warning disable SYSLIB1045
-        _consoleOutput.ToString().Should().MatchRegex(new Regex(
-            "ERROR|.*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
+        _consoleOutput.ToString().StripAnsi().Should().MatchRegex(new Regex(
+            "ERROR | .*System.Exception: Simulating failure from an activity$", RegexOptions.Multiline
         ));
 #pragma warning restore SYSLIB1045
     }
 
-    [Fact]
-    public void ValidateServiceProviderIsLoaded()
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
+    public async Task ValidateServiceProviderIsLoaded()
     {
         MainCommand.ShouldIncludeLoadServiceCommand = true;
-        var task = Task.Run(async () => await Program.Main("load-service"));
-        task.Wait();
+        await Task.Run(async () => await Program.Main("load-service"));
 
-        _consoleOutput.ToString().Should().Contain("All good! Service provider is not null.");
-        _consoleOutput.ToString().Should()
+        var cleanedOutput = CleanupLogOutput(_consoleOutput.ToString().StripAnsi());
+        cleanedOutput.Should().Contain("All good! Service provider is not null.");
+        cleanedOutput.Should()
             .NotContain("Simulating loading the service provider, but the provider is null.");
     }
 }

@@ -1,11 +1,12 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 
-public class CachePreparedEvent : IApplicationEvent
+public class CachePreparedEvent : ApplicationEventBase
 {
-    public ValueTask Handle(IApplicationActivityEngine eventClient)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         return ValueTask.CompletedTask;
     }

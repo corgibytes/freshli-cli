@@ -1,4 +1,5 @@
 ﻿using System.CommandLine;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.CommandRunners;
@@ -7,5 +8,5 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 public interface ICommandRunner<in TCommand, in TCommandOptions> where TCommand : Command
     where TCommandOptions : CommandOptions.CommandOptions
 {
-    public ValueTask<int> Run(TCommandOptions options, IConsole console);
+    public ValueTask<int> Run(TCommandOptions options, IConsole console, CancellationToken context);
 }

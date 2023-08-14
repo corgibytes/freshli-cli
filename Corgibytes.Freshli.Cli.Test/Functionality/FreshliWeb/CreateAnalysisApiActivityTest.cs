@@ -18,7 +18,7 @@ public class CreateAnalysisApiActivityTest
     public CreateAnalysisApiActivityTest() =>
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
 
-    [Fact]
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleSendsRequest()
     {
         const string url = "anything";
@@ -43,7 +43,9 @@ public class CreateAnalysisApiActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(api.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
-        await activity.Handle(_eventEngine.Object);
+        var cancellationToken = new System.Threading.CancellationToken();
+
+        await activity.Handle(_eventEngine.Object, cancellationToken);
 
         cacheDb.Verify(mock => mock.SaveAnalysis(It.Is<CachedAnalysis>(value =>
             value.Id == cachedAnalysisId &&
@@ -53,10 +55,15 @@ public class CreateAnalysisApiActivityTest
         )));
 
         _eventEngine.Verify(mock =>
-            mock.Fire(It.Is<AnalysisApiCreatedEvent>(value =>
-                value.AnalysisId == cachedAnalysisId &&
-                value.ApiAnalysisId == apiAnalysisId &&
-                value.RepositoryUrl == url
-            )));
+            mock.Fire(
+                It.Is<AnalysisApiCreatedEvent>(value =>
+                    value.AnalysisId == cachedAnalysisId &&
+                    value.ApiAnalysisId == apiAnalysisId &&
+                    value.RepositoryUrl == url
+                ),
+                cancellationToken,
+                ApplicationTaskMode.Tracked
+            )
+        );
     }
 }
