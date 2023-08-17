@@ -59,7 +59,8 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
 
         new Thread(() =>
         {
-            try {
+            try
+            {
                 eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
                 eventClient.Fire(
                     new HistoryStopPointProcessingCompletedEvent { Parent = this },

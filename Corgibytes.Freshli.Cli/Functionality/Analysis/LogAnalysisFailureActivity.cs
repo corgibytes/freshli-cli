@@ -31,6 +31,6 @@ public class LogAnalysisFailureActivity : IApplicationActivity
         await eventClient.Fire(new AnalysisFailureLoggedEvent(ErrorEvent), cancellationToken);
     }
 
-    private bool IsCancellationException(ErrorEvent errorEvent) =>
+    private static bool IsCancellationException(ErrorEvent errorEvent) =>
         errorEvent.Exception is TaskCanceledException or OperationCanceledException;
 }

@@ -167,10 +167,11 @@ public class Program
 
             Logger?.LogTrace("[Command Execution Invocation Ended - {ParseResult}]", commandLine);
         }
-        catch(OperationCanceledException) {
+        catch (OperationCanceledException)
+        {
             Logger?.LogWarning("Cancel requested. Exiting...");
         }
-        catch(Exception error)
+        catch (Exception error)
         {
             LogException(error);
             Logger?.LogError("[Unhandled Exception - {ParseResult}] - {ExceptionMessage} - {ExceptionStackTrace}",
