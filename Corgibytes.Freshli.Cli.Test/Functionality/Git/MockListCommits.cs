@@ -7,9 +7,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
 public class MockListCommits : IListCommits
 {
-    private IEnumerable<GitCommit> _availableCommits;
-
-    public MockListCommits() => _availableCommits = new List<GitCommit>();
+    private IEnumerable<GitCommit> _availableCommits = new List<GitCommit>();
 
     public IEnumerable<GitCommit> ForRepository(IHistoryStopData historyStopData) =>
         _availableCommits;
