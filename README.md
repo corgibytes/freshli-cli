@@ -38,8 +38,6 @@ Data is sent to the [Freshli app website](https://freshli.io) via API calls. You
 > :exclamation: Warning
 >
 > The `analyze` command may take a long time to complete. For some projects, it may take well over an hour. How long it takes is dependent on several variables, such as the amount of history in the Git repository and the number of packages that are found at each point in time. The performance characteristics of the computer running the command is also a factor.
->
-> A progress bar has not been [implemented yet](https://github.com/corgibytes/freshli-cli/issues/370).
 
 > :memo: Suggestion
 >
