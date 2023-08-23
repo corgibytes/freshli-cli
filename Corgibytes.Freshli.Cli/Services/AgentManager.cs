@@ -274,13 +274,27 @@ public class AgentManager : IAgentManager, IDisposable
         _logger.LogDebug("Signaling service runner tasks to stop (forcefully)");
         foreach (var agentDescriptor in GetAllAgentDescriptors())
         {
-            agentDescriptor.ForcefulShutdown.Cancel();
+            // TODO: ForcefulShutdown should never be null, but it sometimes is. That's why the null
+            // check is here, even though the semantics of the type being nullable means that it
+            // shouldn't ever be null. We need to investigate where the null value is coming from
+            // and then either preventing it, or marking the type as nullable.
+            // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+            agentDescriptor.ForcefulShutdown?.Cancel();
         }
 
         _logger.LogDebug("Waiting for service runner tasks to stop");
         try
         {
-            Task.WaitAll(GetAllAgentDescriptors().Select(agent => agent.AgentServiceRunner).ToArray());
+            var tasks = GetAllAgentDescriptors()
+                .Select(agent => agent.AgentServiceRunner)
+                // TODO: This value _shouldn't_ ever be null, but for some reason there is sometimes
+                // at least one null in the list of agent descriptors. I'm not sure what's causing
+                // that, so I'm disabling the warning for now. It's probably a good idea to figure
+                // out why the null value is showing up, and solve the problem there instead.
+                // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+                .Where(value => value != null)
+                .ToArray();
+            Task.WaitAll(tasks);
         }
         catch (TaskCanceledException)
         {
@@ -298,8 +312,19 @@ public class AgentManager : IAgentManager, IDisposable
         _logger.LogDebug("Disposing service runner tasks");
         foreach (var agent in GetAllAgentDescriptors())
         {
-            agent.AgentServiceRunner.Dispose();
-            agent.ForcefulShutdown.Dispose();
+            // TODO: AgentServiceRunner should never be null, but it sometimes is. That's why the null
+            // check is here, even though the semantics of the type being nullable means that it
+            // shouldn't ever be null. We need to investigate where the null value is coming from
+            // and then either preventing it, or marking the type as nullable.
+            // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+            agent.AgentServiceRunner?.Dispose();
+
+            // TODO: ForcefulShutdown should never be null, but it sometimes is. That's why the null
+            // check is here, even though the semantics of the type being nullable means that it
+            // shouldn't ever be null. We need to investigate where the null value is coming from
+            // and then either preventing it, or marking the type as nullable.
+            // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
+            agent.ForcefulShutdown?.Dispose();
         }
 
         _logger.LogDebug("Dispose complete");

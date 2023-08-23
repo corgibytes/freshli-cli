@@ -115,6 +115,7 @@ flowchart TD;
     VerifyGitRepositoryInLocalDirectoryActivity --> GitRepositoryInLocalDirectoryVerifiedEvent
     CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
     CheckoutHistoryActivity --> HistoryStopPointProcessingCompletedEvent
+    CheckoutHistoryActivity --> UnhandledExceptionEvent
     ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> InvalidHistoryIntervalEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent

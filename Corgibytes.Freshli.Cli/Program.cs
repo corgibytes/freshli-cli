@@ -102,7 +102,7 @@ public class Program
 
                 await next(context);
             })
-            .AddMiddleware(async (context, next) => { await LogExecution(context, next); })
+            .AddMiddleware(LogExecution)
             .AddMiddleware(async (context, next) =>
             {
                 ParseWorkersOption(context);
@@ -166,6 +166,10 @@ public class Program
             await next(context);
 
             Logger?.LogTrace("[Command Execution Invocation Ended - {ParseResult}]", commandLine);
+        }
+        catch (OperationCanceledException)
+        {
+            Logger?.LogWarning("Cancel requested. Exiting...");
         }
         catch (Exception error)
         {
