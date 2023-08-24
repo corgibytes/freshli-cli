@@ -251,6 +251,10 @@ max_line_length = unset
 indent_size = unset
 max_line_length = unset
 
+[CODE_OF_CONDUCT.md]
+indent_size = unset
+max_line_length = unset
+
 [Corgibytes.Freshli.Cli/**/proto/*.cs]
 generated_code = true
 dotnet_analyzer_diagnostic.severity = none
