@@ -183,54 +183,63 @@ public class AgentManager : IAgentManager, IDisposable
         {
             while (!ShouldStopWaiting(isServiceListening, forcefulShutdown, cancellationToken))
             {
-                _logger.LogDebug(
-                    "Attempting to connect to {Agent} health service on port {Port}",
-                    agentExecutablePath,
-                    port
-                );
-                var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
-                var healthClient = new Health.HealthClient(channel);
-                try
-                {
-                    var request = new HealthCheckRequest { Service = Agent.Agent.Descriptor.FullName };
-                    var response = healthClient.Check(request);
-                    isServiceListening = response.Status == HealthCheckResponse.Types.ServingStatus.Serving;
-                }
-                catch (AggregateException error)
-                {
-                    if (!ContainsException<RpcException>(error))
-                    {
-                        throw;
-                    }
-                    isServiceListening = false;
-                }
-                catch (RpcException)
-                {
-                    isServiceListening = false;
-                }
-
-                if (isServiceListening)
-                {
-                    _logger.LogDebug(
-                        "Successful connection to {Agent} health service on port {Port}",
-                        agentExecutablePath,
-                        port
-                    );
-                }
-                else
-                {
-                    _logger.LogDebug(
-                        "Failed to connect to {Agent} health service on port {Port}. Trying again.",
-                        agentExecutablePath,
-                        port
-                    );
-                }
+                isServiceListening = IsServiceListening(agentExecutablePath, port);
 
                 await Task.Delay(10, cancellationToken);
             }
         }, cancellationToken);
         waitForStartTask.Wait(TimeSpan.FromSeconds(ServiceStartTimeoutInSeconds), cancellationToken);
         return (agentRunnerTask, isServiceListening);
+    }
+
+    private bool IsServiceListening(string agentExecutablePath, int port)
+    {
+        bool isServiceListening;
+        _logger.LogDebug(
+            "Attempting to connect to {Agent} health service on port {Port}",
+            agentExecutablePath,
+            port
+        );
+        var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
+        var healthClient = new Health.HealthClient(channel);
+        try
+        {
+            var request = new HealthCheckRequest {Service = Agent.Agent.Descriptor.FullName};
+            var response = healthClient.Check(request);
+            isServiceListening = response.Status == HealthCheckResponse.Types.ServingStatus.Serving;
+        }
+        catch (AggregateException error)
+        {
+            if (!ContainsException<RpcException>(error))
+            {
+                throw;
+            }
+
+            isServiceListening = false;
+        }
+        catch (RpcException)
+        {
+            isServiceListening = false;
+        }
+
+        if (isServiceListening)
+        {
+            _logger.LogDebug(
+                "Successful connection to {Agent} health service on port {Port}",
+                agentExecutablePath,
+                port
+            );
+        }
+        else
+        {
+            _logger.LogDebug(
+                "Failed to connect to {Agent} health service on port {Port}. Trying again.",
+                agentExecutablePath,
+                port
+            );
+        }
+
+        return isServiceListening;
     }
 
     private static bool ContainsException<TException>(AggregateException error)
