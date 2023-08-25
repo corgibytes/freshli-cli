@@ -209,6 +209,23 @@ public class AgentManager : IAgentManager, IDisposable
                     isServiceListening = false;
                 }
 
+                if (isServiceListening)
+                {
+                    _logger.LogDebug(
+                        "Successful connection to {Agent} health service on port {Port}",
+                        agentExecutablePath,
+                        port
+                    );
+                }
+                else
+                {
+                    _logger.LogDebug(
+                        "Failed to connect to {Agent} health service on port {Port}. Trying again.",
+                        agentExecutablePath,
+                        port
+                    );
+                }
+
                 await Task.Delay(10, cancellationToken);
             }
         }, cancellationToken);
