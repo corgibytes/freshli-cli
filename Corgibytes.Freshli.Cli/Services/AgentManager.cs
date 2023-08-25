@@ -3,12 +3,13 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using CliWrap.EventStream;
 using CliWrap.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality;
+using Grpc.Core;
+using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -23,7 +24,7 @@ public class AgentManager : IAgentManager, IDisposable
     private readonly ICacheManager _cacheManager;
     private readonly ConcurrentDictionary<string, ConcurrentQueue<AgentDescriptor>> _agentsByExecutable = new();
 
-    private readonly ILogger<AgentManager> _logger;
+    private readonly AgentManagerLogger _logger;
     private readonly IConfiguration _configuration;
     private readonly IServiceProvider _serviceProvider;
     private readonly PortFinder _portFinder = new();
@@ -40,7 +41,7 @@ public class AgentManager : IAgentManager, IDisposable
         IConfiguration configuration, IServiceProvider serviceProvider)
     {
         _cacheManager = cacheManager;
-        _logger = logger;
+        _logger = new AgentManagerLogger(logger);
         _configuration = configuration;
         _serviceProvider = serviceProvider;
     }
@@ -52,7 +53,7 @@ public class AgentManager : IAgentManager, IDisposable
 
     public IAgentReader GetReader(string agentExecutablePath, CancellationToken cancellationToken = default)
     {
-        _logger.LogDebug("Getting reader for {AgentExe}", agentExecutablePath);
+        _logger.LogGettingAgentReader(agentExecutablePath);
         var agents = GetAgentsFor(agentExecutablePath);
 
         lock (agents)
@@ -60,30 +61,30 @@ public class AgentManager : IAgentManager, IDisposable
             AgentDescriptor agent;
             if (agents.Count < _configuration.AgentServiceCount)
             {
-                _logger.LogDebug("Starting a new agent service");
+                _logger.LogStartingNewAgentService();
                 var startAgentTask = StartAgentServiceOnAvailablePort(agentExecutablePath, cancellationToken);
                 WithAcceptableExceptions(() => startAgentTask.Wait(cancellationToken));
 
                 if (startAgentTask.Status != TaskStatus.RanToCompletion)
                 {
-                    _logger.LogDebug("Failed to start agent service");
+                    _logger.LogFailedToStart();
                     throw new AgentRetrievalFailure();
                 }
 
                 agent = startAgentTask.Result;
                 agents.Enqueue(agent);
 
-                _logger.LogDebug("Returning new agent reader {hash}", agent.AgentReader.GetHashCode());
+                _logger.LogNewAgentReader(agent);
                 return agent.AgentReader;
             }
 
             if (!agents.TryDequeue(out agent))
             {
-                _logger.LogDebug("The agents queue is in an unexpected state");
+                _logger.LogAgentQueueInUnexpectedState();
                 throw new AgentRetrievalFailure();
             }
 
-            _logger.LogDebug("Retrieving an existing agent reader {hash}", agent.AgentReader.GetHashCode());
+            _logger.LogRetrievingExistingAgentReader(agent);
             agents.Enqueue(agent);
             return agent.AgentReader;
         }
@@ -93,11 +94,11 @@ public class AgentManager : IAgentManager, IDisposable
     {
         while (true)
         {
-            _logger.LogDebug("Attempting to start an agent service");
+            _logger.LogAttemptingToStart();
 
             if (cancellationToken.IsCancellationRequested)
             {
-                _logger.LogDebug("Giving up because cancellation has been requested");
+                _logger.LogGivingUpBecauseOfCancellationRequest();
                 return default;
             }
 
@@ -114,11 +115,7 @@ public class AgentManager : IAgentManager, IDisposable
                 return new AgentDescriptor(agentReader, agentRunnerTask, forcefulShutdown);
             }
 
-            _logger.LogDebug(
-                "Failed to start agent {Agent} on port {Port}. Trying again.",
-                agentExecutablePath,
-                port
-            );
+            _logger.LogFailedToStart(agentExecutablePath, port);
 
             await ForcefullyShutdownAgentRunner(forcefulShutdown, agentRunnerTask);
         }
@@ -126,7 +123,7 @@ public class AgentManager : IAgentManager, IDisposable
 
     private async Task ForcefullyShutdownAgentRunner(CancellationTokenSource forcefulShutdown, Task agentRunnerTask)
     {
-        _logger.LogDebug("Stopping agent service runner (forcefully)");
+        _logger.LogForcefullyStopping();
         forcefulShutdown.Cancel();
         await WithAcceptableExceptionsAsync(async () => await agentRunnerTask);
         forcefulShutdown.Dispose();
@@ -134,7 +131,7 @@ public class AgentManager : IAgentManager, IDisposable
 
     private AgentReader CreateAgentReader(int port)
     {
-        _logger.LogDebug("Connecting to gRPC service on port {Port}", port);
+        _logger.LogConnectingToGrpcService(port);
         var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
         var grpcClient = new Agent.Agent.AgentClient(channel);
         var agentReader = new AgentReader(
@@ -146,7 +143,6 @@ public class AgentManager : IAgentManager, IDisposable
     private (Task, bool) AttemptToStartAgentRunner(string agentExecutablePath, int port,
         CancellationTokenSource forcefulShutdown, CancellationToken cancellationToken)
     {
-        var listeningExpression = new Regex($"[L|l]istening on(:)? (http://0\\.0\\.0\\.0:)?{port}");
         var isServiceListening = false;
 
         var command = CliWrap.Cli.Wrap(agentExecutablePath).WithArguments(new List<string>
@@ -155,11 +151,7 @@ public class AgentManager : IAgentManager, IDisposable
             port.ToString()
         });
 
-        _logger.LogDebug(
-            "Starting agent {Agent} service on port {Port}",
-            agentExecutablePath,
-            port
-        );
+        _logger.LogStartingAgent(agentExecutablePath, port);
         var agentRunnerTask = Task.Run(async () =>
         {
             // ReSharper disable once AccessToDisposedClosure
@@ -174,38 +166,73 @@ public class AgentManager : IAgentManager, IDisposable
             // ReSharper disable once AccessToDisposedClosure
             await foreach (var commandEvent in commandEvents.WithCancellation(forcefulShutdown.Token))
             {
-                _logger.LogDebug("Received command event {@Event}", commandEvent);
-                switch (commandEvent)
-                {
-                    case StandardOutputCommandEvent output:
-                        if (!isServiceListening)
-                        {
-                            isServiceListening = listeningExpression.IsMatch(output.Text);
-                            if (isServiceListening)
-                            {
-                                _logger.LogDebug(
-                                    "Agent {Agent} is listening on port {Port}",
-                                    agentExecutablePath,
-                                    port
-                                );
-                            }
-                        }
-
-                        break;
-                }
+                _logger.LogReceivedCommand(commandEvent);
             }
         }, cancellationToken);
 
-        _logger.LogDebug("Waiting for agent service to start listening");
+        _logger.LogWaitingForAgentToStartListening();
         var waitForStartTask = Task.Run(async () =>
         {
             while (!ShouldStopWaiting(isServiceListening, forcefulShutdown, cancellationToken))
             {
+                isServiceListening = IsServiceListening(agentExecutablePath, port);
+
                 await Task.Delay(10, cancellationToken);
             }
         }, cancellationToken);
         waitForStartTask.Wait(TimeSpan.FromSeconds(ServiceStartTimeoutInSeconds), cancellationToken);
         return (agentRunnerTask, isServiceListening);
+    }
+
+    private bool IsServiceListening(string agentExecutablePath, int port)
+    {
+        bool isServiceListening;
+        _logger.LogAttemptingConnection(agentExecutablePath, port);
+        var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
+        var healthClient = new Health.HealthClient(channel);
+        try
+        {
+            var request = new HealthCheckRequest { Service = Agent.Agent.Descriptor.FullName };
+            var response = healthClient.Check(request);
+            isServiceListening = response.Status == HealthCheckResponse.Types.ServingStatus.Serving;
+        }
+        catch (AggregateException error)
+        {
+            if (!ContainsException<RpcException>(error))
+            {
+                throw;
+            }
+
+            isServiceListening = false;
+        }
+        catch (RpcException)
+        {
+            isServiceListening = false;
+        }
+
+        if (isServiceListening)
+        {
+            _logger.LogConnectionSuccessful(agentExecutablePath, port);
+        }
+        else
+        {
+            _logger.LogConnectionFailed(agentExecutablePath, port);
+        }
+
+        return isServiceListening;
+    }
+
+    private static bool ContainsException<TException>(AggregateException error)
+    {
+        var isPresentInCurrentLevel = error.InnerExceptions.OfType<TException>().Any();
+        if (!isPresentInCurrentLevel)
+        {
+            return error.InnerExceptions
+                .OfType<AggregateException>()
+                .Any(ContainsException<TException>);
+        }
+
+        return isPresentInCurrentLevel;
     }
 
     private static bool ShouldStopWaiting(bool isServiceListening, CancellationTokenSource forcefulShutdown,
@@ -249,12 +276,6 @@ public class AgentManager : IAgentManager, IDisposable
         }).AsTask().Wait();
     }
 
-    private record struct AgentDescriptor(
-        IAgentReader AgentReader,
-        Task AgentServiceRunner,
-        CancellationTokenSource ForcefulShutdown
-    );
-
     private List<AgentDescriptor> GetAllAgentDescriptors()
     {
         var result = new List<AgentDescriptor>();
@@ -269,9 +290,9 @@ public class AgentManager : IAgentManager, IDisposable
 
     public void Dispose()
     {
-        _logger.LogDebug("Dispose starting...");
+        _logger.LogDisposeStarting();
 
-        _logger.LogDebug("Signaling service runner tasks to stop (forcefully)");
+        _logger.LogSignallingForcefulStop();
         foreach (var agentDescriptor in GetAllAgentDescriptors())
         {
             // TODO: ForcefulShutdown should never be null, but it sometimes is. That's why the null
@@ -282,7 +303,7 @@ public class AgentManager : IAgentManager, IDisposable
             agentDescriptor.ForcefulShutdown?.Cancel();
         }
 
-        _logger.LogDebug("Waiting for service runner tasks to stop");
+        _logger.LogWaitingForRunnersToStop();
         try
         {
             var tasks = GetAllAgentDescriptors()
@@ -309,7 +330,7 @@ public class AgentManager : IAgentManager, IDisposable
             }
         }
 
-        _logger.LogDebug("Disposing service runner tasks");
+        _logger.LogDisposingServiceRunners();
         foreach (var agent in GetAllAgentDescriptors())
         {
             // TODO: AgentServiceRunner should never be null, but it sometimes is. That's why the null
@@ -327,7 +348,7 @@ public class AgentManager : IAgentManager, IDisposable
             agent.ForcefulShutdown?.Dispose();
         }
 
-        _logger.LogDebug("Dispose complete");
+        _logger.LogDisposeComplete();
 
         GC.SuppressFinalize(this);
     }
