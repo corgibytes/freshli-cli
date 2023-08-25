@@ -147,7 +147,6 @@ public class AgentManager : IAgentManager, IDisposable
     private (Task, bool) AttemptToStartAgentRunner(string agentExecutablePath, int port,
         CancellationTokenSource forcefulShutdown, CancellationToken cancellationToken)
     {
-        var listeningExpression = new Regex($"[L|l]istening on(:)? (http://0\\.0\\.0\\.0:)?{port}");
         var isServiceListening = false;
 
         var command = CliWrap.Cli.Wrap(agentExecutablePath).WithArguments(new List<string>
