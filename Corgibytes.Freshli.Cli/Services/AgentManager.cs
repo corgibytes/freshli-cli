@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -9,6 +10,8 @@ using System.Threading.Tasks;
 using CliWrap.EventStream;
 using CliWrap.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality;
+using Grpc.Core;
+using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -175,24 +178,6 @@ public class AgentManager : IAgentManager, IDisposable
             await foreach (var commandEvent in commandEvents.WithCancellation(forcefulShutdown.Token))
             {
                 _logger.LogDebug("Received command event {@Event}", commandEvent);
-                switch (commandEvent)
-                {
-                    case StandardOutputCommandEvent output:
-                        if (!isServiceListening)
-                        {
-                            isServiceListening = listeningExpression.IsMatch(output.Text);
-                            if (isServiceListening)
-                            {
-                                _logger.LogDebug(
-                                    "Agent {Agent} is listening on port {Port}",
-                                    agentExecutablePath,
-                                    port
-                                );
-                            }
-                        }
-
-                        break;
-                }
             }
         }, cancellationToken);
 
@@ -201,11 +186,50 @@ public class AgentManager : IAgentManager, IDisposable
         {
             while (!ShouldStopWaiting(isServiceListening, forcefulShutdown, cancellationToken))
             {
+                _logger.LogDebug(
+                    "Attempting to connect to {Agent} health service on port {Port}",
+                    agentExecutablePath,
+                    port
+                );
+                var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
+                var healthClient = new Health.HealthClient(channel);
+                try
+                {
+                    var request = new HealthCheckRequest { Service = Agent.Agent.Descriptor.FullName };
+                    var response = healthClient.Check(request);
+                    isServiceListening = response.Status == HealthCheckResponse.Types.ServingStatus.Serving;
+                }
+                catch (AggregateException error)
+                {
+                    if (!ContainsException<RpcException>(error))
+                    {
+                        throw;
+                    }
+                    isServiceListening = false;
+                }
+                catch (RpcException)
+                {
+                    isServiceListening = false;
+                }
+
                 await Task.Delay(10, cancellationToken);
             }
         }, cancellationToken);
         waitForStartTask.Wait(TimeSpan.FromSeconds(ServiceStartTimeoutInSeconds), cancellationToken);
         return (agentRunnerTask, isServiceListening);
+    }
+
+    private static bool ContainsException<TException>(AggregateException error)
+    {
+        var isPresentInCurrentLevel = error.InnerExceptions.OfType<TException>().Any();
+        if (!isPresentInCurrentLevel)
+        {
+            return error.InnerExceptions
+                .OfType<AggregateException>()
+                .Any(ContainsException<TException>);
+        }
+
+        return isPresentInCurrentLevel;
     }
 
     private static bool ShouldStopWaiting(bool isServiceListening, CancellationTokenSource forcefulShutdown,

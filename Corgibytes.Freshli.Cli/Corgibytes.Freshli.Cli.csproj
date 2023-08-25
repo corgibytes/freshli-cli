@@ -69,5 +69,6 @@
   </ItemGroup>
   <ItemGroup>
     <Protobuf Include="proto\freshli_agent.proto" GrpcServices="Client" />
+    <Protobuf Include="proto\health.proto" GrpcServices="Client" />
   </ItemGroup>
 </Project>
