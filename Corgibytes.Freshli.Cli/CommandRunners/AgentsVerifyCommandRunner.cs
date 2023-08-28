@@ -10,17 +10,10 @@ namespace Corgibytes.Freshli.Cli.CommandRunners;
 
 public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, AgentsVerifyCommandOptions>
 {
-    private readonly IAgentsDetector _agentsDetector;
-
-    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, IRunner runner, AgentsVerifier agentsVerifier,
-        IAgentsDetector agentsDetector)
+    public AgentsVerifyCommandRunner(IServiceProvider serviceProvider, IRunner runner)
         : base(serviceProvider, runner)
     {
-        _agentsDetector = agentsDetector;
-        AgentsVerifier = agentsVerifier;
     }
-
-    private AgentsVerifier AgentsVerifier { get; }
 
     public override async ValueTask<int> Run(AgentsVerifyCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
