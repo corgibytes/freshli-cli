@@ -22,30 +22,10 @@ public class AgentsVerifyCommandRunner : CommandRunner<AgentsVerifyCommand, Agen
 
     private AgentsVerifier AgentsVerifier { get; }
 
-    // TODO: This method should dispatch an activity
     public override async ValueTask<int> Run(AgentsVerifyCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
-        var agents = _agentsDetector.Detect();
-
-        if (options.LanguageName == "")
-        {
-            foreach (var agentsAndPath in agents)
-            {
-                await AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir, "");
-            }
-        }
-        else
-        {
-            foreach (var agentsAndPath in agents)
-            {
-                if (agentsAndPath.ToLower().Contains("freshli-agent-" + options.LanguageName.ToLower()))
-                {
-                    await AgentsVerifier.RunAgentsVerify(agentsAndPath, "validating-repositories", options.CacheDir,
-                        options.LanguageName);
-                }
-            }
-        }
-
+        // TODO: Implement this method by dispatching an activity
+        await Console.Out.WriteLineAsync("This is not yet implemented.");
         return 0;
     }
 }
