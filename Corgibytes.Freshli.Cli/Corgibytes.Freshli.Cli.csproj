@@ -40,7 +40,7 @@
       Switch away from this fork after a release has been published that
       includes [Spectre.Console PR#1132](https://github.com/spectreconsole/spectre.console/pull/1132)
     -->
-    <PackageReference Include="Corgibytes.Fork.Spectre.Console" Version="0.47.1-preview.0.23" />
+    <PackageReference Include="Corgibytes.Fork.Spectre.Console" Version="0.47.1-preview.0.29" />
     <PackageReference Include="System.CommandLine" Version="2.0.0-beta4.22272.1" />
     <PackageReference Include="System.CommandLine.Hosting" Version="0.4.0-alpha.22272.1" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
