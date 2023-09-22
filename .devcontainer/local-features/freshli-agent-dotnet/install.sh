@@ -38,7 +38,8 @@ su \
         bundle install; bin/build.rb' \
     $USERNAME
 
-mkdir -p /usr/local/share/freshli-agent-dotnet/bin
-cp -r exe /usr/local/share/freshli-agent-dotnet/bin
+mkdir -p /usr/local/share/freshli-agent-dotnet/
+cp -r exe /usr/local/share/freshli-agent-dotnet
+mv /usr/local/share/freshli-agent-dotnet/exe /usr/local/share/freshli-agent-dotnet/bin
 ln -s /usr/local/share/freshli-agent-dotnet/bin/freshli-agent-dotnet /usr/local/bin/freshli-agent-dotnet
 rm -rf /tmp/freshli-agent-dotnet
