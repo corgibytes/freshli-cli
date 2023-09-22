@@ -177,7 +177,8 @@ jobs:
           cd $HOME/.local/opt
           git clone https://github.com/corgibytes/freshli-agent-dotnet
           cd freshli-agent-dotnet
-          ./bin/build.rb
+          bundle install
+          bundle exec ./bin/build.rb
           echo "$HOME/.local/opt/freshli-agent-dotnet/exe" >> $GITHUB_PATH
 
       - name: "[Test] - Install freshli-agent-dotnet on Windows"
@@ -187,7 +188,8 @@ jobs:
           Set-Location $HOME\.local\opt
           git clone https://github.com/corgibytes/freshli-agent-dotnet
           Set-Location .\freshli-agent-dotnet
-          ruby .\bin\build.rb
+          bundle install
+          bundle exec .\bin\build.rb
           Write-Output "$HOME\.local\opt\freshli-agent-dotnet\exe" | Out-File -Append $env:GITHUB_PATH
 
       - name: "[Test] - Confirm freshli-agent-dotnet availability"
