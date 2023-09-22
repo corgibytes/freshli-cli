@@ -202,8 +202,8 @@ jobs:
           dotnet tool install --global CycloneDX
           echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
 
-      - name: "[Test] - Install dotnet-CycloneDX on Linux"
-        if: runner.os != 'Windows'
+      - name: "[Test] - Install dotnet-CycloneDX on Windows"
+        if: runner.os == 'Windows'
         run: |
           dotnet tool install --global CycloneDX
           Write-Output "$HOME\.dotnet\tools" | Out-File -Append $env:GITHUB_PATH
