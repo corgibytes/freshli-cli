@@ -170,6 +170,30 @@ jobs:
         run: |
           freshli-agent-java --help
 
+      - name: "[Test] - Install freshli-agent-dotnet on Linux"
+        if: runner.os != 'Windows'
+        run: |
+          mkdir -p $HOME/.local/opt
+          cd $HOME/.local/opt
+          git clone https://github.com/corgibytes/freshli-agent-dotnet
+          cd freshli-agent-dotnet
+          ./bin/build.rb
+          echo "$HOME/.local/opt/freshli-agent-dotnet/exe" >> $GITHUB_PATH
+
+      - name: "[Test] - Install freshli-agent-dotnet on Windows"
+        if: runner.os == 'Windows'
+        run: |
+          New-Item -Type Directory -Force $HOME\.local\opt
+          Set-Location $HOME\.local\opt
+          git clone https://github.com/corgibytes/freshli-agent-dotnet
+          Set-Location .\freshli-agent-dotnet
+          ruby .\bin\build.rb
+          Write-Output "$HOME\.local\opt\freshli-agent-dotnet\exe" | Out-File -Append $env:GITHUB_PATH
+
+      - name: "[Test] - Confirm freshli-agent-dotnet availability"
+        run: |
+          freshli-agent-dotnet --help
+
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
           dotnet coverlet ./exe --target "dotnet" --targetargs 'test --logger "console;verbosity=detailed" --blame-hang-timeout 10min exe/Corgibytes.Freshli.Cli.Test.dll' --format lcov
