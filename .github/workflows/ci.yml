@@ -196,6 +196,22 @@ jobs:
         run: |
           freshli-agent-dotnet --help
 
+      - name: "[Test] - Install dotnet-CycloneDX on Linux"
+        if: runner.os != 'Windows'
+        run: |
+          dotnet tool install --global CycloneDX
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: "[Test] - Install dotnet-CycloneDX on Linux"
+        if: runner.os != 'Windows'
+        run: |
+          dotnet tool install --global CycloneDX
+          Write-Output "$HOME\.dotnet\tools" | Out-File -Append $env:GITHUB_PATH
+
+      - name: "[Test] - Confirm dotnet-CycloneDX availability"
+        run: |
+          dotnet-CycloneDX --help
+
       - name: "[Test] - Test, Generate Code Coverage"
         run: |
           dotnet coverlet ./exe --target "dotnet" --targetargs 'test --logger "console;verbosity=detailed" --blame-hang-timeout 10min exe/Corgibytes.Freshli.Cli.Test.dll' --format lcov
