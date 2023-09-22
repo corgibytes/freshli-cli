@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -28,6 +29,7 @@ public class HistoryStopCheckedOutEventTest
             .Returns(logger.Object);
 
         var parent = new Mock<IHistoryStopPointProcessingTask>();
+        parent.Setup(mock => mock.HistoryStopPoint).Returns(new CachedHistoryStopPoint { Id = 29 });
         var appEvent = new HistoryStopCheckedOutEvent
         {
             AnalysisId = analysisId,

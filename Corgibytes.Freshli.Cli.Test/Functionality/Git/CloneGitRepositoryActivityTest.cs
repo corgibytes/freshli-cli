@@ -53,7 +53,13 @@ public class CloneGitRepositoryActivityTest
 
     private void SetupCloneOrPullUsingDefaults() =>
         _gitSourceRepository.Setup(mock => mock.CloneOrPull(Url, Branch))
-            .ReturnsAsync(new CachedGitSource(RepositoryId, Url, Branch, LocalPath));
+            .ReturnsAsync(new CachedGitSource
+            {
+                Id = RepositoryId,
+                Url = Url,
+                Branch = Branch,
+                LocalPath = LocalPath
+            });
 
     private void SetupCachedAnalysis() =>
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(_cachedAnalysis);

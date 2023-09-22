@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -23,12 +24,13 @@ public class ApiPackageLibYearCreatedEventTest
 
     public ApiPackageLibYearCreatedEventTest()
     {
+        var packageLibYear = new CachedPackageLibYear { Id = PackageLibYearId };
         _appEvent = new ApiPackageLibYearCreatedEvent
         {
             AnalysisId = _analysisId,
             Parent = _parent.Object,
             AgentExecutablePath = AgentExecutablePath,
-            PackageLibYearId = PackageLibYearId
+            PackageLibYear = packageLibYear
         };
     }
 

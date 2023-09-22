@@ -22,8 +22,8 @@ public class PackageLibYear
         LibYear = libYear;
     }
 
-    public PackageURL? CurrentVersion { get; }
-    public PackageURL? LatestVersion { get; }
+    public PackageURL CurrentVersion { get; }
+    public PackageURL LatestVersion { get; }
     public double LibYear { get; }
     public DateTimeOffset ReleaseDateCurrentVersion { get; }
     public DateTimeOffset ReleaseDateLatestVersion { get; }

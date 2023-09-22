@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,18 +9,20 @@ using System.Threading.Tasks;
 using CliWrap.EventStream;
 using CliWrap.Exceptions;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Grpc.Core;
 using Grpc.Health.V1;
 using Grpc.Net.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentManager : IAgentManager, IDisposable
 {
     // TODO: Make this a configurable value
-    private const int ServiceStartTimeoutInSeconds = 2;
+    private const int ServiceStartTimeoutInSeconds = 10;
 
     private readonly ICacheManager _cacheManager;
     private readonly ConcurrentDictionary<string, ConcurrentQueue<AgentDescriptor>> _agentsByExecutable = new();
@@ -92,6 +95,8 @@ public class AgentManager : IAgentManager, IDisposable
 
     private async Task<AgentDescriptor> StartAgentServiceOnAvailablePort(string agentExecutablePath, CancellationToken cancellationToken = default)
     {
+        var agentName = Path.GetFileName(agentExecutablePath);
+
         while (true)
         {
             _logger.LogAttemptingToStart();
@@ -111,7 +116,7 @@ public class AgentManager : IAgentManager, IDisposable
 
             if (isServiceListening)
             {
-                var agentReader = CreateAgentReader(port);
+                var agentReader = CreateAgentReader(agentName, port);
                 return new AgentDescriptor(agentReader, agentRunnerTask, forcefulShutdown);
             }
 
@@ -119,6 +124,13 @@ public class AgentManager : IAgentManager, IDisposable
 
             await ForcefullyShutdownAgentRunner(forcefulShutdown, agentRunnerTask);
         }
+    }
+
+    public IPackageLibYearCalculator GetLibYearCalculator(IAgentReader reader, PackageURL packageUrl,
+        DateTimeOffset asOfDateTime)
+    {
+        var logger = _serviceProvider.GetService<ILogger<PackageLibYearCalculator>>();
+        return new PackageLibYearCalculator(reader, packageUrl, asOfDateTime, logger);
     }
 
     private async Task ForcefullyShutdownAgentRunner(CancellationTokenSource forcefulShutdown, Task agentRunnerTask)
@@ -129,13 +141,13 @@ public class AgentManager : IAgentManager, IDisposable
         forcefulShutdown.Dispose();
     }
 
-    private AgentReader CreateAgentReader(int port)
+    private AgentReader CreateAgentReader(string name, int port)
     {
         _logger.LogConnectingToGrpcService(port);
         var channel = GrpcChannel.ForAddress($"http://localhost:{port}");
         var grpcClient = new Agent.Agent.AgentClient(channel);
         var agentReader = new AgentReader(
-            _cacheManager, grpcClient, _serviceProvider.GetRequiredService<ILogger<AgentReader>>()
+            name, _cacheManager, grpcClient, _serviceProvider.GetRequiredService<ILogger<AgentReader>>()
         );
         return agentReader;
     }

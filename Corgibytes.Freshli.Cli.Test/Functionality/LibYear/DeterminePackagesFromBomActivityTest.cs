@@ -25,7 +25,13 @@ public class DeterminePackagesFromBomActivityTest
 
     public DeterminePackagesFromBomActivityTest()
     {
-        _activity = new DeterminePackagesFromBomActivity(_analysisId, _parent.Object, PathToBom, PathToAgentExecutable);
+        _activity = new DeterminePackagesFromBomActivity
+        {
+            AnalysisId = _analysisId,
+            Parent = _parent.Object,
+            PathToBom = PathToBom,
+            AgentExecutablePath = PathToAgentExecutable
+        };
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -56,7 +62,7 @@ public class DeterminePackagesFromBomActivityTest
             mock.Fire(
                 It.Is<PackageFoundEvent>(value =>
                     value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object &&
+                    value.Parent == _activity &&
                     value.AgentExecutablePath == PathToAgentExecutable &&
                     value.Package == packageAlpha
                 ),
@@ -69,7 +75,7 @@ public class DeterminePackagesFromBomActivityTest
             mock.Fire(
                 It.Is<PackageFoundEvent>(value =>
                     value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object &&
+                    value.Parent == _activity &&
                     value.AgentExecutablePath == PathToAgentExecutable &&
                     value.Package == packageBeta
                 ),
@@ -97,7 +103,7 @@ public class DeterminePackagesFromBomActivityTest
         _eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<HistoryStopPointProcessingFailedEvent>(value =>
-                    value.Parent == _activity.Parent &&
+                    value.Parent == _activity &&
                     value.Exception == exception
                 ),
                 _cancellationToken,
@@ -124,7 +130,7 @@ public class DeterminePackagesFromBomActivityTest
             mock.Fire(
                 It.Is<NoPackagesFoundEvent>(value =>
                     value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object
+                    value.Parent == _activity
                 ),
                 _cancellationToken,
                 ApplicationTaskMode.Tracked

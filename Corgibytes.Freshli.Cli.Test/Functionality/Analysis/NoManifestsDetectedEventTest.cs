@@ -19,7 +19,11 @@ public class NoManifestsDetectedEventTest
 
     public NoManifestsDetectedEventTest()
     {
-        _appEvent = new NoManifestsDetectedEvent(_analysisId, _parent.Object);
+        _appEvent = new NoManifestsDetectedEvent
+        {
+            AnalysisId = _analysisId,
+            Parent = _parent.Object
+        };
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]

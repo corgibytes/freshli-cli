@@ -3,6 +3,7 @@ using System;
 using Corgibytes.Freshli.Cli.DataModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     [DbContext(typeof(CacheContext))]
-    partial class CacheContextModelSnapshot : ModelSnapshot
+    [Migration("20230921172844_AddManifestFileToHistoryStopPoint")]
+    partial class AddManifestFileToHistoryStopPoint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,19 +24,19 @@ namespace Corgibytes.Freshli.Cli.Migrations
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true);
 
-            modelBuilder.Entity("CachedManifestCachedPackageLibYear", b =>
+            modelBuilder.Entity("CachedHistoryStopPointCachedPackageLibYear", b =>
                 {
-                    b.Property<int>("ManifestsId")
+                    b.Property<int>("HistoryStopPointsId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("PackageLibYearsId")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("ManifestsId", "PackageLibYearsId");
+                    b.HasKey("HistoryStopPointsId", "PackageLibYearsId");
 
                     b.HasIndex("PackageLibYearsId");
 
-                    b.ToTable("CachedManifestCachedPackageLibYear");
+                    b.ToTable("CachedHistoryStopPointCachedPackageLibYear");
                 });
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", b =>
@@ -114,6 +117,10 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ManifestFilePath")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("RepositoryId")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -126,29 +133,6 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .IsUnique();
 
                     b.ToTable("CachedHistoryStopPoints");
-                });
-
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedManifest", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("HistoryStopPointId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<string>("ManifestFilePath")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HistoryStopPointId");
-
-                    b.HasIndex("Id")
-                        .IsUnique();
-
-                    b.ToTable("CachedManifests");
                 });
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedPackage", b =>
@@ -236,11 +220,11 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.ToTable("CachedProperties");
                 });
 
-            modelBuilder.Entity("CachedManifestCachedPackageLibYear", b =>
+            modelBuilder.Entity("CachedHistoryStopPointCachedPackageLibYear", b =>
                 {
-                    b.HasOne("Corgibytes.Freshli.Cli.DataModel.CachedManifest", null)
+                    b.HasOne("Corgibytes.Freshli.Cli.DataModel.CachedHistoryStopPoint", null)
                         .WithMany()
-                        .HasForeignKey("ManifestsId")
+                        .HasForeignKey("HistoryStopPointsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -262,25 +246,9 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.Navigation("CachedAnalysis");
                 });
 
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedManifest", b =>
-                {
-                    b.HasOne("Corgibytes.Freshli.Cli.DataModel.CachedHistoryStopPoint", "HistoryStopPoint")
-                        .WithMany("Manifests")
-                        .HasForeignKey("HistoryStopPointId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("HistoryStopPoint");
-                });
-
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedAnalysis", b =>
                 {
                     b.Navigation("HistoryStopPoints");
-                });
-
-            modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedHistoryStopPoint", b =>
-                {
-                    b.Navigation("Manifests");
                 });
 #pragma warning restore 612, 618
         }

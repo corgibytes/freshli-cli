@@ -9,38 +9,32 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class BillOfMaterialsGeneratedEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
-    public BillOfMaterialsGeneratedEvent(Guid analysisId, IHistoryStopPointProcessingTask parent,
-        string pathToBillOfMaterials, string agentExecutablePath)
-    {
-        AnalysisId = analysisId;
-        Parent = parent;
-        PathToBillOfMaterials = pathToBillOfMaterials;
-        AgentExecutablePath = agentExecutablePath;
-    }
-
-    public Guid AnalysisId { get; }
-    public IHistoryStopPointProcessingTask Parent { get; }
-    public string PathToBillOfMaterials { get; }
-    public string AgentExecutablePath { get; }
+    public required Guid AnalysisId { get; init; }
+    public required IHistoryStopPointProcessingTask? Parent { get; init; }
+    public required string PathToBillOfMaterials { get; init; }
+    public required string AgentExecutablePath { get; init; }
 
     public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {
             await eventClient.Dispatch(
-                new DeterminePackagesFromBomActivity(
-                    AnalysisId,
-                    Parent,
-                    PathToBillOfMaterials,
-                    AgentExecutablePath
-                ),
-                cancellationToken);
+                new DeterminePackagesFromBomActivity
+                {
+                    AnalysisId = AnalysisId,
+                    Parent = this,
+                    PathToBom = PathToBillOfMaterials,
+                    AgentExecutablePath = AgentExecutablePath
+                },
+                cancellationToken
+            );
         }
         catch (Exception error)
         {
             await eventClient.Dispatch(
-                new FireHistoryStopPointProcessingErrorActivity(Parent, error),
-                cancellationToken);
+                new FireHistoryStopPointProcessingErrorActivity(this, error),
+                cancellationToken
+            );
         }
     }
 }

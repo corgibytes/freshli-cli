@@ -24,7 +24,11 @@ public class GitRepositoryClonedEventTest
         var configuration = new Mock<IConfiguration>();
         configuration.Setup(mock => mock.GitPath).Returns(gitPath);
         configuration.Setup(mock => mock.CacheDir).Returns(cacheDir);
-        var historyStopData = new HistoryStopData(configuration.Object, gitRepositoryId);
+        var historyStopData = new HistoryStopData
+        {
+            Configuration = configuration.Object,
+            RepositoryId = gitRepositoryId
+        };
 
         var clonedEvent = new GitRepositoryClonedEvent
         {

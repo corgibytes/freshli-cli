@@ -6,12 +6,15 @@ using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using NeoSmart.AsyncLock;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
-public class CacheManager : ICacheManager
+public class CacheManager : ICacheManager, IDisposable, IAsyncDisposable
 {
     private readonly IConfiguration _configuration;
+    private readonly AsyncLock _cacheDbLock = new();
+    private CacheDb? _cacheDb;
 
     public CacheManager(IConfiguration configuration) => _configuration = configuration;
 
@@ -124,7 +127,19 @@ public class CacheManager : ICacheManager
         return true;
     }
 
-    public ICacheDb GetCacheDb() => new CacheDb(_configuration.CacheDir);
+    public ICacheDb GetCacheDb()
+    {
+        var prepareResult = Prepare();
+        if (!prepareResult.IsCompleted)
+        {
+            prepareResult.AsTask().Wait();
+        }
+
+        using (_cacheDbLock.Lock())
+        {
+            return _cacheDb ??= new CacheDb(_configuration.CacheDir);
+        }
+    }
 
     private static async ValueTask MigrateIfPending(CacheContext context)
     {
@@ -135,5 +150,30 @@ public class CacheManager : ICacheManager
         }
 
         await context.Database.MigrateAsync();
+    }
+
+    public void Dispose()
+    {
+        using (_cacheDbLock.Lock())
+        {
+            _cacheDb?.Dispose();
+            _cacheDb = null;
+        }
+
+        GC.SuppressFinalize(this);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        using (await _cacheDbLock.LockAsync())
+        {
+            if (_cacheDb != null)
+            {
+                await _cacheDb.DisposeAsync();
+                _cacheDb = null;
+            }
+        }
+
+        GC.SuppressFinalize(this);
     }
 }

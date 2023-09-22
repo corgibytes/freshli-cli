@@ -5,9 +5,9 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class HistoryStopPointProcessingFailedEvent : UnhandledExceptionEvent, IHistoryStopPointProcessingTask
 {
-    public IHistoryStopPointProcessingTask Parent { get; }
+    public IHistoryStopPointProcessingTask? Parent { get; }
 
-    public HistoryStopPointProcessingFailedEvent(IHistoryStopPointProcessingTask parent, Exception error) : base(error)
+    public HistoryStopPointProcessingFailedEvent(IHistoryStopPointProcessingTask? parent, Exception error) : base(error)
     {
         Parent = parent;
     }

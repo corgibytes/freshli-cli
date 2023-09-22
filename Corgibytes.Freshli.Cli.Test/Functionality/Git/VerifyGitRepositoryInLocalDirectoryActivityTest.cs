@@ -56,10 +56,13 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
         await activity.Handle(_eventEngine.Object, _cancellationToken);
 
-        var expectedCachedGitSource = new CachedGitSource(
-            new CachedGitSourceId(repositoryLocation.FullName).Id, _repositoryLocation, null,
-            repositoryLocation.FullName
-        );
+        var expectedCachedGitSource = new CachedGitSource
+        {
+            Id = new CachedGitSourceId(repositoryLocation.FullName).Id,
+            Url = _repositoryLocation,
+            Branch = null,
+            LocalPath = repositoryLocation.FullName
+        };
 
         _repository.Verify(mock => mock.Save(It.Is<CachedGitSource>(value =>
             value.Branch == expectedCachedGitSource.Branch &&

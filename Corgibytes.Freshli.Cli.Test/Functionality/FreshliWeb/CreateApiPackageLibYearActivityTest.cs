@@ -15,7 +15,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
 public class CreateApiPackageLibYearActivityTest
 {
     private readonly Guid _analysisId = Guid.NewGuid();
-    private const int PackageLibYearId = 9;
+    private readonly CachedPackageLibYear _packageLibYear = new() { Id = 9 };
     private const string AgentExecutablePath = "/path/to/agent";
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly Mock<IApplicationEventEngine> _eventClient = new();
@@ -38,7 +38,7 @@ public class CreateApiPackageLibYearActivityTest
         {
             AnalysisId = _analysisId,
             Parent = _parent.Object,
-            PackageLibYearId = PackageLibYearId,
+            PackageLibYear = _packageLibYear,
             AgentExecutablePath = AgentExecutablePath
         };
 
@@ -47,10 +47,12 @@ public class CreateApiPackageLibYearActivityTest
         var cacheDb = new Mock<ICacheDb>();
         var resultsApi = new Mock<IResultsApi>();
 
+        var historyStopPoint = new CachedHistoryStopPoint { Id = 29 };
+        _parent.Setup(mock => mock.HistoryStopPoint).Returns(historyStopPoint);
 
         cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(cachedAnalysis);
         cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        resultsApi.Setup(mock => mock.CreatePackageLibYear(cacheDb.Object, _analysisId, PackageLibYearId));
+        resultsApi.Setup(mock => mock.CreatePackageLibYear(cacheDb.Object, _analysisId, historyStopPoint, _packageLibYear));
         serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(resultsApi.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         _eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
@@ -61,8 +63,8 @@ public class CreateApiPackageLibYearActivityTest
             mock.Fire(
                 It.Is<ApiPackageLibYearCreatedEvent>(value =>
                     value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object &&
-                    value.PackageLibYearId == PackageLibYearId &&
+                    value.Parent == activity &&
+                    value.PackageLibYear == _packageLibYear &&
                     value.AgentExecutablePath == AgentExecutablePath
                 ),
                 _cancellationToken,
@@ -78,7 +80,7 @@ public class CreateApiPackageLibYearActivityTest
         {
             AnalysisId = _analysisId,
             Parent = _parent.Object,
-            PackageLibYearId = PackageLibYearId,
+            PackageLibYear = _packageLibYear,
             AgentExecutablePath = AgentExecutablePath
         };
 
@@ -90,7 +92,7 @@ public class CreateApiPackageLibYearActivityTest
         _eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<HistoryStopPointProcessingFailedEvent>(value =>
-                    value.Parent == activity.Parent &&
+                    value.Parent == activity &&
                     value.Exception == exception
                 ),
                 _cancellationToken,

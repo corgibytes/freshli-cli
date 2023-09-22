@@ -22,7 +22,13 @@ public class BillOfMaterialsGeneratedEventTest
 
     public BillOfMaterialsGeneratedEventTest()
     {
-        _appEvent = new BillOfMaterialsGeneratedEvent(_analysisId, _parent.Object, PathToBom, AgentExecutablePath);
+        _appEvent = new BillOfMaterialsGeneratedEvent
+        {
+            AnalysisId = _analysisId,
+            Parent = _parent.Object,
+            PathToBillOfMaterials = PathToBom,
+            AgentExecutablePath = AgentExecutablePath
+        };
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -34,7 +40,7 @@ public class BillOfMaterialsGeneratedEventTest
             mock.Dispatch(
                 It.Is<DeterminePackagesFromBomActivity>(value =>
                     value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object &&
+                    value.Parent == _appEvent &&
                     value.PathToBom == PathToBom &&
                     value.AgentExecutablePath == AgentExecutablePath
                 ),
@@ -61,7 +67,7 @@ public class BillOfMaterialsGeneratedEventTest
         _engine.Verify(mock =>
             mock.Dispatch(
                 It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
-                    value.Parent == _parent.Object &&
+                    value.Parent == _appEvent &&
                     value.Error == exception
                 ),
                 _cancellationToken,

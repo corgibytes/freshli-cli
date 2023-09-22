@@ -28,17 +28,16 @@ Then('the {string} contains history stop point at {string} {string}') do |databa
 end
 
 Then('the {string} contains lib year {double} for {string} as of {string}') do
-  |database, lib_year, package, as_of_date_time|
+  |database, lib_year, package_url, as_of_date_time|
 
   database = resolve_path database
   SQLite3::Database.new(database, readonly: true) do |db|
     r = db.execute(<<-SQL)
-      SELECT CachedPackageLibYears.PackageName, CachedPackageLibYears.LibYear, CachedHistoryStopPoints.AsOfDateTime
-      FROM CachedHistoryStopPoints
-      INNER JOIN CachedPackageLibYears ON CachedHistoryStopPoints.ID=CachedPackageLibYears.HistoryStopPointId
-      WHERE CachedHistoryStopPoints.AsOfDateTime LIKE '#{as_of_date_time}%' AND CachedPackageLibYears.PackageName='#{package}'
+      SELECT PackageUrl, LibYear, AsOfDateTime
+      FROM CachedPackageLibYears
+      WHERE AsOfDateTime LIKE '#{as_of_date_time}%' AND PackageUrl='#{package_url}'
     SQL
-    expect(r[0][0]).to match(/#{package}/)
+    expect(r[0][0]).to eq(package_url)
     expect(r[0][1]).to eq(lib_year)
     expect(r[0][2]).to match(as_of_date_time.to_s)
   end

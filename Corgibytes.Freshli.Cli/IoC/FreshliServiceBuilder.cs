@@ -10,7 +10,6 @@ using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
-using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.OutputStrategies;
 using Corgibytes.Freshli.Cli.Services;
 using Corgibytes.Freshli.Lib;
@@ -67,7 +66,6 @@ public class FreshliServiceBuilder
         Services.AddScoped<IResultsApi, ResultsApi>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
         Services.AddScoped<IBomReader, CycloneDxBomReader>();
-        Services.AddScoped<IPackageLibYearCalculator, PackageLibYearCalculator>();
     }
 
     private void RegisterLoadServiceCommand() =>

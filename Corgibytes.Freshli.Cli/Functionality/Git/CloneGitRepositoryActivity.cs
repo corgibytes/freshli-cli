@@ -39,7 +39,11 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             var gitRepository = await gitRepositoryService.CloneOrPull(
                 cachedAnalysis.RepositoryUrl, cachedAnalysis.RepositoryBranch);
 
-            var historyStopData = new HistoryStopData(configuration, gitRepository.Id);
+            var historyStopData = new HistoryStopData
+            {
+                Configuration = configuration,
+                RepositoryId = gitRepository.Id
+            };
 
             await eventClient.Fire(
                 new GitRepositoryClonedEvent

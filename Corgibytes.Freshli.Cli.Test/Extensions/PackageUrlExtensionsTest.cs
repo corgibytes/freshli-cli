@@ -15,6 +15,7 @@ public class PackageUrlExtensionsTest
     [InlineData("pkg:nuget/Microsoft.Extensions.Configuration@6.0.0-rc.2.21480.5", "nuget", "Microsoft.Extensions.Configuration", "6.0.0-rc.2.21480.5")]
     [InlineData("pkg:nuget/Corgibytes/Freshli.Lib@0.5.0", "nuget", "Corgibytes.Freshli.Lib", "0.5.0", false)]
     [InlineData("pkg:nuget/Corgibytes/Freshli.Lib@0.5.0", "nuget", "Corgibytes/Freshli.Lib", "0.5.0.1", false)]
+    [InlineData("pkg:nuget/PropertyChanged.Fody@1.41.0.0", "nuget", "PropertyChanged.Fody", "1.41.0")]
     public void IsPackageUrlEqual(string purl,
         string type, string name, string version, bool expectEqual = true)
     {

@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -10,8 +11,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 public class LibYearComputedForPackageEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
     public required Guid AnalysisId { get; init; }
-    public required IHistoryStopPointProcessingTask Parent { get; init; }
-    public required int PackageLibYearId { get; init; }
+    public required IHistoryStopPointProcessingTask? Parent { get; init; }
+    public required CachedPackageLibYear PackageLibYear { get; init; }
     public required string AgentExecutablePath { get; init; }
 
     public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
@@ -22,8 +23,8 @@ public class LibYearComputedForPackageEvent : ApplicationEventBase, IHistoryStop
                 new CreateApiPackageLibYearActivity
                 {
                     AnalysisId = AnalysisId,
-                    Parent = Parent,
-                    PackageLibYearId = PackageLibYearId,
+                    Parent = this,
+                    PackageLibYear = PackageLibYear,
                     AgentExecutablePath = AgentExecutablePath
                 },
                 cancellationToken);
@@ -31,7 +32,7 @@ public class LibYearComputedForPackageEvent : ApplicationEventBase, IHistoryStop
         catch (Exception error)
         {
             await eventClient.Dispatch(
-                new FireHistoryStopPointProcessingErrorActivity(Parent, error),
+                new FireHistoryStopPointProcessingErrorActivity(this, error),
                 cancellationToken);
         }
     }

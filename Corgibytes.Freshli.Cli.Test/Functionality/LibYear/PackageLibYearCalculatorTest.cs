@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
 using Corgibytes.Freshli.Cli.Services;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using PackageUrl;
 using Xunit;
+using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 
@@ -51,8 +54,8 @@ public class PackageLibYearCalculatorTest
         agentReader.Setup(mock => mock.RetrieveReleaseHistory(currentlyInstalledPackageUrl))
             .Returns(givenReleaseHistory.ToAsyncEnumerable());
 
-        var calculator = new PackageLibYearCalculator();
         var asOfDateTime = new DateTimeOffset(2021, 12, 31, 12, 30, 45, TimeSpan.Zero);
+        var calculator = new PackageLibYearCalculator(agentReader.Object, currentlyInstalledPackageUrl, asOfDateTime);
 
         var expectedPackageLibYear = new PackageLibYear(
             new DateTimeOffset(2019, 3, 30, 14, 41, 55, TimeSpan.Zero),
@@ -63,40 +66,95 @@ public class PackageLibYearCalculatorTest
             asOfDateTime
         );
 
-        var actualPackageLibYear =
-            (await calculator.ComputeLibYear(agentReader.Object, currentlyInstalledPackageUrl, asOfDateTime))!;
+        var actualPackageLibYear = await calculator.ComputeLibYear();
 
-        Assert.Equivalent(expectedPackageLibYear.CurrentVersion!, actualPackageLibYear.CurrentVersion!);
-        Assert.Equivalent(expectedPackageLibYear.LatestVersion!, actualPackageLibYear.LatestVersion!);
+        Assert.Equivalent(expectedPackageLibYear.CurrentVersion, actualPackageLibYear!.CurrentVersion);
+        Assert.Equivalent(expectedPackageLibYear.LatestVersion, actualPackageLibYear.LatestVersion);
         Assert.Equal(expectedPackageLibYear.ReleaseDateCurrentVersion, actualPackageLibYear.ReleaseDateCurrentVersion);
         Assert.Equal(expectedPackageLibYear.ReleaseDateLatestVersion, actualPackageLibYear.ReleaseDateLatestVersion);
         Assert.Equal(expectedPackageLibYear.LibYear, actualPackageLibYear.LibYear);
     }
 
+    // TODO: This needs to be flagged as an integration test since it interacts with a real language agent
+    [Fact]
+    public async Task MicrosoftEntityFrameworkCoreSqliteCore()
+    {
+        var serviceProvider = new Mock<IServiceProvider>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<AgentReader>)))
+            .Returns(NullLogger<AgentReader>.Instance);
+        using var manager = new AgentManager(
+            new CacheManager(new Configuration(new Environment())),
+            new NullLogger<AgentManager>(),
+            new Configuration(new Environment()),
+            serviceProvider.Object
+        );
+
+        var dotnetAgentReader = manager.GetReader("freshli-agent-dotnet");
+        IPackageLibYearCalculator calculator;
+
+        for (var minorRelease = 0; minorRelease < 5; minorRelease++)
+        {
+            calculator = manager.GetLibYearCalculator(
+                dotnetAgentReader,
+                new PackageURL($"pkg:nuget/Microsoft.EntityFrameworkCore.Sqlite.Core@7.0.{minorRelease}"),
+                DateTimeOffset.Parse("06/01/2023 00:00:00 -04:00")
+            );
+            await calculator.ComputeLibYear();
+        }
+
+        var packageUrl = new PackageURL("pkg:nuget/Microsoft.EntityFrameworkCore.Sqlite.Core@7.0.5");
+
+        calculator = manager.GetLibYearCalculator(
+            dotnetAgentReader,
+            packageUrl,
+            DateTimeOffset.Parse("06/01/2023 00:00:00 -04:00")
+        );
+        var actualPackageLibYear = await calculator.ComputeLibYear();
+
+        var expectedReleaseDate = DateTimeOffset.Parse("2023-04-11T13:34:22.2870000+00:00");
+
+        var expectedLatestVersion = new PackageURL("pkg:nuget/Microsoft.EntityFrameworkCore.Sqlite.Core@8.0.0-preview.4.23259.3");
+        var expectedLatestReleaseDate = DateTimeOffset.Parse("2023-05-16T12:50:45.6270000+00:00");
+
+        Assert.Equal(packageUrl.ToString(), actualPackageLibYear!.CurrentVersion.ToString());
+        Assert.Equal(expectedReleaseDate, actualPackageLibYear.ReleaseDateCurrentVersion);
+        Assert.Equal(expectedLatestVersion.ToString(), actualPackageLibYear.LatestVersion.ToString());
+        Assert.Equal(expectedLatestReleaseDate, actualPackageLibYear.ReleaseDateLatestVersion);
+    }
+
     [Theory]
     [MemberData(nameof(ExpectedPackageLibYears))]
-    public void VerifyNLogHasReleaseDate(PackageLibYear expectedPackageLibYear)
+    public async Task VerifyNLogHasReleaseDate(PackageLibYear expectedPackageLibYear)
     {
         var packageUrl = new PackageURL("pkg:nuget/NLog@4.7.7");
         var releaseHistory = LoadReleaseHistory("nuget.NLog-ReleaseHistory.json");
 
-        var computedLibYear =
-            PackageLibYearCalculator.ComputeLibYear(packageUrl, expectedPackageLibYear.AsOfDateTime, releaseHistory);
+        var agentReader = new Mock<IAgentReader>();
+        agentReader.Setup(mock => mock.RetrieveReleaseHistory(packageUrl)).Returns(releaseHistory.ToAsyncEnumerable());
+
+        var calculator = new PackageLibYearCalculator(agentReader.Object, packageUrl, expectedPackageLibYear.AsOfDateTime);
+
+        var computedLibYear = await calculator.ComputeLibYear();
         Assert.NotNull(computedLibYear);
-        Assert.Equivalent(expectedPackageLibYear.CurrentVersion!, computedLibYear.CurrentVersion!);
-        Assert.Equivalent(expectedPackageLibYear.LatestVersion!, computedLibYear.LatestVersion!);
+        Assert.Equivalent(expectedPackageLibYear.CurrentVersion, computedLibYear.CurrentVersion);
+        Assert.Equivalent(expectedPackageLibYear.LatestVersion, computedLibYear.LatestVersion);
         Assert.Equal(expectedPackageLibYear.ReleaseDateCurrentVersion, computedLibYear.ReleaseDateCurrentVersion);
         Assert.Equal(expectedPackageLibYear.ReleaseDateLatestVersion, computedLibYear.ReleaseDateLatestVersion);
         Assert.Equal(expectedPackageLibYear.LibYear, computedLibYear.LibYear);
     }
 
     [Fact]
-    public void VerifyNLogNoReleaseDate()
+    public async Task VerifyNLogNoReleaseDate()
     {
         var packageUrl = new PackageURL("pkg:nuget/NLog@4.7.7");
         var releaseHistory = LoadReleaseHistory("nuget.NLog-ReleaseHistory.json");
         var asOfDate = DateTimeOffset.Parse("1900-01-01T00:00:00.000Z").AddDays(-7);
-        var computedLibYear = PackageLibYearCalculator.ComputeLibYear(packageUrl, asOfDate, releaseHistory);
+
+        var agentReader = new Mock<IAgentReader>();
+        agentReader.Setup(mock => mock.RetrieveReleaseHistory(packageUrl)).Returns(releaseHistory.ToAsyncEnumerable());
+
+        var calculator = new PackageLibYearCalculator(agentReader.Object, packageUrl, asOfDate);
+        var computedLibYear = await calculator.ComputeLibYear();
         Assert.Null(computedLibYear);
     }
 
@@ -135,7 +193,7 @@ public class PackageLibYearCalculatorTest
         new()
         {
             {
-                // Release date current version, release date latest version, expected libyear
+                // Release date current version, release date latest version, expected LibYear
                 // Case: new version released in 2021, current version from 2019
                 new DateTimeOffset(2019, 1, 3, 0, 0, 0, TimeSpan.Zero),
                 new DateTimeOffset(2021, 8, 25, 0, 0, 0, TimeSpan.Zero), 2.65, 2

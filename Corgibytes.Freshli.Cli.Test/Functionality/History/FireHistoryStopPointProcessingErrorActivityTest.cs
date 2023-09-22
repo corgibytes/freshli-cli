@@ -24,7 +24,7 @@ public class FireHistoryStopPointProcessingErrorActivityTest
         eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<HistoryStopPointProcessingFailedEvent>(value =>
-                    value.Parent == activity.Parent &&
+                    value.Parent == activity &&
                     value.Exception == activity.Error
                 ),
                 cancellationToken,

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -16,8 +17,12 @@ public class HistoryIntervalStopFoundEventTest
     public async Task HandleFiresCreateApiHistoryIntervalStop()
     {
         var cachedAnalysisId = Guid.NewGuid();
-        const int historyStopPointId = 29;
-        var appEvent = new HistoryIntervalStopFoundEvent(cachedAnalysisId, historyStopPointId);
+        var historyStopPoint = new CachedHistoryStopPoint { Id = 29 };
+        var appEvent = new HistoryIntervalStopFoundEvent
+        {
+            AnalysisId = cachedAnalysisId,
+            HistoryStopPoint = historyStopPoint
+        };
 
         var eventClient = new Mock<IApplicationActivityEngine>();
         var serviceProvider = new Mock<IServiceProvider>();
@@ -33,7 +38,7 @@ public class HistoryIntervalStopFoundEventTest
             mock.Dispatch(
                 It.Is<CreateApiHistoryStopActivity>(value =>
                     value.CachedAnalysisId == cachedAnalysisId &&
-                    value.HistoryStopPointId == historyStopPointId
+                    value.HistoryStopPoint == historyStopPoint
                 ),
                 cancellationToken,
                 ApplicationTaskMode.Tracked

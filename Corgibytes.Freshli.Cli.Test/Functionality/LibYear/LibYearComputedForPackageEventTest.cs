@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -13,7 +14,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;
 [UnitTest]
 public class LibYearComputedForPackageEventTest
 {
-    private const int PackageLibYearId = 9;
+    private readonly CachedPackageLibYear _packageLibYear = new() { Id = 9 };
     private const string AgentExecutablePath = "/path/to/agent";
     private readonly Guid _analysisId = Guid.NewGuid();
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
@@ -27,7 +28,7 @@ public class LibYearComputedForPackageEventTest
         {
             AnalysisId = _analysisId,
             Parent = _parent.Object,
-            PackageLibYearId = PackageLibYearId,
+            PackageLibYear = _packageLibYear,
             AgentExecutablePath = AgentExecutablePath
         };
     }
@@ -41,8 +42,8 @@ public class LibYearComputedForPackageEventTest
             mock.Dispatch(
                 It.Is<CreateApiPackageLibYearActivity>(value =>
                     value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object &&
-                    value.PackageLibYearId == PackageLibYearId &&
+                    value.Parent == _appEvent &&
+                    value.PackageLibYear == _packageLibYear &&
                     value.AgentExecutablePath == AgentExecutablePath
                 ),
                 _cancellationToken,
@@ -68,7 +69,7 @@ public class LibYearComputedForPackageEventTest
         _activityClient.Verify(mock =>
             mock.Dispatch(
                 It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
-                    value.Parent == _appEvent.Parent &&
+                    value.Parent == _appEvent &&
                     value.Error == exception
                 ),
                 _cancellationToken,

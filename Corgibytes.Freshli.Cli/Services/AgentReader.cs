@@ -23,8 +23,12 @@ public class AgentReader : IAgentReader
     private readonly Agent.Agent.AgentClient _client;
     private readonly ILogger<AgentReader> _logger;
 
-    public AgentReader(ICacheManager cacheManager, Agent.Agent.AgentClient client, ILogger<AgentReader> logger)
+    public string Name { get; }
+
+    public AgentReader(string name, ICacheManager cacheManager, Agent.Agent.AgentClient client,
+        ILogger<AgentReader> logger)
     {
+        Name = name;
         _cacheDb = cacheManager.GetCacheDb();
         _client = client;
         _logger = logger;

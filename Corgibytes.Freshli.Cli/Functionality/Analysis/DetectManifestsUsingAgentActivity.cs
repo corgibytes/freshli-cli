@@ -11,56 +11,66 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public DetectManifestsUsingAgentActivity(Guid analysisId, IHistoryStopPointProcessingTask parent,
-        string agentExecutablePath)
-    {
-        AnalysisId = analysisId;
-        Parent = parent;
-        AgentExecutablePath = agentExecutablePath;
-    }
-
     public int Priority
     {
         get { return 100; }
     }
 
-    public Guid AnalysisId { get; }
-    public string AgentExecutablePath { get; }
-    public IHistoryStopPointProcessingTask Parent { get; }
+    public required Guid AnalysisId { get; init; }
+    public required string AgentExecutablePath { get; init; }
+    public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
-        var logger = eventClient.ServiceProvider.GetService<ILogger<DetectManifestsUsingAgentActivity>>();
-        logger?.LogDebug("Handling manifest detection for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId} with agent = {Agent}",
-            AnalysisId, Parent.HistoryStopPointId, AgentExecutablePath);
         try
         {
+            var historyStopPoint = Parent?.HistoryStopPoint;
+            _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
+
+            var logger = eventClient.ServiceProvider.GetService<ILogger<DetectManifestsUsingAgentActivity>>();
+            logger?.LogDebug("Handling manifest detection for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId} with agent = {Agent}",
+                AnalysisId, historyStopPoint.Id, AgentExecutablePath);
+
+            var cachedManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
+            var cacheDb = cachedManager.GetCacheDb();
+
             var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
             var agentReader = agentManager.GetReader(AgentExecutablePath, cancellationToken);
 
-            var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb();
-            var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(Parent.HistoryStopPointId);
-            logger?.LogDebug("Manifest detection path for HistoryStopPointId = {HistoryStopPointId} is {Path}",
-                Parent.HistoryStopPointId, historyStopPoint?.LocalPath);
-
             var manifestsFound = false;
-            await foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint?.LocalPath!).WithCancellation(cancellationToken))
+            await foreach (var manifestPath in agentReader.DetectManifests(historyStopPoint.LocalPath).WithCancellation(cancellationToken))
             {
                 manifestsFound = true;
+                logger?.LogDebug(
+                    "Detected manifest {ManifestPath} for HistoryStopPointId = {HistoryStopPointId}",
+                    manifestPath, historyStopPoint.Id
+                );
+
+                var manifest = await cacheDb.AddManifest(historyStopPoint, manifestPath);
+
                 await eventClient.Fire(
-                    new ManifestDetectedEvent(AnalysisId, Parent, AgentExecutablePath, manifestPath),
-                    cancellationToken);
+                    new ManifestDetectedEvent
+                    {
+                        AnalysisId = AnalysisId,
+                        Parent = this,
+                        AgentExecutablePath = AgentExecutablePath,
+                        Manifest = manifest
+                    },
+                    cancellationToken
+                );
             }
 
             if (!manifestsFound)
             {
-                await eventClient.Fire(new NoManifestsDetectedEvent(AnalysisId, Parent), cancellationToken);
+                await eventClient.Fire(
+                    new NoManifestsDetectedEvent { AnalysisId = AnalysisId, Parent = this },
+                    cancellationToken
+                );
             }
         }
         catch (Exception error)
         {
-            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(Parent, error), cancellationToken);
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, error), cancellationToken);
         }
     }
 }

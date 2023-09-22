@@ -51,7 +51,13 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
         var directory = await CacheManager.GetDirectoryInCache("repositories", id.Id);
 
-        var cachedGitSource = new CachedGitSource(id.Id, url, branch, directory.FullName);
+        var cachedGitSource = new CachedGitSource
+        {
+            Id = id.Id,
+            Url = url,
+            Branch = branch,
+            LocalPath = directory.FullName
+        };
         await cacheDb.AddCachedGitSource(cachedGitSource);
 
         // TODO: We probably shouldn't pull if we're running against a repository that we didn't check out

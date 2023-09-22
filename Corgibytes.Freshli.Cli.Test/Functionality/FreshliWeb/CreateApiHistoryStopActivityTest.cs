@@ -45,18 +45,22 @@ public class CreateApiHistoryStopActivityTest
         var eventClient = new Mock<IApplicationEventEngine>();
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var activity = new CreateApiHistoryStopActivity(cachedAnalysisId, historyStopPointId);
+        var activity = new CreateApiHistoryStopActivity
+        {
+            CachedAnalysisId = cachedAnalysisId,
+            HistoryStopPoint = historyStopPoint
+        };
 
         var cancellationToken = new System.Threading.CancellationToken();
         await activity.Handle(eventClient.Object, cancellationToken);
 
-        resultsApi.Verify(mock => mock.CreateHistoryPoint(cacheDb.Object, cachedAnalysisId, historyStopPointId));
+        resultsApi.Verify(mock => mock.CreateHistoryPoint(cacheDb.Object, cachedAnalysisId, historyStopPoint));
 
         eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<ApiHistoryStopCreatedEvent>(value =>
                     value.CachedAnalysisId == cachedAnalysisId &&
-                    value.HistoryStopPointId == historyStopPointId
+                    value.HistoryStopPoint == historyStopPoint
                 ),
                 cancellationToken,
                 ApplicationTaskMode.Tracked
