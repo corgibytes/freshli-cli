@@ -68,17 +68,19 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         var historyIntervalStopsList = historyIntervalStops.ToList();
 
-        progressReporter.ReportHistoryStopPointDetectionFinished();
-
-        progressReporter.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Archive,
-            historyIntervalStopsList.Count);
-        progressReporter.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Process,
-            historyIntervalStopsList.Count);
+        ReportProgress(progressReporter, historyIntervalStopsList);
 
         var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<ComputeHistoryActivity>>();
         logger.LogDebug("Detected {count} history stop points", historyIntervalStopsList.Count);
 
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
+        await HandleHistoryIntervalStops(eventClient, historyIntervalStopsList, configuration, cacheDb, cancellationToken);
+    }
+
+    private async Task HandleHistoryIntervalStops(IApplicationEventEngine eventClient,
+        List<HistoryIntervalStop> historyIntervalStopsList, IConfiguration configuration, ICacheDb cacheDb,
+        CancellationToken cancellationToken)
+    {
         foreach (var historyIntervalStop in historyIntervalStopsList)
         {
             var historyStop = new HistoryStopData
@@ -100,8 +102,18 @@ public class ComputeHistoryActivity : IApplicationActivity
                 });
 
             await eventClient.Fire(
-                new HistoryIntervalStopFoundEvent { AnalysisId = AnalysisId, HistoryStopPoint = historyStopPoint },
+                new HistoryIntervalStopFoundEvent {AnalysisId = AnalysisId, HistoryStopPoint = historyStopPoint},
                 cancellationToken);
         }
+    }
+
+    private static void ReportProgress(IAnalyzeProgressReporter progressReporter, List<HistoryIntervalStop> historyIntervalStopsList)
+    {
+        progressReporter.ReportHistoryStopPointDetectionFinished();
+
+        progressReporter.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Archive,
+            historyIntervalStopsList.Count);
+        progressReporter.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Process,
+            historyIntervalStopsList.Count);
     }
 }
