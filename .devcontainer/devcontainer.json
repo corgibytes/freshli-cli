@@ -41,6 +41,7 @@
         "./local-features/bundler": "latest",
         "./local-features/eclint": "latest",
         "./local-features/cyclonedx-cli": "latest",
-        "./local-features/freshli-agent-java": "latest"
+        "./local-features/freshli-agent-java": "latest",
+        "./local-features/freshli-agent-dotnet": "latest"
     }
 }
