@@ -19,7 +19,7 @@ namespace Corgibytes.Freshli.Cli.Services;
 
 public class AgentReader : IAgentReader
 {
-    private readonly ICacheDb _cacheDb;
+    private readonly ICacheManager _cacheManager;
     private readonly Agent.Agent.AgentClient _client;
     private readonly ILogger<AgentReader> _logger;
 
@@ -29,7 +29,7 @@ public class AgentReader : IAgentReader
         ILogger<AgentReader> logger)
     {
         Name = name;
-        _cacheDb = cacheManager.GetCacheDb();
+        _cacheManager = cacheManager;
         _client = client;
         _logger = logger;
     }
@@ -37,7 +37,8 @@ public class AgentReader : IAgentReader
     public async IAsyncEnumerable<Package> RetrieveReleaseHistory(PackageURL packageUrl)
     {
         _logger.LogTrace("RetrieveReleaseHistory({Purl})", packageUrl.ToString());
-        var cachedPackages = _cacheDb.RetrieveCachedReleaseHistory(packageUrl);
+        var cacheDb = await _cacheManager.GetCacheDb();
+        var cachedPackages = cacheDb.RetrieveCachedReleaseHistory(packageUrl);
 
         var isUsingCache = false;
         await foreach (var cachedPackage in cachedPackages)
@@ -80,7 +81,7 @@ public class AgentReader : IAgentReader
             yield return package;
         }
 
-        await _cacheDb.StoreCachedReleaseHistory(packages.Select(package => new CachedPackage(package)).ToList());
+        await cacheDb.StoreCachedReleaseHistory(packages.Select(package => new CachedPackage(package)).ToList());
     }
 
     private static IAsyncEnumerable<T> RetryableRequestWithStreamResponse<T>(

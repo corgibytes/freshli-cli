@@ -41,7 +41,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
             var agentReader = agentManager.GetReader(AgentExecutablePath, cancellationToken);
 
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb();
+            var cacheDb = await cacheManager.GetCacheDb();
 
             CachedPackageLibYear? packageLibYear;
             using (await s_cacheLibYearLock.LockAsync(cancellationToken))

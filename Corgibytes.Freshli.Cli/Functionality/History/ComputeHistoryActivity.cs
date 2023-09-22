@@ -31,7 +31,7 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
+        var cacheDb = await cacheManager.GetCacheDb();
         var cachedAnalysis = await cacheDb.RetrieveAnalysis(AnalysisId);
 
         if (cachedAnalysis == null)

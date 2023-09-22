@@ -59,7 +59,7 @@ public class DetectManifestsUsingAgentActivityTest
         var cacheManager = new Mock<ICacheManager>();
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         var cacheDb = new Mock<ICacheDb>();
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
 
         cacheDb.Setup(mock => mock.AddManifest(historyStopPoint, "/path/to/first/manifest"))
             .ReturnsAsync(firstCachedManifest);
@@ -121,7 +121,7 @@ public class DetectManifestsUsingAgentActivityTest
         var cacheManager = new Mock<ICacheManager>();
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         var cacheDb = new Mock<ICacheDb>();
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
 
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
@@ -162,7 +162,7 @@ public class DetectManifestsUsingAgentActivityTest
         var cacheManager = new Mock<ICacheManager>();
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         var cacheDb = new Mock<ICacheDb>();
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);

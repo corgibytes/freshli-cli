@@ -53,7 +53,7 @@ public class AgentReaderTest
             _gammaPackage
         };
 
-        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
         _agentClient = new Mock<Agent.Agent.AgentClient>();
         _reader = new AgentReader("test", _cacheManager.Object, _agentClient.Object, NullLogger<AgentReader>.Instance);
     }
@@ -89,7 +89,7 @@ public class AgentReaderTest
             )
         ).Returns(CallHelpers.CreateAsyncServerStreamingCall(serverResponse.ToAsyncStreamReader()));
 
-        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
         _cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(_packageUrl))
             .Returns(new List<CachedPackage>().ToAsyncEnumerable());
 

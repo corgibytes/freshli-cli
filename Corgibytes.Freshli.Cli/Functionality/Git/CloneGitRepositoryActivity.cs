@@ -22,7 +22,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         try
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb();
+            var cacheDb = await cacheManager.GetCacheDb();
             var cachedAnalysis = await cacheDb.RetrieveAnalysis(CachedAnalysisId);
 
             if (cachedAnalysis == null)

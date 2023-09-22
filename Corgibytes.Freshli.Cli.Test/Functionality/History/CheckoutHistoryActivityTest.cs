@@ -35,7 +35,7 @@ public class CheckoutHistoryActivityTest
             GitCommitId = commitId
         };
 
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPoint.Id)).ReturnsAsync(historyStopPoint);
 
         var gitManager = new Mock<IGitManager>();

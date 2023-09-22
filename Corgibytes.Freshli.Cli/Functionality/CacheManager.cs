@@ -127,17 +127,17 @@ public class CacheManager : ICacheManager, IDisposable, IAsyncDisposable
         return true;
     }
 
-    public ICacheDb GetCacheDb()
+    public async ValueTask<ICacheDb> GetCacheDb()
     {
-        var prepareResult = Prepare();
-        if (!prepareResult.IsCompleted)
+        using (await _cacheDbLock.LockAsync())
         {
-            prepareResult.AsTask().Wait();
-        }
+            if (_cacheDb != null)
+            {
+                return _cacheDb;
+            }
 
-        using (_cacheDbLock.Lock())
-        {
-            return _cacheDb ??= new CacheDb(_configuration.CacheDir);
+            await Prepare();
+            return new CacheDb(_configuration.CacheDir);
         }
     }
 

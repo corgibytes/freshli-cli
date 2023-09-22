@@ -32,7 +32,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IGitManager))).Returns(_gitManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
-        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
         _configuration.Setup(mock => mock.CacheDir).Returns("/cache/dir");
 

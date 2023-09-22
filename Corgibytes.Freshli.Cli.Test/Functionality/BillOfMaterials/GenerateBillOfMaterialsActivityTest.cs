@@ -46,7 +46,7 @@ public class GenerateBillOfMaterialsActivityTest
         parent.Setup(mock => mock.HistoryStopPoint).Returns(historyStopPoint);
         parent.Setup(mock => mock.Manifest).Returns(manifest);
 
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
 
         var fileValidator = new Mock<IFileValidator>();
         fileValidator.Setup(mock => mock.IsValidFilePath("/path/to/bill-of-materials")).Returns(true);

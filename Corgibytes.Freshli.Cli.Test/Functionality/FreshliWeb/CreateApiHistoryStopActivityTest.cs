@@ -34,7 +34,7 @@ public class CreateApiHistoryStopActivityTest
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
         var cacheManager = new Mock<ICacheManager>();
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
 
         var resultsApi = new Mock<IResultsApi>();
 

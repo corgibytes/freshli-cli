@@ -65,7 +65,7 @@ public class ComputeLibYearForPackageActivityTest
         agentManager.Setup(mock => mock.GetLibYearCalculator(agentReader.Object, _package, s_asOfDateTime)).Returns(calculator.Object);
 
         calculator.Setup(mock => mock.ComputeLibYear()).ReturnsAsync(packageLibYear);
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrievePackageLibYear(_package, s_asOfDateTime)).ReturnsAsync((CachedPackageLibYear?)null);
         var cachedPackageLibYear = new CachedPackageLibYear()
         {
@@ -138,7 +138,7 @@ public class ComputeLibYearForPackageActivityTest
         agentManager.Setup(mock => mock.GetLibYearCalculator(agentReader.Object, _package, asOfDateTime)).Returns(calculator.Object);
 
         calculator.Setup(mock => mock.ComputeLibYear()).ReturnsAsync(packageLibYear);
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
         var cachedPackageLibYear = new CachedPackageLibYear
         {

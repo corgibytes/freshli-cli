@@ -24,7 +24,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
     public async ValueTask<CachedGitSource> FindOneByRepositoryId(string repositoryId)
     {
-        var cacheDb = CacheManager.GetCacheDb();
+        var cacheDb = await CacheManager.GetCacheDb();
         var entry = await cacheDb.RetrieveCachedGitSource(new CachedGitSourceId(repositoryId));
         _ = entry ?? throw new CacheException(CliOutput.CachedGitSourceRepository_No_Repository_Found_In_Cache);
 
@@ -33,7 +33,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
 
     public async ValueTask Save(CachedGitSource cachedGitSource)
     {
-        var cacheDb = CacheManager.GetCacheDb();
+        var cacheDb = await CacheManager.GetCacheDb();
         await cacheDb.AddCachedGitSource(cachedGitSource);
     }
 
@@ -42,7 +42,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         // Generate a unique repositoryId for the repository based on its URL and branch.
         var id = new CachedGitSourceId(url, branch);
 
-        var cacheDb = CacheManager.GetCacheDb();
+        var cacheDb = await CacheManager.GetCacheDb();
         var existingCachedGitSource = await cacheDb.RetrieveCachedGitSource(id);
         if (existingCachedGitSource is not null)
         {
@@ -124,7 +124,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     {
         var directory = new DirectoryInfo(cachedGitSource.LocalPath);
         await using var db = new CacheContext(Configuration.CacheDir);
-        var cacheDb = CacheManager.GetCacheDb();
+        var cacheDb = await CacheManager.GetCacheDb();
         var entry = await cacheDb.RetrieveCachedGitSource(new CachedGitSourceId(cachedGitSource.Id));
         if (entry != null)
         {

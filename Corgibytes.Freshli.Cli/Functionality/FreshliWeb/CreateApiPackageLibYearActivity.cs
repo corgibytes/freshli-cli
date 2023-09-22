@@ -25,7 +25,7 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity, IHistorySto
         try
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb();
+            var cacheDb = await cacheManager.GetCacheDb();
 
             var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
 

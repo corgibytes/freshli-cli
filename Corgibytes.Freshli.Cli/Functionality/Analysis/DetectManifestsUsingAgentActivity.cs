@@ -32,7 +32,7 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
                 AnalysisId, historyStopPoint.Id, AgentExecutablePath);
 
             var cachedManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cachedManager.GetCacheDb();
+            var cacheDb = await cachedManager.GetCacheDb();
 
             var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
             var agentReader = agentManager.GetReader(AgentExecutablePath, cancellationToken);

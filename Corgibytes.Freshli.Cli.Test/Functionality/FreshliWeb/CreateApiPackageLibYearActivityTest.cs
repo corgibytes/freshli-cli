@@ -51,7 +51,7 @@ public class CreateApiPackageLibYearActivityTest
         _parent.Setup(mock => mock.HistoryStopPoint).Returns(historyStopPoint);
 
         cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(cachedAnalysis);
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
         resultsApi.Setup(mock => mock.CreatePackageLibYear(cacheDb.Object, _analysisId, historyStopPoint, _packageLibYear));
         serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(resultsApi.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);

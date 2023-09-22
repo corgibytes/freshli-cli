@@ -38,7 +38,7 @@ public class CreateAnalysisApiActivityTest
         cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).ReturnsAsync(cachedAnalysis);
 
         var cacheManager = new Mock<ICacheManager>();
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
 
         _serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(api.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);

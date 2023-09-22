@@ -12,5 +12,5 @@ public interface ICacheManager
     public ValueTask<bool> Prepare();
     public ValueTask<string> StoreBomInCache(string pathToBom, Guid analysisId, DateTimeOffset asOfDateTime);
 
-    public ICacheDb GetCacheDb();
+    public ValueTask<ICacheDb> GetCacheDb();
 }

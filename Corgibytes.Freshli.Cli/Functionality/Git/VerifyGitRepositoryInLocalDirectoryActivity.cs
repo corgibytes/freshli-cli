@@ -19,7 +19,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var gitSourceRepository = eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>();
-        var cacheDb = cacheManager.GetCacheDb();
+        var cacheDb = await cacheManager.GetCacheDb();
         var analysis = await cacheDb.RetrieveAnalysis(AnalysisId);
 
         if (analysis == null)

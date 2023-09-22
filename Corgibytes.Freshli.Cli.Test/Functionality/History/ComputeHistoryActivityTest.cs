@@ -32,7 +32,7 @@ public class ComputeHistoryActivityTest
     {
         Configuration = new Configuration(new MockEnvironment());
 
-        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
 
         _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(Configuration);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
