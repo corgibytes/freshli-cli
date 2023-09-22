@@ -21,4 +21,4 @@ elif [ "${USERNAME}" = "none" ] || ! id -u ${USERNAME} > /dev/null 2>&1; then
     USERNAME=root
 fi
 
-su --login $USERNAME dotnet tool install --global CycloneDX
+su --login --command "dotnet tool install --global CycloneDX" $USERNAME
