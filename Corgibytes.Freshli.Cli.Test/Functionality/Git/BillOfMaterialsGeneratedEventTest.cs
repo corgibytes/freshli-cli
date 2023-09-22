@@ -17,14 +17,12 @@ public class BillOfMaterialsGeneratedEventTest
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly CancellationToken _cancellationToken = new(false);
     private readonly Mock<IApplicationActivityEngine> _engine = new();
-    private readonly Guid _analysisId = Guid.NewGuid();
     private readonly BillOfMaterialsGeneratedEvent _appEvent;
 
     public BillOfMaterialsGeneratedEventTest()
     {
         _appEvent = new BillOfMaterialsGeneratedEvent
         {
-            AnalysisId = _analysisId,
             Parent = _parent.Object,
             PathToBillOfMaterials = PathToBom,
             AgentExecutablePath = AgentExecutablePath
@@ -39,7 +37,6 @@ public class BillOfMaterialsGeneratedEventTest
         _engine.Verify(mock =>
             mock.Dispatch(
                 It.Is<DeterminePackagesFromBomActivity>(value =>
-                    value.AnalysisId == _analysisId &&
                     value.Parent == _appEvent &&
                     value.PathToBom == PathToBom &&
                     value.AgentExecutablePath == AgentExecutablePath

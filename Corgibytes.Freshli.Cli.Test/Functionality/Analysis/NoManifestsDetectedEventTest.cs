@@ -12,7 +12,6 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
 public class NoManifestsDetectedEventTest
 {
     private readonly Mock<IApplicationActivityEngine> _activityClient = new();
-    private readonly Guid _analysisId = Guid.NewGuid();
     private readonly NoManifestsDetectedEvent _appEvent;
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly CancellationToken _cancellationToken = new(false);
@@ -21,7 +20,6 @@ public class NoManifestsDetectedEventTest
     {
         _appEvent = new NoManifestsDetectedEvent
         {
-            AnalysisId = _analysisId,
             Parent = _parent.Object
         };
     }

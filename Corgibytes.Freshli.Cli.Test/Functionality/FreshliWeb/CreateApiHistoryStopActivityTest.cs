@@ -22,14 +22,24 @@ public class CreateApiHistoryStopActivityTest
         const string repositoryBranch = "branch";
         var asOfDateTime = new DateTimeOffset(2022, 1, 1, 12, 52, 28, 0, TimeSpan.Zero);
 
-        var cachedAnalysis =
-            new CachedAnalysis(repositoryUrl, repositoryBranch, "1m", CommitHistory.AtInterval,
-                RevisionHistoryMode.AllRevisions)
-            { ApiAnalysisId = apiAnalysisId };
+        var cachedAnalysis = new CachedAnalysis
+        {
+            Id = cachedAnalysisId,
+            RepositoryUrl = repositoryUrl,
+            RepositoryBranch = repositoryBranch,
+            HistoryInterval = "1m",
+            UseCommitHistory = CommitHistory.AtInterval,
+            RevisionHistoryMode = RevisionHistoryMode.AllRevisions,
+            ApiAnalysisId = apiAnalysisId
+        };
 
         const int historyStopPointId = 29;
         var cacheDb = new Mock<ICacheDb>();
-        var historyStopPoint = new CachedHistoryStopPoint { AsOfDateTime = asOfDateTime };
+        var historyStopPoint = new CachedHistoryStopPoint
+        {
+            AsOfDateTime = asOfDateTime,
+            CachedAnalysis = cachedAnalysis
+        };
         cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).ReturnsAsync(cachedAnalysis);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
@@ -47,7 +57,6 @@ public class CreateApiHistoryStopActivityTest
 
         var activity = new CreateApiHistoryStopActivity
         {
-            CachedAnalysisId = cachedAnalysisId,
             HistoryStopPoint = historyStopPoint
         };
 
@@ -59,7 +68,6 @@ public class CreateApiHistoryStopActivityTest
         eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<ApiHistoryStopCreatedEvent>(value =>
-                    value.CachedAnalysisId == cachedAnalysisId &&
                     value.HistoryStopPoint == historyStopPoint
                 ),
                 cancellationToken,

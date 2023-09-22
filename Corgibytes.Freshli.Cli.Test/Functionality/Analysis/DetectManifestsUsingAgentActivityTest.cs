@@ -45,10 +45,8 @@ public class DetectManifestsUsingAgentActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var analysisId = Guid.NewGuid();
         var activity = new DetectManifestsUsingAgentActivity
         {
-            AnalysisId = analysisId,
             Parent = parent.Object,
             AgentExecutablePath = agentExecutablePath
         };
@@ -71,7 +69,6 @@ public class DetectManifestsUsingAgentActivityTest
         eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<ManifestDetectedEvent>(appEvent =>
-                    appEvent.AnalysisId == analysisId &&
                     appEvent.Parent == activity &&
                     appEvent.AgentExecutablePath == agentExecutablePath &&
                     appEvent.Manifest == firstCachedManifest
@@ -84,7 +81,6 @@ public class DetectManifestsUsingAgentActivityTest
         eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<ManifestDetectedEvent>(appEvent =>
-                    appEvent.AnalysisId == analysisId &&
                     appEvent.Parent == activity &&
                     appEvent.AgentExecutablePath == agentExecutablePath &&
                     appEvent.Manifest == secondCachedManifest
@@ -106,7 +102,6 @@ public class DetectManifestsUsingAgentActivityTest
         var cancellationToken = new CancellationToken(false);
         var activity = new DetectManifestsUsingAgentActivity
         {
-            AnalysisId = Guid.NewGuid(),
             Parent = parent.Object,
             AgentExecutablePath = "/path/to/agent"
         };
@@ -172,7 +167,6 @@ public class DetectManifestsUsingAgentActivityTest
         var cancellationToken = new CancellationToken(false);
         var activity = new DetectManifestsUsingAgentActivity
         {
-            AnalysisId = analysisId,
             Parent = parent.Object,
             AgentExecutablePath = agentExecutablePath
         };
@@ -182,7 +176,6 @@ public class DetectManifestsUsingAgentActivityTest
         eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<NoManifestsDetectedEvent>(appEvent =>
-                    appEvent.AnalysisId == analysisId &&
                     appEvent.Parent == activity
                 ),
                 cancellationToken,

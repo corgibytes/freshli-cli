@@ -16,7 +16,6 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
         get { return 100; }
     }
 
-    public required Guid AnalysisId { get; init; }
     public required string AgentExecutablePath { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
@@ -29,7 +28,7 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
 
             var logger = eventClient.ServiceProvider.GetService<ILogger<DetectManifestsUsingAgentActivity>>();
             logger?.LogDebug("Handling manifest detection for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId} with agent = {Agent}",
-                AnalysisId, historyStopPoint.Id, AgentExecutablePath);
+                historyStopPoint.CachedAnalysis.Id, historyStopPoint.Id, AgentExecutablePath);
 
             var cachedManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = await cachedManager.GetCacheDb();
@@ -51,7 +50,6 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
                 await eventClient.Fire(
                     new ManifestDetectedEvent
                     {
-                        AnalysisId = AnalysisId,
                         Parent = this,
                         AgentExecutablePath = AgentExecutablePath,
                         Manifest = manifest
@@ -63,7 +61,7 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
             if (!manifestsFound)
             {
                 await eventClient.Fire(
-                    new NoManifestsDetectedEvent { AnalysisId = AnalysisId, Parent = this },
+                    new NoManifestsDetectedEvent { Parent = this },
                     cancellationToken
                 );
             }

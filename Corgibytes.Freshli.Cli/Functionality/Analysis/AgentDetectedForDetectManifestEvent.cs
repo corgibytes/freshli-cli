@@ -8,7 +8,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AgentDetectedForDetectManifestEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required string AgentExecutablePath { get; init; }
 
@@ -19,7 +18,6 @@ public class AgentDetectedForDetectManifestEvent : ApplicationEventBase, IHistor
             await eventClient.Dispatch(
                 new DetectManifestsUsingAgentActivity
                 {
-                    AnalysisId = AnalysisId,
                     Parent = this,
                     AgentExecutablePath = AgentExecutablePath
                 },

@@ -15,7 +15,6 @@ public class PackageFoundEventTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyDispatchesComputeLibYearForPackageActivity()
     {
-        var analysisId = Guid.NewGuid();
         const string agentExecutablePath = "/path/to/agent";
         var activityEngine = new Mock<IApplicationActivityEngine>();
         var cancellationToken = new System.Threading.CancellationToken(false);
@@ -24,7 +23,6 @@ public class PackageFoundEventTest
         var package = new PackageURL("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
         var packageEvent = new PackageFoundEvent
         {
-            AnalysisId = analysisId,
             Parent = parent.Object,
             AgentExecutablePath = agentExecutablePath,
             Package = package
@@ -35,7 +33,6 @@ public class PackageFoundEventTest
         activityEngine.Verify(
             mock => mock.Dispatch(
                 It.Is<ComputeLibYearForPackageActivity>(value =>
-                    value.AnalysisId == analysisId &&
                     value.Parent == parent.Object &&
                     value.AgentExecutablePath == agentExecutablePath &&
                     value.Package == package

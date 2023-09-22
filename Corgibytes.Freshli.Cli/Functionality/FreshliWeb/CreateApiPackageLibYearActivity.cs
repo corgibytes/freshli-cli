@@ -10,7 +10,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class CreateApiPackageLibYearActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required CachedPackageLibYear PackageLibYear { get; init; }
     public required string AgentExecutablePath { get; init; }
@@ -32,12 +31,11 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity, IHistorySto
             var historyStopPoint = Parent?.HistoryStopPoint;
             _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
 
-            await resultsApi.CreatePackageLibYear(cacheDb, AnalysisId, historyStopPoint, PackageLibYear);
+            await resultsApi.CreatePackageLibYear(cacheDb, historyStopPoint.CachedAnalysis.Id, historyStopPoint, PackageLibYear);
 
             await eventClient.Fire(
                 new ApiPackageLibYearCreatedEvent
                 {
-                    AnalysisId = AnalysisId,
                     Parent = this,
                     PackageLibYear = PackageLibYear,
                     AgentExecutablePath = AgentExecutablePath

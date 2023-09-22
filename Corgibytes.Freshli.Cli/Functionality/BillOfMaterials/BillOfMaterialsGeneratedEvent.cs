@@ -9,7 +9,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class BillOfMaterialsGeneratedEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required string PathToBillOfMaterials { get; init; }
     public required string AgentExecutablePath { get; init; }
@@ -21,7 +20,6 @@ public class BillOfMaterialsGeneratedEvent : ApplicationEventBase, IHistoryStopP
             await eventClient.Dispatch(
                 new DeterminePackagesFromBomActivity
                 {
-                    AnalysisId = AnalysisId,
                     Parent = this,
                     PathToBom = PathToBillOfMaterials,
                     AgentExecutablePath = AgentExecutablePath

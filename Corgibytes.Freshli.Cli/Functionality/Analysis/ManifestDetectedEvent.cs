@@ -10,7 +10,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class ManifestDetectedEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required CachedManifest? Manifest { get; init; }
     public required string AgentExecutablePath { get; init; }
@@ -22,7 +21,6 @@ public class ManifestDetectedEvent : ApplicationEventBase, IHistoryStopPointProc
             await eventClient.Dispatch(
                 new GenerateBillOfMaterialsActivity
                 {
-                    AnalysisId = AnalysisId,
                     AgentExecutablePath = AgentExecutablePath,
                     Parent = this
                 },

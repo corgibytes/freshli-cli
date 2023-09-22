@@ -15,11 +15,9 @@ public class ApiHistoryStopCreatedEventTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleDispatchesCheckoutHistoryActivity()
     {
-        var cachedAnalysisId = Guid.NewGuid();
         var historyStopPoint = new CachedHistoryStopPoint { Id = 29 };
         var appEvent = new ApiHistoryStopCreatedEvent
         {
-            CachedAnalysisId = cachedAnalysisId,
             HistoryStopPoint = historyStopPoint
         };
 

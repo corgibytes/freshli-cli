@@ -15,13 +15,15 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
         get { return 100; }
     }
 
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required string PathToBom { get; init; }
     public required string AgentExecutablePath { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
+        var historyStopPoint = Parent?.HistoryStopPoint;
+        _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
+
         var logger = eventClient.ServiceProvider.GetService<ILogger<DeterminePackagesFromBomActivity>>();
         logger?.LogTrace("Handling retrieval of packageUrls from BomFile = {PathToBom}", PathToBom);
 
@@ -42,7 +44,6 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
                 await eventClient.Fire(
                     new PackageFoundEvent
                     {
-                        AnalysisId = AnalysisId,
                         Parent = this,
                         AgentExecutablePath = AgentExecutablePath,
                         Package = packageUrl
@@ -53,7 +54,7 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
 
             if (packageUrls.Count == 0)
             {
-                await eventClient.Fire(new NoPackagesFoundEvent(AnalysisId, this), cancellationToken);
+                await eventClient.Fire(new NoPackagesFoundEvent(this), cancellationToken);
             }
         }
         catch (Exception error)

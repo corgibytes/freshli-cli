@@ -12,7 +12,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
     public int Priority
@@ -28,7 +27,7 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHis
             _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
 
             var logger = eventClient.ServiceProvider.GetService<ILogger<DetectAgentsForDetectManifestsActivity>>();
-            logger?.LogTrace("Handling agents detection for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, historyStopPoint.Id);
+            logger?.LogTrace("Handling agents detection for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", historyStopPoint.CachedAnalysis.Id, historyStopPoint.Id);
 
             var agentsDetector = eventClient.ServiceProvider.GetRequiredService<IAgentsDetector>();
             var agents = agentsDetector.Detect();
@@ -42,11 +41,11 @@ public class DetectAgentsForDetectManifestsActivity : IApplicationActivity, IHis
             }
 
             logger?.LogTrace("Found {Count} agents to detect manifests of AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}",
-                agents.Count, AnalysisId, historyStopPoint.Id);
+                agents.Count, historyStopPoint.CachedAnalysis.Id, historyStopPoint.Id);
             foreach (var agentPath in agents)
             {
                 await eventClient.Fire(
-                    new AgentDetectedForDetectManifestEvent { AnalysisId = AnalysisId, Parent = this, AgentExecutablePath = agentPath },
+                    new AgentDetectedForDetectManifestEvent { Parent = this, AgentExecutablePath = agentPath },
                     cancellationToken);
             }
         }

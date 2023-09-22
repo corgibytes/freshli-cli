@@ -40,7 +40,14 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _analysisId = new Guid();
 
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(
-            new CachedAnalysis(_repositoryLocation, "main", "1m", CommitHistory.Full, RevisionHistoryMode.AllRevisions)
+            new CachedAnalysis
+            {
+                RepositoryUrl = _repositoryLocation,
+                RepositoryBranch = "main",
+                HistoryInterval = "1m",
+                UseCommitHistory = CommitHistory.Full,
+                RevisionHistoryMode = RevisionHistoryMode.AllRevisions
+            }
         );
     }
 

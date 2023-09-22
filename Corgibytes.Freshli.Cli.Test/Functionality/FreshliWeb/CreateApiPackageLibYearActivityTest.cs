@@ -30,13 +30,19 @@ public class CreateApiPackageLibYearActivityTest
         const string repositoryBranch = "main";
         const string historyInterval = "1m";
 
-        var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval,
-            CommitHistory.AtInterval, RevisionHistoryMode.AllRevisions)
-        { ApiAnalysisId = apiAnalysisId };
+        var cachedAnalysis = new CachedAnalysis
+        {
+            Id = _analysisId,
+            RepositoryUrl = repositoryUrl,
+            RepositoryBranch = repositoryBranch,
+            HistoryInterval = historyInterval,
+            UseCommitHistory = CommitHistory.AtInterval,
+            RevisionHistoryMode = RevisionHistoryMode.AllRevisions,
+            ApiAnalysisId = apiAnalysisId
+        };
 
         var activity = new CreateApiPackageLibYearActivity
         {
-            AnalysisId = _analysisId,
             Parent = _parent.Object,
             PackageLibYear = _packageLibYear,
             AgentExecutablePath = AgentExecutablePath
@@ -47,22 +53,23 @@ public class CreateApiPackageLibYearActivityTest
         var cacheDb = new Mock<ICacheDb>();
         var resultsApi = new Mock<IResultsApi>();
 
-        var historyStopPoint = new CachedHistoryStopPoint { Id = 29 };
+        var historyStopPoint = new CachedHistoryStopPoint { Id = 29, CachedAnalysis = cachedAnalysis };
         _parent.Setup(mock => mock.HistoryStopPoint).Returns(historyStopPoint);
 
-        cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(cachedAnalysis);
         cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
-        resultsApi.Setup(mock => mock.CreatePackageLibYear(cacheDb.Object, _analysisId, historyStopPoint, _packageLibYear));
         serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(resultsApi.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         _eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         await activity.Handle(_eventClient.Object, _cancellationToken);
 
+        resultsApi.Verify(mock =>
+            mock.CreatePackageLibYear(cacheDb.Object, _analysisId, historyStopPoint, _packageLibYear)
+        );
+
         _eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<ApiPackageLibYearCreatedEvent>(value =>
-                    value.AnalysisId == _analysisId &&
                     value.Parent == activity &&
                     value.PackageLibYear == _packageLibYear &&
                     value.AgentExecutablePath == AgentExecutablePath
@@ -78,7 +85,6 @@ public class CreateApiPackageLibYearActivityTest
     {
         var activity = new CreateApiPackageLibYearActivity
         {
-            AnalysisId = _analysisId,
             Parent = _parent.Object,
             PackageLibYear = _packageLibYear,
             AgentExecutablePath = AgentExecutablePath

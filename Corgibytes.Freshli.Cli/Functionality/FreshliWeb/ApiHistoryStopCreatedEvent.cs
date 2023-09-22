@@ -10,13 +10,10 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 public class ApiHistoryStopCreatedEvent : ApplicationEventBase
 {
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public required Guid CachedAnalysisId { get; init; }
-
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public required CachedHistoryStopPoint HistoryStopPoint { get; init; }
 
     public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken) =>
         await eventClient.Dispatch(
-            new CheckoutHistoryActivity { AnalysisId = CachedAnalysisId, HistoryStopPoint = HistoryStopPoint },
+            new CheckoutHistoryActivity { HistoryStopPoint = HistoryStopPoint },
             cancellationToken);
 }

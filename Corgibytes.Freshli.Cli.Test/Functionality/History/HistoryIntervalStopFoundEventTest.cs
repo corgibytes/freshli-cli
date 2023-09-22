@@ -16,11 +16,9 @@ public class HistoryIntervalStopFoundEventTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleFiresCreateApiHistoryIntervalStop()
     {
-        var cachedAnalysisId = Guid.NewGuid();
         var historyStopPoint = new CachedHistoryStopPoint { Id = 29 };
         var appEvent = new HistoryIntervalStopFoundEvent
         {
-            AnalysisId = cachedAnalysisId,
             HistoryStopPoint = historyStopPoint
         };
 
@@ -37,7 +35,6 @@ public class HistoryIntervalStopFoundEventTest
         eventClient.Verify(mock =>
             mock.Dispatch(
                 It.Is<CreateApiHistoryStopActivity>(value =>
-                    value.CachedAnalysisId == cachedAnalysisId &&
                     value.HistoryStopPoint == historyStopPoint
                 ),
                 cancellationToken,

@@ -20,7 +20,6 @@ public class ManifestDetectedEventTest
         var engine = new Mock<IApplicationActivityEngine>();
 
         const string agentExecutablePath = "/path/to/agent";
-        var analysisId = Guid.NewGuid();
         var parent = new Mock<IHistoryStopPointProcessingTask>();
         var cancellationToken = new System.Threading.CancellationToken(false);
 
@@ -31,7 +30,6 @@ public class ManifestDetectedEventTest
 
         var manifestEvent = new ManifestDetectedEvent
         {
-            AnalysisId = analysisId,
             Parent = parent.Object,
             AgentExecutablePath = agentExecutablePath,
             Manifest = cachedManifest
@@ -41,7 +39,6 @@ public class ManifestDetectedEventTest
         engine.Verify(
             mock => mock.Dispatch(
                 It.Is<GenerateBillOfMaterialsActivity>(value =>
-                    value.AnalysisId == analysisId &&
                     value.Parent == manifestEvent &&
                     value.AgentExecutablePath == agentExecutablePath
                 ),
@@ -62,7 +59,6 @@ public class ManifestDetectedEventTest
 
         var appEvent = new ManifestDetectedEvent
         {
-            AnalysisId = Guid.NewGuid(),
             Parent = parent.Object,
             AgentExecutablePath = "/path/to/agent",
             Manifest = cachedManifest

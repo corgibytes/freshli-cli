@@ -16,11 +16,9 @@ public class AgentDetectedForDetectManifestEventTest
     public async Task Handle()
     {
         const string agentExecutablePath = "/path/to/agent";
-        var analysisId = Guid.NewGuid();
         var parent = new Mock<IHistoryStopPointProcessingTask>();
         var appEvent = new AgentDetectedForDetectManifestEvent
         {
-            AnalysisId = analysisId,
             Parent = parent.Object,
             AgentExecutablePath = agentExecutablePath
         };
@@ -33,7 +31,6 @@ public class AgentDetectedForDetectManifestEventTest
         activityEngine.Verify(mock =>
             mock.Dispatch(
                 It.Is<DetectManifestsUsingAgentActivity>(activity =>
-                    activity.AnalysisId == analysisId &&
                     activity.Parent == appEvent &&
                     activity.AgentExecutablePath == agentExecutablePath
                 ),
@@ -50,7 +47,6 @@ public class AgentDetectedForDetectManifestEventTest
         var cancellationToken = new CancellationToken(false);
         var appEvent = new AgentDetectedForDetectManifestEvent
         {
-            AnalysisId = Guid.NewGuid(),
             Parent = parent.Object,
             AgentExecutablePath = "/path/to/agent"
         };

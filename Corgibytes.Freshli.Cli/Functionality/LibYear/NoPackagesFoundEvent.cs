@@ -8,12 +8,10 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class NoPackagesFoundEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
-    public Guid AnalysisId { get; }
     public IHistoryStopPointProcessingTask? Parent { get; }
 
-    public NoPackagesFoundEvent(Guid analysisId, IHistoryStopPointProcessingTask? parent)
+    public NoPackagesFoundEvent(IHistoryStopPointProcessingTask? parent)
     {
-        AnalysisId = analysisId;
         Parent = parent;
     }
 

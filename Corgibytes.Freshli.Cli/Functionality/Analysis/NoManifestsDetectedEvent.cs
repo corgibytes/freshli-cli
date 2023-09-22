@@ -8,7 +8,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class NoManifestsDetectedEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
     public override ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)

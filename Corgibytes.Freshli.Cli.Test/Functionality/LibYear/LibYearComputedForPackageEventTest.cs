@@ -16,7 +16,6 @@ public class LibYearComputedForPackageEventTest
 {
     private readonly CachedPackageLibYear _packageLibYear = new() { Id = 9 };
     private const string AgentExecutablePath = "/path/to/agent";
-    private readonly Guid _analysisId = Guid.NewGuid();
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly CancellationToken _cancellationToken = new(false);
     private readonly LibYearComputedForPackageEvent _appEvent;
@@ -26,7 +25,6 @@ public class LibYearComputedForPackageEventTest
     {
         _appEvent = new LibYearComputedForPackageEvent
         {
-            AnalysisId = _analysisId,
             Parent = _parent.Object,
             PackageLibYear = _packageLibYear,
             AgentExecutablePath = AgentExecutablePath
@@ -41,7 +39,6 @@ public class LibYearComputedForPackageEventTest
         _activityClient.Verify(mock =>
             mock.Dispatch(
                 It.Is<CreateApiPackageLibYearActivity>(value =>
-                    value.AnalysisId == _analysisId &&
                     value.Parent == _appEvent &&
                     value.PackageLibYear == _packageLibYear &&
                     value.AgentExecutablePath == AgentExecutablePath

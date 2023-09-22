@@ -14,7 +14,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required PackageURL Package { get; init; }
     public required string AgentExecutablePath { get; init; }
@@ -84,7 +83,6 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
             await eventClient.Fire(
                 new LibYearComputedForPackageEvent
                 {
-                    AnalysisId = AnalysisId,
                     Parent = this,
                     PackageLibYear = packageLibYear,
                     AgentExecutablePath = AgentExecutablePath

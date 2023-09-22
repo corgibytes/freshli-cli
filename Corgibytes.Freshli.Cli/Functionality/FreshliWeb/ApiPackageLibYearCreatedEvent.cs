@@ -9,7 +9,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class ApiPackageLibYearCreatedEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required CachedPackageLibYear PackageLibYear { get; init; }
     public required string AgentExecutablePath { get; init; }

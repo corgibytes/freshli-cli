@@ -10,9 +10,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 public class CreateApiHistoryStopActivity : IApplicationActivity
 {
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public required Guid CachedAnalysisId { get; init; }
-
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public required CachedHistoryStopPoint HistoryStopPoint { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
@@ -21,10 +18,11 @@ public class CreateApiHistoryStopActivity : IApplicationActivity
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
         var cacheDb = await cacheManager.GetCacheDb();
 
-        await resultsApi.CreateHistoryPoint(cacheDb, CachedAnalysisId, HistoryStopPoint);
+        // TODO: Why is the cacheDb passed in this way. Shouldn't the ResultsAPI received the ICacheManager instance via dependency injection and then get the cacheDb from that?
+        await resultsApi.CreateHistoryPoint(cacheDb, HistoryStopPoint.CachedAnalysis.Id, HistoryStopPoint);
 
         await eventClient.Fire(
-            new ApiHistoryStopCreatedEvent { CachedAnalysisId = CachedAnalysisId, HistoryStopPoint = HistoryStopPoint },
+            new ApiHistoryStopCreatedEvent { HistoryStopPoint = HistoryStopPoint },
             cancellationToken
         );
     }

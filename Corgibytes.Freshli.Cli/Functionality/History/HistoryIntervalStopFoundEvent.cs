@@ -12,9 +12,6 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 public class HistoryIntervalStopFoundEvent : ApplicationEventBase
 {
     // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
-    public required Guid AnalysisId { get; init; }
-
-    // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
     public required CachedHistoryStopPoint HistoryStopPoint { get; init; }
 
     public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
@@ -22,7 +19,7 @@ public class HistoryIntervalStopFoundEvent : ApplicationEventBase
         var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<HistoryIntervalStopFoundEvent>>();
         logger.LogDebug("Started processing history stop point {id}", HistoryStopPoint.Id);
         await eventClient.Dispatch(
-            new CreateApiHistoryStopActivity { CachedAnalysisId = AnalysisId, HistoryStopPoint = HistoryStopPoint },
+            new CreateApiHistoryStopActivity { HistoryStopPoint = HistoryStopPoint },
             cancellationToken
         );
     }

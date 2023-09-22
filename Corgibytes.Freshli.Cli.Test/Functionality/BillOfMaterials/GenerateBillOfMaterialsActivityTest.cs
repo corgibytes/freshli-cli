@@ -29,11 +29,13 @@ public class GenerateBillOfMaterialsActivityTest
 
         var cacheManager = new Mock<ICacheManager>();
         var cacheDb = new Mock<ICacheDb>();
+        var analysisId = Guid.NewGuid();
         var historyStopPoint = new CachedHistoryStopPoint
         {
             Id = 29,
             LocalPath = "/path/to/repository",
-            AsOfDateTime = asOfDateTime
+            AsOfDateTime = asOfDateTime,
+            CachedAnalysis = new CachedAnalysis { Id = analysisId }
         };
         var manifest = new CachedManifest
         {
@@ -59,16 +61,12 @@ public class GenerateBillOfMaterialsActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        // Act
-        var analysisId = Guid.NewGuid();
-
         cacheManager.Setup(mock => mock.StoreBomInCache("/path/to/bill-of-materials", analysisId, asOfDateTime))
             .ReturnsAsync("/path/to/bom/in/cache");
 
         var cancellationToken = new CancellationToken(false);
         var activity = new GenerateBillOfMaterialsActivity
         {
-            AnalysisId = analysisId,
             AgentExecutablePath = agentExecutablePath,
             Parent = parent.Object,
         };
@@ -79,7 +77,6 @@ public class GenerateBillOfMaterialsActivityTest
             mock.Fire(
                 It.Is<BillOfMaterialsGeneratedEvent>(appEvent =>
                     appEvent.AgentExecutablePath == agentExecutablePath &&
-                    appEvent.AnalysisId == analysisId &&
                     appEvent.Parent == activity &&
                     appEvent.PathToBillOfMaterials == "/path/to/bom/in/cache"
                 ),
@@ -109,7 +106,6 @@ public class GenerateBillOfMaterialsActivityTest
         var cancellationToken = new CancellationToken(false);
         var activity = new GenerateBillOfMaterialsActivity
         {
-            AnalysisId = Guid.NewGuid(),
             AgentExecutablePath = "/path/to/agent",
             Parent = parent.Object
         };

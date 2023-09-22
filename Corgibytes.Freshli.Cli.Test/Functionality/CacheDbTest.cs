@@ -334,11 +334,13 @@ public class CacheDbTest
     }
 
     private static CachedAnalysis BuildCompleteCachedAnalysis() =>
-        new(
-            "git@github.com:corgibytes/freshli", "test", "1m", CommitHistory.Full,
-            RevisionHistoryMode.AllRevisions
-        )
+        new()
         {
+            RepositoryUrl = "git@github.com:corgibytes/freshli",
+            RepositoryBranch = "test",
+            HistoryInterval = "1m",
+            UseCommitHistory = CommitHistory.Full,
+            RevisionHistoryMode = RevisionHistoryMode.AllRevisions,
             ApiAnalysisId = Guid.NewGuid()
         };
 

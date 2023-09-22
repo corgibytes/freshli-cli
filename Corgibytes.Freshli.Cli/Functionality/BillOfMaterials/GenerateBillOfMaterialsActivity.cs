@@ -21,7 +21,6 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_historyPointSemaphores = new();
 
     public required string AgentExecutablePath { get; init; }
-    public required Guid AnalysisId { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
@@ -73,12 +72,11 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
                 return;
             }
 
-            var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
+            var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, historyStopPoint.CachedAnalysis.Id, asOfDateTime);
 
             await eventClient.Fire(
                 new BillOfMaterialsGeneratedEvent
                 {
-                    AnalysisId = AnalysisId,
                     Parent = this,
                     PathToBillOfMaterials = cachedBomFilePath,
                     AgentExecutablePath = AgentExecutablePath

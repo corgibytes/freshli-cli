@@ -15,22 +15,18 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
 {
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new();
 
-    public required Guid AnalysisId { get; init; }
-
     public IHistoryStopPointProcessingTask? Parent => null;
     public required CachedHistoryStopPoint HistoryStopPoint { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var logger = eventClient.ServiceProvider.GetService<ILogger<CheckoutHistoryActivity>>();
-        logger?.LogDebug("Handling history checkout for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, HistoryStopPoint.Id);
+        logger?.LogDebug("Handling history checkout for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", HistoryStopPoint.CachedAnalysis.Id, HistoryStopPoint.Id);
 
         if (HistoryStopPoint.GitCommitId == null)
         {
             throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
         }
-        logger?.LogDebug("historyStopPoint = {@HistoryStopPoint} for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}",
-            HistoryStopPoint, AnalysisId, HistoryStopPoint.Id);
 
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
@@ -39,11 +35,10 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
             gitManager.ParseCommitId(HistoryStopPoint.GitCommitId)
         );
 
-        logger?.LogDebug("Fire HistoryStopCheckedOutEvent for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, HistoryStopPoint.Id);
+        logger?.LogDebug("Fire HistoryStopCheckedOutEvent for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", HistoryStopPoint.CachedAnalysis.Id, HistoryStopPoint.Id);
         await eventClient.Fire(
             new HistoryStopCheckedOutEvent
             {
-                AnalysisId = AnalysisId,
                 Parent = this
             },
             cancellationToken);

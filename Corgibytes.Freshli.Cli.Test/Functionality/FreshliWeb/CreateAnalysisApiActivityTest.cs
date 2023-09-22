@@ -29,11 +29,15 @@ public class CreateAnalysisApiActivityTest
         api.Setup(mock => mock.CreateAnalysis(url)).ReturnsAsync(apiAnalysisId);
         var activity = new CreateAnalysisApiActivity(cachedAnalysisId);
 
-        var cachedAnalysis =
-            new CachedAnalysis(url, branch, null!, CommitHistory.AtInterval, RevisionHistoryMode.OnlyLatestRevision)
-            {
-                Id = cachedAnalysisId
-            };
+        var cachedAnalysis = new CachedAnalysis
+        {
+            Id = cachedAnalysisId,
+            RepositoryUrl = url,
+            RepositoryBranch = branch,
+            UseCommitHistory = CommitHistory.AtInterval,
+            RevisionHistoryMode = RevisionHistoryMode.OnlyLatestRevision,
+        };
+
         var cacheDb = new Mock<ICacheDb>();
         cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).ReturnsAsync(cachedAnalysis);
 

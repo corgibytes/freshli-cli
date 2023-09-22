@@ -102,7 +102,7 @@ public class ComputeHistoryActivity : IApplicationActivity
                 });
 
             await eventClient.Fire(
-                new HistoryIntervalStopFoundEvent { AnalysisId = AnalysisId, HistoryStopPoint = historyStopPoint },
+                new HistoryIntervalStopFoundEvent { HistoryStopPoint = historyStopPoint },
                 cancellationToken);
         }
     }

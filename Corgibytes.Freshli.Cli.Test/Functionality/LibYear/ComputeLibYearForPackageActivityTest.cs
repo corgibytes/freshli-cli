@@ -20,7 +20,6 @@ public class ComputeLibYearForPackageActivityTest
 
     private readonly CancellationToken _cancellationToken = new(false);
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
-    private readonly Guid _analysisId = Guid.NewGuid();
     private readonly PackageURL _package = new("pkg:nuget/org.corgibytes.calculatron/calculatron@14.6");
     private readonly ComputeLibYearForPackageActivity _activity;
     private readonly Mock<IApplicationEventEngine> _eventClient = new();
@@ -32,7 +31,6 @@ public class ComputeLibYearForPackageActivityTest
     {
         _activity = new ComputeLibYearForPackageActivity
         {
-            AnalysisId = _analysisId,
             Parent = _parent.Object,
             AgentExecutablePath = AgentExecutablePath,
             Package = _package
@@ -100,7 +98,6 @@ public class ComputeLibYearForPackageActivityTest
         _eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<LibYearComputedForPackageEvent>(value =>
-                    value.AnalysisId == _analysisId &&
                     value.Parent == _activity &&
                     value.PackageLibYear == cachedPackageLibYear &&
                     value.AgentExecutablePath == AgentExecutablePath
@@ -161,7 +158,6 @@ public class ComputeLibYearForPackageActivityTest
         _eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<LibYearComputedForPackageEvent>(value =>
-                    value.AnalysisId == _analysisId &&
                     value.Parent == _activity &&
                     value.PackageLibYear == cachedPackageLibYear &&
                     value.AgentExecutablePath == AgentExecutablePath

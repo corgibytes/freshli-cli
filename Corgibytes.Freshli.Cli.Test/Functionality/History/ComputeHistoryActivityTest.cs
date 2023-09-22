@@ -190,8 +190,15 @@ public class ComputeHistoryActivityTest
     {
         // Arrange
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval, useCommitHistory,
-            revisionHistoryMode);
+        var cachedAnalysis = new CachedAnalysis
+        {
+            RepositoryUrl = repositoryUrl,
+            RepositoryBranch = repositoryBranch,
+            HistoryInterval = historyInterval,
+            UseCommitHistory = useCommitHistory,
+            RevisionHistoryMode = revisionHistoryMode
+        };
+
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).ReturnsAsync(cachedAnalysis);
     }
 
@@ -240,7 +247,6 @@ public class ComputeHistoryActivityTest
             _eventEngine.Verify(mock =>
                 mock.Fire(
                     It.Is<HistoryIntervalStopFoundEvent>(value =>
-                        value.AnalysisId == analysisId &&
                         value.HistoryStopPoint.Id == id
                     ),
                     _cancellationToken,

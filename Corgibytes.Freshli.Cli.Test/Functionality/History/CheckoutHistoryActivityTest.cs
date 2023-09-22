@@ -40,10 +40,8 @@ public class CheckoutHistoryActivityTest
 
         var gitManager = new Mock<IGitManager>();
 
-        var analysisId = Guid.NewGuid();
         var activity = new CheckoutHistoryActivity
         {
-            AnalysisId = analysisId,
             HistoryStopPoint = historyStopPoint
         };
 
@@ -65,7 +63,6 @@ public class CheckoutHistoryActivityTest
         eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<HistoryStopCheckedOutEvent>(appEvent =>
-                    appEvent.AnalysisId == analysisId &&
                     appEvent.Parent!.HistoryStopPoint == historyStopPoint
                 ),
                 cancellationToken,

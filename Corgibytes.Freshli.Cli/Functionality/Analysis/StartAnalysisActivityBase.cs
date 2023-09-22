@@ -31,8 +31,15 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     private async ValueTask FireAnalysisStartedEvent(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var cacheDb = await CacheManager.GetCacheDb();
-        var id = await cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
-            UseCommitHistory, RevisionHistoryMode));
+        var id = await cacheDb.SaveAnalysis(
+            new CachedAnalysis {
+                RepositoryUrl = RepositoryUrl,
+                RepositoryBranch = RepositoryBranch,
+                HistoryInterval = HistoryInterval,
+                UseCommitHistory = UseCommitHistory,
+                RevisionHistoryMode = RevisionHistoryMode
+            }
+        );
         await eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id }, cancellationToken);
     }
 
