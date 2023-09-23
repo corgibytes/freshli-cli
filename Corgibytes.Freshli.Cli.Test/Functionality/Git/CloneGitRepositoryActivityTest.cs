@@ -41,7 +41,8 @@ public class CloneGitRepositoryActivityTest
 
         _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
 
-        _cachedAnalysis = new CachedAnalysis {
+        _cachedAnalysis = new CachedAnalysis
+        {
             RepositoryUrl = Url,
             RepositoryBranch = Branch,
             HistoryInterval = "1m",

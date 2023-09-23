@@ -32,7 +32,8 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     {
         var cacheDb = await CacheManager.GetCacheDb();
         var id = await cacheDb.SaveAnalysis(
-            new CachedAnalysis {
+            new CachedAnalysis
+            {
                 RepositoryUrl = RepositoryUrl,
                 RepositoryBranch = RepositoryBranch,
                 HistoryInterval = HistoryInterval,
@@ -71,13 +72,10 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
         return false;
     }
 
-    protected virtual TErrorEvent CreateErrorEvent() =>
-        // ReSharper disable once UseStringInterpolation
-        new()
-        {
-            ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.",
-                Configuration.CacheDir)
-        };
+    protected virtual TErrorEvent CreateErrorEvent() => new()
+    {
+        ErrorMessage = $"Unable to locate a valid cache directory at: '{Configuration.CacheDir}'."
+    };
 
     private async ValueTask HandleWithCacheFailure(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {

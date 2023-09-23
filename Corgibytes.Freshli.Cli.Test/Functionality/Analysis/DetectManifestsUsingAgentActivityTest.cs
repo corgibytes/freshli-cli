@@ -162,8 +162,6 @@ public class DetectManifestsUsingAgentActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var analysisId = Guid.NewGuid();
-
         var cancellationToken = new CancellationToken(false);
         var activity = new DetectManifestsUsingAgentActivity
         {
