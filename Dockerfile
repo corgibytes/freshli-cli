@@ -3,7 +3,7 @@
 # directory.
 
 ### Build `freshli` executable
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0.100-bullseye-slim AS dotnet_build
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0.401-bullseye-slim AS dotnet_build
 ARG TARGETARCH
 # Allow builder to build from branches other than `main`
 ARG FRESHLI_AGENT_DOTNET_BRANCH=main
@@ -50,9 +50,7 @@ RUN dotnet build Corgibytes.Freshli.Agent.DotNet/Corgibytes.Freshli.Agent.DotNet
 WORKDIR /app
 RUN git clone https://github.com/CycloneDX/cyclonedx-dotnet.git
 WORKDIR /app/cyclonedx-dotnet
-RUN git checkout "v2.7.0"
-RUN dotnet publish -c Release -r ${DOTNET_RUNTIME_ID} --self-contained false -f net6.0
-RUN cp -r CycloneDX/bin/Release/net6.0/${DOTNET_RUNTIME_ID}/publish /app/cyclonedx-dotnet/CycloneDX/.
+RUN dotnet tool install --tool-path . cyclonedx
 
 ### Build `freshli-agent-java` executable
 FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk-jammy AS java_build
@@ -67,8 +65,15 @@ WORKDIR /app/freshli-agent-java
 RUN ./gradlew installDist
 
 ### Runtime container
-# Use Java JRE as the base image -- the `freshli` executable is self contained (meaning it does not need the .NET runtime to be installed)
-FROM eclipse-temurin:17-jdk-jammy AS final
+# Use .NET SDK as the base image, because it is required by the dotnet agent
+FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0.401-bullseye-slim AS final
+
+# Install Java JDK
+RUN apt update -y && apt install -y wget apt-transport-https
+RUN mkdir -p /etc/apt/keyrings
+RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc
+RUN echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
+RUN apt update -y && apt-get install temurin-17-jdk -y
 
 # Install git
 RUN apt update -y && apt install git lsof -y
@@ -112,22 +117,13 @@ RUN mkdir -p /root/.freshli
 
 # Also, copy `freshli-agent-dotnet` from the `dotnet_build` image
 RUN mkdir -p /usr/local/share/freshli-agent-dotnet
-COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/exe /usr/local/share/freshli-agent-dotnet/bin
-RUN ln -s /usr/local/share/freshli-agent-dotnet/bin/freshli-agent-dotnet /usr/local/bin/freshli-agent-dotnet
-COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/Corgibytes.Freshli.Agent.DotNet/appsettings.json /usr/local/share/freshli-agent-dotnet/bin/appsettings.json
+COPY --from=dotnet_build_platform_specific /app/freshli-agent-dotnet/exe/ /usr/local/share/freshli-agent-dotnet/bin/
 RUN ln -s /usr/local/share/freshli-agent-dotnet/bin/freshli-agent-dotnet /usr/local/bin/freshli-agent-dotnet
 
+# Copy `dotnet-CycloneDX` from the `dotnet_build` image
 RUN mkdir -p /usr/local/share/cyclonedx-dotnet
-COPY --from=dotnet_build_platform_specific /app/cyclonedx-dotnet/CycloneDX/publish /usr/local/share/cyclonedx-dotnet
-RUN ln -s /usr/local/share/cyclonedx-dotnet/CycloneDX /usr/local/bin/cyclonedx
-
-# Install dotnet v6 runtime
-WORKDIR /tmp
-RUN wget https://dot.net/v1/dotnet-install.sh
-RUN chmod +x dotnet-install.sh
-RUN ./dotnet-install.sh --install-dir /usr/local/share/dotnet-6.0 --os linux
-RUN ln -s /usr/local/share/dotnet-6.0/dotnet /usr/local/bin/dotnet
-ENV DOTNET_ROOT=/usr/local/share/dotnet-6.0
+COPY --from=dotnet_build_platform_specific /app/cyclonedx-dotnet /usr/local/share/cyclonedx-dotnet
+RUN ln -s /usr/local/share/cyclonedx-dotnet/dotnet-CycloneDX /usr/local/bin/dotnet-CycloneDX
 
 # Copy `freshli-agent-java` from the `java_build` image
 RUN mkdir -p /usr/local/share/freshli-agent-java
