@@ -45,6 +45,12 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
                     manifestPath, historyStopPoint.Id
                 );
 
+                var cachedManifest = await cacheDb.RetrieveManifest(historyStopPoint, manifestPath);
+                if (cachedManifest != null)
+                {
+                    continue;
+                }
+
                 var manifest = await cacheDb.AddManifest(historyStopPoint, manifestPath);
 
                 await eventClient.Fire(
