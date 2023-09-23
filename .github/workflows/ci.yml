@@ -86,35 +86,6 @@ jobs:
       - name: "[Build] - Build"
         run: dotnet build --configuration Release
 
-      - name: "[Build, Docker] - Set up QEMU"
-        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
-        uses: docker/setup-qemu-action@v3
-
-      - name: "[Build, Docker] - Set up Docker Buildx"
-        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
-        uses: docker/setup-buildx-action@v3
-
-      - name: "[Build, Docker] - Login to DockerHub"
-        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: "[Build, Docker] - Build and push"
-        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags:
-            corgibytes/freshli-cli:latest,
-            corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }},
-            corgibytes/freshli-cli:${{ steps.gitversion.outputs.semVer }}-${{ steps.gitversion.outputs.fullBuildMetadata }}
-          cache-from: type=registry,ref=corgibytes/freshli-cli:buildcache
-          cache-to: type=registry,ref=corgibytes/freshli-cli:buildcache,mode=max
-
       - name: "[Build] - Setup for Acceptance Test Coverage Collection, and for running the linters"
         run: |
           dotnet tool restore
@@ -281,3 +252,61 @@ jobs:
         with:
           name: freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-alpha-osx-x64.zip
           path: ${{ env.BUILD_ARTIFACTS_FOLDER }}/freshli-cli-${{ steps.gitversion.outputs.majorMinorPatch }}-osx-x64.zip
+
+      - name: "[Publish, Docker] - Set up QEMU"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
+        uses: docker/setup-qemu-action@v3
+
+      - name: "[Publish, Docker] - Set up Docker Buildx"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
+        uses: docker/setup-buildx-action@v3
+
+      - name: "[Publish, Docker] - Login to DockerHub"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: "[Publish, Docker] - Build"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags:
+            corgibytes/freshli-cli:latest,
+            corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }},
+            corgibytes/freshli-cli:${{ steps.gitversion.outputs.semVer }}-${{ steps.gitversion.outputs.fullBuildMetadata }}
+          cache-from: type=registry,ref=corgibytes/freshli-cli:buildcache
+          cache-to: type=registry,ref=corgibytes/freshli-cli:buildcache,mode=max
+
+      - name: "[Publish, Docker] - Smoke Test - `agents detect`"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
+        run: |
+          docker run --rm corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }} agents detect
+
+      - name: "[Publish, Docker] - Smoke Test - Analyze Java Fixture Repo"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
+        run: |
+          docker run --rm corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }} analyze https://github.com/corgibytes/freshli-fixture-java-test
+
+      - name: "[Publish, Docker] - Smoke Test - Analyze DotNet Fixture Repo"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
+        run: |
+          docker run --rm corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }} analyze https://github.com/corgibytes/freshli-fixture-csharp-test
+
+      - name: "[Publish, Docker] - Push"
+        if: ${{ startsWith(github.ref, 'refs/tags/v') && runner.os != 'Windows' }}
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags:
+            corgibytes/freshli-cli:latest,
+            corgibytes/freshli-cli:${{ steps.gitversion.outputs.majorMinorPatch }},
+            corgibytes/freshli-cli:${{ steps.gitversion.outputs.semVer }}-${{ steps.gitversion.outputs.fullBuildMetadata }}
+          cache-from: type=registry,ref=corgibytes/freshli-cli:buildcache
+          cache-to: type=registry,ref=corgibytes/freshli-cli:buildcache,mode=max
