@@ -134,6 +134,149 @@ public class CacheDbTest
     }
 
     [Fact]
+    public async Task RetrieveManifestWhenNull()
+    {
+        await WithPreparedDatabase(async cacheDb =>
+        {
+            var historyStopPoint = new CachedHistoryStopPoint
+            {
+                AsOfDateTime = DateTimeOffset.Now,
+                RepositoryId = "repoId",
+                LocalPath = "localPath",
+                GitCommitId = "gitCommitId",
+                CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
+            };
+
+            var savedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
+
+            const string firstManifestPath = "/path/to/first/manifest";
+
+            var retrievedManifest = await cacheDb.RetrieveManifest(savedHistoryStopPoint, firstManifestPath);
+            Assert.Null(retrievedManifest);
+        });
+    }
+
+    [Fact]
+    public async Task RetrieveManifestAfterSave()
+    {
+        await WithPreparedDatabase(async cacheDb =>
+        {
+            var historyStopPoint = new CachedHistoryStopPoint
+            {
+                AsOfDateTime = DateTimeOffset.Now,
+                RepositoryId = "repoId",
+                LocalPath = "localPath",
+                GitCommitId = "gitCommitId",
+                CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
+            };
+
+            var savedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
+
+            const string firstManifestPath = "/path/to/first/manifest";
+
+            var savedManifest = await cacheDb.AddManifest(savedHistoryStopPoint, firstManifestPath);
+            Assert.True(savedManifest.Id != 0);
+            Assert.Equal(firstManifestPath, savedManifest.ManifestFilePath);
+            Assert.Equal(savedHistoryStopPoint.Id, savedManifest.HistoryStopPoint.Id);
+
+            var retrievedManifest = await cacheDb.RetrieveManifest(savedHistoryStopPoint, firstManifestPath);
+            Assert.NotNull(retrievedManifest);
+            Assert.Equal(savedManifest.Id, retrievedManifest.Id);
+            Assert.Equal(savedManifest.ManifestFilePath, retrievedManifest.ManifestFilePath);
+            Assert.Equal(savedHistoryStopPoint.Id, retrievedManifest.HistoryStopPoint.Id);
+        });
+    }
+
+    [Fact]
+    public async Task AddMultipleManifestsToHistoryStopPoint()
+    {
+        await WithPreparedDatabase(async cacheDb =>
+        {
+            var historyStopPoint = new CachedHistoryStopPoint
+            {
+                AsOfDateTime = DateTimeOffset.Now,
+                RepositoryId = "repoId",
+                LocalPath = "localPath",
+                GitCommitId = "gitCommitId",
+                CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
+            };
+
+            var savedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
+
+            const string firstManifestPath = "/path/to/first/manifest";
+
+            var savedFirstManifest = await cacheDb.AddManifest(savedHistoryStopPoint, firstManifestPath);
+            Assert.True(savedFirstManifest.Id != 0);
+            Assert.Equal(firstManifestPath, savedFirstManifest.ManifestFilePath);
+            Assert.Equal(savedHistoryStopPoint.Id, savedFirstManifest.HistoryStopPoint.Id);
+
+            var retrievedFirstManifest = await cacheDb.RetrieveManifest(savedHistoryStopPoint, firstManifestPath);
+            Assert.NotNull(retrievedFirstManifest);
+            Assert.Equal(savedFirstManifest.Id, retrievedFirstManifest.Id);
+            Assert.Equal(savedFirstManifest.ManifestFilePath, retrievedFirstManifest.ManifestFilePath);
+            Assert.Equal(savedHistoryStopPoint.Id, retrievedFirstManifest.HistoryStopPoint.Id);
+
+            const string secondManifestPath = "/path/to/second/manifest";
+
+            var savedSecondManifest = await cacheDb.AddManifest(savedHistoryStopPoint, secondManifestPath);
+            Assert.True(savedSecondManifest.Id != 0);
+            Assert.Equal(secondManifestPath, savedSecondManifest.ManifestFilePath);
+            Assert.Equal(savedHistoryStopPoint.Id, savedSecondManifest.HistoryStopPoint.Id);
+
+            var retrievedSecondManifest = await cacheDb.RetrieveManifest(savedHistoryStopPoint, secondManifestPath);
+            Assert.NotNull(retrievedSecondManifest);
+            Assert.Equal(savedSecondManifest.Id, retrievedSecondManifest.Id);
+            Assert.Equal(savedSecondManifest.ManifestFilePath, retrievedSecondManifest.ManifestFilePath);
+            Assert.Equal(savedHistoryStopPoint.Id, retrievedSecondManifest.HistoryStopPoint.Id);
+        });
+    }
+
+    [Fact]
+    public async Task AddSecondManifestToUntrackedHistoryStopPoint()
+    {
+        await WithPreparedDatabase(async cacheDb =>
+        {
+            var historyStopPoint = new CachedHistoryStopPoint
+            {
+                AsOfDateTime = DateTimeOffset.Now,
+                RepositoryId = "repoId",
+                LocalPath = "localPath",
+                GitCommitId = "gitCommitId",
+                CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
+            };
+
+            var savedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
+            historyStopPoint.Id = savedHistoryStopPoint.Id;
+
+            const string firstManifestPath = "/path/to/first/manifest";
+
+            var savedFirstManifest = await cacheDb.AddManifest(historyStopPoint, firstManifestPath);
+            Assert.True(savedFirstManifest.Id != 0);
+            Assert.Equal(firstManifestPath, savedFirstManifest.ManifestFilePath);
+            Assert.Equal(historyStopPoint.Id, savedFirstManifest.HistoryStopPoint.Id);
+
+            var retrievedFirstManifest = await cacheDb.RetrieveManifest(historyStopPoint, firstManifestPath);
+            Assert.NotNull(retrievedFirstManifest);
+            Assert.Equal(savedFirstManifest.Id, retrievedFirstManifest.Id);
+            Assert.Equal(savedFirstManifest.ManifestFilePath, retrievedFirstManifest.ManifestFilePath);
+            Assert.Equal(historyStopPoint.Id, retrievedFirstManifest.HistoryStopPoint.Id);
+
+            const string secondManifestPath = "/path/to/second/manifest";
+
+            var savedSecondManifest = await cacheDb.AddManifest(historyStopPoint, secondManifestPath);
+            Assert.True(savedSecondManifest.Id != 0);
+            Assert.Equal(secondManifestPath, savedSecondManifest.ManifestFilePath);
+            Assert.Equal(historyStopPoint.Id, savedSecondManifest.HistoryStopPoint.Id);
+
+            var retrievedSecondManifest = await cacheDb.RetrieveManifest(historyStopPoint, secondManifestPath);
+            Assert.NotNull(retrievedSecondManifest);
+            Assert.Equal(savedSecondManifest.Id, retrievedSecondManifest.Id);
+            Assert.Equal(savedSecondManifest.ManifestFilePath, retrievedSecondManifest.ManifestFilePath);
+            Assert.Equal(historyStopPoint.Id, retrievedSecondManifest.HistoryStopPoint.Id);
+        });
+    }
+
+    [Fact]
     public async Task RetrievePackageLibYearAfterCreation()
     {
         await WithPreparedDatabase(async cacheDb =>
@@ -152,7 +295,7 @@ public class CacheDbTest
 
             var storedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
 
-            var manifestFilePath = "manifestFilePath";
+            const string manifestFilePath = "manifestFilePath";
             var storedManifest = await cacheDb.AddManifest(storedHistoryStopPoint, manifestFilePath);
 
             var package = new PackageURL("pkg:nuget/Newtonsoft.Json@12.0.3");
@@ -209,7 +352,7 @@ public class CacheDbTest
             var storedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
 
             var firstManifest = await cacheDb.AddManifest(storedHistoryStopPoint, "/path/to/first/manifest");
-            var secondManifest = await cacheDb.AddManifest(historyStopPoint, "/path/to/second/manifest");
+            var secondManifest = await cacheDb.AddManifest(storedHistoryStopPoint, "/path/to/second/manifest");
 
             var package = new PackageURL("pkg:nuget/Newtonsoft.Json@12.0.3");
 
@@ -258,7 +401,6 @@ public class CacheDbTest
                 retrievedPackageLibYear.Id,
                 updatedSecondManifest.PackageLibYears.First().Id
             );
-
         });
     }
 
