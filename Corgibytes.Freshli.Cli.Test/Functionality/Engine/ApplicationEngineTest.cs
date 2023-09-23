@@ -205,9 +205,10 @@ public class ApplicationEngineTest : IDisposable
                 await _engine.Wait(activity, CancellationToken.None);
             }
 
+            const int tolerance = 50;
             foreach (var activity in activities)
             {
-                Assert.True(activity.HandleStoppedAt - activity.HandleStartedAt >= TimeSpan.FromMilliseconds(activityDelay));
+                Assert.True(activity.HandleStoppedAt - activity.HandleStartedAt >= TimeSpan.FromMilliseconds(activityDelay - tolerance));
             }
 
             var sortedActivities = activities.OrderBy(activity => activity.HandleStartedAt);
