@@ -235,9 +235,9 @@ public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
 
     private async ValueTask SaveChanges(DbContext context)
     {
-        // await _sqliteRetryPolicy.ExecuteAsync(async () =>
-        await context.SaveChangesAsync();
-        // );
+        await _sqliteRetryPolicy.ExecuteAsync(async () =>
+            await context.SaveChangesAsync()
+        );
     }
 
     public void Dispose()
