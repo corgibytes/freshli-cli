@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality;
@@ -173,6 +175,58 @@ public class ApplicationEngineTest : IDisposable
 
         Assert.True(wasEventHandlerCalled);
         Assert.True(activity.WasHandleCalled);
+    }
+
+    [Fact]
+    public async Task WaitForSynchronizedActivities()
+    {
+        var secondWorkerCancellation = new CancellationTokenSource();
+        var secondQueuedHostedService = ActivatorUtilities.CreateInstance<QueuedHostedService>(_host.Services);
+        var secondWorkerTask = secondQueuedHostedService.StartAsync(_workerCancellation.Token);
+
+        try
+        {
+            const int activityDelay = 200;
+
+            const int activityCount = 5;
+            var activities = new List<FakeSynchronizedActivity>();
+            for (var i = 0; i < activityCount; i++)
+            {
+                activities.Add(new FakeSynchronizedActivity(activityDelay));
+            }
+
+            foreach (var activity in activities)
+            {
+                await _engine.Dispatch(activity, CancellationToken.None);
+            }
+
+            foreach (var activity in activities)
+            {
+                await _engine.Wait(activity, CancellationToken.None);
+            }
+
+            foreach (var activity in activities)
+            {
+                Assert.True(activity.HandleStoppedAt - activity.HandleStartedAt >= TimeSpan.FromMilliseconds(activityDelay));
+            }
+
+            var sortedActivities = activities.OrderBy(activity => activity.HandleStartedAt);
+
+            var previousActivityStoppedAt = DateTimeOffset.MinValue;
+            foreach (var activity in sortedActivities)
+            {
+                Assert.True(activity.HandleStartedAt >= previousActivityStoppedAt);
+                previousActivityStoppedAt = activity.HandleStoppedAt;
+            }
+        }
+        finally
+        {
+            secondWorkerCancellation.Cancel();
+            await secondWorkerTask;
+
+            secondWorkerCancellation.Dispose();
+            secondWorkerTask.Dispose();
+        }
     }
 
     private void AssertHandled(FakeApplicationActivityTree fakeActivity)
@@ -355,6 +409,29 @@ public class ApplicationEngineTest : IDisposable
         {
             await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
         }
+    }
+
+    private class FakeSynchronizedActivity : IApplicationActivity, ISynchronized
+    {
+        private readonly int _delay;
+        private static readonly SemaphoreSlim s_semaphore = new(1, 1);
+
+        public FakeSynchronizedActivity(int delay)
+        {
+            _delay = delay;
+        }
+
+        public DateTimeOffset HandleStartedAt { get; private set; }
+        public DateTimeOffset HandleStoppedAt { get; private set; }
+
+        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        {
+            HandleStartedAt = DateTimeOffset.Now;
+            await Task.Delay(_delay, cancellationToken);
+            HandleStoppedAt = DateTimeOffset.Now;
+        }
+
+        public SemaphoreSlim GetSemaphore() => s_semaphore;
     }
 
     public void Dispose()
