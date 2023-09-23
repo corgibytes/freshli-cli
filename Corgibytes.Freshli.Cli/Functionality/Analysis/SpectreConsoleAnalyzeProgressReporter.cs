@@ -266,12 +266,12 @@ public class SpectreConsoleAnalyzeProgressReporter : IAnalyzeProgressReporter, I
         /// <summary>
         /// Gets or sets the style for a non-complete task.
         /// </summary>
-        public Style Style { get; set; } = Style.Plain;
+        private static Style Style => Style.Plain;
 
         /// <summary>
         /// Gets or sets the style for a completed task.
         /// </summary>
-        public Style CompletedStyle { get; set; } = Color.Green;
+        private static Style CompletedStyle => Color.Green;
 
         /// <inheritdoc/>
         public override IRenderable Render(RenderOptions options, ProgressTask task, TimeSpan deltaTime)
