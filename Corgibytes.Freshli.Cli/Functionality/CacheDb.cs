@@ -96,9 +96,10 @@ public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
     {
         using (await _cacheDbLock.LockAsync())
         {
+            var retrievedHistoryStopPoint = await _context.CachedHistoryStopPoints.FindAsync(historyStopPoint.Id);
             var manifest = new CachedManifest
             {
-                HistoryStopPoint = historyStopPoint,
+                HistoryStopPoint = retrievedHistoryStopPoint!,
                 ManifestFilePath = manifestFilePath
             };
 
@@ -234,8 +235,9 @@ public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
 
     private async ValueTask SaveChanges(DbContext context)
     {
-        await _sqliteRetryPolicy.ExecuteAsync(async () =>
-            await context.SaveChangesAsync());
+        // await _sqliteRetryPolicy.ExecuteAsync(async () =>
+        await context.SaveChangesAsync();
+        // );
     }
 
     public void Dispose()
