@@ -34,38 +34,44 @@ public class DetectManifestsUsingAgentActivityTest
         var cancellationToken = new CancellationToken(false);
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath, cancellationToken)).Returns(agentReader.Object);
 
-        var cacheManager = new Mock<ICacheManager>();
-        var cacheDb = new Mock<ICacheDb>();
-        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
-
-        const int historyStopPointId = 29;
+        var historyStopPoint = new CachedHistoryStopPoint { Id = 29, LocalPath = localPath };
 
         var parent = new Mock<IHistoryStopPointProcessingTask>();
-        parent.Setup(mock => mock.HistoryStopPointId).Returns(historyStopPointId);
-
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
+        parent.Setup(mock => mock.HistoryStopPoint).Returns(historyStopPoint);
 
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
-        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var analysisId = Guid.NewGuid();
-        var activity =
-            new DetectManifestsUsingAgentActivity(analysisId, parent.Object, agentExecutablePath);
+        var activity = new DetectManifestsUsingAgentActivity
+        {
+            Parent = parent.Object,
+            AgentExecutablePath = agentExecutablePath
+        };
+
+        var firstCachedManifest = new CachedManifest { ManifestFilePath = "/path/to/first/manifest" };
+        var secondCachedManifest = new CachedManifest { ManifestFilePath = "/path/to/second/manifest" };
+
+        var cacheManager = new Mock<ICacheManager>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
+        var cacheDb = new Mock<ICacheDb>();
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
+
+        cacheDb.Setup(mock => mock.AddManifest(historyStopPoint, "/path/to/first/manifest"))
+            .ReturnsAsync(firstCachedManifest);
+        cacheDb.Setup(mock => mock.AddManifest(historyStopPoint, "/path/to/second/manifest"))
+            .ReturnsAsync(secondCachedManifest);
 
         await activity.Handle(eventEngine.Object, cancellationToken);
 
         eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<ManifestDetectedEvent>(appEvent =>
-                    appEvent.AnalysisId == analysisId &&
-                    appEvent.Parent == parent.Object &&
+                    appEvent.Parent == activity &&
                     appEvent.AgentExecutablePath == agentExecutablePath &&
-                    appEvent.ManifestPath == "/path/to/first/manifest"
+                    appEvent.Manifest == firstCachedManifest
                 ),
                 cancellationToken,
                 ApplicationTaskMode.Tracked
@@ -75,10 +81,9 @@ public class DetectManifestsUsingAgentActivityTest
         eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<ManifestDetectedEvent>(appEvent =>
-                    appEvent.AnalysisId == analysisId &&
-                    appEvent.Parent == parent.Object &&
+                    appEvent.Parent == activity &&
                     appEvent.AgentExecutablePath == agentExecutablePath &&
-                    appEvent.ManifestPath == "/path/to/second/manifest"
+                    appEvent.Manifest == secondCachedManifest
                 ),
                 cancellationToken,
                 ApplicationTaskMode.Tracked
@@ -92,8 +97,14 @@ public class DetectManifestsUsingAgentActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
 
         var parent = new Mock<IHistoryStopPointProcessingTask>();
+        parent.Setup(mock => mock.HistoryStopPoint).Returns(new CachedHistoryStopPoint { Id = 12 });
+
         var cancellationToken = new CancellationToken(false);
-        var activity = new DetectManifestsUsingAgentActivity(Guid.NewGuid(), parent.Object, "/path/to/agent");
+        var activity = new DetectManifestsUsingAgentActivity
+        {
+            Parent = parent.Object,
+            AgentExecutablePath = "/path/to/agent"
+        };
 
         var agentManager = new Mock<IAgentManager>();
         var exception = new InvalidOperationException("Simulated exception");
@@ -102,6 +113,11 @@ public class DetectManifestsUsingAgentActivityTest
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
 
+        var cacheManager = new Mock<ICacheManager>();
+        serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
+        var cacheDb = new Mock<ICacheDb>();
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
+
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
         await activity.Handle(eventEngine.Object, cancellationToken);
@@ -109,7 +125,7 @@ public class DetectManifestsUsingAgentActivityTest
         eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<HistoryStopPointProcessingFailedEvent>(appEvent =>
-                    appEvent.Parent == activity.Parent &&
+                    appEvent.Parent == activity &&
                     appEvent.Exception == exception
                 ),
                 cancellationToken,
@@ -130,37 +146,35 @@ public class DetectManifestsUsingAgentActivityTest
         var agentManager = new Mock<IAgentManager>();
         agentManager.Setup(mock => mock.GetReader(agentExecutablePath, CancellationToken.None)).Returns(agentReader.Object);
 
-        var cacheManager = new Mock<ICacheManager>();
-        var cacheDb = new Mock<ICacheDb>();
-        var historyStopPoint = new CachedHistoryStopPoint { LocalPath = localPath };
+        var historyStopPoint = new CachedHistoryStopPoint { Id = 29, LocalPath = localPath };
 
-        const int historyStopPointId = 29;
         var parent = new Mock<IHistoryStopPointProcessingTask>();
-        parent.Setup(mock => mock.HistoryStopPointId).Returns(historyStopPointId);
-
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
+        parent.Setup(mock => mock.HistoryStopPoint).Returns(historyStopPoint);
 
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAgentManager))).Returns(agentManager.Object);
+
+        var cacheManager = new Mock<ICacheManager>();
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
+        var cacheDb = new Mock<ICacheDb>();
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
 
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var analysisId = Guid.NewGuid();
-
         var cancellationToken = new CancellationToken(false);
-        var activity =
-            new DetectManifestsUsingAgentActivity(analysisId, parent.Object, agentExecutablePath);
+        var activity = new DetectManifestsUsingAgentActivity
+        {
+            Parent = parent.Object,
+            AgentExecutablePath = agentExecutablePath
+        };
 
         await activity.Handle(eventEngine.Object, cancellationToken);
 
         eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<NoManifestsDetectedEvent>(appEvent =>
-                    appEvent.AnalysisId == analysisId &&
-                    appEvent.Parent == parent.Object
+                    appEvent.Parent == activity
                 ),
                 cancellationToken,
                 ApplicationTaskMode.Tracked

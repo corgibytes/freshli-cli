@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,9 +10,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 public class CreateApiPackageLibYearActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
-    public required IHistoryStopPointProcessingTask Parent { get; init; }
-    public required int PackageLibYearId { get; init; }
+    public required IHistoryStopPointProcessingTask? Parent { get; init; }
+    public required CachedPackageLibYear PackageLibYear { get; init; }
     public required string AgentExecutablePath { get; init; }
 
     public int Priority
@@ -24,17 +24,20 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity, IHistorySto
         try
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb();
+            var cacheDb = await cacheManager.GetCacheDb();
 
             var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
-            await resultsApi.CreatePackageLibYear(cacheDb, AnalysisId, PackageLibYearId);
+
+            var historyStopPoint = Parent?.HistoryStopPoint;
+            _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
+
+            await resultsApi.CreatePackageLibYear(cacheDb, historyStopPoint.CachedAnalysis.Id, historyStopPoint, PackageLibYear);
 
             await eventClient.Fire(
                 new ApiPackageLibYearCreatedEvent
                 {
-                    AnalysisId = AnalysisId,
-                    Parent = Parent,
-                    PackageLibYearId = PackageLibYearId,
+                    Parent = this,
+                    PackageLibYear = PackageLibYear,
                     AgentExecutablePath = AgentExecutablePath
                 },
                 cancellationToken);
@@ -42,7 +45,7 @@ public class CreateApiPackageLibYearActivity : IApplicationActivity, IHistorySto
         catch (Exception error)
         {
             await eventClient.Fire(
-                new HistoryStopPointProcessingFailedEvent(Parent, error),
+                new HistoryStopPointProcessingFailedEvent(this, error),
                 cancellationToken);
         }
     }

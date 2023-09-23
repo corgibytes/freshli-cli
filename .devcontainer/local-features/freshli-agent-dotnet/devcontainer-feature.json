@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "id": "freshli-agent-dotnet",
+  "name": "Install freshli-agent-dotnet",
+  "installsAfter": [
+    "./local-features/bundler"
+  ]
+}

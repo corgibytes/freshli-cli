@@ -12,26 +12,16 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class CachedAnalysis
 {
-    public CachedAnalysis(string repositoryUrl, string? repositoryBranch, string historyInterval,
-        CommitHistory useCommitHistory, RevisionHistoryMode revisionHistoryMode)
-    {
-        RepositoryUrl = repositoryUrl;
-        RepositoryBranch = repositoryBranch;
-        HistoryInterval = historyInterval;
-        UseCommitHistory = useCommitHistory;
-        RevisionHistoryMode = revisionHistoryMode;
-    }
-
     // ReSharper disable once PropertyCanBeMadeInitOnly.Global
     [Required] public Guid Id { get; set; }
-    [Required] public string RepositoryUrl { get; set; }
+    [Required] public string RepositoryUrl { get; set; } = null!;
 
     public string? RepositoryBranch { get; set; }
     public CommitHistory UseCommitHistory { get; set; }
     public RevisionHistoryMode RevisionHistoryMode { get; set; }
 
     // TODO: Research how to use a value class here instead of a string
-    [Required] public string HistoryInterval { get; set; }
+    [Required] public string HistoryInterval { get; set; } = null!;
 
     public Guid? ApiAnalysisId { get; set; }
 

@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -15,8 +16,6 @@ public class HistoryStopCheckedOutEventTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
-        var analysisId = Guid.NewGuid();
-
         var progressReporter = new Mock<IAnalyzeProgressReporter>();
         var serviceProvider = new Mock<IServiceProvider>();
         serviceProvider.Setup(mock => mock.GetService(typeof(IAnalyzeProgressReporter)))
@@ -28,9 +27,9 @@ public class HistoryStopCheckedOutEventTest
             .Returns(logger.Object);
 
         var parent = new Mock<IHistoryStopPointProcessingTask>();
+        parent.Setup(mock => mock.HistoryStopPoint).Returns(new CachedHistoryStopPoint { Id = 29 });
         var appEvent = new HistoryStopCheckedOutEvent
         {
-            AnalysisId = analysisId,
             Parent = parent.Object
         };
 
@@ -40,7 +39,7 @@ public class HistoryStopCheckedOutEventTest
         activityEngine.Verify(
             mock => mock.Dispatch(
                 It.Is<DetectAgentsForDetectManifestsActivity>(value =>
-                    value.AnalysisId == analysisId && value.Parent == parent.Object
+                    value.Parent == appEvent
                 ),
                 cancellationToken,
                 ApplicationTaskMode.Tracked

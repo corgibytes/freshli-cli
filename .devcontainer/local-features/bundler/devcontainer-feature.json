@@ -1,4 +1,5 @@
 {
+  "version": "1.0.0",
   "id": "bundler",
   "name": "Install Correct Bundler Version",
   "installsAfter": [

@@ -22,19 +22,29 @@ public class CreateApiHistoryStopActivityTest
         const string repositoryBranch = "branch";
         var asOfDateTime = new DateTimeOffset(2022, 1, 1, 12, 52, 28, 0, TimeSpan.Zero);
 
-        var cachedAnalysis =
-            new CachedAnalysis(repositoryUrl, repositoryBranch, "1m", CommitHistory.AtInterval,
-                RevisionHistoryMode.AllRevisions)
-            { ApiAnalysisId = apiAnalysisId };
+        var cachedAnalysis = new CachedAnalysis
+        {
+            Id = cachedAnalysisId,
+            RepositoryUrl = repositoryUrl,
+            RepositoryBranch = repositoryBranch,
+            HistoryInterval = "1m",
+            UseCommitHistory = CommitHistory.AtInterval,
+            RevisionHistoryMode = RevisionHistoryMode.AllRevisions,
+            ApiAnalysisId = apiAnalysisId
+        };
 
         const int historyStopPointId = 29;
         var cacheDb = new Mock<ICacheDb>();
-        var historyStopPoint = new CachedHistoryStopPoint { AsOfDateTime = asOfDateTime };
+        var historyStopPoint = new CachedHistoryStopPoint
+        {
+            AsOfDateTime = asOfDateTime,
+            CachedAnalysis = cachedAnalysis
+        };
         cacheDb.Setup(mock => mock.RetrieveAnalysis(cachedAnalysisId)).ReturnsAsync(cachedAnalysis);
         cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
 
         var cacheManager = new Mock<ICacheManager>();
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
 
         var resultsApi = new Mock<IResultsApi>();
 
@@ -45,18 +55,20 @@ public class CreateApiHistoryStopActivityTest
         var eventClient = new Mock<IApplicationEventEngine>();
         eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        var activity = new CreateApiHistoryStopActivity(cachedAnalysisId, historyStopPointId);
+        var activity = new CreateApiHistoryStopActivity
+        {
+            HistoryStopPoint = historyStopPoint
+        };
 
         var cancellationToken = new System.Threading.CancellationToken();
         await activity.Handle(eventClient.Object, cancellationToken);
 
-        resultsApi.Verify(mock => mock.CreateHistoryPoint(cacheDb.Object, cachedAnalysisId, historyStopPointId));
+        resultsApi.Verify(mock => mock.CreateHistoryPoint(cacheDb.Object, cachedAnalysisId, historyStopPoint));
 
         eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<ApiHistoryStopCreatedEvent>(value =>
-                    value.CachedAnalysisId == cachedAnalysisId &&
-                    value.HistoryStopPointId == historyStopPointId
+                    value.HistoryStopPoint == historyStopPoint
                 ),
                 cancellationToken,
                 ApplicationTaskMode.Tracked

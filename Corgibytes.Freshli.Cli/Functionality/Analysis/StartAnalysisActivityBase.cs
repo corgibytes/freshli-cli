@@ -30,9 +30,17 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
 
     private async ValueTask FireAnalysisStartedEvent(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
-        var cacheDb = CacheManager.GetCacheDb();
-        var id = await cacheDb.SaveAnalysis(new CachedAnalysis(RepositoryUrl, RepositoryBranch, HistoryInterval,
-            UseCommitHistory, RevisionHistoryMode));
+        var cacheDb = await CacheManager.GetCacheDb();
+        var id = await cacheDb.SaveAnalysis(
+            new CachedAnalysis
+            {
+                RepositoryUrl = RepositoryUrl,
+                RepositoryBranch = RepositoryBranch,
+                HistoryInterval = HistoryInterval,
+                UseCommitHistory = UseCommitHistory,
+                RevisionHistoryMode = RevisionHistoryMode
+            }
+        );
         await eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id }, cancellationToken);
     }
 
@@ -64,13 +72,10 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
         return false;
     }
 
-    protected virtual TErrorEvent CreateErrorEvent() =>
-        // ReSharper disable once UseStringInterpolation
-        new()
-        {
-            ErrorMessage = string.Format("Unable to locate a valid cache directory at: '{0}'.",
-                Configuration.CacheDir)
-        };
+    protected virtual TErrorEvent CreateErrorEvent() => new()
+    {
+        ErrorMessage = $"Unable to locate a valid cache directory at: '{Configuration.CacheDir}'."
+    };
 
     private async ValueTask HandleWithCacheFailure(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {

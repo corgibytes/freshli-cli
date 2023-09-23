@@ -63,7 +63,7 @@ public abstract class StartAnalysisActivityTestBase<TActivity, TErrorEvent> wher
         _intervalParser.Setup(mock => mock.IsValid("1m")).Returns(true);
 
         _cacheManager.Setup(mock => mock.ValidateCacheDirectory()).ReturnsAsync(true);
-        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
         _cacheDb.Setup(mock => mock.SaveAnalysis(It.IsAny<CachedAnalysis>())).ReturnsAsync(analysisId);
 
         await Activity.Handle(_eventEngine.Object, _cancellationToken);

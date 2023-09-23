@@ -36,11 +36,13 @@
         "ghcr.io/devcontainers/features/node:1": {
         },
         "./local-features/rbenv-ruby": {
-            "version": "3.0.4"
+            "version": "3.0.5"
         },
         "./local-features/bundler": "latest",
         "./local-features/eclint": "latest",
         "./local-features/cyclonedx-cli": "latest",
-        "./local-features/freshli-agent-java": "latest"
+        "./local-features/freshli-agent-java": "latest",
+        "./local-features/freshli-agent-dotnet": "latest",
+        "./local-features/dotnet-cyclonedx": "latest"
     }
 }

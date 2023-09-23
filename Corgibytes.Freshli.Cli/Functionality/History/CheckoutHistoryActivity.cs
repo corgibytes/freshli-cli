@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -12,47 +13,32 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHistoryStopPointProcessingTask
 {
-    public CheckoutHistoryActivity(Guid analysisId, int historyStopPointId)
-    {
-        AnalysisId = analysisId;
-        HistoryStopPointId = historyStopPointId;
-    }
-
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new();
 
-    // ReSharper disable once MemberCanBePrivate.Global
-    public Guid AnalysisId { get; }
-
-    public IHistoryStopPointProcessingTask Parent => null!;
-    public int HistoryStopPointId { get; }
+    public IHistoryStopPointProcessingTask? Parent => null;
+    public required CachedHistoryStopPoint HistoryStopPoint { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var logger = eventClient.ServiceProvider.GetService<ILogger<CheckoutHistoryActivity>>();
-        logger?.LogDebug("Handling history checkout for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, HistoryStopPointId);
+        logger?.LogDebug("Handling history checkout for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", HistoryStopPoint.CachedAnalysis.Id, HistoryStopPoint.Id);
 
-        var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
-        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
-        if (historyStopPoint?.GitCommitId == null)
+        if (HistoryStopPoint.GitCommitId == null)
         {
             throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
         }
-        logger?.LogDebug("historyStopPoint = {@HistoryStopPoint} for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}",
-            historyStopPoint, AnalysisId, HistoryStopPointId);
 
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
         await gitManager.CreateArchive(
-            historyStopPoint.RepositoryId,
-            gitManager.ParseCommitId(historyStopPoint.GitCommitId)
+            HistoryStopPoint.RepositoryId,
+            gitManager.ParseCommitId(HistoryStopPoint.GitCommitId)
         );
 
-        logger?.LogDebug("Fire HistoryStopCheckedOutEvent for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", AnalysisId, HistoryStopPointId);
+        logger?.LogDebug("Fire HistoryStopCheckedOutEvent for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", HistoryStopPoint.CachedAnalysis.Id, HistoryStopPoint.Id);
         await eventClient.Fire(
             new HistoryStopCheckedOutEvent
             {
-                AnalysisId = AnalysisId,
                 Parent = this
             },
             cancellationToken);
@@ -84,16 +70,13 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
 
     }
 
-    public async ValueTask<SemaphoreSlim> GetSemaphore(IServiceProvider serviceProvider)
+    public SemaphoreSlim GetSemaphore()
     {
-        var cacheManager = serviceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
-        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(HistoryStopPointId);
-        if (historyStopPoint?.GitCommitId == null)
+        if (HistoryStopPoint.GitCommitId == null)
         {
             throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
         }
 
-        return s_semaphores.GetOrAdd(historyStopPoint.GitCommitId, new SemaphoreSlim(1, 1));
+        return s_semaphores.GetOrAdd(HistoryStopPoint.GitCommitId, new SemaphoreSlim(1, 1));
     }
 }

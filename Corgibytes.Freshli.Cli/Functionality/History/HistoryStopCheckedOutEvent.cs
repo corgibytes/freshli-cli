@@ -10,18 +10,20 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class HistoryStopCheckedOutEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
-    public required IHistoryStopPointProcessingTask Parent { get; init; }
+    public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
     public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
+        var historyStopPoint = Parent?.HistoryStopPoint;
+        _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
+
         var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<HistoryStopCheckedOutEvent>>();
-        logger.LogDebug("Checked out history stop point {id}", Parent.HistoryStopPointId);
+        logger.LogDebug("Checked out history stop point {id}", historyStopPoint.Id);
 
         var progressReporter = eventClient.ServiceProvider.GetRequiredService<IAnalyzeProgressReporter>();
         progressReporter.ReportSingleHistoryStopPointOperationFinished(HistoryStopPointOperation.Archive);
         await eventClient.Dispatch(
-            new DetectAgentsForDetectManifestsActivity(AnalysisId, Parent),
+            new DetectAgentsForDetectManifestsActivity { Parent = this },
             cancellationToken);
     }
 }

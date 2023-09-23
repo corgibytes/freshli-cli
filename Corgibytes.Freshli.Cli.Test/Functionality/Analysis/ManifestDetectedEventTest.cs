@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -19,19 +20,26 @@ public class ManifestDetectedEventTest
         var engine = new Mock<IApplicationActivityEngine>();
 
         const string agentExecutablePath = "/path/to/agent";
-        var analysisId = Guid.NewGuid();
         var parent = new Mock<IHistoryStopPointProcessingTask>();
         var cancellationToken = new System.Threading.CancellationToken(false);
-        var manifestEvent =
-            new ManifestDetectedEvent(analysisId, parent.Object, agentExecutablePath, manifestPath);
+
+        var cachedManifest = new CachedManifest
+        {
+            ManifestFilePath = manifestPath
+        };
+
+        var manifestEvent = new ManifestDetectedEvent
+        {
+            Parent = parent.Object,
+            AgentExecutablePath = agentExecutablePath,
+            Manifest = cachedManifest
+        };
         await manifestEvent.Handle(engine.Object, cancellationToken);
 
         engine.Verify(
             mock => mock.Dispatch(
                 It.Is<GenerateBillOfMaterialsActivity>(value =>
-                    value.AnalysisId == analysisId &&
-                    value.Parent == parent.Object &&
-                    value.ManifestPath == manifestPath &&
+                    value.Parent == manifestEvent &&
                     value.AgentExecutablePath == agentExecutablePath
                 ),
                 cancellationToken,
@@ -46,7 +54,15 @@ public class ManifestDetectedEventTest
         var engine = new Mock<IApplicationActivityEngine>();
         var cancellationToken = new System.Threading.CancellationToken(false);
         var parent = new Mock<IHistoryStopPointProcessingTask>();
-        var appEvent = new ManifestDetectedEvent(Guid.NewGuid(), parent.Object, "/path/to/agent", "/path/to/manifest");
+
+        var cachedManifest = new CachedManifest { ManifestFilePath = "/path/to/manifest" };
+
+        var appEvent = new ManifestDetectedEvent
+        {
+            Parent = parent.Object,
+            AgentExecutablePath = "/path/to/agent",
+            Manifest = cachedManifest
+        };
 
         var exception = new InvalidOperationException();
         engine.Setup(
@@ -62,7 +78,7 @@ public class ManifestDetectedEventTest
         engine.Verify(
             mock => mock.Dispatch(
                 It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
-                    value.Parent == appEvent.Parent &&
+                    value.Parent == appEvent &&
                     value.Error == exception
                 ),
                 cancellationToken,

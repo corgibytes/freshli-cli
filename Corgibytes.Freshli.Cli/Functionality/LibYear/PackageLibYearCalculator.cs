@@ -1,46 +1,63 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Services;
-using NLog;
+using Microsoft.Extensions.Logging;
 using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class PackageLibYearCalculator : IPackageLibYearCalculator
 {
-    private static readonly Logger s_logger = LogManager.GetCurrentClassLogger();
+    private readonly ILogger<PackageLibYearCalculator>? _logger;
+    private readonly IAgentReader _agentReader;
+    private readonly PackageURL _packageUrl;
+    private readonly DateTimeOffset _asOfDateTime;
+    private List<Package>? _releaseHistory;
 
-    public async ValueTask<PackageLibYear?> ComputeLibYear(IAgentReader agentReader, PackageURL packageUrl,
-        DateTimeOffset asOfDateTime)
+    public PackageLibYearCalculator(IAgentReader agentReader, PackageURL packageUrl, DateTimeOffset asOfDateTime, ILogger<PackageLibYearCalculator>? logger = null)
     {
-        var releaseHistory = new List<Package>();
-        await foreach (var package in agentReader.RetrieveReleaseHistory(packageUrl))
-        {
-            releaseHistory.Add(package);
-        }
-
-        return ComputeLibYear(packageUrl, asOfDateTime, releaseHistory);
+        _logger = logger;
+        _agentReader = agentReader;
+        _packageUrl = packageUrl;
+        _asOfDateTime = asOfDateTime;
     }
 
-    public static PackageLibYear? ComputeLibYear(PackageURL packageUrl, DateTimeOffset asOfDateTime,
-        List<Package> releaseHistory)
+    [MemberNotNull(nameof(_releaseHistory))]
+    private async Task EnsureReleaseHistory()
     {
-        var latestVersionPackageUrl = GetLatestVersion(releaseHistory, asOfDateTime);
+        if (_releaseHistory != null)
+        {
+            return;
+        }
+
+        _releaseHistory = new List<Package>();
+        await foreach (var package in _agentReader.RetrieveReleaseHistory(_packageUrl))
+        {
+            _releaseHistory.Add(package);
+        }
+    }
+
+    public async ValueTask<PackageLibYear?> ComputeLibYear()
+    {
+        await EnsureReleaseHistory();
+
+        var latestVersionPackageUrl = await GetLatestVersion();
         if (latestVersionPackageUrl == null)
         {
             return null;
         }
 
-        var releaseDateCurrentVersion = GetReleaseDate(releaseHistory, packageUrl);
+        var releaseDateCurrentVersion = await GetReleaseDate(_packageUrl);
         if (releaseDateCurrentVersion == null)
         {
             return null;
         }
 
-        var releaseDateLatestVersion = GetReleaseDate(releaseHistory, latestVersionPackageUrl);
+        var releaseDateLatestVersion = await GetReleaseDate(latestVersionPackageUrl);
         if (releaseDateLatestVersion == null)
         {
             return null;
@@ -48,11 +65,11 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
 
         return new PackageLibYear(
             releaseDateCurrentVersion.Value,
-            packageUrl,
+            _packageUrl,
             releaseDateLatestVersion.Value,
             latestVersionPackageUrl,
             CalculateLibYear(releaseDateCurrentVersion.Value, releaseDateLatestVersion.Value),
-            asOfDateTime
+            _asOfDateTime
         );
     }
 
@@ -87,44 +104,67 @@ public class PackageLibYearCalculator : IPackageLibYearCalculator
         return Math.Round(timeSpan.Days / averageNumberOfDaysPerYear, precision);
     }
 
-    private static DateTimeOffset? GetReleaseDate(IEnumerable<Package> releaseHistory, PackageURL packageUrl)
+    private async Task<DateTimeOffset?> GetReleaseDate(PackageURL packageUrl)
     {
+        await EnsureReleaseHistory();
+
         // The problem is if the version of the packageUrl input parameter is no longer available, then the
         // exception will be thrown even though a compatible version might be available
-        var enumerable = releaseHistory.ToList();
-        foreach (var package in enumerable.Where(package => package.PackageUrl.PackageUrlEquals(packageUrl)))
+        foreach (var package in _releaseHistory.Where(package => package.PackageUrl.PackageUrlEquals(packageUrl)))
         {
             return package.ReleasedAt;
         }
 
-        // only take the overhead hit for calculating this string if the
-        // application is being debugged (i.e. trace enabled).
-        if (s_logger.IsWarnEnabled)
-        {
-            var versions = string.Join(", ", enumerable.Select(release =>
-                release.ReleasedAt.ToString("yyyy-MM-dd") + "@" + release.PackageUrl.Version));
-            s_logger.Warn($"Failed to find Release date for {packageUrl} from history = {versions}");
-        }
+        await LogGetReleaseDateFailure(packageUrl);
 
         return null;
     }
 
-    private static PackageURL? GetLatestVersion(IEnumerable<Package> releaseHistory, DateTimeOffset asOfDate)
+    private async Task LogGetReleaseDateFailure(PackageURL packageUrl)
     {
-        IEnumerable<Package> history = releaseHistory.ToList();
+        if (_logger == null)
+        {
+            return;
+        }
+
+        // only take the overhead hit for calculating this string if the
+        // application is being debugged (i.e. trace enabled).
+        if (!_logger.IsEnabled(LogLevel.Warning))
+        {
+            return;
+        }
+
+        await EnsureReleaseHistory();
+
+        var versions = string.Join(", ", _releaseHistory.Select(release =>
+            release.ReleasedAt.ToString("yyyy-MM-dd") + "@" + release.PackageUrl.Version));
+        _logger.LogWarning(
+            "[Agent: {Agent}] Failed to find Release date for {PackageUrl} from history = {Versions}",
+            _agentReader.Name, packageUrl, versions);
+    }
+
+    private async Task<PackageURL?> GetLatestVersion()
+    {
+        await EnsureReleaseHistory();
+
+        IEnumerable<Package> history = _releaseHistory.ToList();
         var latestPackage = history
             .OrderByDescending(package => package.ReleasedAt)
-            .FirstOrDefault(package => package.ReleasedAt < asOfDate);
+            .FirstOrDefault(package => package.ReleasedAt < _asOfDateTime);
 
         if (latestPackage != null)
         {
             return latestPackage.PackageUrl;
         }
 
-        var packageUrl = history.First().PackageUrl;
-        s_logger.Debug("Failed to find latest version for package = {PackageUrl} asOfDate = {AsOfDate}",
-            packageUrl, asOfDate);
+        LogGetLatestVersionFailure();
 
         return null;
+    }
+
+    private void LogGetLatestVersionFailure()
+    {
+        _logger?.LogDebug("[Agent: {Agent}] Failed to find latest version for package = {PackageUrl} asOfDate = {AsOfDate}",
+            _agentReader.Name, _packageUrl, _asOfDateTime);
     }
 }

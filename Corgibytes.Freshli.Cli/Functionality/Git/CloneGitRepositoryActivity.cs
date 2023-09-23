@@ -22,7 +22,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         try
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb();
+            var cacheDb = await cacheManager.GetCacheDb();
             var cachedAnalysis = await cacheDb.RetrieveAnalysis(CachedAnalysisId);
 
             if (cachedAnalysis == null)
@@ -39,7 +39,11 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             var gitRepository = await gitRepositoryService.CloneOrPull(
                 cachedAnalysis.RepositoryUrl, cachedAnalysis.RepositoryBranch);
 
-            var historyStopData = new HistoryStopData(configuration, gitRepository.Id);
+            var historyStopData = new HistoryStopData
+            {
+                Configuration = configuration,
+                RepositoryId = gitRepository.Id
+            };
 
             await eventClient.Fire(
                 new GitRepositoryClonedEvent

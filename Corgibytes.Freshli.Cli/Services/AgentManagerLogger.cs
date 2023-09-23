@@ -58,19 +58,19 @@ internal class AgentManagerLogger
     public void LogForcefullyStopping() => _logger.LogDebug("Stopping agent service runner (forcefully)");
 
     public void LogGettingAgentReader(string agentExecutablePath) =>
-        _logger.LogDebug("Getting reader for {AgentExe}", agentExecutablePath);
+        _logger.LogTrace("Getting reader for {AgentExe}", agentExecutablePath);
 
     public void LogGivingUpBecauseOfCancellationRequest() =>
-        _logger.LogDebug("Giving up because cancellation has been requested");
+        _logger.LogTrace("Giving up because cancellation has been requested");
 
     public void LogNewAgentReader(AgentDescriptor agent) =>
-        _logger.LogDebug("Returning new agent reader {hash}", agent.AgentReader.GetHashCode());
+        _logger.LogTrace("Returning new agent reader {hash}", agent.AgentReader.GetHashCode());
 
     public void LogReceivedCommand(CommandEvent commandEvent) =>
         _logger.LogDebug("Received command event {@Event}", commandEvent);
 
     public void LogRetrievingExistingAgentReader(AgentDescriptor agent) =>
-        _logger.LogDebug("Retrieving an existing agent reader {hash}", agent.AgentReader.GetHashCode());
+        _logger.LogTrace("Retrieving an existing agent reader {hash}", agent.AgentReader.GetHashCode());
 
     public void LogSignallingForcefulStop() => _logger.LogDebug("Signaling service runner tasks to stop (forcefully)");
 

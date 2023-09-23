@@ -30,18 +30,20 @@ public class CheckoutHistoryActivityTest
         var cacheDb = new Mock<ICacheDb>();
         var historyStopPoint = new CachedHistoryStopPoint
         {
+            Id = 29,
             RepositoryId = repositoryId,
             GitCommitId = commitId
         };
 
-        const int historyStopPointId = 29;
-        cacheManager.Setup(mock => mock.GetCacheDb()).Returns(cacheDb.Object);
-        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPointId)).ReturnsAsync(historyStopPoint);
+        cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
+        cacheDb.Setup(mock => mock.RetrieveHistoryStopPoint(historyStopPoint.Id)).ReturnsAsync(historyStopPoint);
 
         var gitManager = new Mock<IGitManager>();
 
-        var analysisId = Guid.NewGuid();
-        var activity = new CheckoutHistoryActivity(analysisId, historyStopPointId);
+        var activity = new CheckoutHistoryActivity
+        {
+            HistoryStopPoint = historyStopPoint
+        };
 
         var serviceProvider = new Mock<IServiceProvider>();
         var eventEngine = new Mock<IApplicationEventEngine>();
@@ -61,8 +63,7 @@ public class CheckoutHistoryActivityTest
         eventEngine.Verify(
             mock => mock.Fire(
                 It.Is<HistoryStopCheckedOutEvent>(appEvent =>
-                    appEvent.AnalysisId == analysisId &&
-                    appEvent.Parent.HistoryStopPointId == historyStopPointId
+                    appEvent.Parent!.HistoryStopPoint == historyStopPoint
                 ),
                 cancellationToken,
                 ApplicationTaskMode.Tracked

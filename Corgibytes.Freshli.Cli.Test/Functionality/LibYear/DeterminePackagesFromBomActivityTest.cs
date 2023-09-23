@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -17,15 +18,25 @@ public class DeterminePackagesFromBomActivityTest
 {
     private const string PathToBom = "/path/to/bom";
     private const string PathToAgentExecutable = "/path/to/agent";
-    private readonly Guid _analysisId = Guid.NewGuid();
     private readonly Mock<IApplicationEventEngine> _eventClient = new();
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly DeterminePackagesFromBomActivity _activity;
     private readonly CancellationToken _cancellationToken = new();
+    private readonly CachedHistoryStopPoint _historyStopPoint = new()
+    {
+        Id = 22,
+        CachedAnalysis = new CachedAnalysis { Id = Guid.NewGuid() }
+    };
 
     public DeterminePackagesFromBomActivityTest()
     {
-        _activity = new DeterminePackagesFromBomActivity(_analysisId, _parent.Object, PathToBom, PathToAgentExecutable);
+        _activity = new DeterminePackagesFromBomActivity
+        {
+            Parent = _parent.Object,
+            PathToBom = PathToBom,
+            AgentExecutablePath = PathToAgentExecutable
+        };
+        _parent.Setup(mock => mock.HistoryStopPoint).Returns(_historyStopPoint);
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -55,8 +66,7 @@ public class DeterminePackagesFromBomActivityTest
         _eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<PackageFoundEvent>(value =>
-                    value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object &&
+                    value.Parent == _activity &&
                     value.AgentExecutablePath == PathToAgentExecutable &&
                     value.Package == packageAlpha
                 ),
@@ -68,8 +78,7 @@ public class DeterminePackagesFromBomActivityTest
         _eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<PackageFoundEvent>(value =>
-                    value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object &&
+                    value.Parent == _activity &&
                     value.AgentExecutablePath == PathToAgentExecutable &&
                     value.Package == packageBeta
                 ),
@@ -97,7 +106,7 @@ public class DeterminePackagesFromBomActivityTest
         _eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<HistoryStopPointProcessingFailedEvent>(value =>
-                    value.Parent == _activity.Parent &&
+                    value.Parent == _activity &&
                     value.Exception == exception
                 ),
                 _cancellationToken,
@@ -123,8 +132,7 @@ public class DeterminePackagesFromBomActivityTest
         _eventClient.Verify(mock =>
             mock.Fire(
                 It.Is<NoPackagesFoundEvent>(value =>
-                    value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object
+                    value.Parent == _activity
                 ),
                 _cancellationToken,
                 ApplicationTaskMode.Tracked

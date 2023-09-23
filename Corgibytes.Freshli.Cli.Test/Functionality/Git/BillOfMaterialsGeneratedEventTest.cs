@@ -17,12 +17,16 @@ public class BillOfMaterialsGeneratedEventTest
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly CancellationToken _cancellationToken = new(false);
     private readonly Mock<IApplicationActivityEngine> _engine = new();
-    private readonly Guid _analysisId = Guid.NewGuid();
     private readonly BillOfMaterialsGeneratedEvent _appEvent;
 
     public BillOfMaterialsGeneratedEventTest()
     {
-        _appEvent = new BillOfMaterialsGeneratedEvent(_analysisId, _parent.Object, PathToBom, AgentExecutablePath);
+        _appEvent = new BillOfMaterialsGeneratedEvent
+        {
+            Parent = _parent.Object,
+            PathToBillOfMaterials = PathToBom,
+            AgentExecutablePath = AgentExecutablePath
+        };
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -33,8 +37,7 @@ public class BillOfMaterialsGeneratedEventTest
         _engine.Verify(mock =>
             mock.Dispatch(
                 It.Is<DeterminePackagesFromBomActivity>(value =>
-                    value.AnalysisId == _analysisId &&
-                    value.Parent == _parent.Object &&
+                    value.Parent == _appEvent &&
                     value.PathToBom == PathToBom &&
                     value.AgentExecutablePath == AgentExecutablePath
                 ),
@@ -61,7 +64,7 @@ public class BillOfMaterialsGeneratedEventTest
         _engine.Verify(mock =>
             mock.Dispatch(
                 It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
-                    value.Parent == _parent.Object &&
+                    value.Parent == _appEvent &&
                     value.Error == exception
                 ),
                 _cancellationToken,

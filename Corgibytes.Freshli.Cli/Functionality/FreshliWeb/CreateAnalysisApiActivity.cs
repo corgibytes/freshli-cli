@@ -14,7 +14,7 @@ public class CreateAnalysisApiActivity : IApplicationActivity
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
-        var cacheDb = eventClient.ServiceProvider.GetRequiredService<ICacheManager>().GetCacheDb();
+        var cacheDb = await eventClient.ServiceProvider.GetRequiredService<ICacheManager>().GetCacheDb();
         var apiService = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
 
         var cachedAnalysis = await cacheDb.RetrieveAnalysis(CachedAnalysisId);

@@ -90,57 +90,48 @@ public class Program
     {
         var builder = new CommandLineBuilder(new MainCommand(Configuration))
             .UseHost(CreateHostBuilder)
-            .AddMiddleware(async (context, next) =>
-            {
-                var host = context.BindingContext.GetRequiredService<IHost>();
-
-                await Task.Run(() => ConfigureLogging(
-                    host.Services,
-                    context.ParseResult.GetOptionValueByName<string>("loglevel"),
-                    context.ParseResult.GetOptionValueByName<string>("logfile"))
-                );
-
-                await next(context);
-            })
+            .AddMiddleware(PreflightInitialize)
             .AddMiddleware(LogExecution)
-            .AddMiddleware(async (context, next) =>
-            {
-                ParseWorkersOption(context);
-
-                Logger!.LogDebug("Starting workers. Worker count: {WorkerCount}", Configuration.WorkerCount);
-
-                var host = context.BindingContext.GetRequiredService<IHost>();
-
-                var startTasks = new List<Task>();
-                while (Workers.Count < Configuration.WorkerCount)
-                {
-                    var worker = ActivatorUtilities.CreateInstance<QueuedHostedService>(host.Services);
-                    Workers.Add(worker);
-
-                    var startTask = worker.StartAsync(context.GetCancellationToken());
-                    startTasks.Add(startTask);
-                }
-
-                await next(context);
-
-                var stopTasks = new List<Task>();
-                while (Workers.Count > 0)
-                {
-                    var worker = Workers[0];
-
-                    var stopTask = worker.StopAsync(context.GetCancellationToken());
-                    stopTasks.Add(stopTask);
-                    Workers.Remove(worker);
-                }
-
-                Task.WaitAll(stopTasks.ToArray(), context.GetCancellationToken());
-                Task.WaitAll(startTasks.ToArray(), context.GetCancellationToken());
-            })
+            .AddMiddleware(StartWorkers)
             .UseExceptionHandler()
             .CancelOnProcessTermination()
             .UseHelp();
 
         return builder;
+    }
+
+    private async Task StartWorkers(InvocationContext context, Func<InvocationContext, Task> next)
+    {
+        ParseWorkersOption(context);
+
+        Logger?.LogDebug("Starting workers. Worker count: {WorkerCount}", Configuration.WorkerCount);
+
+        var host = context.BindingContext.GetRequiredService<IHost>();
+
+        var startTasks = new List<Task>();
+        while (Workers.Count < Configuration.WorkerCount)
+        {
+            var worker = ActivatorUtilities.CreateInstance<QueuedHostedService>(host.Services);
+            Workers.Add(worker);
+
+            var startTask = worker.StartAsync(context.GetCancellationToken());
+            startTasks.Add(startTask);
+        }
+
+        await next(context);
+
+        var stopTasks = new List<Task>();
+        while (Workers.Count > 0)
+        {
+            var worker = Workers[0];
+
+            var stopTask = worker.StopAsync(context.GetCancellationToken());
+            stopTasks.Add(stopTask);
+            Workers.Remove(worker);
+        }
+
+        Task.WaitAll(stopTasks.ToArray(), context.GetCancellationToken());
+        Task.WaitAll(startTasks.ToArray(), context.GetCancellationToken());
     }
 
     private void ParseWorkersOption(InvocationContext context)
@@ -149,10 +140,17 @@ public class Program
 
         if (workerCount == 0)
         {
-            workerCount = System.Environment.ProcessorCount;
+            workerCount = (int)Math.Ceiling(System.Environment.ProcessorCount * 1.5);
         }
 
         Configuration.WorkerCount = workerCount;
+    }
+
+    private async Task PreflightInitialize(InvocationContext context, Func<InvocationContext, Task> next)
+    {
+        await ConfigureLogging(context);
+
+        await next(context);
     }
 
     private async Task LogExecution(InvocationContext context, Func<InvocationContext, Task> next)
@@ -177,6 +175,17 @@ public class Program
             Logger?.LogError("[Unhandled Exception - {ParseResult}] - {ExceptionMessage} - {ExceptionStackTrace}",
                 commandLine, error.Message, error.StackTrace);
         }
+    }
+
+    private static async Task ConfigureLogging(InvocationContext context)
+    {
+        var host = context.BindingContext.GetRequiredService<IHost>();
+
+        await Task.Run(() => ConfigureLogging(
+            host.Services,
+            context.ParseResult.GetOptionValueByName<string>("loglevel"),
+            context.ParseResult.GetOptionValueByName<string>("logfile"))
+        );
     }
 
     private void LogException(Exception error)

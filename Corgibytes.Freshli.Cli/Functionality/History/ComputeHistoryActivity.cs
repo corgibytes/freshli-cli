@@ -31,7 +31,7 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         var computeHistoryService = eventClient.ServiceProvider.GetRequiredService<IComputeHistory>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
+        var cacheDb = await cacheManager.GetCacheDb();
         var cachedAnalysis = await cacheDb.RetrieveAnalysis(AnalysisId);
 
         if (cachedAnalysis == null)
@@ -68,35 +68,52 @@ public class ComputeHistoryActivity : IApplicationActivity
 
         var historyIntervalStopsList = historyIntervalStops.ToList();
 
+        ReportProgress(progressReporter, historyIntervalStopsList);
+
+        var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<ComputeHistoryActivity>>();
+        logger.LogDebug("Detected {count} history stop points", historyIntervalStopsList.Count);
+
+        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
+        await HandleHistoryIntervalStops(eventClient, historyIntervalStopsList, configuration, cacheDb, cancellationToken);
+    }
+
+    private async Task HandleHistoryIntervalStops(IApplicationEventEngine eventClient,
+        List<HistoryIntervalStop> historyIntervalStopsList, IConfiguration configuration, ICacheDb cacheDb,
+        CancellationToken cancellationToken)
+    {
+        foreach (var historyIntervalStop in historyIntervalStopsList)
+        {
+            var historyStop = new HistoryStopData
+            {
+                Configuration = configuration,
+                RepositoryId = HistoryStopData.RepositoryId,
+                CommitId = historyIntervalStop.GitCommitIdentifier,
+                AsOfDateTime = historyIntervalStop.AsOfDateTime
+            };
+
+            var historyStopPoint = await cacheDb.AddHistoryStopPoint(
+                new CachedHistoryStopPoint
+                {
+                    CachedAnalysisId = AnalysisId,
+                    RepositoryId = historyStop.RepositoryId,
+                    LocalPath = historyStop.Path,
+                    GitCommitId = historyStop.CommitId,
+                    AsOfDateTime = historyStop.AsOfDateTime
+                });
+
+            await eventClient.Fire(
+                new HistoryIntervalStopFoundEvent { HistoryStopPoint = historyStopPoint },
+                cancellationToken);
+        }
+    }
+
+    private static void ReportProgress(IAnalyzeProgressReporter progressReporter, List<HistoryIntervalStop> historyIntervalStopsList)
+    {
         progressReporter.ReportHistoryStopPointDetectionFinished();
 
         progressReporter.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Archive,
             historyIntervalStopsList.Count);
         progressReporter.ReportHistoryStopPointsOperationStarted(HistoryStopPointOperation.Process,
             historyIntervalStopsList.Count);
-
-        var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<ComputeHistoryActivity>>();
-        logger.LogDebug("Detected {count} history stop points", historyIntervalStopsList.Count);
-
-        var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
-        foreach (var historyIntervalStop in historyIntervalStopsList)
-        {
-            var historyStop = new HistoryStopData(configuration, HistoryStopData.RepositoryId,
-                historyIntervalStop.GitCommitIdentifier, historyIntervalStop.AsOfDateTime);
-
-            var historyStopPointId = await cacheDb.AddHistoryStopPoint(
-                new CachedHistoryStopPoint
-                {
-                    CachedAnalysisId = AnalysisId,
-                    RepositoryId = historyStop.RepositoryId,
-                    LocalPath = historyStop.Path,
-                    GitCommitId = historyStop.CommitId!,
-                    AsOfDateTime = historyStop.AsOfDateTime
-                });
-
-            await eventClient.Fire(
-                new HistoryIntervalStopFoundEvent(AnalysisId, historyStopPointId),
-                cancellationToken);
-        }
     }
 }

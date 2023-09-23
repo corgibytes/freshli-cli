@@ -7,16 +7,17 @@ using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NeoSmart.AsyncLock;
 using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public required Guid AnalysisId { get; init; }
-    public required IHistoryStopPointProcessingTask Parent { get; init; }
+    public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required PackageURL Package { get; init; }
     public required string AgentExecutablePath { get; init; }
+    private static readonly AsyncLock s_cacheLibYearLock = new();
 
     public int Priority
     {
@@ -27,47 +28,70 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
     {
         try
         {
+            var historyStopPoint = Parent?.HistoryStopPoint;
+            _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
+
+            var manifest = Parent?.Manifest;
+            _ = manifest ?? throw new Exception("Parent's Manifest is null");
+
             var logger = eventClient.ServiceProvider.GetService<ILogger<ComputeLibYearForPackageActivity>>();
 
             var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
             var agentReader = agentManager.GetReader(AgentExecutablePath, cancellationToken);
 
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb();
-            var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(Parent.HistoryStopPointId);
+            var cacheDb = await cacheManager.GetCacheDb();
 
-            var calculator = eventClient.ServiceProvider.GetRequiredService<IPackageLibYearCalculator>();
-            var packageLibYear = await calculator.ComputeLibYear(agentReader, Package, historyStopPoint!.AsOfDateTime);
-            if (packageLibYear == null)
+            CachedPackageLibYear? packageLibYear;
+            using (await s_cacheLibYearLock.LockAsync(cancellationToken))
             {
-                logger?.LogWarning("Failed to compute libyear for {Package} as of {Time}", Package, historyStopPoint.AsOfDateTime);
-                return;
+                packageLibYear = await cacheDb.RetrievePackageLibYear(Package, historyStopPoint.AsOfDateTime);
+                if (packageLibYear != null)
+                {
+                    if (!packageLibYear.DoesBelongTo(manifest))
+                    {
+                        await cacheDb.AddPackageLibYear(manifest, packageLibYear);
+                    }
+                }
+                else
+                {
+                    var calculator =
+                        agentManager.GetLibYearCalculator(agentReader, Package, historyStopPoint.AsOfDateTime);
+                    var computedPackageLibYear = await calculator.ComputeLibYear();
+                    if (computedPackageLibYear == null)
+                    {
+                        logger?.LogWarning("Failed to compute libyear for {Package} as of {Time}", Package,
+                            historyStopPoint.AsOfDateTime);
+                        return;
+                    }
+
+                    packageLibYear = await cacheDb.AddPackageLibYear(
+                        manifest,
+                        new CachedPackageLibYear
+                        {
+                            PackageUrl = Package.ToString()!,
+                            AsOfDateTime = historyStopPoint.AsOfDateTime,
+                            ReleaseDateCurrentVersion = computedPackageLibYear.ReleaseDateCurrentVersion,
+                            LatestVersion = computedPackageLibYear.LatestVersion.ToString(),
+                            ReleaseDateLatestVersion = computedPackageLibYear.ReleaseDateLatestVersion,
+                            LibYear = computedPackageLibYear.LibYear
+                        }
+                    );
+                }
             }
-
-            var packageLibYearId = await cacheDb.AddPackageLibYear(new CachedPackageLibYear
-            {
-                PackageName = Package.Name,
-                CurrentVersion = packageLibYear.CurrentVersion?.ToString(),
-                ReleaseDateCurrentVersion = packageLibYear.ReleaseDateCurrentVersion,
-                LatestVersion = packageLibYear.LatestVersion?.ToString(),
-                ReleaseDateLatestVersion = packageLibYear.ReleaseDateLatestVersion,
-                LibYear = packageLibYear.LibYear,
-                HistoryStopPointId = Parent.HistoryStopPointId
-            });
 
             await eventClient.Fire(
                 new LibYearComputedForPackageEvent
                 {
-                    AnalysisId = AnalysisId,
-                    Parent = Parent,
-                    PackageLibYearId = packageLibYearId,
+                    Parent = this,
+                    PackageLibYear = packageLibYear,
                     AgentExecutablePath = AgentExecutablePath
                 },
                 cancellationToken);
         }
         catch (Exception error)
         {
-            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(Parent, error), cancellationToken);
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, error), cancellationToken);
         }
     }
 }

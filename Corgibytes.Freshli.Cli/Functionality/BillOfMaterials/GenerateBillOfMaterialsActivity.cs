@@ -13,49 +13,41 @@ namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchronized, IHistoryStopPointProcessingTask
 {
-    private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_historyPointSemaphores = new();
-    public readonly string AgentExecutablePath;
-    public readonly Guid AnalysisId;
-    public readonly string ManifestPath;
-    public IHistoryStopPointProcessingTask Parent { get; }
-
     public int Priority
     {
         get { return 100; }
     }
 
-    public GenerateBillOfMaterialsActivity(Guid analysisId, string agentExecutablePath,
-        IHistoryStopPointProcessingTask parent, string manifestPath)
-    {
-        AnalysisId = analysisId;
-        AgentExecutablePath = agentExecutablePath;
-        Parent = parent;
-        ManifestPath = manifestPath;
-    }
+    private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_historyPointSemaphores = new();
+
+    public required string AgentExecutablePath { get; init; }
+    public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
-        var logger = eventClient.ServiceProvider.GetService<ILogger<GenerateBillOfMaterialsActivity>>();
-        logger?.LogDebug("Handling bom generation for HistoryStopPointId = {HistoryStopPointId} with agent = {Agent} and manifest path = {Path}",
-            Parent.HistoryStopPointId, AgentExecutablePath, ManifestPath);
-
         try
         {
+            var historyStopPoint = Parent?.HistoryStopPoint;
+            _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
+
+            var manifest = Parent?.Manifest;
+            _ = manifest ?? throw new Exception("Parent's Manifest is null");
+
+            var logger = eventClient.ServiceProvider.GetService<ILogger<GenerateBillOfMaterialsActivity>>();
+            logger?.LogDebug("Handling bom generation for HistoryStopPointId = {HistoryStopPointId} with agent = {Agent} and manifest path = {Path}",
+                historyStopPoint.Id, AgentExecutablePath, manifest.ManifestFilePath);
+
             var agentManager = eventClient.ServiceProvider.GetRequiredService<IAgentManager>();
             var agentReader = agentManager.GetReader(AgentExecutablePath, cancellationToken);
 
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
-            var cacheDb = cacheManager.GetCacheDb();
-
-            var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(Parent.HistoryStopPointId);
-            _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {Parent.HistoryStopPointId}");
 
             var historyPointPath = historyStopPoint.LocalPath;
             var asOfDateTime = historyStopPoint.AsOfDateTime;
 
-            var fullManifestPath = Path.Combine(historyPointPath, ManifestPath);
+            var fullManifestPath = Path.Combine(historyPointPath, manifest.ManifestFilePath);
             logger?.LogDebug("Preparing to process manifest for HistoryStopPointId = {HistoryStopPointId} with agent = {Agent} for {Path} and {FullManifestPath} on {AsOfDate}",
-                Parent.HistoryStopPointId, AgentExecutablePath, ManifestPath, fullManifestPath, asOfDateTime);
+                historyStopPoint.Id, AgentExecutablePath, manifest.ManifestFilePath, fullManifestPath, asOfDateTime);
 
             var fileValidator = eventClient.ServiceProvider.GetRequiredService<IFileValidator>();
 
@@ -80,33 +72,32 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
                 return;
             }
 
-            var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, AnalysisId, asOfDateTime);
+            var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, historyStopPoint.CachedAnalysis.Id, asOfDateTime);
 
             await eventClient.Fire(
-                new BillOfMaterialsGeneratedEvent(
-                    AnalysisId,
-                    Parent,
-                    cachedBomFilePath,
-                    AgentExecutablePath
-                ),
-                cancellationToken);
+                new BillOfMaterialsGeneratedEvent
+                {
+                    Parent = this,
+                    PathToBillOfMaterials = cachedBomFilePath,
+                    AgentExecutablePath = AgentExecutablePath
+                },
+                cancellationToken
+            );
         }
         catch (Exception error)
         {
             await eventClient.Fire(
-                new HistoryStopPointProcessingFailedEvent(Parent, error),
-                cancellationToken);
+                new HistoryStopPointProcessingFailedEvent(this, error),
+                cancellationToken
+            );
         }
     }
 
-    public async ValueTask<SemaphoreSlim> GetSemaphore(IServiceProvider provider)
+    public SemaphoreSlim GetSemaphore()
     {
-        var cacheManager = provider.GetRequiredService<ICacheManager>();
-        var cacheDb = cacheManager.GetCacheDb();
-
-        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(Parent.HistoryStopPointId);
+        var historyStopPoint = Parent?.HistoryStopPoint;
         // TODO create an exception class for this exception and write a test to cover it getting generated
-        _ = historyStopPoint ?? throw new Exception($"Failed to retrieve history stop point {Parent.HistoryStopPointId}");
+        _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
 
         var historyPointPath = historyStopPoint.LocalPath;
 

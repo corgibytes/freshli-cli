@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -27,7 +28,7 @@ public class HistoryStopPointProcessingCompletedEventTest
             .Returns(logger.Object);
 
         var parent = new Mock<IHistoryStopPointProcessingTask>();
-        parent.Setup(mock => mock.HistoryStopPointId).Returns(12);
+        parent.Setup(mock => mock.HistoryStopPoint).Returns(new CachedHistoryStopPoint { Id = 29 });
         var appEvent = new HistoryStopPointProcessingCompletedEvent { Parent = parent.Object };
 
         var cancellationToken = new System.Threading.CancellationToken(false);

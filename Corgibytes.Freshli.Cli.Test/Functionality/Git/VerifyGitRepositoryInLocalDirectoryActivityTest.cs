@@ -32,7 +32,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _serviceProvider.Setup(mock => mock.GetService(typeof(IGitManager))).Returns(_gitManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
-        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
         _configuration.Setup(mock => mock.CacheDir).Returns("/cache/dir");
 
@@ -40,7 +40,14 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _analysisId = new Guid();
 
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(
-            new CachedAnalysis(_repositoryLocation, "main", "1m", CommitHistory.Full, RevisionHistoryMode.AllRevisions)
+            new CachedAnalysis
+            {
+                RepositoryUrl = _repositoryLocation,
+                RepositoryBranch = "main",
+                HistoryInterval = "1m",
+                UseCommitHistory = CommitHistory.Full,
+                RevisionHistoryMode = RevisionHistoryMode.AllRevisions
+            }
         );
     }
 
@@ -56,10 +63,13 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
         await activity.Handle(_eventEngine.Object, _cancellationToken);
 
-        var expectedCachedGitSource = new CachedGitSource(
-            new CachedGitSourceId(repositoryLocation.FullName).Id, _repositoryLocation, null,
-            repositoryLocation.FullName
-        );
+        var expectedCachedGitSource = new CachedGitSource
+        {
+            Id = new CachedGitSourceId(repositoryLocation.FullName).Id,
+            Url = _repositoryLocation,
+            Branch = null,
+            LocalPath = repositoryLocation.FullName
+        };
 
         _repository.Verify(mock => mock.Save(It.Is<CachedGitSource>(value =>
             value.Branch == expectedCachedGitSource.Branch &&

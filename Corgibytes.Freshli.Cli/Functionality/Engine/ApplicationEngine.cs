@@ -169,7 +169,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         SemaphoreSlim? semaphore = null;
         if (activity is ISynchronized mutexSource)
         {
-            semaphore = await mutexSource.GetSemaphore(ServiceProvider);
+            semaphore = mutexSource.GetSemaphore();
         }
 
         var semaphoreEntered = true;
@@ -197,7 +197,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
         try
         {
-            _logger.LogDebug(
+            _logger.LogTrace(
                 "Handling activity {ActivityType}: {Activity}",
                 activity.GetType(),
                 // TODO: figure out how best to log activity specific values here
@@ -242,7 +242,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         try
         {
             // TODO: figure out how best to log event specific values here
-            _logger.LogDebug(
+            _logger.LogTrace(
                 "Handling activity {AppEventType}: {AppEvent}",
                 appEvent.GetType(),
                 appEvent

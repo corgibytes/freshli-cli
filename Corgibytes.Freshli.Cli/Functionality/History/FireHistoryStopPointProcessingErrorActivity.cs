@@ -7,7 +7,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.History;
 
 public class FireHistoryStopPointProcessingErrorActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public FireHistoryStopPointProcessingErrorActivity(IHistoryStopPointProcessingTask parent, Exception error)
+    public FireHistoryStopPointProcessingErrorActivity(IHistoryStopPointProcessingTask? parent, Exception error)
     {
         Parent = parent;
         Error = error;
@@ -15,10 +15,10 @@ public class FireHistoryStopPointProcessingErrorActivity : IApplicationActivity,
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
-        await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(Parent, Error), cancellationToken);
+        await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, Error), cancellationToken);
     }
 
-    public IHistoryStopPointProcessingTask Parent { get; }
+    public IHistoryStopPointProcessingTask? Parent { get; }
     public Exception Error { get; }
 
     public int Priority

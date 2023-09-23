@@ -18,11 +18,11 @@ Feature: analyze
         """
         https://freshli.io/AnalysisRequests/
         """
-        And the "~/.freshli/freshli.db" contains lib year 0.09 for "postgresql" as of "2022-10-01 00:00:00"
-        And the "~/.freshli/freshli.db" contains lib year 1.58 for "postgresql" as of "2022-01-01 00:00:00"
-        And the "~/.freshli/freshli.db" contains lib year 0.54 for "postgresql" as of "2020-12-01 00:00:00"
+        And the "~/.freshli/freshli.db" contains lib year 0.09 for "pkg:maven/org.postgresql/postgresql@42.4.1?type=jar" as of "2022-10-01 00:00:00"
+        And the "~/.freshli/freshli.db" contains lib year 1.58 for "pkg:maven/org.postgresql/postgresql@42.2.12?type=jar" as of "2022-01-01 00:00:00"
+        And the "~/.freshli/freshli.db" contains lib year 0.54 for "pkg:maven/org.postgresql/postgresql@42.2.12?type=jar" as of "2020-12-01 00:00:00"
 
-    Scenario: Run the analysis with default options against a fixture project.
+    Scenario: Run the analysis with default options against a Java fixture project.
         Given the Freshli Web API is available
         And a directory named "~/.freshli" does not exist
         When I run `freshli --loglevel Debug analyze https://github.com/corgibytes/freshli-fixture-java-test`
@@ -42,9 +42,24 @@ Feature: analyze
         And the "~/.freshli/freshli.db" contains history stop point at "2022-07-01 00:00:00" "7601fe07ea76d9ce8c9d5332db237d71e236ef4a"
         And the "~/.freshli/freshli.db" contains history stop point at "2021-05-01 00:00:00" "054452d2a28e0b1717c8e8002532a8e572abe66b"
         And the "~/.freshli/freshli.db" contains history stop point at "2020-09-01 00:00:00" "f58c3f8773da4ea4f01d819b842e384b3a343d40"
-        And the "~/.freshli/freshli.db" contains lib year 0.0 for "commons-io" as of "2022-10-01 00:00:00"
-        And the "~/.freshli/freshli.db" contains lib year 0.0 for "commons-io" as of "2021-01-01 00:00:00"
-        And the "~/.freshli/freshli.db" contains lib year 0.0 for "commons-io" as of "2020-10-01 00:00:00"
+        And the "~/.freshli/freshli.db" contains lib year 0.0 for "pkg:maven/commons-io/commons-io@2.11.0?type=jar" as of "2022-10-01 00:00:00"
+        And the "~/.freshli/freshli.db" contains lib year 0.0 for "pkg:maven/commons-io/commons-io@2.8.0?type=jar" as of "2021-01-01 00:00:00"
+        And the "~/.freshli/freshli.db" contains lib year 0.0 for "pkg:maven/commons-io/commons-io@2.8.0?type=jar" as of "2020-10-01 00:00:00"
+
+    Scenario: Run the analysis with default options against a DotNet fixture project.
+      Given the Freshli Web API is available
+      And a directory named "~/.freshli" does not exist
+      When I run `freshli --loglevel Debug analyze https://github.com/corgibytes/freshli-fixture-csharp-test`
+      Then it should pass with:
+          """
+          https://freshli.io/AnalysisRequests/
+          """
+      And the directory named "~/.freshli" should exist
+      And a file named "~/.freshli/freshli.db" should exist
+      And we can open a SQLite connection to "~/.freshli/freshli.db"
+      And the "~/.freshli/freshli.db" contains lib year 2.27 for "pkg:nuget/NLog@4.7.7" as of "2023-05-01 00:00:00"
+      And the "~/.freshli/freshli.db" contains lib year 2.18 for "pkg:nuget/NLog@4.7.7" as of "2023-04-01 00:00:00"
+      And the "~/.freshli/freshli.db" contains lib year 2.07 for "pkg:nuget/NLog@4.7.7" as of "2023-03-01 00:00:00"
 
     Scenario: Run the analysis with specific git installation.
         Given the Freshli Web API is available

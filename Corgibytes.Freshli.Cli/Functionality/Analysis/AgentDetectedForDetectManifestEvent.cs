@@ -8,30 +8,26 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class AgentDetectedForDetectManifestEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
-    public AgentDetectedForDetectManifestEvent(Guid analysisId, IHistoryStopPointProcessingTask parent,
-        string agentExecutablePath)
-    {
-        AnalysisId = analysisId;
-        Parent = parent;
-        AgentExecutablePath = agentExecutablePath;
-    }
-
-    public Guid AnalysisId { get; }
-    public IHistoryStopPointProcessingTask Parent { get; }
-    public string AgentExecutablePath { get; }
+    public required IHistoryStopPointProcessingTask? Parent { get; init; }
+    public required string AgentExecutablePath { get; init; }
 
     public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {
             await eventClient.Dispatch(
-                new DetectManifestsUsingAgentActivity(AnalysisId, Parent, AgentExecutablePath),
-                cancellationToken);
+                new DetectManifestsUsingAgentActivity
+                {
+                    Parent = this,
+                    AgentExecutablePath = AgentExecutablePath
+                },
+                cancellationToken
+            );
         }
         catch (Exception error)
         {
             await eventClient.Dispatch(
-                new FireHistoryStopPointProcessingErrorActivity(Parent, error),
+                new FireHistoryStopPointProcessingErrorActivity(this, error),
                 cancellationToken);
         }
     }

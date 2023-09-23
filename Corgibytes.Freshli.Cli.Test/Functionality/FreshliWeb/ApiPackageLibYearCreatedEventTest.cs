@@ -1,6 +1,6 @@
-using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -14,7 +14,6 @@ public class ApiPackageLibYearCreatedEventTest
 {
     private const string AgentExecutablePath = "/path/to/agent";
     private const int PackageLibYearId = 12;
-    private readonly Guid _analysisId = Guid.NewGuid();
     private readonly CancellationToken _cancellationToken = new(false);
     private readonly Mock<IApplicationActivityEngine> _activityClient = new();
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
@@ -23,12 +22,12 @@ public class ApiPackageLibYearCreatedEventTest
 
     public ApiPackageLibYearCreatedEventTest()
     {
+        var packageLibYear = new CachedPackageLibYear { Id = PackageLibYearId };
         _appEvent = new ApiPackageLibYearCreatedEvent
         {
-            AnalysisId = _analysisId,
             Parent = _parent.Object,
             AgentExecutablePath = AgentExecutablePath,
-            PackageLibYearId = PackageLibYearId
+            PackageLibYear = packageLibYear
         };
     }
 

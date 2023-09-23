@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Resources;
 using Spectre.Console;
+using Spectre.Console.Rendering;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
@@ -51,7 +52,7 @@ public class SpectreConsoleAnalyzeProgressReporter : IAnalyzeProgressReporter, I
             _mainProgressBar.Columns(
                 new TaskDescriptionColumn(),
                 new ProgressBarColumn(),
-                new PercentageColumn(),
+                new DecimalPercentageColumn(),
                 new ElapsedTimeColumn(),
                 new SpinnerColumn()
             );
@@ -255,5 +256,42 @@ public class SpectreConsoleAnalyzeProgressReporter : IAnalyzeProgressReporter, I
         _mainProgressBar = null;
 
         GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// A column showing task progress in percentage.
+    /// </summary>
+    private sealed class DecimalPercentageColumn : ProgressColumn
+    {
+        /// <summary>
+        /// Gets or sets the style for a non-complete task.
+        /// </summary>
+        private static Style Style => Style.Plain;
+
+        /// <summary>
+        /// Gets or sets the style for a completed task.
+        /// </summary>
+        private static Style CompletedStyle => Color.Green;
+
+        /// <inheritdoc/>
+        public override IRenderable Render(RenderOptions options, ProgressTask task, TimeSpan deltaTime)
+        {
+            const double tolerance = 0.000001;
+            var percentage = Math.Min(task.Percentage, 100.0);
+            var style = Math.Abs(percentage - 100.0) < tolerance ? CompletedStyle : Style;
+
+            var formattedPercentage = $"{percentage:0.00}";
+            if (formattedPercentage.EndsWith(".00"))
+            {
+                formattedPercentage = $"{percentage:0}";
+            }
+            return new Text($"{formattedPercentage}%", style).RightJustified();
+        }
+
+        /// <inheritdoc/>
+        public override int? GetColumnWidth(RenderOptions options)
+        {
+            return 6;
+        }
     }
 }

@@ -16,10 +16,12 @@ public class AgentDetectedForDetectManifestEventTest
     public async Task Handle()
     {
         const string agentExecutablePath = "/path/to/agent";
-        var analysisId = Guid.NewGuid();
         var parent = new Mock<IHistoryStopPointProcessingTask>();
-        var appEvent =
-            new AgentDetectedForDetectManifestEvent(analysisId, parent.Object, agentExecutablePath);
+        var appEvent = new AgentDetectedForDetectManifestEvent
+        {
+            Parent = parent.Object,
+            AgentExecutablePath = agentExecutablePath
+        };
         var cancellationToken = new CancellationToken(false);
 
         var activityEngine = new Mock<IApplicationActivityEngine>();
@@ -29,8 +31,7 @@ public class AgentDetectedForDetectManifestEventTest
         activityEngine.Verify(mock =>
             mock.Dispatch(
                 It.Is<DetectManifestsUsingAgentActivity>(activity =>
-                    activity.AnalysisId == analysisId &&
-                    activity.Parent == parent.Object &&
+                    activity.Parent == appEvent &&
                     activity.AgentExecutablePath == agentExecutablePath
                 ),
                 cancellationToken,
@@ -44,7 +45,11 @@ public class AgentDetectedForDetectManifestEventTest
     {
         var parent = new Mock<IHistoryStopPointProcessingTask>();
         var cancellationToken = new CancellationToken(false);
-        var appEvent = new AgentDetectedForDetectManifestEvent(Guid.NewGuid(), parent.Object, "/path/to/agent");
+        var appEvent = new AgentDetectedForDetectManifestEvent
+        {
+            Parent = parent.Object,
+            AgentExecutablePath = "/path/to/agent"
+        };
 
         var activityEngine = new Mock<IApplicationActivityEngine>();
 
@@ -62,7 +67,7 @@ public class AgentDetectedForDetectManifestEventTest
         activityEngine.Verify(mock =>
             mock.Dispatch(
                 It.Is<FireHistoryStopPointProcessingErrorActivity>(activity =>
-                    activity.Parent == parent.Object &&
+                    activity.Parent == appEvent &&
                     activity.Error == exception
                 ),
                 cancellationToken,

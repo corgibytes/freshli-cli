@@ -18,7 +18,11 @@ public class HistoryStopDataTest
     public void PathWithoutCommitId()
     {
         var repositoryId = Guid.NewGuid().ToString();
-        var data = new HistoryStopData(_configuration.Object, repositoryId);
+        var data = new HistoryStopData
+        {
+            Configuration = _configuration.Object,
+            RepositoryId = repositoryId
+        };
 
         var expectedPath = Path.Combine(CacheDirectory, "repositories", repositoryId);
         Assert.Equal(expectedPath, data.Path);
@@ -29,7 +33,12 @@ public class HistoryStopDataTest
     {
         var repositoryId = Guid.NewGuid().ToString();
         var commitId = Guid.NewGuid().ToString();
-        var data = new HistoryStopData(_configuration.Object, repositoryId, commitId);
+        var data = new HistoryStopData
+        {
+            Configuration = _configuration.Object,
+            RepositoryId = repositoryId,
+            CommitId = commitId
+        };
 
         var expectedPath = Path.Combine(CacheDirectory, "histories", repositoryId, commitId);
         Assert.Equal(expectedPath, data.Path);
@@ -41,8 +50,12 @@ public class HistoryStopDataTest
         var expectedPath = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         var repositoryId = Guid.NewGuid().ToString();
 
-        var historyStopData =
-            new HistoryStopData(_configuration.Object, repositoryId) { LocalDirectory = expectedPath };
+        var historyStopData = new HistoryStopData
+        {
+            Configuration = _configuration.Object,
+            RepositoryId = repositoryId,
+            LocalDirectory = expectedPath
+        };
 
         Assert.Equal(expectedPath, historyStopData.Path);
     }
@@ -54,8 +67,13 @@ public class HistoryStopDataTest
         var repositoryId = Guid.NewGuid().ToString();
         var commitId = Guid.NewGuid().ToString();
 
-        var historyStopData =
-            new HistoryStopData(_configuration.Object, repositoryId, commitId) { LocalDirectory = localDirectory };
+        var historyStopData = new HistoryStopData
+        {
+            Configuration = _configuration.Object,
+            RepositoryId = repositoryId,
+            CommitId = commitId,
+            LocalDirectory = localDirectory
+        };
 
         var expectedPath = Path.Combine(CacheDirectory, "histories", repositoryId, commitId);
         Assert.Equal(expectedPath, historyStopData.Path);

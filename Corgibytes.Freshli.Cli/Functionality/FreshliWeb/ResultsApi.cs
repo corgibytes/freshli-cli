@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Microsoft.Extensions.Logging;
 using Polly;
 
@@ -132,18 +133,11 @@ public class ResultsApi : IResultsApi, IDisposable
         }
     }
 
-    public async ValueTask CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, int historyStopPointId)
+    public async ValueTask CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint)
     {
         var cachedAnalysis = await cacheDb.RetrieveAnalysis(analysisId);
         var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
 
-        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
-        if (historyStopPoint == null)
-        {
-            _logger.LogWarning("Could not find HistoryStopPoint for {HistoryStopPointId} in cache as expected",
-                historyStopPointId);
-            return;
-        }
         var asOfDateTime = historyStopPoint.AsOfDateTime;
 
         var apiUrl = _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
@@ -165,29 +159,25 @@ public class ResultsApi : IResultsApi, IDisposable
         }
     }
 
-    public async ValueTask CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, int packageLibYearId)
+    public async ValueTask CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint, CachedPackageLibYear packageLibYear)
     {
-        _logger.LogTrace("CreatePackageLibYear({AnalysisId}, {PackageLibYearId})", analysisId, packageLibYearId);
+        _logger.LogTrace("CreatePackageLibYear({AnalysisId}, {PackageLibYearId})", analysisId, packageLibYear.Id);
         var cachedAnalysis = await cacheDb.RetrieveAnalysis(analysisId);
-        var packageLibYear = await cacheDb.RetrievePackageLibYear(packageLibYearId);
-
-        var historyStopPointId = packageLibYear!.HistoryStopPointId;
-        var historyStopPoint = await cacheDb.RetrieveHistoryStopPoint(historyStopPointId);
 
         var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
-        var asOfDateTime = historyStopPoint!.AsOfDateTime;
+        var asOfDateTime = historyStopPoint.AsOfDateTime;
 
         var apiUrl = $"{_configuration.FreshliWebApiBaseUrl}/api/v0/analysis-request/{apiAnalysisId}/{asOfDateTime:o}";
         var requestContent = JsonContent.Create(
             new
             {
-                packageUrl = packageLibYear.CurrentVersion!,
+                packageUrl = packageLibYear.PackageUrl,
                 publicationDate = packageLibYear.ReleaseDateCurrentVersion.ToString("o"),
                 libYear = packageLibYear.LibYear
             },
             new MediaTypeHeaderValue("application/json")
         );
-        _logger.LogDebug("Sending HistoryPoint to Freshli.Web endpoint {Endpoint}: {@Payload}", apiUrl, requestContent);
+        _logger.LogTrace("Sending HistoryPoint to Freshli.Web endpoint {Endpoint}: {@Payload}", apiUrl, requestContent);
 
         try
         {
@@ -196,7 +186,7 @@ public class ResultsApi : IResultsApi, IDisposable
         catch (Exception error)
         {
             throw new InvalidOperationException(
-                $"Failed to create package lib year for analysis '{apiAnalysisId}' and '{asOfDateTime:o}' with package URL '{packageLibYear.CurrentVersion!}' publication date '{packageLibYear.ReleaseDateCurrentVersion:o}' and LibYear '{packageLibYear.LibYear}'.",
+                $"Failed to create package lib year for analysis '{apiAnalysisId}' and '{asOfDateTime:o}' with package URL '{packageLibYear.CurrentVersion}' publication date '{packageLibYear.ReleaseDateCurrentVersion:o}' and LibYear '{packageLibYear.LibYear}'.",
                 error
             );
         }

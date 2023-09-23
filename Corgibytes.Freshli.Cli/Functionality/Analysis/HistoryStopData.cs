@@ -4,38 +4,22 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class HistoryStopData : IHistoryStopData
 {
-    private readonly IConfiguration _configuration;
-
-    public HistoryStopData(IConfiguration configuration, string repositoryId, string? commitId = null,
-        DateTimeOffset asOfDateTime = default)
-    {
-        _configuration = configuration;
-        RepositoryId = repositoryId;
-        CommitId = commitId;
-        AsOfDateTime = asOfDateTime;
-    }
-
+    public required IConfiguration Configuration { get; init; }
     public string? LocalDirectory { get; init; }
-
-    public string RepositoryId { get; }
-    public string? CommitId { get; }
-    public DateTimeOffset AsOfDateTime { get; }
+    public required string RepositoryId { get; init; }
+    public string? CommitId { get; init; }
+    public DateTimeOffset AsOfDateTime { get; init; }
 
     public string Path
     {
         get
         {
-            if (CommitId == null)
+            if (CommitId != null)
             {
-                if (LocalDirectory != null)
-                {
-                    return LocalDirectory;
-                }
-
-                return System.IO.Path.Combine(_configuration.CacheDir, "repositories", RepositoryId);
+                return System.IO.Path.Combine(Configuration.CacheDir, "histories", RepositoryId, CommitId);
             }
 
-            return System.IO.Path.Combine(_configuration.CacheDir, "histories", RepositoryId, CommitId);
+            return LocalDirectory ?? System.IO.Path.Combine(Configuration.CacheDir, "repositories", RepositoryId);
         }
     }
 }

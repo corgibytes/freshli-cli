@@ -32,7 +32,7 @@ public class ComputeHistoryActivityTest
     {
         Configuration = new Configuration(new MockEnvironment());
 
-        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
 
         _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(Configuration);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
@@ -44,9 +44,13 @@ public class ComputeHistoryActivityTest
 
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
 
-        HistoryStopData =
-            new HistoryStopData(Configuration, "test", "abcde1234",
-                new DateTimeOffset(2022, 9, 1, 1, 0, 0, TimeSpan.Zero));
+        HistoryStopData = new HistoryStopData
+        {
+            Configuration = Configuration,
+            RepositoryId = "test",
+            CommitId = "abcde1234",
+            AsOfDateTime = new DateTimeOffset(2022, 9, 1, 1, 0, 0, TimeSpan.Zero)
+        };
     }
 
     private HistoryStopData HistoryStopData { get; }
@@ -186,8 +190,15 @@ public class ComputeHistoryActivityTest
     {
         // Arrange
         // Have an analysis available
-        var cachedAnalysis = new CachedAnalysis(repositoryUrl, repositoryBranch, historyInterval, useCommitHistory,
-            revisionHistoryMode);
+        var cachedAnalysis = new CachedAnalysis
+        {
+            RepositoryUrl = repositoryUrl,
+            RepositoryBranch = repositoryBranch,
+            HistoryInterval = historyInterval,
+            UseCommitHistory = useCommitHistory,
+            RevisionHistoryMode = revisionHistoryMode
+        };
+
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(It.IsAny<Guid>())).ReturnsAsync(cachedAnalysis);
     }
 
@@ -196,10 +207,16 @@ public class ComputeHistoryActivityTest
         var stopPointId = HistoryStopPointId;
         foreach (var stopPoint in historyIntervalStops)
         {
+            var historyStopPoint = new CachedHistoryStopPoint
+            {
+                Id = stopPointId,
+                GitCommitId = stopPoint.GitCommitIdentifier,
+                AsOfDateTime = stopPoint.AsOfDateTime
+            };
             _cacheDb.Setup(mock => mock.AddHistoryStopPoint(It.Is<CachedHistoryStopPoint>(value =>
                     value.GitCommitId == stopPoint.GitCommitIdentifier &&
                     value.AsOfDateTime == stopPoint.AsOfDateTime)))
-                .ReturnsAsync(stopPointId);
+                .ReturnsAsync(historyStopPoint);
             stopPointId++;
         }
     }
@@ -230,8 +247,7 @@ public class ComputeHistoryActivityTest
             _eventEngine.Verify(mock =>
                 mock.Fire(
                     It.Is<HistoryIntervalStopFoundEvent>(value =>
-                        value.AnalysisId == analysisId &&
-                        value.HistoryStopPointId == id
+                        value.HistoryStopPoint.Id == id
                     ),
                     _cancellationToken,
                     ApplicationTaskMode.Tracked

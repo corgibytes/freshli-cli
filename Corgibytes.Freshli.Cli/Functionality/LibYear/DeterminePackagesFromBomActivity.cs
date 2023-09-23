@@ -10,27 +10,20 @@ namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
 public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistoryStopPointProcessingTask
 {
-    public DeterminePackagesFromBomActivity(Guid analysisId, IHistoryStopPointProcessingTask parent, string pathToBom,
-        string agentExecutablePath)
-    {
-        AnalysisId = analysisId;
-        Parent = parent;
-        PathToBom = pathToBom;
-        AgentExecutablePath = agentExecutablePath;
-    }
-
     public int Priority
     {
         get { return 100; }
     }
 
-    public Guid AnalysisId { get; }
-    public IHistoryStopPointProcessingTask Parent { get; }
-    public string PathToBom { get; }
-    public string AgentExecutablePath { get; }
+    public required IHistoryStopPointProcessingTask? Parent { get; init; }
+    public required string PathToBom { get; init; }
+    public required string AgentExecutablePath { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
+        var historyStopPoint = Parent?.HistoryStopPoint;
+        _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
+
         var logger = eventClient.ServiceProvider.GetService<ILogger<DeterminePackagesFromBomActivity>>();
         logger?.LogTrace("Handling retrieval of packageUrls from BomFile = {PathToBom}", PathToBom);
 
@@ -51,22 +44,22 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
                 await eventClient.Fire(
                     new PackageFoundEvent
                     {
-                        AnalysisId = AnalysisId,
-                        Parent = Parent,
+                        Parent = this,
                         AgentExecutablePath = AgentExecutablePath,
                         Package = packageUrl
                     },
-                    cancellationToken);
+                    cancellationToken
+                );
             }
 
             if (packageUrls.Count == 0)
             {
-                await eventClient.Fire(new NoPackagesFoundEvent(AnalysisId, Parent), cancellationToken);
+                await eventClient.Fire(new NoPackagesFoundEvent(this), cancellationToken);
             }
         }
         catch (Exception error)
         {
-            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(Parent, error), cancellationToken);
+            await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, error), cancellationToken);
         }
     }
 }

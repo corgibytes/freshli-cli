@@ -1,5 +1,4 @@
 using System;
-using Corgibytes.Freshli.Lib;
 using NLog;
 using PackageUrl;
 
@@ -13,6 +12,32 @@ public static class PackageUrlExtensions
         return other.ToString()!;
     }
 
+    private static bool AreVersionsEquivalent(string left, string right)
+    {
+        if (left == right)
+        {
+            return true;
+        }
+
+        var longer = left;
+        var shorter = right;
+        if (left.Length < right.Length)
+        {
+            longer = right;
+            shorter = left;
+        }
+
+        if (longer.StartsWith(shorter))
+        {
+            if (longer.EndsWith(".0"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public static bool PackageUrlEquals(this PackageURL packageUrl, PackageURL? other)
     {
         // Technically this isn't true equality but this what equals means to us.
@@ -22,9 +47,7 @@ public static class PackageUrlExtensions
             return other != null &&
                 packageUrl.Name == other.Name &&
                 packageUrl.Namespace == other.Namespace &&
-                // the SemVerVersionInfo safely parses even non-SemanticVersion compliant values
-                new SemVerVersionInfo(packageUrl.Version)
-                    .CompareTo(new SemVerVersionInfo(other.Version)) == 0;
+                AreVersionsEquivalent(packageUrl.Version, other.Version);
         }
         catch (Exception e)
         {

@@ -39,9 +39,16 @@ public class CloneGitRepositoryActivityTest
         _configuration.Setup(mock => mock.CacheDir).Returns(CacheDir);
         _configuration.Setup(mock => mock.GitPath).Returns(GitPath);
 
-        _cacheManager.Setup(mock => mock.GetCacheDb()).Returns(_cacheDb.Object);
+        _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
 
-        _cachedAnalysis = new CachedAnalysis(Url, Branch, "1m", new CommitHistory(), RevisionHistoryMode.AllRevisions);
+        _cachedAnalysis = new CachedAnalysis
+        {
+            RepositoryUrl = Url,
+            RepositoryBranch = Branch,
+            HistoryInterval = "1m",
+            UseCommitHistory = new CommitHistory(),
+            RevisionHistoryMode = RevisionHistoryMode.AllRevisions
+        };
 
         _serviceProvider.Setup(mock => mock.GetService(typeof(IConfiguration))).Returns(_configuration.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
@@ -53,7 +60,13 @@ public class CloneGitRepositoryActivityTest
 
     private void SetupCloneOrPullUsingDefaults() =>
         _gitSourceRepository.Setup(mock => mock.CloneOrPull(Url, Branch))
-            .ReturnsAsync(new CachedGitSource(RepositoryId, Url, Branch, LocalPath));
+            .ReturnsAsync(new CachedGitSource
+            {
+                Id = RepositoryId,
+                Url = Url,
+                Branch = Branch,
+                LocalPath = LocalPath
+            });
 
     private void SetupCachedAnalysis() =>
         _cacheDb.Setup(mock => mock.RetrieveAnalysis(_analysisId)).ReturnsAsync(_cachedAnalysis);
