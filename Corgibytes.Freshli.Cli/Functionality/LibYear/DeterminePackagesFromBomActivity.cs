@@ -56,6 +56,31 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
             {
                 await eventClient.Fire(new NoPackagesFoundEvent(this), cancellationToken);
             }
+
+	    new Thread(() =>
+            {
+                try
+                {
+                    eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
+                    eventClient.Fire(
+                        new PackagesFromBomProcessedEvent { Parent = this },
+                        cancellationToken,
+                        ApplicationTaskMode.Untracked
+                    ).AsTask().Wait(cancellationToken);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Don't do anything, we're just exiting
+                }
+                catch (Exception error)
+                {
+                    eventClient.Fire(
+                        new UnhandledExceptionEvent(error),
+                        cancellationToken,
+                        ApplicationTaskMode.Untracked
+                    ).AsTask().Wait(cancellationToken);
+                }
+            }).Start();
         }
         catch (Exception error)
         {
