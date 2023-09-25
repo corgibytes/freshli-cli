@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Resources;
@@ -97,8 +98,7 @@ public class CacheManager : ICacheManager, IDisposable, IAsyncDisposable
 
     private static string GetFilePathHash(string filePath)
     {
-        var sha256 = SHA256.Create();
-        var sourceManifestHash = sha256.ComputeHash(System.Text.Encoding.UTF8.GetBytes(filePath));
+        var sourceManifestHash = SHA256.HashData(Encoding.UTF8.GetBytes(filePath));
         return BitConverter.ToString(sourceManifestHash).Replace("-", string.Empty);
     }
 
