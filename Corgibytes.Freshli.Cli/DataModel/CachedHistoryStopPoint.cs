@@ -12,7 +12,7 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-public class CachedHistoryStopPoint
+public class CachedHistoryStopPoint : TimeStampedEntity
 {
     [Required] public int Id { get; set; }
 

@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-public class CachedAnalysis
+public class CachedAnalysis : TimeStampedEntity
 {
     // ReSharper disable once PropertyCanBeMadeInitOnly.Global
     [Required] public Guid Id { get; set; }

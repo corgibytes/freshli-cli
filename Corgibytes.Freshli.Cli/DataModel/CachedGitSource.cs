@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
-public class CachedGitSource
+public class CachedGitSource : TimeStampedEntity
 {
     [Required] public string Id { get; set; } = null!;
     [Required] public string Url { get; set; } = null!;

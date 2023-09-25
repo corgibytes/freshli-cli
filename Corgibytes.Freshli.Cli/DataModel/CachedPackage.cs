@@ -10,7 +10,7 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 [Index(nameof(Id), IsUnique = true)]
 [Index(nameof(PackageUrlWithoutVersion))]
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-public class CachedPackage
+public class CachedPackage : TimeStampedEntity
 {
     public CachedPackage()
     {

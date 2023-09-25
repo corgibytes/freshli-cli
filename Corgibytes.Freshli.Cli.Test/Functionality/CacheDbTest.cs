@@ -15,6 +15,8 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality;
 [IntegrationTest]
 public class CacheDbTest
 {
+    private TimeSpan DateTolerance { get; } = TimeSpan.FromSeconds(1);
+
     [Fact]
     public async Task RetrieveAnalysisWhenNull()
     {
@@ -39,6 +41,8 @@ public class CacheDbTest
 
             Assert.NotNull(retrievedAnalysis);
             Assert.Equal(analysisId, retrievedAnalysis.Id);
+            Assert.True(DateTimeOffset.Now - analysis.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - analysis.UpdatedAt < DateTolerance);
             Assert.Equal(analysis.RepositoryUrl, retrievedAnalysis.RepositoryUrl);
             Assert.Equal(analysis.RepositoryBranch, retrievedAnalysis.RepositoryBranch);
             Assert.Equal(analysis.UseCommitHistory, retrievedAnalysis.UseCommitHistory);
@@ -76,6 +80,8 @@ public class CacheDbTest
             var storedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
             Assert.NotNull(historyStopPoint);
             Assert.True(historyStopPoint.Id != 0);
+            Assert.True(DateTimeOffset.Now - storedHistoryStopPoint.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - storedHistoryStopPoint.UpdatedAt < DateTolerance);
             AssertCachedHistoryStopPointsEqual(historyStopPoint, storedHistoryStopPoint);
 
             var retrievedHistoryStopPoint = await cacheDb.RetrieveHistoryStopPoint(historyStopPoint.Id);
@@ -176,14 +182,14 @@ public class CacheDbTest
 
             var savedManifest = await cacheDb.AddManifest(savedHistoryStopPoint, firstManifestPath);
             Assert.True(savedManifest.Id != 0);
+            Assert.True(DateTimeOffset.Now - savedManifest.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - savedManifest.UpdatedAt < DateTolerance);
             Assert.Equal(firstManifestPath, savedManifest.ManifestFilePath);
             Assert.Equal(savedHistoryStopPoint.Id, savedManifest.HistoryStopPoint.Id);
 
             var retrievedManifest = await cacheDb.RetrieveManifest(savedHistoryStopPoint, firstManifestPath);
             Assert.NotNull(retrievedManifest);
-            Assert.Equal(savedManifest.Id, retrievedManifest.Id);
-            Assert.Equal(savedManifest.ManifestFilePath, retrievedManifest.ManifestFilePath);
-            Assert.Equal(savedHistoryStopPoint.Id, retrievedManifest.HistoryStopPoint.Id);
+            AssertManifestsEqual(savedManifest, retrievedManifest);
         });
     }
 
@@ -207,27 +213,27 @@ public class CacheDbTest
 
             var savedFirstManifest = await cacheDb.AddManifest(savedHistoryStopPoint, firstManifestPath);
             Assert.True(savedFirstManifest.Id != 0);
+            Assert.True(DateTimeOffset.Now - savedFirstManifest.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - savedFirstManifest.UpdatedAt < DateTolerance);
             Assert.Equal(firstManifestPath, savedFirstManifest.ManifestFilePath);
             Assert.Equal(savedHistoryStopPoint.Id, savedFirstManifest.HistoryStopPoint.Id);
 
             var retrievedFirstManifest = await cacheDb.RetrieveManifest(savedHistoryStopPoint, firstManifestPath);
             Assert.NotNull(retrievedFirstManifest);
-            Assert.Equal(savedFirstManifest.Id, retrievedFirstManifest.Id);
-            Assert.Equal(savedFirstManifest.ManifestFilePath, retrievedFirstManifest.ManifestFilePath);
-            Assert.Equal(savedHistoryStopPoint.Id, retrievedFirstManifest.HistoryStopPoint.Id);
+            AssertManifestsEqual(savedFirstManifest, retrievedFirstManifest);
 
             const string secondManifestPath = "/path/to/second/manifest";
 
             var savedSecondManifest = await cacheDb.AddManifest(savedHistoryStopPoint, secondManifestPath);
             Assert.True(savedSecondManifest.Id != 0);
+            Assert.True(DateTimeOffset.Now - savedSecondManifest.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - savedSecondManifest.UpdatedAt < DateTolerance);
             Assert.Equal(secondManifestPath, savedSecondManifest.ManifestFilePath);
             Assert.Equal(savedHistoryStopPoint.Id, savedSecondManifest.HistoryStopPoint.Id);
 
             var retrievedSecondManifest = await cacheDb.RetrieveManifest(savedHistoryStopPoint, secondManifestPath);
             Assert.NotNull(retrievedSecondManifest);
-            Assert.Equal(savedSecondManifest.Id, retrievedSecondManifest.Id);
-            Assert.Equal(savedSecondManifest.ManifestFilePath, retrievedSecondManifest.ManifestFilePath);
-            Assert.Equal(savedHistoryStopPoint.Id, retrievedSecondManifest.HistoryStopPoint.Id);
+            AssertManifestsEqual(savedSecondManifest, retrievedSecondManifest);
         });
     }
 
@@ -252,27 +258,27 @@ public class CacheDbTest
 
             var savedFirstManifest = await cacheDb.AddManifest(historyStopPoint, firstManifestPath);
             Assert.True(savedFirstManifest.Id != 0);
+            Assert.True(DateTimeOffset.Now - savedFirstManifest.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - savedFirstManifest.UpdatedAt < DateTolerance);
             Assert.Equal(firstManifestPath, savedFirstManifest.ManifestFilePath);
             Assert.Equal(historyStopPoint.Id, savedFirstManifest.HistoryStopPoint.Id);
 
             var retrievedFirstManifest = await cacheDb.RetrieveManifest(historyStopPoint, firstManifestPath);
             Assert.NotNull(retrievedFirstManifest);
-            Assert.Equal(savedFirstManifest.Id, retrievedFirstManifest.Id);
-            Assert.Equal(savedFirstManifest.ManifestFilePath, retrievedFirstManifest.ManifestFilePath);
-            Assert.Equal(historyStopPoint.Id, retrievedFirstManifest.HistoryStopPoint.Id);
+            AssertManifestsEqual(savedFirstManifest, retrievedFirstManifest);
 
             const string secondManifestPath = "/path/to/second/manifest";
 
             var savedSecondManifest = await cacheDb.AddManifest(historyStopPoint, secondManifestPath);
             Assert.True(savedSecondManifest.Id != 0);
+            Assert.True(DateTimeOffset.Now - savedSecondManifest.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - savedSecondManifest.UpdatedAt < DateTolerance);
             Assert.Equal(secondManifestPath, savedSecondManifest.ManifestFilePath);
             Assert.Equal(historyStopPoint.Id, savedSecondManifest.HistoryStopPoint.Id);
 
             var retrievedSecondManifest = await cacheDb.RetrieveManifest(historyStopPoint, secondManifestPath);
             Assert.NotNull(retrievedSecondManifest);
-            Assert.Equal(savedSecondManifest.Id, retrievedSecondManifest.Id);
-            Assert.Equal(savedSecondManifest.ManifestFilePath, retrievedSecondManifest.ManifestFilePath);
-            Assert.Equal(historyStopPoint.Id, retrievedSecondManifest.HistoryStopPoint.Id);
+            AssertManifestsEqual(savedSecondManifest, retrievedSecondManifest);
         });
     }
 
@@ -311,6 +317,8 @@ public class CacheDbTest
 
             var storedPackageLibYear = await cacheDb.AddPackageLibYear(storedManifest, cachedPackageLibYear);
             Assert.True(storedHistoryStopPoint.Id != 0);
+            Assert.True(DateTimeOffset.Now - storedPackageLibYear.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - storedPackageLibYear.UpdatedAt < DateTolerance);
             cachedPackageLibYear.Id = storedPackageLibYear.Id;
             AssertCachedPackageLibYearsEqual(cachedPackageLibYear, storedPackageLibYear);
 
@@ -367,12 +375,16 @@ public class CacheDbTest
 
             var storedPackageLibYear = await cacheDb.AddPackageLibYear(firstManifest, cachedPackageLibYear);
             Assert.True(storedPackageLibYear.Id != 0);
+            Assert.True(DateTimeOffset.Now - storedPackageLibYear.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - storedPackageLibYear.UpdatedAt < DateTolerance);
             cachedPackageLibYear.Id = storedPackageLibYear.Id;
             AssertCachedPackageLibYearsEqual(cachedPackageLibYear, storedPackageLibYear);
             Assert.Single(storedPackageLibYear.Manifests);
 
             storedPackageLibYear = await cacheDb.AddPackageLibYear(secondManifest, cachedPackageLibYear);
             Assert.True(storedPackageLibYear.Id != 0);
+            Assert.True(DateTimeOffset.Now - storedPackageLibYear.CreatedAt < DateTolerance);
+            Assert.True(DateTimeOffset.Now - storedPackageLibYear.UpdatedAt < DateTolerance);
             cachedPackageLibYear.Id = storedPackageLibYear.Id;
             AssertCachedPackageLibYearsEqual(cachedPackageLibYear, storedPackageLibYear);
             Assert.Equal(2, storedPackageLibYear.Manifests.Count);
@@ -393,6 +405,8 @@ public class CacheDbTest
                 retrievedPackageLibYear.Id,
                 updatedFirstManifest.PackageLibYears.First().Id
             );
+            Assert.True(DateTimeOffset.Now - updatedFirstManifest.UpdatedAt < DateTolerance);
+
 
             var updatedSecondManifest =
                 await cacheDb.RetrieveManifest(storedHistoryStopPoint, "/path/to/second/manifest");
@@ -401,6 +415,8 @@ public class CacheDbTest
                 retrievedPackageLibYear.Id,
                 updatedSecondManifest.PackageLibYears.First().Id
             );
+            Assert.True(DateTimeOffset.Now - updatedSecondManifest.UpdatedAt < DateTolerance);
+
         });
     }
 
@@ -449,6 +465,8 @@ public class CacheDbTest
                         && expectedPackage.PackageUrlWithoutVersion == actualPackage.PackageUrlWithoutVersion
                         && expectedPackage.Version == actualPackage.Version
                         && expectedPackage.ReleasedAt == actualPackage.ReleasedAt
+                        && DateTimeOffset.Now - actualPackage.CreatedAt < DateTolerance
+                        && DateTimeOffset.Now - actualPackage.UpdatedAt < DateTolerance
                     )
                 );
             }
@@ -486,9 +504,20 @@ public class CacheDbTest
             ApiAnalysisId = Guid.NewGuid()
         };
 
+    private static void AssertManifestsEqual(CachedManifest expected, CachedManifest actual)
+    {
+        Assert.Equal(expected.Id, actual.Id);
+        Assert.Equal(expected.CreatedAt, actual.CreatedAt);
+        Assert.Equal(expected.UpdatedAt, actual.UpdatedAt);
+        Assert.Equal(expected.ManifestFilePath, actual.ManifestFilePath);
+        Assert.Equal(expected.HistoryStopPoint.Id, actual.HistoryStopPoint.Id);
+    }
+
     private static void AssertCachedHistoryStopPointsEqual(CachedHistoryStopPoint expected, CachedHistoryStopPoint actual)
     {
         Assert.Equal(expected.Id, actual.Id);
+        Assert.Equal(expected.CreatedAt, actual.CreatedAt);
+        Assert.Equal(expected.UpdatedAt, actual.UpdatedAt);
         Assert.Equal(expected.AsOfDateTime, actual.AsOfDateTime);
         Assert.Equal(expected.RepositoryId, actual.RepositoryId);
         Assert.Equal(expected.LocalPath, actual.LocalPath);
