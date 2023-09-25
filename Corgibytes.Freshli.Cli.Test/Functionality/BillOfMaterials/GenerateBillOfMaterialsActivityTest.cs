@@ -61,7 +61,7 @@ public class GenerateBillOfMaterialsActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        cacheManager.Setup(mock => mock.StoreBomInCache("/path/to/bill-of-materials", analysisId, asOfDateTime))
+        cacheManager.Setup(mock => mock.StoreBomInCache("/path/to/bill-of-materials", analysisId, asOfDateTime, "/path/to/manifest"))
             .ReturnsAsync("/path/to/bom/in/cache");
 
         var cancellationToken = new CancellationToken(false);

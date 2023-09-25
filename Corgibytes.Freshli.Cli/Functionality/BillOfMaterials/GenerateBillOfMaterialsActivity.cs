@@ -72,7 +72,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
                 return;
             }
 
-            var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, historyStopPoint.CachedAnalysis.Id, asOfDateTime);
+            var cachedBomFilePath = await cacheManager.StoreBomInCache(bomFilePath, historyStopPoint.CachedAnalysis.Id, asOfDateTime, fullManifestPath);
 
             await eventClient.Fire(
                 new BillOfMaterialsGeneratedEvent
