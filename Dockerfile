@@ -66,7 +66,7 @@ RUN ./gradlew installDist
 
 ### Runtime container
 # Use .NET SDK as the base image, because it is required by the dotnet agent
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0.401-bullseye-slim AS final
+FROM dotnet_build_platform_specific AS final
 
 # Install Java JDK
 RUN apt update -y && apt install -y wget apt-transport-https
