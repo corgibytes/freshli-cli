@@ -66,7 +66,10 @@ RUN ./gradlew installDist
 
 ### Runtime container
 # Use .NET SDK as the base image, because it is required by the dotnet agent
-FROM dotnet_build_platform_specific AS final
+FROM debian:bullseye AS final
+
+# Install dependencies
+RUN apt update -y && apt install -y curl gnupg2 ca-certificates
 
 # Install Java JDK
 RUN apt update -y && apt install -y wget apt-transport-https
@@ -74,6 +77,14 @@ RUN mkdir -p /etc/apt/keyrings
 RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc
 RUN echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
 RUN apt update -y && apt-get install temurin-17-jdk -y
+
+# Install dotnet SDK
+WORKDIR /tmp
+RUN wget https://dot.net/v1/dotnet-install.sh
+RUN chmod +x dotnet-install.sh
+RUN ./dotnet-install.sh --install-dir /usr/local/share/dotnet-sdk --os linux --channel 7.0
+RUN ln -s /usr/local/share/dotnet-sdk/dotnet /usr/local/bin/dotnet
+ENV DOTNET_ROOT=/usr/local/share/dotnet-sdk
 
 # Install git
 RUN apt update -y && apt install git lsof -y
