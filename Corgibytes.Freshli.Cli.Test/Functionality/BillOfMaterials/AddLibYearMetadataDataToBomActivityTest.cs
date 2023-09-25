@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
@@ -14,6 +15,9 @@ public class AddLibYearMetadataDataToBomActivityTest
     private const string PathToBom = "/path/to/bom";
     private const string AgentExecutablePath = "/path/to/agent";
 
+    private readonly CachedManifest _manifest = new() { Id = 12, ManifestFilePath = "/path/to/manifest" };
+
+    private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly Mock<IApplicationEventEngine> _engine = new();
     private readonly CancellationToken _cancellationToken = new();
     private readonly AddLibYearMetadataDataToBomActivity _activity;
@@ -22,10 +26,12 @@ public class AddLibYearMetadataDataToBomActivityTest
     {
         _activity = new AddLibYearMetadataDataToBomActivity
         {
-            Parent = _activity,
+            Parent = _parent.Object,
             PathToBom = PathToBom,
             AgentExecutablePath = AgentExecutablePath
         };
+
+        _parent.Setup(mock => mock.Manifest).Returns(_manifest);
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -41,7 +47,7 @@ public class AddLibYearMetadataDataToBomActivityTest
         await _activity.Handle(_engine.Object, _cancellationToken);
 
         billOfMaterialsProcessor.Verify(mock =>
-            mock.AddLibYearMetadataDataToBom(AgentExecutablePath, PathToBom, _cancellationToken)
+            mock.AddLibYearMetadataDataToBom(_manifest, AgentExecutablePath, PathToBom, _cancellationToken)
         );
 
         _engine.Verify(mock => mock.Fire(

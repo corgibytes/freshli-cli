@@ -17,8 +17,11 @@ public class AddLibYearMetadataDataToBomActivity : IApplicationActivity, IHistor
     {
         try
         {
+            var manifest = Parent?.Manifest;
+            _ = manifest ?? throw new Exception("Parent's Manifest is null");
+
             var bomProcessor = eventClient.ServiceProvider.GetRequiredService<IBillOfMaterialsProcessor>();
-            await bomProcessor.AddLibYearMetadataDataToBom(AgentExecutablePath, PathToBom, cancellationToken);
+            await bomProcessor.AddLibYearMetadataDataToBom(manifest, AgentExecutablePath, PathToBom, cancellationToken);
 
             await eventClient.Fire(
                 new LibYearMetadataAddedToBomEvent
