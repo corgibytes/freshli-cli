@@ -31,6 +31,8 @@ FROM dotnet_build_${TARGETARCH} as dotnet_build_platform_specific
 COPY . /app/freshli
 WORKDIR /app/freshli
 
+RUN echo "TARGETARCH=${TARGETARCH}\nDOTNET_RUNTIME_ID=${DOTNET_RUNTIME_ID}" | tee /app/.buildinfo
+
 RUN dotnet tool restore
 RUN dotnet gitversion /config GitVersion.yml /showconfig
 RUN dotnet gitversion /config GitVersion.yml /output json /output buildserver
@@ -118,6 +120,9 @@ RUN echo "<project> \
 RUN cd /root/bootstrap && \
     mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom && \
     mvn com.corgibytes:versions-maven-plugin:resolve-ranges-historical
+
+# Copy buildinfo metadata
+COPY --from=dotnet_build_platform_specific /app/.buildinfo /app/.buildinfo
 
 # Copy `freshli` executable from the `dotnet_build_platform_specific` image
 RUN mkdir -p /usr/local/share/freshli
