@@ -137,9 +137,9 @@ flowchart TD;
     ComputeLibYearForPackageActivity --> HistoryStopPointProcessingFailedEvent
     DeterminePackagesFromBomActivity --> PackageFoundEvent
     DeterminePackagesFromBomActivity --> NoPackagesFoundEvent
+    DeterminePackagesFromBomActivity --> HistoryStopPointProcessingFailedEvent
     DeterminePackagesFromBomActivity --> PackagesFromBomProcessedEvent
     DeterminePackagesFromBomActivity --> UnhandledExceptionEvent
-    DeterminePackagesFromBomActivity --> HistoryStopPointProcessingFailedEvent
     LibYearComputationForBomStartedEvent -.-> ApplicationEventBase
     LibYearComputationForBomStartedEvent
     LibYearComputedForPackageEvent -.-> ApplicationEventBase
