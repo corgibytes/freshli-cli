@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Key), IsUnique = true)]
-public class CachedProperty
+public class CachedProperty : TimeStampedEntity
 {
     [Required] public int Id { get; set; }
 

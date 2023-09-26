@@ -7,6 +7,7 @@ using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Formatters;
 using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
+using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -42,6 +43,7 @@ public class FreshliServiceBuilder
         Services.AddScoped<IRunner, Runner>();
         Services.AddSingleton<HttpClient>();
         Services.AddSingleton<IFileValidator, FileValidator>();
+        Services.AddSingleton<IBillOfMaterialsProcessor, BillOfMaterialsProcessor>();
         RegisterBaseCommand();
         RegisterAnalyzeCommand();
         RegisterFailCommand();

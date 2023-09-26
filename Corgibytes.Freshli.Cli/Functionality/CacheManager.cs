@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Resources;
@@ -94,12 +96,19 @@ public class CacheManager : ICacheManager, IDisposable, IAsyncDisposable
         return focus;
     }
 
-    public async ValueTask<string> StoreBomInCache(string bomFilePath, Guid analysisId, DateTimeOffset asOfDateTime)
+    private static string GetFilePathHash(string filePath)
     {
-        var bomFileInfo = new FileInfo(bomFilePath);
+        var sourceManifestHash = SHA256.HashData(Encoding.UTF8.GetBytes(filePath));
+        return BitConverter.ToString(sourceManifestHash).Replace("-", string.Empty);
+    }
+
+    public async ValueTask<string> StoreBomInCache(string bomFilePath, Guid analysisId, DateTimeOffset asOfDateTime, string sourceManifestFilePath)
+    {
+        var sourceManifestFilePathHash = GetFilePathHash(sourceManifestFilePath);
+        var targetFileName = $"{sourceManifestFilePathHash}-bom.json";
 
         var bomCacheDirInfo = await GetDirectoryInCache("boms", analysisId.ToString(), asOfDateTime.UtcDateTime.ToString("yyyyMMddTHHmmssZ"));
-        var cachedBomFilePath = Path.Combine(bomCacheDirInfo.FullName, bomFileInfo.Name);
+        var cachedBomFilePath = Path.Combine(bomCacheDirInfo.FullName, targetFileName);
 
         // use Task.Run to wait for file IO to complete
         await Task.Run(() => File.Copy(bomFilePath, cachedBomFilePath, true));

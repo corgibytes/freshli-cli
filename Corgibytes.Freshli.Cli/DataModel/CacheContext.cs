@@ -1,4 +1,8 @@
+using System;
 using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
 namespace Corgibytes.Freshli.Cli.DataModel;
@@ -27,4 +31,40 @@ public class CacheContext : DbContext
         => optionsBuilder
             .UseLazyLoadingProxies()
             .UseSqlite($"Data Source={DbPath}");
+
+    public override int SaveChanges()
+    {
+        AddTimestamps();
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
+    {
+        AddTimestamps();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    // Based on: https://stackoverflow.com/a/63421380/243215
+    private void AddTimestamps()
+    {
+        var entities = ChangeTracker.Entries().Where(entry =>
+            entry is
+            {
+                Entity: TimeStampedEntity,
+                State: EntityState.Added or EntityState.Modified
+            }
+        );
+
+        foreach (var entity in entities)
+        {
+            var now = DateTime.UtcNow;
+
+            var timeStampedEntity = (TimeStampedEntity)entity.Entity;
+            if (entity.State == EntityState.Added)
+            {
+                timeStampedEntity.CreatedAt = now;
+            }
+            timeStampedEntity.UpdatedAt = now;
+        }
+    }
 }

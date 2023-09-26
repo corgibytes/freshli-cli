@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
@@ -61,6 +62,8 @@ public class DeterminePackagesFromBomActivityTest
         _eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IBomReader))).Returns(bomReader.Object);
 
+        _eventClient.Setup(mock => mock.Wait(_activity, _cancellationToken)).Returns(ValueTask.CompletedTask);
+
         await _activity.Handle(_eventClient.Object, _cancellationToken);
 
         _eventClient.Verify(mock =>
@@ -84,6 +87,21 @@ public class DeterminePackagesFromBomActivityTest
                 ),
                 _cancellationToken,
                 ApplicationTaskMode.Tracked
+            )
+        );
+
+        Assert.NotNull(_activity.WaitingForChildrenThread);
+        _activity.StopWaitingForChildren();
+
+        _eventClient.Verify(mock =>
+            mock.Fire(
+                It.Is<PackagesFromBomProcessedEvent>(value =>
+                    value.Parent == _activity &&
+                    value.PathToBom == _activity.PathToBom &&
+                    value.AgentExecutablePath == _activity.AgentExecutablePath
+                ),
+                _cancellationToken,
+                ApplicationTaskMode.Untracked
             )
         );
     }

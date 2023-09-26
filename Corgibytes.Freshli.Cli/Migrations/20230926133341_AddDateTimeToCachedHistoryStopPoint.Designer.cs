@@ -3,6 +3,7 @@ using System;
 using Corgibytes.Freshli.Cli.DataModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     [DbContext(typeof(CacheContext))]
-    partial class CacheContextModelSnapshot : ModelSnapshot
+    [Migration("20230926133341_AddDateTimeToCachedHistoryStopPoint")]
+    partial class AddDateTimeToCachedHistoryStopPoint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -187,10 +190,6 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset?>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PackageUrl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PackageUrlWithoutVersion")

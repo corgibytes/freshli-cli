@@ -86,21 +86,22 @@ public class ComputeHistory : IComputeHistory
         return (
                 from offset in range
                 let lastCommitForOffset = gitCommits.First(commit => commit.CommittedAt <= offset)
-                select new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, offset))
+                select new HistoryIntervalStop(lastCommitForOffset.ShaIdentifier, lastCommitForOffset.CommittedAt, offset))
             .ToList();
     }
 
+    // BUG: This should also include the same stops as ComputeWithHistoryInterval in addition to all of the commit dates.
     public IEnumerable<HistoryIntervalStop> ComputeCommitHistory(IHistoryStopData historyStopData)
     {
         var commitHistory = _listCommits.ForRepository(historyStopData);
         return commitHistory
-            .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt)).ToList();
+            .Select(gitCommit => new HistoryIntervalStop(gitCommit.ShaIdentifier, gitCommit.CommittedAt, gitCommit.CommittedAt)).ToList();
     }
 
     public IEnumerable<HistoryIntervalStop> ComputeLatestOnly(IHistoryStopData historyStopData)
     {
         var gitCommit = _listCommits.MostRecentCommit(historyStopData);
-        return new List<HistoryIntervalStop> { new(gitCommit.ShaIdentifier, gitCommit.CommittedAt) };
+        return new List<HistoryIntervalStop> { new(gitCommit.ShaIdentifier, gitCommit.CommittedAt, gitCommit.CommittedAt) };
     }
 
     private static DateTimeOffset DetermineRangeStartDate(DateTimeOffset startAtDate, string? quantifier)

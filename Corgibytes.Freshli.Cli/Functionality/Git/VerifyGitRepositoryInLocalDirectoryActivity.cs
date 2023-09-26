@@ -57,8 +57,11 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
             var cachedGitSource = new CachedGitSource
             {
                 Id = cachedGitSourceId.Id,
+                // TODO: This needs to retrieve the default git remote if `analysis.RepositoryUrl` is a local directory.
                 Url = analysis.RepositoryUrl,
+                // TODO: This needs to retrieve the current branch name (or commit sha if detached head).
                 Branch = null,
+                // TODO: Need to ensure that this is a full expanded path.
                 LocalPath = analysis.RepositoryUrl
             };
             await gitSourceRepository.Save(cachedGitSource);

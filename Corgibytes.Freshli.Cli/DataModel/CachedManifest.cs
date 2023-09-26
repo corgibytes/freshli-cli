@@ -6,7 +6,7 @@ namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
-public class CachedManifest
+public class CachedManifest : TimeStampedEntity
 {
     [Required] public int Id { get; set; }
 
@@ -16,6 +16,6 @@ public class CachedManifest
 
     // ReSharper disable once UnusedMember.Global
     // ReSharper disable once ReturnTypeCanBeEnumerable.Global
-    public virtual List<CachedPackageLibYear> PackageLibYears { get; } = new();
+    public virtual List<CachedPackageLibYear> PackageLibYears { get; init; } = new();
 
 }

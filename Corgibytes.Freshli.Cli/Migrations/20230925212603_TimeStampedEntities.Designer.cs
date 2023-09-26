@@ -3,6 +3,7 @@ using System;
 using Corgibytes.Freshli.Cli.DataModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Corgibytes.Freshli.Cli.Migrations
 {
     [DbContext(typeof(CacheContext))]
-    partial class CacheContextModelSnapshot : ModelSnapshot
+    [Migration("20230925212603_TimeStampedEntities")]
+    partial class TimeStampedEntities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,9 +124,6 @@ namespace Corgibytes.Freshli.Cli.Migrations
                     b.Property<DateTimeOffset?>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTimeOffset>("GitCommitDateTime")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("GitCommitId")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -145,8 +145,6 @@ namespace Corgibytes.Freshli.Cli.Migrations
 
                     b.HasIndex("Id")
                         .IsUnique();
-
-                    b.HasIndex("RepositoryId");
 
                     b.ToTable("CachedHistoryStopPoints");
                 });
@@ -187,10 +185,6 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTimeOffset?>("CreatedAt")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("PackageUrl")
-                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PackageUrlWithoutVersion")
@@ -310,15 +304,7 @@ namespace Corgibytes.Freshli.Cli.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Corgibytes.Freshli.Cli.DataModel.CachedGitSource", "Repository")
-                        .WithMany()
-                        .HasForeignKey("RepositoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("CachedAnalysis");
-
-                    b.Navigation("Repository");
                 });
 
             modelBuilder.Entity("Corgibytes.Freshli.Cli.DataModel.CachedManifest", b =>
