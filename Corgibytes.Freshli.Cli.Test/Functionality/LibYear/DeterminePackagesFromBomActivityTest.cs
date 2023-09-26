@@ -8,10 +8,8 @@ using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Corgibytes.Freshli.Cli.Functionality.LibYear;
-using CycloneDX.Models;
 using Moq;
 using PackageUrl;
-using SQLitePCL;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.LibYear;

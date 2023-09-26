@@ -14,6 +14,7 @@ using Polly.Retry;
 
 namespace Corgibytes.Freshli.Cli.Functionality;
 
+// TODO: This class should handle validating that the data is correct before saving it.
 public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
 {
     private readonly AsyncLock _cacheDbLock = new();
@@ -83,12 +84,13 @@ public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
         }
     }
 
-    public async ValueTask AddCachedGitSource(CachedGitSource cachedGitSource)
+    public async ValueTask<CachedGitSource> AddCachedGitSource(CachedGitSource cachedGitSource)
     {
         using (await _cacheDbLock.LockAsync())
         {
-            await _context.CachedGitSources.AddAsync(cachedGitSource);
+            var savedEntity = await _context.CachedGitSources.AddAsync(cachedGitSource);
             await SaveChanges(_context);
+            return savedEntity.Entity;
         }
     }
 

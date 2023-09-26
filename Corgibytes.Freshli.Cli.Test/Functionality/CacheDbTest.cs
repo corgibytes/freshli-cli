@@ -68,10 +68,18 @@ public class CacheDbTest
         await WithPreparedDatabase(async cacheDb =>
         {
             var analysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis());
+            var repository = await cacheDb.AddCachedGitSource(new CachedGitSource()
+            {
+                Id = "repoId",
+                Url = "url",
+                Branch = "branch",
+                LocalPath = "/path/to/clone"
+            });
+
             var historyStopPoint = new CachedHistoryStopPoint
             {
                 AsOfDateTime = DateTimeOffset.Now,
-                RepositoryId = "repoId",
+                RepositoryId = repository.Id,
                 LocalPath = "localPath",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = analysisId,
@@ -144,10 +152,18 @@ public class CacheDbTest
     {
         await WithPreparedDatabase(async cacheDb =>
         {
+            var repository = await cacheDb.AddCachedGitSource(new CachedGitSource()
+            {
+                Id = "repoId",
+                Url = "url",
+                Branch = "branch",
+                LocalPath = "/path/to/clone"
+            });
+
             var historyStopPoint = new CachedHistoryStopPoint
             {
                 AsOfDateTime = DateTimeOffset.Now,
-                RepositoryId = "repoId",
+                RepositoryId = repository.Id,
                 LocalPath = "localPath",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
@@ -167,10 +183,18 @@ public class CacheDbTest
     {
         await WithPreparedDatabase(async cacheDb =>
         {
+            var repository = await cacheDb.AddCachedGitSource(new CachedGitSource()
+            {
+                Id = "repoId",
+                Url = "url",
+                Branch = "branch",
+                LocalPath = "/path/to/clone"
+            });
+
             var historyStopPoint = new CachedHistoryStopPoint
             {
                 AsOfDateTime = DateTimeOffset.Now,
-                RepositoryId = "repoId",
+                RepositoryId = repository.Id,
                 LocalPath = "localPath",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
@@ -198,10 +222,17 @@ public class CacheDbTest
     {
         await WithPreparedDatabase(async cacheDb =>
         {
+            var repository = await cacheDb.AddCachedGitSource(new CachedGitSource()
+            {
+                Id = "repoId",
+                Url = "url",
+                Branch = "branch",
+                LocalPath = "/path/to/clone"
+            });
             var historyStopPoint = new CachedHistoryStopPoint
             {
                 AsOfDateTime = DateTimeOffset.Now,
-                RepositoryId = "repoId",
+                RepositoryId = repository.Id,
                 LocalPath = "localPath",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
@@ -242,10 +273,18 @@ public class CacheDbTest
     {
         await WithPreparedDatabase(async cacheDb =>
         {
+            var repository = await cacheDb.AddCachedGitSource(new CachedGitSource()
+            {
+                Id = "repoId",
+                Url = "url",
+                Branch = "branch",
+                LocalPath = "/path/to/clone"
+            });
+
             var historyStopPoint = new CachedHistoryStopPoint
             {
                 AsOfDateTime = DateTimeOffset.Now,
-                RepositoryId = "repoId",
+                RepositoryId = repository.Id,
                 LocalPath = "localPath",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
@@ -290,10 +329,18 @@ public class CacheDbTest
             var asOfDateTime = DateTimeOffset.Now;
 
             var analysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis());
+            var repository = await cacheDb.AddCachedGitSource(new CachedGitSource()
+            {
+                Id = "repoId",
+                Url = "url",
+                Branch = "branch",
+                LocalPath = "/path/to/clone"
+            });
+
             var historyStopPoint = new CachedHistoryStopPoint
             {
                 AsOfDateTime = asOfDateTime,
-                RepositoryId = "repoId",
+                RepositoryId = repository.Id,
                 LocalPath = "localPath",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = analysisId,
@@ -349,10 +396,18 @@ public class CacheDbTest
 
             var analysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis());
 
+            var repository = await cacheDb.AddCachedGitSource(new CachedGitSource()
+            {
+                Id = "repoId",
+                Url = "url",
+                Branch = "branch",
+                LocalPath = "/path/to/clone"
+            });
+
             var historyStopPoint = new CachedHistoryStopPoint
             {
                 AsOfDateTime = asOfDateTime,
-                RepositoryId = "repoId",
+                RepositoryId = repository.Id,
                 LocalPath = "localPath",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = analysisId,

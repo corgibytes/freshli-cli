@@ -43,12 +43,16 @@ public class ComputeHistoryTest : FreshliTest
         var expectedStops = new List<HistoryIntervalStop>
         {
             new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+                new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero),
                 new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero)),
             new("ef14791d014431952aa721fa2a9b22afb8d4f144",
+                new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero),
                 new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero)),
             new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
+                new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero),
                 new DateTimeOffset(2021, 1, 12, 00, 00, 00, TimeSpan.Zero)),
             new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                 new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
         };
 
@@ -65,6 +69,7 @@ public class ComputeHistoryTest : FreshliTest
         var expectedStops = new List<HistoryIntervalStop>
         {
             new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+                new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero),
                 new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero))
         };
 
@@ -120,15 +125,19 @@ public class ComputeHistoryTest : FreshliTest
                 {
                     // Friday week 4
                     new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+                        new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero)),
                     // Monday week 4 (start of range)
                     new("ef14791d014431952aa721fa2a9b22afb8d4f144",
+                        new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 25, 00, 00, 00, TimeSpan.Zero)),
                     // Monday week 2
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 11, 00, 00, 00, TimeSpan.Zero)),
                     // Thursday week 53
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
                 }
             }
@@ -152,17 +161,23 @@ public class ComputeHistoryTest : FreshliTest
                 {
                     // Start date
                     new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
+                        new DateTimeOffset(2021, 1, 4, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 5, 00, 00, 00, TimeSpan.Zero)),
                     new("ca6c6f099e0bb1a63bf5aba7e3db90ba0cff4546",
+                        new DateTimeOffset(2021, 1, 4, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 4, 00, 00, 00, TimeSpan.Zero)),
                     new("ef14791d014431952aa721fa2a9b22afb8d4f144",
+                        new DateTimeOffset(2021, 1, 3, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 3, 00, 00, 00, TimeSpan.Zero)),
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 2, 00, 00, 00, TimeSpan.Zero)),
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 1, 00, 00, 00, TimeSpan.Zero)),
                     // End date
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
                 }
             }
@@ -178,21 +193,27 @@ public class ComputeHistoryTest : FreshliTest
                 {
                     // Friday week 4
                     new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+                        new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero)),
                     // Monday week 4
                     new("ef14791d014431952aa721fa2a9b22afb8d4f144",
+                        new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 25, 00, 00, 00, TimeSpan.Zero)),
                     // Monday week 3
                     new("ef14791d014431952aa721fa2a9b22afb8d4f144",
+                        new DateTimeOffset(2021, 1, 13, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 18, 00, 00, 00, TimeSpan.Zero)),
                     // Monday week 2
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 11, 00, 00, 00, TimeSpan.Zero)),
                     // Monday week 1
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 4, 00, 00, 00, TimeSpan.Zero)),
                     // Thursday week 53
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
                 }
             }
@@ -208,12 +229,15 @@ public class ComputeHistoryTest : FreshliTest
                 {
                     // Start date
                     new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+                        new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero)),
                     // First day of first month
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 1, 00, 00, 00, TimeSpan.Zero)),
                     // End date
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2020, 12, 31, 00, 00, 00, TimeSpan.Zero))
                 }
             }
@@ -237,13 +261,17 @@ public class ComputeHistoryTest : FreshliTest
                 {
                     // Start date
                     new("edd01470c5fb4c5922db060f59bf0e0a5ddce6a5",
+                        new DateTimeOffset(2021, 1, 29, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 31, 00, 00, 00, TimeSpan.Zero)),
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2019, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2021, 1, 1, 00, 00, 00, TimeSpan.Zero)),
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2019, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2020, 1, 1, 00, 00, 00, TimeSpan.Zero)),
                     // End date
                     new("4f6b7990ad45b2c5bf5817c359de72729654dd9f",
+                        new DateTimeOffset(2019, 12, 31, 00, 00, 00, TimeSpan.Zero),
                         new DateTimeOffset(2019, 12, 31, 00, 00, 00, TimeSpan.Zero))
                 }
             }

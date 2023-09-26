@@ -17,7 +17,7 @@ public interface ICacheDb
     public ValueTask<CachedManifest?> RetrieveManifest(CachedHistoryStopPoint historyStopPoint, string manifestFilePath);
     public ValueTask<CachedPackageLibYear> AddPackageLibYear(CachedManifest manifest, CachedPackageLibYear packageLibYear);
     public ValueTask<CachedGitSource?> RetrieveCachedGitSource(CachedGitSourceId id);
-    public ValueTask AddCachedGitSource(CachedGitSource cachedGitSource);
+    public ValueTask<CachedGitSource> AddCachedGitSource(CachedGitSource cachedGitSource);
     public ValueTask RemoveCachedGitSource(CachedGitSource cachedGitSource);
     public ValueTask<CachedHistoryStopPoint?> RetrieveHistoryStopPoint(int historyStopPointId);
     public ValueTask<CachedPackageLibYear?> RetrievePackageLibYear(PackageURL packageUrl, DateTimeOffset asOfDateTime);

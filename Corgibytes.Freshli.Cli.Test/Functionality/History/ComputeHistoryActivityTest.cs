@@ -67,10 +67,12 @@ public class ComputeHistoryActivityTest
         {
             new(
                 "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                DateTime.Parse("2020-01-10T02:21:24+00:00"),
                 new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
             ),
             new(
                 "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
+                DateTime.Parse("2020-04-18T05:14:14+00:00"),
                 new DateTimeOffset(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
             )
         };
@@ -100,6 +102,7 @@ public class ComputeHistoryActivityTest
         {
             new(
                 "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                DateTimeOffset.Parse("2020-01-10T02:21:24+00:00"),
                 new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
             )
         };
@@ -129,6 +132,7 @@ public class ComputeHistoryActivityTest
         {
             new(
                 "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                DateTime.Parse("2020-01-10T02:21:24+00:00"),
                 new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
             )
         };
@@ -211,10 +215,12 @@ public class ComputeHistoryActivityTest
             {
                 Id = stopPointId,
                 GitCommitId = stopPoint.GitCommitIdentifier,
+                GitCommitDateTime = stopPoint.GitCommitDateTime,
                 AsOfDateTime = stopPoint.AsOfDateTime
             };
             _cacheDb.Setup(mock => mock.AddHistoryStopPoint(It.Is<CachedHistoryStopPoint>(value =>
                     value.GitCommitId == stopPoint.GitCommitIdentifier &&
+                    value.GitCommitDateTime == stopPoint.GitCommitDateTime &&
                     value.AsOfDateTime == stopPoint.AsOfDateTime)))
                 .ReturnsAsync(historyStopPoint);
             stopPointId++;
@@ -239,6 +245,7 @@ public class ComputeHistoryActivityTest
                     value.RepositoryId == HistoryStopData.RepositoryId &&
                     value.LocalPath == path &&
                     value.GitCommitId == stopPoint.GitCommitIdentifier &&
+                    value.GitCommitDateTime == stopPoint.GitCommitDateTime &&
                     value.AsOfDateTime == stopPoint.AsOfDateTime
                 )));
 

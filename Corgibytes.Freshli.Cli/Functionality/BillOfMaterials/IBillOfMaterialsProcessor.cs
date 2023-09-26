@@ -8,6 +8,7 @@ public interface IBillOfMaterialsProcessor
 {
     public Task AddLibYearMetadataDataToBom(
         CachedManifest manifest,
+        // ReSharper disable once UnusedParameter.Global
         string agentExecutablePath,
         string pathToBom,
         CancellationToken cancellationToken);

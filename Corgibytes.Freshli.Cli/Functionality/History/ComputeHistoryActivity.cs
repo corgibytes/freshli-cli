@@ -88,7 +88,8 @@ public class ComputeHistoryActivity : IApplicationActivity
                 Configuration = configuration,
                 RepositoryId = HistoryStopData.RepositoryId,
                 CommitId = historyIntervalStop.GitCommitIdentifier,
-                AsOfDateTime = historyIntervalStop.AsOfDateTime
+                AsOfDateTime = historyIntervalStop.AsOfDateTime,
+                CommittedAt = historyIntervalStop.GitCommitDateTime
             };
 
             var historyStopPoint = await cacheDb.AddHistoryStopPoint(
@@ -98,6 +99,7 @@ public class ComputeHistoryActivity : IApplicationActivity
                     RepositoryId = historyStop.RepositoryId,
                     LocalPath = historyStop.Path,
                     GitCommitId = historyStop.CommitId,
+                    GitCommitDateTime = historyStop.CommittedAt!.Value,
                     AsOfDateTime = historyStop.AsOfDateTime
                 });
 

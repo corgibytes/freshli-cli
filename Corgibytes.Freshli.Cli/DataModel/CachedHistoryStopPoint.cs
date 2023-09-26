@@ -23,11 +23,14 @@ public class CachedHistoryStopPoint : TimeStampedEntity
 
     // ReSharper disable once PropertyCanBeMadeInitOnly.Global
     [Required] public string GitCommitId { get; set; } = null!;
+    [Required] public DateTimeOffset GitCommitDateTime { get; set; }
 
     [Required] public Guid CachedAnalysisId { get; set; }
 
     // ReSharper disable once UnusedMember.Global
     public virtual CachedAnalysis CachedAnalysis { get; set; } = null!;
+
+    public virtual CachedGitSource Repository { get; set; } = null!;
 
     public virtual List<CachedManifest> Manifests { get; } = new();
 }

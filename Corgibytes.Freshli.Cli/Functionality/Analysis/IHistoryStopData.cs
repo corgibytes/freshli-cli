@@ -8,6 +8,7 @@ public interface IHistoryStopData
 {
     public string RepositoryId { get; }
     public string? CommitId { get; }
+    public DateTimeOffset? CommittedAt { get; }
     public string Path { get; }
     public DateTimeOffset AsOfDateTime { get; }
 }

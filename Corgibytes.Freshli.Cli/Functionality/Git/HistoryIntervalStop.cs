@@ -7,4 +7,4 @@ using System;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
-public record HistoryIntervalStop(string GitCommitIdentifier, DateTimeOffset AsOfDateTime);
+public record HistoryIntervalStop(string GitCommitIdentifier, DateTimeOffset GitCommitDateTime, DateTimeOffset AsOfDateTime);
