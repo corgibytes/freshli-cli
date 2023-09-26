@@ -31,6 +31,8 @@ FROM dotnet_build_${TARGETARCH} as dotnet_build_platform_specific
 COPY . /app/freshli
 WORKDIR /app/freshli
 
+RUN echo "TARGETARCH=${TARGETARCH}\nDOTNET_RUNTIME_ID=${DOTNET_RUNTIME_ID}" | tee /app/.buildinfo
+
 RUN dotnet tool restore
 RUN dotnet gitversion /config GitVersion.yml /showconfig
 RUN dotnet gitversion /config GitVersion.yml /output json /output buildserver
@@ -66,7 +68,10 @@ RUN ./gradlew installDist
 
 ### Runtime container
 # Use .NET SDK as the base image, because it is required by the dotnet agent
-FROM --platform=$BUILDPLATFORM mcr.microsoft.com/dotnet/sdk:7.0.401-bullseye-slim AS final
+FROM debian:bullseye AS final
+
+# Install dependencies
+RUN apt update -y && apt install -y curl gnupg2 ca-certificates
 
 # Install Java JDK
 RUN apt update -y && apt install -y wget apt-transport-https
@@ -75,14 +80,22 @@ RUN wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee
 RUN echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list
 RUN apt update -y && apt-get install temurin-17-jdk -y
 
+# Install dotnet SDK
+WORKDIR /tmp
+RUN wget https://dot.net/v1/dotnet-install.sh
+RUN chmod +x dotnet-install.sh
+RUN ./dotnet-install.sh --install-dir /usr/local/share/dotnet-sdk --os linux --channel 7.0
+RUN ln -s /usr/local/share/dotnet-sdk/dotnet /usr/local/bin/dotnet
+ENV DOTNET_ROOT=/usr/local/share/dotnet-sdk
+
 # Install git
 RUN apt update -y && apt install git lsof -y
 
 # Install maven
-# Copied from https://github.com/carlossg/docker-maven/blob/d2333e08a71fe120a0ac245157906e9b3507cee3/eclipse-temurin-17/Dockerfile
-ARG MAVEN_VERSION=3.8.8
+# Based on https://github.com/carlossg/docker-maven/blob/d2333e08a71fe120a0ac245157906e9b3507cee3/eclipse-temurin-17/Dockerfile
+ARG MAVEN_VERSION=3.9.4
 ARG USER_HOME_DIR="/root"
-ARG SHA=332088670d14fa9ff346e6858ca0acca304666596fec86eea89253bd496d3c90deae2be5091be199f48e09d46cec817c6419d5161fb4ee37871503f472765d00
+ARG SHA=deaa39e16b2cf20f8cd7d232a1306344f04020e1f0fb28d35492606f647a60fe729cc40d3cba33e093a17aed41bd161fe1240556d0f1b80e773abd408686217e
 ARG BASE_URL=https://apache.osuosl.org/maven/maven-3/${MAVEN_VERSION}/binaries
 
 RUN mkdir -p /usr/share/maven /usr/share/maven/ref \
@@ -107,6 +120,9 @@ RUN echo "<project> \
 RUN cd /root/bootstrap && \
     mvn org.cyclonedx:cyclonedx-maven-plugin:makeAggregateBom && \
     mvn com.corgibytes:versions-maven-plugin:resolve-ranges-historical
+
+# Copy buildinfo metadata
+COPY --from=dotnet_build_platform_specific /app/.buildinfo /app/.buildinfo
 
 # Copy `freshli` executable from the `dotnet_build_platform_specific` image
 RUN mkdir -p /usr/local/share/freshli
