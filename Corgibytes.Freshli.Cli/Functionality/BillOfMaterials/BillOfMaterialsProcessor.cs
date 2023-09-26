@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,6 +23,16 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
             throw new Exception("Unable to open bom");
         }
 
+        AddFreshliMetadataProperties(bom, manifest);
+        AddFreshliComponentProperties(bom, manifest);
+
+        await using var bomWriteStream = File.Open(pathToBom, FileMode.Truncate);
+        await CycloneDX.Json.Serializer.SerializeAsync(bom, bomWriteStream);
+        await bomWriteStream.FlushAsync(cancellationToken);
+        bomWriteStream.Close();
+    }
+
+    private static void AddFreshliMetadataProperties(Bom bom, CachedManifest manifest) =>
         bom.AddMetadataProperties(new List<Property>()
         {
             new()
@@ -66,9 +77,18 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
             }
         });
 
-        await using var bomWriteStream = File.Open(pathToBom, FileMode.Truncate);
-        await CycloneDX.Json.Serializer.SerializeAsync(bom, bomWriteStream);
-        await bomWriteStream.FlushAsync(cancellationToken);
-        bomWriteStream.Close();
+    private static void AddFreshliComponentProperties(Bom bom, CachedManifest manifest)
+    {
+        foreach (var component in bom.Components)
+        {
+            var packageLibYear = manifest.PackageLibYears.Find(x => x.PackageName == component.Name);
+            if (packageLibYear == null)
+            {
+                    continue;
+            }
+
+            component.Properties ??= new List<Property>();
+            component.Properties.Add(new Property { Name = "freshli:libyear", Value = packageLibYear.LibYear.ToString(CultureInfo.InvariantCulture) });
+        }
     }
 }

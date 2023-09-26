@@ -16,6 +16,6 @@ public class CachedManifest : TimeStampedEntity
 
     // ReSharper disable once UnusedMember.Global
     // ReSharper disable once ReturnTypeCanBeEnumerable.Global
-    public virtual List<CachedPackageLibYear> PackageLibYears { get; } = new();
+    public virtual List<CachedPackageLibYear> PackageLibYears { get; init; } = new();
 
 }
