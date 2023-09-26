@@ -61,39 +61,7 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
                 await eventClient.Fire(new NoPackagesFoundEvent(this), cancellationToken);
             }
 
-            WaitingForChildrenThread = new Thread(() =>
-            {
-                try
-                {
-                    eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
-                    eventClient.Fire(
-                        new PackagesFromBomProcessedEvent
-                        {
-                            Parent = this,
-                            PathToBom = PathToBom,
-                            AgentExecutablePath = AgentExecutablePath
-                        },
-                        cancellationToken,
-                        ApplicationTaskMode.Untracked
-                    ).AsTask().Wait(cancellationToken);
-                }
-                catch (OperationCanceledException)
-                {
-                    // Don't do anything, we're just exiting
-                }
-                catch (ThreadInterruptedException)
-                {
-                    // Don't do anything, the thread is being disposed of
-                }
-                catch (Exception error)
-                {
-                    eventClient.Fire(
-                        new UnhandledExceptionEvent(error),
-                        cancellationToken,
-                        ApplicationTaskMode.Untracked
-                    ).AsTask().Wait(cancellationToken);
-                }
-            });
+            WaitingForChildrenThread = BuildWaitingForChildrenThread(eventClient, cancellationToken);
             WaitingForChildrenThread.Start();
         }
         catch (Exception error)
@@ -101,6 +69,41 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
             await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, error), cancellationToken);
         }
     }
+
+    private Thread BuildWaitingForChildrenThread(IApplicationEventEngine eventClient, CancellationToken cancellationToken) =>
+        new(() =>
+        {
+            try
+            {
+                eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
+                eventClient.Fire(
+                    new PackagesFromBomProcessedEvent
+                    {
+                        Parent = this,
+                        PathToBom = PathToBom,
+                        AgentExecutablePath = AgentExecutablePath
+                    },
+                    cancellationToken,
+                    ApplicationTaskMode.Untracked
+                ).AsTask().Wait(cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                // Don't do anything, we're just exiting
+            }
+            catch (ThreadInterruptedException)
+            {
+                // Don't do anything, the thread is being disposed of
+            }
+            catch (Exception error)
+            {
+                eventClient.Fire(
+                    new UnhandledExceptionEvent(error),
+                    cancellationToken,
+                    ApplicationTaskMode.Untracked
+                ).AsTask().Wait(cancellationToken);
+            }
+        });
 
     private const int WaitingForChildrenThreadStopTimeout = 200;
     public void Dispose()
