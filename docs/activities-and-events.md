@@ -62,11 +62,16 @@ flowchart TD;
     UnableToRestartAnalysisEvent
     UnhandledExceptionEvent -.-> FailureEvent
     UnhandledExceptionEvent
+    AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
+    AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
     BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
     BillOfMaterialsGeneratedEvent --> DeterminePackagesFromBomActivity
     BillOfMaterialsGeneratedEvent --> FireHistoryStopPointProcessingErrorActivity
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
     GenerateBillOfMaterialsActivity --> HistoryStopPointProcessingFailedEvent
+    LibYearMetadataAddedToBomEvent
+    PackagesFromBomProcessedEvent --> AddLibYearMetadataDataToBomActivity
+    PackagesFromBomProcessedEvent --> FireHistoryStopPointProcessingErrorActivity
     CacheDestroyedEvent -.-> ApplicationEventBase
     CacheDestroyedEvent
     CacheDestroyFailedEvent -.-> ApplicationEventBase
@@ -132,6 +137,8 @@ flowchart TD;
     ComputeLibYearForPackageActivity --> HistoryStopPointProcessingFailedEvent
     DeterminePackagesFromBomActivity --> PackageFoundEvent
     DeterminePackagesFromBomActivity --> NoPackagesFoundEvent
+    DeterminePackagesFromBomActivity --> PackagesFromBomProcessedEvent
+    DeterminePackagesFromBomActivity --> UnhandledExceptionEvent
     DeterminePackagesFromBomActivity --> HistoryStopPointProcessingFailedEvent
     LibYearComputationForBomStartedEvent -.-> ApplicationEventBase
     LibYearComputationForBomStartedEvent
