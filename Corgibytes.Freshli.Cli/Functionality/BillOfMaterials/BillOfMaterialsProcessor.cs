@@ -6,11 +6,19 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using CycloneDX.Models;
+using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
 public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
 {
+    private readonly ICacheManager _cacheManager;
+
+    public BillOfMaterialsProcessor(ICacheManager cacheManager)
+    {
+        _cacheManager = cacheManager;
+    }
+
     public async Task AddLibYearMetadataDataToBom(CachedManifest manifest, string agentExecutablePath, string pathToBom,
         CancellationToken cancellationToken)
     {
@@ -24,7 +32,7 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
         }
 
         AddFreshliMetadataProperties(bom, manifest);
-        AddFreshliComponentProperties(bom, manifest);
+        await AddFreshliComponentProperties(bom, manifest);
 
         await using var bomWriteStream = File.Open(pathToBom, FileMode.Truncate);
         await CycloneDX.Json.Serializer.SerializeAsync(bom, bomWriteStream);
@@ -77,18 +85,33 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
             }
         });
 
-    private static void AddFreshliComponentProperties(Bom bom, CachedManifest manifest)
+    private async Task AddFreshliComponentProperties(Bom bom, CachedManifest manifest)
     {
+        var cacheDb = await _cacheManager.GetCacheDb();
+        _ = cacheDb ?? throw new Exception("CacheDb is null");
+
         foreach (var component in bom.Components)
         {
-            var packageLibYear = manifest.PackageLibYears.Find(x => x.PackageName == component.Name);
+            var packageLibYear = manifest.PackageLibYears.Find(value => value.PackageUrl == component.Purl);
             if (packageLibYear == null)
             {
-                    continue;
+                continue;
             }
 
             component.Properties ??= new List<Property>();
             component.Properties.Add(new Property { Name = "freshli:libyear", Value = packageLibYear.LibYear.ToString(CultureInfo.InvariantCulture) });
+
+            var parsedPackageUrl = new PackageURL(component.Purl);
+            var releases = cacheDb.RetrieveCachedReleaseHistory(parsedPackageUrl);
+
+            await foreach (var release in releases)
+            {
+                component.Properties.Add(new Property
+                {
+                    Name = $"freshli:release:{release.PackageUrl}",
+                    Value = release.ReleasedAt.ToString("O")
+                });
+            }
         }
     }
 }

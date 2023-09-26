@@ -496,12 +496,14 @@ public class CacheDbTest
             {
                 new()
                 {
+                    PackageUrl = packageUrl.ToString()!,
                     PackageUrlWithoutVersion = packageUrl.FormatWithoutVersion(),
                     Version = "12.0.3",
                     ReleasedAt = DateTimeOffset.Parse("2021-01-01T00:00:00Z"),
                 },
                 new()
                 {
+                    PackageUrl = packageUrl.ToString()!,
                     PackageUrlWithoutVersion = packageUrl.FormatWithoutVersion(),
                     Version = "15.9.2",
                     ReleasedAt = DateTimeOffset.Parse("2022-01-01T00:00:00Z"),
