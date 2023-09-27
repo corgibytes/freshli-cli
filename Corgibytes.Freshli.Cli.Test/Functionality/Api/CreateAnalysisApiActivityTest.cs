@@ -8,7 +8,7 @@ using Corgibytes.Freshli.Cli.Functionality.Git;
 using Moq;
 using Xunit;
 
-namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
+namespace Corgibytes.Freshli.Cli.Test.Functionality.Api;
 
 [UnitTest]
 public class CreateAnalysisApiActivityTest
