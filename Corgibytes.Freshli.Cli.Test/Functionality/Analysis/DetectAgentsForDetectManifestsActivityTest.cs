@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;

@@ -2,14 +2,13 @@ using System.CommandLine;
 using System.CommandLine.Invocation;
 using System.CommandLine.NamingConventionBinder;
 using System.Threading.Tasks;
-using Corgibytes.Freshli.Cli.CommandRunners;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace Corgibytes.Freshli.Cli.Commands;
 
 public abstract class RunnableCommand<TCommand, TCommandOptions> : Command where TCommand : Command
-    where TCommandOptions : CommandOptions.CommandOptions
+    where TCommandOptions : CommandOptions
 {
     protected RunnableCommand(string name, string? description = null) : base(name, description)
     {

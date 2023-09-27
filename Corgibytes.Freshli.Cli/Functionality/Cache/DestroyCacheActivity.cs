@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Corgibytes.Freshli.Cli.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
+using Corgibytes.Freshli.Cli.Functionality.Extensions;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Cache;

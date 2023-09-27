@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.CommandLine;
 using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Support;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Moq;

@@ -5,6 +5,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality.Cache;
 using CycloneDX.Models;
 using PackageUrl;
 

@@ -6,11 +6,9 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands;
-using Corgibytes.Freshli.Cli.Extensions;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.IoC;
-using Corgibytes.Freshli.Cli.Logging;
+using Corgibytes.Freshli.Cli.Functionality.Extensions;
+using Corgibytes.Freshli.Cli.Functionality.Support;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -20,7 +18,7 @@ using NLog.Extensions.Logging;
 using NLog.Targets;
 using Spectre.Console;
 using static System.String;
-using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
+using Environment = Corgibytes.Freshli.Cli.Functionality.Support.Environment;
 using LogLevel = NLog.LogLevel;
 
 namespace Corgibytes.Freshli.Cli;
@@ -80,7 +78,7 @@ public class Program
             })
             .ConfigureServices((_, services) =>
             {
-                new FreshliServiceBuilder(services, Configuration).Register();
+                new ServiceBuilder(services, Configuration).Register();
                 Logger = services.BuildServiceProvider().GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
             });
     }

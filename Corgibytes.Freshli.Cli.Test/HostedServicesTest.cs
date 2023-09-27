@@ -1,5 +1,4 @@
-using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.IoC;
+using Corgibytes.Freshli.Cli.Functionality.Support;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -17,7 +16,7 @@ public abstract class HostedServicesTest
                 options.ValidateOnBuild = true;
             })
             .ConfigureServices((_, services) =>
-                new FreshliServiceBuilder(services, new Configuration(new Environment())).Register()).Build();
+                new ServiceBuilder(services, new Configuration(new Environment())).Register()).Build();
 
     protected IServiceScope ServiceScope { get; } = Host.Services.CreateScope();
 }

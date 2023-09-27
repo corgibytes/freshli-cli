@@ -1,6 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Moq;

@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Corgibytes.Freshli.Cli.Extensions;
-using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
+using Corgibytes.Freshli.Cli.Functionality.Extensions;
 using Microsoft.EntityFrameworkCore;
 using PackageUrl;
 

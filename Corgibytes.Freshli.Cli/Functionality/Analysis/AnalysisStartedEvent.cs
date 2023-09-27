@@ -1,8 +1,8 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Functionality.Api;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 

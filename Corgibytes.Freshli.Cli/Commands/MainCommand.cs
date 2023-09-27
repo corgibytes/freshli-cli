@@ -1,5 +1,11 @@
 ﻿using System.CommandLine;
-using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Commands.Agents;
+using Corgibytes.Freshli.Cli.Commands.Analyze;
+using Corgibytes.Freshli.Cli.Commands.Cache;
+using Corgibytes.Freshli.Cli.Commands.Fail;
+using Corgibytes.Freshli.Cli.Commands.LoadService;
+using Corgibytes.Freshli.Cli.Commands.Scan;
+using Corgibytes.Freshli.Cli.Functionality.Support;
 using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Commands;

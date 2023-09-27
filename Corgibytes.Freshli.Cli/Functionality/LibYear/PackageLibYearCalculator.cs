@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading.Tasks;
-using Corgibytes.Freshli.Cli.Extensions;
-using Corgibytes.Freshli.Cli.Services;
+using Corgibytes.Freshli.Cli.Functionality.Agents;
+using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
+using Corgibytes.Freshli.Cli.Functionality.Extensions;
 using Microsoft.Extensions.Logging;
 using PackageUrl;
 

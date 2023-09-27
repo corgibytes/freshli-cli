@@ -1,8 +1,8 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Functionality.Api;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Functionality.FreshliWeb;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Moq;
 using Xunit;

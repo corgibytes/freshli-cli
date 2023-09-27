@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Corgibytes.Freshli.Cli.Functionality;
+using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.EntityFrameworkCore;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global

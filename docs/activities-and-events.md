@@ -62,6 +62,20 @@ flowchart TD;
     UnableToRestartAnalysisEvent
     UnhandledExceptionEvent -.-> FailureEvent
     UnhandledExceptionEvent
+    AnalysisApiCreatedEvent -.-> ApplicationEventBase
+    AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
+    AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
+    AnalysisApiStatusUpdatedEvent -.-> ApplicationEventBase
+    AnalysisApiStatusUpdatedEvent
+    ApiHistoryStopCreatedEvent -.-> ApplicationEventBase
+    ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
+    ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
+    ApiPackageLibYearCreatedEvent
+    CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
+    CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
+    CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
+    CreateApiPackageLibYearActivity --> HistoryStopPointProcessingFailedEvent
+    UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
     AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
     BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
@@ -84,21 +98,9 @@ flowchart TD;
     DestroyCacheActivity --> CacheDestroyFailedEvent
     PrepareCacheActivity --> CachePreparedEvent
     PrepareCacheActivity --> CachePrepareFailedEvent
+    LoadServiceProviderActivity
+    ThrowExceptionActivity
     ApplicationEventBase
-    AnalysisApiCreatedEvent -.-> ApplicationEventBase
-    AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
-    AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
-    AnalysisApiStatusUpdatedEvent -.-> ApplicationEventBase
-    AnalysisApiStatusUpdatedEvent
-    ApiHistoryStopCreatedEvent -.-> ApplicationEventBase
-    ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
-    ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
-    ApiPackageLibYearCreatedEvent
-    CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
-    CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
-    CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
-    CreateApiPackageLibYearActivity --> HistoryStopPointProcessingFailedEvent
-    UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryCloneStartedEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
@@ -149,7 +151,5 @@ flowchart TD;
     NoPackagesFoundEvent
     PackageFoundEvent -.-> ApplicationEventBase
     PackageFoundEvent --> ComputeLibYearForPackageActivity
-    LoadServiceProviderActivity
-    ThrowExceptionActivity
 
 ```

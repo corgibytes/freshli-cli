@@ -1,0 +1,17 @@
+using System;
+using System.CommandLine;
+using System.Threading;
+using System.Threading.Tasks;
+using Corgibytes.Freshli.Lib;
+
+namespace Corgibytes.Freshli.Cli.Commands.Cache;
+
+public class CacheCommandRunner : CommandRunner<CacheCommand, CacheCommandOptions>
+{
+    public CacheCommandRunner(IServiceProvider serviceProvider, IRunner runner)
+        : base(serviceProvider, runner)
+    {
+    }
+
+    public override ValueTask<int> Run(CacheCommandOptions options, IConsole console, CancellationToken cancellationToken) => ValueTask.FromResult(0);
+}

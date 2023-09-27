@@ -1,4 +1,3 @@
-using Corgibytes.Freshli.Cli.CommandOptions;
 using Corgibytes.Freshli.Cli.Resources;
 
 namespace Corgibytes.Freshli.Cli.Commands.Cache;

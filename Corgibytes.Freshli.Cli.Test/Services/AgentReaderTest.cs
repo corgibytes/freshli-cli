@@ -5,17 +5,17 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Agent;
 using Corgibytes.Freshli.Cli.DataModel;
-using Corgibytes.Freshli.Cli.Extensions;
-using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Services;
-using Corgibytes.Freshli.Cli.Test.Helpers;
+using Corgibytes.Freshli.Cli.Functionality.Agents;
+using Corgibytes.Freshli.Cli.Functionality.Cache;
+using Corgibytes.Freshli.Cli.Functionality.Extensions;
+using Corgibytes.Freshli.Cli.Test.Common;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using PackageUrl;
 using Xunit;
-using Package = Corgibytes.Freshli.Cli.Functionality.Package;
+using Package = Corgibytes.Freshli.Cli.Functionality.BillOfMaterials.Package;
 
 namespace Corgibytes.Freshli.Cli.Test.Services;
 
@@ -87,7 +87,7 @@ public class AgentReaderTest
                 null,
                 It.IsAny<CancellationToken>()
             )
-        ).Returns(CallHelpers.CreateAsyncServerStreamingCall(serverResponse.ToAsyncStreamReader()));
+        ).Returns(GrpcCalls.CreateAsyncServerStreamingCall(serverResponse.ToAsyncStreamReader()));
 
         _cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(_cacheDb.Object);
         _cacheDb.Setup(mock => mock.RetrieveCachedReleaseHistory(_packageUrl))
