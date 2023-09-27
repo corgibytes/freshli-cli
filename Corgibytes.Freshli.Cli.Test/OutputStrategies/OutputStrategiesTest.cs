@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Corgibytes.Freshli.Cli.CommandOptions;
-using Corgibytes.Freshli.Cli.Formatters;
-using Corgibytes.Freshli.Cli.OutputStrategies;
+using Corgibytes.Freshli.Cli.Commands.Scan;
+using Corgibytes.Freshli.Cli.Commands.Scan.Formatters;
+using Corgibytes.Freshli.Cli.Commands.Scan.OutputStrategies;
 using Corgibytes.Freshli.Cli.Test.Common;
 using Corgibytes.Freshli.Lib;
 using FluentAssertions;

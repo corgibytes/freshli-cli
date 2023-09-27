@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Functionality.Support;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 

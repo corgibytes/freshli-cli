@@ -1,11 +1,12 @@
 using System;
-using Corgibytes.Freshli.Cli.Functionality;
-using Corgibytes.Freshli.Cli.Services;
+using Corgibytes.Freshli.Cli.Functionality.Agents;
+using Corgibytes.Freshli.Cli.Functionality.Cache;
+using Corgibytes.Freshli.Cli.Functionality.Support;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using Xunit;
-using Environment = Corgibytes.Freshli.Cli.Functionality.Environment;
+using Environment = Corgibytes.Freshli.Cli.Functionality.Support.Environment;
 
 namespace Corgibytes.Freshli.Cli.Test.Services;
 

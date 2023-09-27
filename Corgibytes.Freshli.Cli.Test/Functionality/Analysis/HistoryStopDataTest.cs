@@ -1,7 +1,7 @@
 using System;
 using System.IO;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
+using Corgibytes.Freshli.Cli.Functionality.Support;
 using Moq;
 using Xunit;
 

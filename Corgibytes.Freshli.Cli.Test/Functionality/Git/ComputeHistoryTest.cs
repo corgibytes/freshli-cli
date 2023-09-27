@@ -1,9 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Corgibytes.Freshli.Cli.Functionality;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Git;
+using Corgibytes.Freshli.Cli.Functionality.History;
+using Corgibytes.Freshli.Cli.Functionality.Support;
 using Corgibytes.Freshli.Cli.Test.Common;
 using FluentAssertions;
 using Moq;
