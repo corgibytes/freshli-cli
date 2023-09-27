@@ -45,50 +45,77 @@ public class ConfigurationTest
 
     [Fact]
     public void FreshliWebApiBaseUrlHasADefaultValue() =>
-        Assert.Equal("https://freshli.io", _configuration.FreshliWebApiBaseUrl);
+        Assert.Equal("https://freshli.io", _configuration.LegacyWebApiBaseUrl);
 
     [Fact]
     public void FreshliWebApiBaseUrlCanBeSetViaEnvironmentVariable()
     {
-        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName))
+        _environment.Setup(mock => mock.GetVariable(Configuration.LegacyFreshliWebApiBaseUrlEnvVarName))
             .Returns("https://some/other/url");
 
-        Assert.Equal("https://some/other/url", _configuration.FreshliWebApiBaseUrl);
+        Assert.Equal("https://some/other/url", _configuration.LegacyWebApiBaseUrl);
     }
 
     [Fact]
     public void FreshliWebApiBaseUrlCanBeModified()
     {
-        _configuration.FreshliWebApiBaseUrl = "https://yet/another/url";
+        _configuration.LegacyWebApiBaseUrl = "https://yet/another/url";
 
-        Assert.Equal("https://yet/another/url", _configuration.FreshliWebApiBaseUrl);
+        Assert.Equal("https://yet/another/url", _configuration.LegacyWebApiBaseUrl);
     }
 
     [Fact]
     public void FreshliWebUrlCannotBeModifiedWhenEnvironmentVariableIsSet()
     {
-        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName))
+        _environment.Setup(mock => mock.GetVariable(Configuration.LegacyFreshliWebApiBaseUrlEnvVarName))
             .Returns("https://url/from/env");
 
-        _configuration.FreshliWebApiBaseUrl = "https://url/from/assignment";
+        _configuration.LegacyWebApiBaseUrl = "https://url/from/assignment";
 
-        Assert.Equal("https://url/from/env", _configuration.FreshliWebApiBaseUrl);
+        Assert.Equal("https://url/from/env", _configuration.LegacyWebApiBaseUrl);
     }
 
     [Fact]
     public void FreshliWebUrlSetRemovesTrailingSlash()
     {
-        _configuration.FreshliWebApiBaseUrl = "https://url/with/a/trailing/slash/";
+        _configuration.LegacyWebApiBaseUrl = "https://url/with/a/trailing/slash/";
 
-        Assert.Equal("https://url/with/a/trailing/slash", _configuration.FreshliWebApiBaseUrl);
+        Assert.Equal("https://url/with/a/trailing/slash", _configuration.LegacyWebApiBaseUrl);
     }
 
     [Fact]
     public void FreshliWebUrlRemovesTrailingSlashFromEnvVariable()
     {
-        _environment.Setup(mock => mock.GetVariable(Configuration.FreshliWebApiBaseUrlEnvVarName))
+        _environment.Setup(mock => mock.GetVariable(Configuration.LegacyFreshliWebApiBaseUrlEnvVarName))
             .Returns("https://url/with/a/trailing/slash/");
 
-        Assert.Equal("https://url/with/a/trailing/slash", _configuration.FreshliWebApiBaseUrl);
+        Assert.Equal("https://url/with/a/trailing/slash", _configuration.LegacyWebApiBaseUrl);
+    }
+
+    [Fact]
+    public void ApiServerBaseDefault()
+    {
+        Assert.Equal("api.freshli.io", Configuration.DefaultApiServerBase);
+        Assert.Equal(Configuration.DefaultApiServerBase, _configuration.ApiServerBase);
+    }
+
+    [Fact]
+    public void AuthServerBaseDefault()
+    {
+        Assert.Equal("auth.freshli.io", Configuration.DefaultAuthServerBase);
+        Assert.Equal(Configuration.DefaultAuthServerBase, _configuration.AuthServerBase);
+    }
+
+    [Fact]
+    public void AuthClientIdDefault()
+    {
+        Assert.Equal("PzGfZ41Df9e0Dk6VpKp2kEI0uhKpggwH", Configuration.DefaultAuthClientId);
+        Assert.Equal(Configuration.DefaultAuthClientId, _configuration.AuthClientId);
+    }
+
+    [Fact]
+    public void ApiBaseUrlDefault()
+    {
+        Assert.Equal("https://api.freshli.io/v1", _configuration.ApiBaseUrl);
     }
 }

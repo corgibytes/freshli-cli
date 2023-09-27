@@ -91,7 +91,7 @@ public class ResultsApi : IResultsApi, IDisposable
 
     public async ValueTask<Guid> CreateAnalysis(string url)
     {
-        var apiUrl = _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request";
+        var apiUrl = _configuration.LegacyWebApiBaseUrl + "/api/v0/analysis-request";
         var requestBody = JsonContent.Create(new
         {
             name = "Freshli CLI User",
@@ -116,7 +116,7 @@ public class ResultsApi : IResultsApi, IDisposable
 
     public async ValueTask UpdateAnalysis(Guid apiAnalysisId, string status)
     {
-        var apiUrl = _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
+        var apiUrl = _configuration.LegacyWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
         var requestBody = JsonContent.Create(
             new { state = status },
             new MediaTypeHeaderValue("application/json")
@@ -142,7 +142,7 @@ public class ResultsApi : IResultsApi, IDisposable
 
         var asOfDateTime = historyStopPoint.AsOfDateTime;
 
-        var apiUrl = _configuration.FreshliWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
+        var apiUrl = _configuration.LegacyWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
         var requestBody = JsonContent.Create(
             new { date = asOfDateTime.ToString("o") },
             new MediaTypeHeaderValue("application/json")
@@ -169,7 +169,7 @@ public class ResultsApi : IResultsApi, IDisposable
         var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
         var asOfDateTime = historyStopPoint.AsOfDateTime;
 
-        var apiUrl = $"{_configuration.FreshliWebApiBaseUrl}/api/v0/analysis-request/{apiAnalysisId}/{asOfDateTime:o}";
+        var apiUrl = $"{_configuration.LegacyWebApiBaseUrl}/api/v0/analysis-request/{apiAnalysisId}/{asOfDateTime:o}";
         var requestContent = JsonContent.Create(
             new
             {

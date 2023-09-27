@@ -5,7 +5,20 @@ namespace Corgibytes.Freshli.Cli.Functionality.Support;
 
 public class Configuration : IConfiguration
 {
-    public const string FreshliWebApiBaseUrlEnvVarName = "FRESHLI_WEB_API_BASE_URL";
+    // TODO: Remove this constant
+    public const string LegacyFreshliWebApiBaseUrlEnvVarName = "FRESHLI_WEB_API_BASE_URL";
+    // ReSharper disable once UnusedMember.Global
+    public const string ApiServerBaseEnvVarName = "FRESHLI_API_BASE";
+    // ReSharper disable once UnusedMember.Global
+    public const string AuthServerBaseEnvVarName = "FRESHLI_AUTH_BASE";
+    // ReSharper disable once UnusedMember.Global
+    public const string AuthClientIdEnvVarName = "FRESHLI_AUTH_CLIENT_ID";
+
+    public const string DefaultApiServerBase = "api.freshli.io";
+    public const string DefaultAuthServerBase = "auth.freshli.io";
+    // Note: This _is not_ a password, even though it looks like one
+    public const string DefaultAuthClientId = "PzGfZ41Df9e0Dk6VpKp2kEI0uhKpggwH";
+
     private readonly IEnvironment _environment;
     private string? _cacheDir;
     private string? _freshliWebApiBaseUrl;
@@ -25,11 +38,11 @@ public class Configuration : IConfiguration
         set => _cacheDir = value;
     }
 
-    public string FreshliWebApiBaseUrl
+    public string LegacyWebApiBaseUrl
     {
         get
         {
-            var valueFromEnvironment = _environment.GetVariable(FreshliWebApiBaseUrlEnvVarName);
+            var valueFromEnvironment = _environment.GetVariable(LegacyFreshliWebApiBaseUrlEnvVarName);
             if (valueFromEnvironment != null)
             {
                 return RemoveTrailingSlash(valueFromEnvironment);
@@ -40,6 +53,14 @@ public class Configuration : IConfiguration
 
         set => _freshliWebApiBaseUrl = value != null! ? RemoveTrailingSlash(value) : value;
     }
+
+    // TODO: allow overriding this value with an environment variable
+    public string ApiServerBase { get; } = DefaultApiServerBase;
+    // TODO: allow overriding this value with an environment variable
+    public string AuthServerBase { get; } = DefaultAuthServerBase;
+    // TODO: allow overriding this value with an environment variable
+    public string AuthClientId { get; } = DefaultAuthClientId;
+    public string ApiBaseUrl { get; } = $"https://{DefaultApiServerBase}/v1";
 
     public int WorkerCount { get; set; }
     public int AgentServiceCount => Math.Max(WorkerCount / 4, 1);

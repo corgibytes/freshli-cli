@@ -3,8 +3,10 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality.Api.Auth;
 using Corgibytes.Freshli.Cli.Functionality.Support;
 using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.Data.Sqlite;
@@ -115,6 +117,33 @@ public class CacheManager : ICacheManager, IDisposable, IAsyncDisposable
         await Task.Run(() => File.Copy(bomFilePath, cachedBomFilePath, true));
 
         return cachedBomFilePath;
+    }
+
+    private async ValueTask<string> GetCredentialsPath()
+    {
+        var cacheDirectory = await GetDirectoryInCache();
+        var credentialsPath = Path.Combine(cacheDirectory.ToString(), "credentials.json");
+        return credentialsPath;
+    }
+
+    // TODO: Write a test that covers this method
+    public async ValueTask<string> StoreApiCredentials(ApiCredentials credentials)
+    {
+        var credentialsPath = await GetCredentialsPath();
+        await using var credentialsStream = File.OpenWrite(credentialsPath);
+        await JsonSerializer.SerializeAsync(credentialsStream, credentials);
+        return credentialsPath;
+    }
+
+    // TODO: Write a test that covers this method
+    public async ValueTask<ApiCredentials?> GetApiCredentials()
+    {
+        var credentialsPath = await GetCredentialsPath();
+        // TODO: Handle the file not being present
+        // TODO: Handle parsing failure
+        // TODO: Throw an error if any of the values in the `ApiCredentials` instance is null or default
+        await using var credentialsStream = File.OpenRead(credentialsPath);
+        return await JsonSerializer.DeserializeAsync<ApiCredentials>(credentialsStream);
     }
 
     public async ValueTask<bool> Destroy()
