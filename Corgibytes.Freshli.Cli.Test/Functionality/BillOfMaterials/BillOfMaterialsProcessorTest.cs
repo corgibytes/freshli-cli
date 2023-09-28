@@ -48,7 +48,8 @@ public static class BillOfMaterialsProcessorTest
             { "freshli:source:branch", HistoryStopPoint.Repository.Branch! },
             { "freshli:source:clone-path", HistoryStopPoint.Repository.LocalPath },
             { "freshli:commit:id", HistoryStopPoint.GitCommitId },
-            { "freshli:commit:date", HistoryStopPoint.GitCommitDateTime.ToString("O") }
+            { "freshli:commit:date", HistoryStopPoint.GitCommitDateTime.ToString("O") },
+            { "freshli:manifest:path", "path/to/manifest" }
         };
     }
 
@@ -360,6 +361,7 @@ public static class BillOfMaterialsProcessorTest
                 CachedAnalysis = Analysis,
                 AsOfDateTime = AsOfDate,
                 Repository = GitSource,
+                LocalPath = "/path/to/history-stop-point"
             };
             return s_historyStopPoint;
         }
@@ -373,7 +375,8 @@ public static class BillOfMaterialsProcessorTest
             s_manifest ??= new CachedManifest
             {
                 HistoryStopPoint = HistoryStopPoint,
-                PackageLibYears = CachedPackageLibYears
+                PackageLibYears = CachedPackageLibYears,
+                ManifestFilePath = "path/to/manifest"
             };
             return s_manifest;
         }

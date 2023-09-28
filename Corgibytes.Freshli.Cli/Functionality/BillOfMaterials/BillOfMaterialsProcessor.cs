@@ -83,6 +83,11 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
             {
                 Name = "freshli:commit:date",
                 Value = manifest.HistoryStopPoint.GitCommitDateTime.ToString("O")
+            },
+            new()
+            {
+                Name = "freshli:manifest:path",
+                Value = manifest.ManifestFilePath
             }
         });
 
