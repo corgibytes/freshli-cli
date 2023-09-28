@@ -51,8 +51,8 @@ public class DetectManifestsUsingAgentActivityTest
             AgentExecutablePath = agentExecutablePath
         };
 
-        var firstCachedManifest = new CachedManifest { ManifestFilePath = "/path/to/first/manifest" };
-        var secondCachedManifest = new CachedManifest { ManifestFilePath = "/path/to/second/manifest" };
+        var firstCachedManifest = new CachedManifest { ManifestFilePath = "path/to/first/manifest" };
+        var secondCachedManifest = new CachedManifest { ManifestFilePath = "path/to/second/manifest" };
 
         var cacheManager = new Mock<ICacheManager>();
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);

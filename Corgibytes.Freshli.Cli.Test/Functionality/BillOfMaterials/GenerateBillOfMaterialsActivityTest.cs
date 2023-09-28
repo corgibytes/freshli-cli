@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
@@ -18,10 +19,13 @@ public class GenerateBillOfMaterialsActivityTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
-        // Arrange
+        const string repositoryPath = "/path/to/repository";
+        const string manifestPath = "path/to/manifest";
+        var fullManifestPath = Path.Combine(repositoryPath, manifestPath);
+
         var asOfDateTime = DateTimeOffset.Now;
         var javaAgentReader = new Mock<IAgentReader>();
-        javaAgentReader.Setup(mock => mock.ProcessManifest("/path/to/manifest", asOfDateTime))
+        javaAgentReader.Setup(mock => mock.ProcessManifest(fullManifestPath, asOfDateTime))
             .ReturnsAsync("/path/to/bill-of-materials");
 
         const string agentExecutablePath = "/path/to/agent";
@@ -34,14 +38,14 @@ public class GenerateBillOfMaterialsActivityTest
         var historyStopPoint = new CachedHistoryStopPoint
         {
             Id = 29,
-            LocalPath = "/path/to/repository",
+            LocalPath = repositoryPath,
             AsOfDateTime = asOfDateTime,
             CachedAnalysis = new CachedAnalysis { Id = analysisId }
         };
         var manifest = new CachedManifest
         {
             Id = 12,
-            ManifestFilePath = "/path/to/manifest",
+            ManifestFilePath = manifestPath,
             HistoryStopPoint = historyStopPoint
         };
 
@@ -62,7 +66,7 @@ public class GenerateBillOfMaterialsActivityTest
         var eventEngine = new Mock<IApplicationEventEngine>();
         eventEngine.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
 
-        cacheManager.Setup(mock => mock.StoreBomInCache("/path/to/bill-of-materials", analysisId, asOfDateTime, "/path/to/manifest"))
+        cacheManager.Setup(mock => mock.StoreBomInCache("/path/to/bill-of-materials", analysisId, asOfDateTime, manifestPath))
             .ReturnsAsync("/path/to/bom/in/cache");
 
         var cancellationToken = new CancellationToken(false);
