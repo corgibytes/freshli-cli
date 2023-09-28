@@ -1,6 +1,7 @@
 ﻿using System.CommandLine;
 using Corgibytes.Freshli.Cli.Commands.Agents;
 using Corgibytes.Freshli.Cli.Commands.Analyze;
+using Corgibytes.Freshli.Cli.Commands.Auth;
 using Corgibytes.Freshli.Cli.Commands.Cache;
 using Corgibytes.Freshli.Cli.Commands.Fail;
 using Corgibytes.Freshli.Cli.Commands.LoadService;
@@ -37,10 +38,11 @@ public class MainCommand : RootCommand
         AddOption(workers);
 
         // Add commands here!
-        Add(new ScanCommand());
-        Add(new CacheCommand());
         Add(new AgentsCommand());
         Add(new AnalyzeCommand(configuration));
+        Add(new AuthCommand());
+        Add(new CacheCommand());
+        Add(new ScanCommand());
 
         if (ShouldIncludeFailCommand)
         {

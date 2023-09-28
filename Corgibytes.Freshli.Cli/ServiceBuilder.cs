@@ -3,6 +3,7 @@ using System.Net.Http;
 using Corgibytes.Freshli.Cli.Commands;
 using Corgibytes.Freshli.Cli.Commands.Agents;
 using Corgibytes.Freshli.Cli.Commands.Analyze;
+using Corgibytes.Freshli.Cli.Commands.Auth;
 using Corgibytes.Freshli.Cli.Commands.Cache;
 using Corgibytes.Freshli.Cli.Commands.Fail;
 using Corgibytes.Freshli.Cli.Commands.LoadService;
@@ -12,6 +13,7 @@ using Corgibytes.Freshli.Cli.Commands.Scan.OutputStrategies;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Api;
+using Corgibytes.Freshli.Cli.Functionality.Api.Auth;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
@@ -49,8 +51,10 @@ public class ServiceBuilder
         Services.AddSingleton<HttpClient>();
         Services.AddSingleton<IFileValidator, FileValidator>();
         Services.AddSingleton<IBillOfMaterialsProcessor, BillOfMaterialsProcessor>();
+        Services.AddSingleton<IAuthClient, AuthClient>();
         RegisterBaseCommand();
         RegisterAnalyzeCommand();
+        RegisterAuthCommand();
         RegisterFailCommand();
         RegisterLoadServiceCommand();
         RegisterScanCommand();
@@ -73,6 +77,11 @@ public class ServiceBuilder
         Services.AddScoped<IResultsApi, ResultsApi>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
         Services.AddScoped<IBomReader, CycloneDxBomReader>();
+    }
+
+    private void RegisterAuthCommand()
+    {
+        Services.AddScoped<ICommandRunner<AuthCommand, EmptyCommandOptions>, AuthCommandRunner>();
     }
 
     private void RegisterLoadServiceCommand() =>

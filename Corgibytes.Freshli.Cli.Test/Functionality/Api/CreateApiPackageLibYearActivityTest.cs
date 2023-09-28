@@ -10,7 +10,7 @@ using Corgibytes.Freshli.Cli.Functionality.History;
 using Moq;
 using Xunit;
 
-namespace Corgibytes.Freshli.Cli.Test.Functionality.FreshliWeb;
+namespace Corgibytes.Freshli.Cli.Test.Functionality.Api;
 
 [UnitTest]
 public class CreateApiPackageLibYearActivityTest
