@@ -52,6 +52,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
                     if (!packageLibYear.DoesBelongTo(manifest))
                     {
                         await cacheDb.AddPackageLibYear(manifest, packageLibYear);
+                        logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Existing cached PackageLibYear {PackageURL} added to cached manifest {ManifestId}", historyStopPoint.Id, packageLibYear.PackageUrl, manifest.Id);
                     }
                 }
                 else
@@ -78,6 +79,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
                             LibYear = computedPackageLibYear.LibYear
                         }
                     );
+                    logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Added new cached PackageLibYear {PackageURL} added to cached manifest {ManifestId}", historyStopPoint.Id, packageLibYear.PackageUrl, manifest.Id);
                 }
             }
 
