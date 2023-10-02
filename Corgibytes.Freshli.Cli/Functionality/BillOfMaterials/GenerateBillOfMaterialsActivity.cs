@@ -47,30 +47,29 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
             var historyPointPath = historyStopPoint.LocalPath;
             var asOfDateTime = historyStopPoint.AsOfDateTime;
 
-            var fullManifestPath = Path.Combine(historyPointPath, manifest.ManifestFilePath);
-            logger?.LogDebug("Preparing to process manifest for HistoryStopPointId = {HistoryStopPointId} with agent = {Agent} for {Path} and {FullManifestPath} on {AsOfDate}",
-                historyStopPoint.Id, AgentExecutablePath, manifest.ManifestFilePath, fullManifestPath, asOfDateTime);
+            logger?.LogDebug("Preparing to process manifest for HistoryStopPointId = {HistoryStopPointId} with agent = {Agent} for {Path} on {AsOfDate}",
+                historyStopPoint.Id, AgentExecutablePath, manifest.ManifestFilePath, asOfDateTime);
 
             var fileValidator = eventClient.ServiceProvider.GetRequiredService<IFileValidator>();
 
             string bomFilePath;
             try
             {
-                bomFilePath = await agentReader.ProcessManifest(fullManifestPath, asOfDateTime);
+                bomFilePath = await agentReader.ProcessManifest(manifest.ManifestFilePath, asOfDateTime);
                 logger?.LogDebug("BillOfMaterials is {BomFilePath} generated from {FullManifestPath}",
-                    bomFilePath, fullManifestPath);
+                    bomFilePath, manifest.ManifestFilePath);
 
                 if (!fileValidator.IsValidFilePath(bomFilePath))
                 {
                     logger?.LogWarning("Processing manifest {ManifestPath} failed to generate BOM file for {AsOfDate}",
-                        fullManifestPath, asOfDateTime);
+                        manifest.ManifestFilePath, asOfDateTime);
                     return;
                 }
             }
             catch (Exception e)
             {
                 logger?.LogWarning("Exception attempting to process manifest {ManifestPath} for {AsOfDate}: {Message}",
-                    fullManifestPath, asOfDateTime, e.Message);
+                    manifest.ManifestFilePath, asOfDateTime, e.Message);
                 return;
             }
 

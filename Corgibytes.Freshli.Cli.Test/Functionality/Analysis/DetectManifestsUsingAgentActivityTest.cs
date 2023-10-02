@@ -20,13 +20,13 @@ public class DetectManifestsUsingAgentActivityTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
-        const string localPath = "/path/to/repository";
+        const string localPath = "/path/to/history-stop-point";
         var agentReader = new Mock<IAgentReader>();
         agentReader.Setup(mock => mock.DetectManifests(localPath)).Returns(
             new List<string>
             {
-                "/path/to/first/manifest",
-                "/path/to/second/manifest"
+                "/path/to/history-stop-point/path/to/first/manifest",
+                "/path/to/history-stop-point/path/to/second/manifest"
             }.ToAsyncEnumerable());
 
         const string agentExecutablePath = "/path/to/agent";
@@ -51,17 +51,17 @@ public class DetectManifestsUsingAgentActivityTest
             AgentExecutablePath = agentExecutablePath
         };
 
-        var firstCachedManifest = new CachedManifest { ManifestFilePath = "path/to/first/manifest" };
-        var secondCachedManifest = new CachedManifest { ManifestFilePath = "path/to/second/manifest" };
+        var firstCachedManifest = new CachedManifest { ManifestFilePath = "/path/to/history-stop-point/path/to/first/manifest" };
+        var secondCachedManifest = new CachedManifest { ManifestFilePath = "/path/to/history-stop-point/path/to/second/manifest" };
 
         var cacheManager = new Mock<ICacheManager>();
         serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(cacheManager.Object);
         var cacheDb = new Mock<ICacheDb>();
         cacheManager.Setup(mock => mock.GetCacheDb()).ReturnsAsync(cacheDb.Object);
 
-        cacheDb.Setup(mock => mock.AddManifest(historyStopPoint, "/path/to/first/manifest"))
+        cacheDb.Setup(mock => mock.AddManifest(historyStopPoint, "/path/to/history-stop-point/path/to/first/manifest"))
             .ReturnsAsync(firstCachedManifest);
-        cacheDb.Setup(mock => mock.AddManifest(historyStopPoint, "/path/to/second/manifest"))
+        cacheDb.Setup(mock => mock.AddManifest(historyStopPoint, "/path/to/history-stop-point/path/to/second/manifest"))
             .ReturnsAsync(secondCachedManifest);
 
         await activity.Handle(eventEngine.Object, cancellationToken);
@@ -137,7 +137,7 @@ public class DetectManifestsUsingAgentActivityTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task HandleCorrectlyFiresNoManifestsDetectedEvent()
     {
-        const string localPath = "/path/to/repository";
+        const string localPath = "/path/to/history-stop-point";
         var agentReader = new Mock<IAgentReader>();
         agentReader.Setup(mock => mock.DetectManifests(localPath)).Returns(
             new List<string>().ToAsyncEnumerable());

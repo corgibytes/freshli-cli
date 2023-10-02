@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
@@ -21,21 +22,27 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var logger = eventClient.ServiceProvider.GetService<ILogger<CheckoutHistoryActivity>>();
-        logger?.LogDebug("Handling history checkout for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", HistoryStopPoint.CachedAnalysis.Id, HistoryStopPoint.Id);
+        logger?.LogDebug("HistoryStopPoint = {HistoryStopPointId}: Handling history checkout", HistoryStopPoint.Id);
 
         if (HistoryStopPoint.GitCommitId == null)
         {
             throw new InvalidOperationException("Unable to checkout history when commit id is not provided.");
         }
 
+        new Thread(WaitForChildTasks).Start();
+
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
 
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+        logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Started checking out history", HistoryStopPoint.Id);
         await gitManager.CreateArchive(
             HistoryStopPoint.RepositoryId,
             gitManager.ParseCommitId(HistoryStopPoint.GitCommitId)
         );
+        stopWatch.Stop();
+        logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Stopped checking out history. Elapsed time - {Duration}", HistoryStopPoint.Id, stopWatch.Elapsed);
 
-        logger?.LogDebug("Fire HistoryStopCheckedOutEvent for AnalysisId = {AnalysisId} and HistoryStopPointId = {HistoryStopPointId}", HistoryStopPoint.CachedAnalysis.Id, HistoryStopPoint.Id);
         await eventClient.Fire(
             new HistoryStopCheckedOutEvent
             {
@@ -43,16 +50,24 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
             },
             cancellationToken);
 
-        new Thread(() =>
+        return;
+
+        async void WaitForChildTasks()
         {
+            ApplicationTaskWaitToken? waitToken = null;
             try
             {
-                eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
-                eventClient.Fire(
-                    new HistoryStopPointProcessingCompletedEvent { Parent = this },
-                    cancellationToken,
-                    ApplicationTaskMode.Untracked
-                ).AsTask().Wait(cancellationToken);
+                logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Started waiting for all child tasks to complete", HistoryStopPoint.Id);
+                var childWaitStopWatch = new Stopwatch();
+                childWaitStopWatch.Start();
+                waitToken = new ApplicationTaskWaitToken();
+                await eventClient.RegisterChildWaitToken(this, waitToken, cancellationToken);
+                await eventClient.Wait(this, cancellationToken, waitToken);
+                childWaitStopWatch.Stop();
+                logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Finished waiting for child tasks to complete. Elapsed time - {Duration}", HistoryStopPoint.Id, childWaitStopWatch.Elapsed);
+
+                await eventClient.Fire(new HistoryStopPointProcessingCompletedEvent { Parent = this },
+                    cancellationToken);
             }
             catch (OperationCanceledException)
             {
@@ -60,14 +75,14 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
             }
             catch (Exception error)
             {
-                eventClient.Fire(
-                    new UnhandledExceptionEvent(error),
-                    cancellationToken,
-                    ApplicationTaskMode.Untracked
-                ).AsTask().Wait(cancellationToken);
+                await eventClient.Fire(new UnhandledExceptionEvent(error), cancellationToken,
+                    ApplicationTaskMode.Untracked);
             }
-        }).Start();
-
+            finally
+            {
+                waitToken?.Signal();
+            }
+        }
     }
 
     public SemaphoreSlim GetSemaphore()

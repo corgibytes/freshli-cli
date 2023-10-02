@@ -12,4 +12,5 @@ public interface IResultsApi
     ValueTask UpdateAnalysis(Guid apiAnalysisId, string status);
     ValueTask CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint);
     ValueTask CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint, CachedPackageLibYear packageLibYear);
+    ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom);
 }

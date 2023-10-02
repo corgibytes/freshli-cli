@@ -61,7 +61,7 @@ public class DeterminePackagesFromBomActivityTest
         _eventClient.Setup(mock => mock.ServiceProvider).Returns(serviceProvider.Object);
         serviceProvider.Setup(mock => mock.GetService(typeof(IBomReader))).Returns(bomReader.Object);
 
-        _eventClient.Setup(mock => mock.Wait(_activity, _cancellationToken)).Returns(ValueTask.CompletedTask);
+        _eventClient.Setup(mock => mock.Wait(_activity, _cancellationToken, It.IsAny<ApplicationTaskWaitToken>())).Returns(ValueTask.CompletedTask);
 
         await _activity.Handle(_eventClient.Object, _cancellationToken);
 
@@ -100,7 +100,7 @@ public class DeterminePackagesFromBomActivityTest
                     value.AgentExecutablePath == _activity.AgentExecutablePath
                 ),
                 _cancellationToken,
-                ApplicationTaskMode.Untracked
+                ApplicationTaskMode.Tracked
             )
         );
     }

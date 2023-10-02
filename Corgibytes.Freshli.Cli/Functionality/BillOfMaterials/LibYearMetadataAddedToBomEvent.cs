@@ -1,5 +1,7 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Corgibytes.Freshli.Cli.Functionality.Api;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 
@@ -11,9 +13,28 @@ public class LibYearMetadataAddedToBomEvent : IApplicationEvent, IHistoryStopPoi
     public required string PathToBom { get; init; }
     public required string AgentExecutablePath { get; init; }
 
-    public ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
+    public async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
-        return ValueTask.CompletedTask;
+        try
+        {
+            await eventClient.Dispatch(
+                new UploadBomToApiActivity
+                {
+                    Parent = this,
+                    AgentExecutablePath = AgentExecutablePath,
+                    PathToBom = PathToBom
+                },
+                cancellationToken
+            );
+        }
+        catch (Exception error)
+        {
+            await eventClient.Dispatch(
+                new FireHistoryStopPointProcessingErrorActivity(this, error),
+                cancellationToken
+            );
+        }
+    }
 
     public override string ToString()
     {

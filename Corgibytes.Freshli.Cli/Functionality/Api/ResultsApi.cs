@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -18,9 +19,11 @@ public class ResultsApi : IResultsApi, IDisposable
     private readonly IConfiguration _configuration;
     private readonly HttpClient _client;
     private readonly ILogger<ResultsApi> _logger;
+    private ICacheManager _cacheManager;
 
-    public ResultsApi(IConfiguration configuration, HttpClient client, ILogger<ResultsApi> logger)
+    public ResultsApi(IConfiguration configuration, HttpClient client, ICacheManager cacheManager, ILogger<ResultsApi> logger)
     {
+        _cacheManager = cacheManager;
         _configuration = configuration;
         _client = client;
         _logger = logger;
@@ -42,7 +45,7 @@ public class ResultsApi : IResultsApi, IDisposable
         }
     }
 
-    private async ValueTask<T> ApiSendAsync<T>(HttpMethod method, string url, JsonContent? content,
+    private async ValueTask<T> ApiSendAsync<T>(HttpMethod method, string url, HttpContent? content,
         HttpStatusCode expectedStatusCode, Func<HttpResponseMessage, Task<T>>? responseProcessor = null)
     {
         var uri = string.IsNullOrEmpty(url) ? null : new Uri(url, UriKind.RelativeOrAbsolute);
@@ -72,7 +75,7 @@ public class ResultsApi : IResultsApi, IDisposable
         return responseProcessor != null ? await responseProcessor(response) : default!;
     }
 
-    private async ValueTask<T> ApiSendAsync<T>(HttpMethod method, string url, JsonContent body,
+    private async ValueTask<T> ApiSendAsync<T>(HttpMethod method, string url, HttpContent body,
         HttpStatusCode expectedStatusCode,
         Func<HttpResponseMessage, T>? responseProcessor = null)
     {
@@ -191,6 +194,54 @@ public class ResultsApi : IResultsApi, IDisposable
                 $"Failed to create package lib year for analysis '{apiAnalysisId}' and '{asOfDateTime:o}' with package URL '{packageLibYear.CurrentVersion}' publication date '{packageLibYear.ReleaseDateCurrentVersion:o}' and LibYear '{packageLibYear.LibYear}'.",
                 error
             );
+        }
+    }
+
+    public async ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom)
+    {
+        var repositoryName = new DirectoryInfo(manifest.HistoryStopPoint.Repository.LocalPath).Name;
+        var dataPointDate = manifest.HistoryStopPoint.AsOfDateTime.ToString("O");
+        var manifestHash = manifest.GetManifestRelativeFilePathHash();
+
+        var apiUrl = _configuration.ApiBaseUrl + $"/corgibytes/samples/{repositoryName}/{dataPointDate}/{manifestHash}/bom";
+
+        var credentials = await _cacheManager.GetApiCredentials();
+        _ = credentials ?? throw new Exception("Failed to retrieve API credentials");
+
+        await using var bomStream = File.OpenRead(pathToBom);
+        var streamBody = new StreamContent(bomStream);
+        streamBody.Headers.Add("content-type", "application/json");
+
+        try
+        {
+            var uri = string.IsNullOrEmpty(apiUrl) ? null : new Uri(apiUrl, UriKind.RelativeOrAbsolute);
+
+            var response1 = await Policy
+                .Handle<HttpRequestException>()
+                .Or<TimeoutException>()
+                .WaitAndRetryAsync(6, retryAttempt =>
+                    TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
+                )
+                .ExecuteAsync(async () =>
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Post, uri)
+                    {
+                        Content = streamBody
+                    };
+                    request.Headers.Add("authorization", $"Bearer {credentials.AccessToken}");
+
+                    // TODO: pass in a cancellation token
+                    return await _client.SendAsync(request);
+                });
+
+            if (response1.StatusCode != HttpStatusCode.Created)
+            {
+                throw new UnexpectedStatusCode(HttpStatusCode.Created, response1.StatusCode);
+            }
+        }
+        catch (Exception error)
+        {
+            throw new InvalidOperationException($"Failed to upload bom", error);
         }
     }
 

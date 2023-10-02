@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Support;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -101,6 +102,43 @@ public class ApplicationEngineTest : IDisposable
     }
 
     [Fact(Timeout = Constants.ExpandedTestTimeout)]
+    public async Task WaitForTaskCompletionWithTreeOfActivitiesAndEventsWithMultipleWorkers()
+    {
+        var workers = new List<(QueuedHostedService, Task, CancellationTokenSource)>();
+
+        for (var index = 0; index < 5; index++)
+        {
+            var additionalWorkerCancellation = new CancellationTokenSource();
+            var additionalQueuedHostedService = ActivatorUtilities.CreateInstance<QueuedHostedService>(_host.Services);
+            var additionalWorkerTask = additionalQueuedHostedService.StartAsync(_workerCancellation.Token);
+
+            workers.Add((additionalQueuedHostedService, additionalWorkerTask, additionalWorkerCancellation));
+        }
+
+        var activity = new FakeApplicationActivityTree();
+
+        try
+        {
+            await _engine.Dispatch(activity, CancellationToken.None);
+            await _engine.Wait(activity, CancellationToken.None);
+        }
+        finally
+        {
+            foreach (var (additionalQueuedHostedService, additionalWorkerTask, additionalWorkerCancellation) in workers)
+            {
+                additionalWorkerCancellation.Cancel();
+                await additionalWorkerTask;
+
+                additionalWorkerCancellation.Dispose();
+                additionalWorkerTask.Dispose();
+                additionalQueuedHostedService.Dispose();
+            }
+        }
+
+        AssertHandled(activity);
+    }
+
+    [Fact(Timeout = Constants.ExpandedTestTimeout)]
     public async Task WaitForRegisteredEventsToBeHandled()
     {
         var activity = new FakeApplicationActivityThatFiresAnEvent();
@@ -176,6 +214,79 @@ public class ApplicationEngineTest : IDisposable
         Assert.True(activity.WasHandleCalled);
     }
 
+    class FakeApplicationActivityThatResultsInSynchronizedActivities : IApplicationActivity
+    {
+        public FakeApplicationEventThatDispatchesSynchronizedActivities? ChildEvent { get; private set; }
+        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        {
+            ChildEvent = new FakeApplicationEventThatDispatchesSynchronizedActivities();
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+
+            await eventClient.Fire(ChildEvent, cancellationToken);
+        }
+    }
+
+    class FakeApplicationEventThatDispatchesSynchronizedActivities : IApplicationEvent
+    {
+        public const int ActivityCount = 30;
+        public List<FakeSynchronizedActivity> Activities { get; } = new();
+
+        public async ValueTask Handle(IApplicationActivityEngine activityClient, CancellationToken cancellationToken)
+        {
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
+
+            for (var i = 0; i < ActivityCount; i++)
+            {
+                Activities.Add(new FakeSynchronizedActivity(200));
+            }
+
+            foreach (var activity in Activities)
+            {
+                await activityClient.Dispatch(activity, CancellationToken.None);
+            }
+        }
+    }
+
+    [Fact]
+    public async Task WaitForSynchronizedTriggeringActivity()
+    {
+        var workers = new List<(QueuedHostedService, Task, CancellationTokenSource)>();
+
+        for (var index = 0; index < 5; index++)
+        {
+            var additionalWorkerCancellation = new CancellationTokenSource();
+            var additionalQueuedHostedService = ActivatorUtilities.CreateInstance<QueuedHostedService>(_host.Services);
+            var additionalWorkerTask = additionalQueuedHostedService.StartAsync(_workerCancellation.Token);
+
+            workers.Add((additionalQueuedHostedService, additionalWorkerTask, additionalWorkerCancellation));
+        }
+
+        var activity = new FakeApplicationActivityThatResultsInSynchronizedActivities();
+
+        DateTimeOffset stoppedWaitingAt;
+        try
+        {
+            await _engine.Dispatch(activity, CancellationToken.None);
+            await _engine.Wait(activity, CancellationToken.None);
+            stoppedWaitingAt = DateTimeOffset.Now;
+        }
+        finally
+        {
+            foreach (var (additionalQueuedHostedService, additionalWorkerTask, additionalWorkerCancellation) in workers)
+            {
+                additionalWorkerCancellation.Cancel();
+                await additionalWorkerTask;
+
+                additionalWorkerCancellation.Dispose();
+                additionalWorkerTask.Dispose();
+                additionalQueuedHostedService.Dispose();
+            }
+        }
+
+        Assert.True(activity.ChildEvent!.Activities.All(activity => activity.HandleStoppedAt <= stoppedWaitingAt));
+        AssertHandled(activity);
+    }
+
     [Fact]
     public async Task WaitForSynchronizedActivities()
     {
@@ -204,20 +315,7 @@ public class ApplicationEngineTest : IDisposable
                 await _engine.Wait(activity, CancellationToken.None);
             }
 
-            const int tolerance = 50;
-            foreach (var activity in activities)
-            {
-                Assert.True(activity.HandleStoppedAt - activity.HandleStartedAt >= TimeSpan.FromMilliseconds(activityDelay - tolerance));
-            }
-
-            var sortedActivities = activities.OrderBy(activity => activity.HandleStartedAt);
-
-            var previousActivityStoppedAt = DateTimeOffset.MinValue;
-            foreach (var activity in sortedActivities)
-            {
-                Assert.True(activity.HandleStartedAt >= previousActivityStoppedAt);
-                previousActivityStoppedAt = activity.HandleStoppedAt;
-            }
+            AssertHandled(activities, activityDelay);
         }
         finally
         {
@@ -227,6 +325,32 @@ public class ApplicationEngineTest : IDisposable
             secondWorkerCancellation.Dispose();
             secondWorkerTask.Dispose();
         }
+    }
+
+    private static void AssertHandled(List<FakeSynchronizedActivity> activities, int activityDelay)
+    {
+        const int tolerance = 50;
+        foreach (var activity in activities)
+        {
+            (activity.HandleStoppedAt - activity.HandleStartedAt).Should()
+                .BeGreaterOrEqualTo(TimeSpan.FromMilliseconds(activityDelay - tolerance));
+        }
+
+        var sortedActivities = activities.OrderBy(activity => activity.HandleStartedAt);
+
+        var previousActivityStoppedAt = DateTimeOffset.MinValue;
+        foreach (var activity in sortedActivities)
+        {
+            Assert.True(activity.HandleStartedAt >= previousActivityStoppedAt);
+            previousActivityStoppedAt = activity.HandleStoppedAt;
+        }
+    }
+
+    private void AssertHandled(FakeApplicationActivityThatResultsInSynchronizedActivities fakeActivity)
+    {
+        Assert.NotNull(fakeActivity.ChildEvent);
+        Assert.Equal(FakeApplicationEventThatDispatchesSynchronizedActivities.ActivityCount, fakeActivity.ChildEvent.Activities.Count);
+        AssertHandled(fakeActivity.ChildEvent.Activities, 200);
     }
 
     private void AssertHandled(FakeApplicationActivityTree fakeActivity)
@@ -351,7 +475,7 @@ public class ApplicationEngineTest : IDisposable
         public bool WasHandleCalled { get; private set; }
         public ConcurrentBag<FakeApplicationEventTree> Children { get; } = new();
 
-        private const int MaxFanOut = 10;
+        private const int MaxFanOut = 500;
         private static int s_count;
 
         public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
@@ -380,7 +504,7 @@ public class ApplicationEngineTest : IDisposable
         public bool WasHandleCalled { get; private set; }
         public ConcurrentBag<FakeApplicationActivityTree> Children { get; } = new();
 
-        private const int MaxFanOut = 10;
+        private const int MaxFanOut = 500;
         private static int s_count;
         public async ValueTask Handle(IApplicationActivityEngine activityClient, CancellationToken cancellationToken)
         {

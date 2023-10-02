@@ -100,6 +100,15 @@ public class ConfigurationTest
     }
 
     [Fact]
+    public void ApiServerBaseCanBeSetViaEnvironmentVariable()
+    {
+        _environment.Setup(mock => mock.GetVariable(Configuration.ApiServerBaseEnvVarName))
+            .Returns("api.freshli-staging.io:8080");
+
+        Assert.Equal("api.freshli-staging.io:8080", _configuration.ApiServerBase);
+    }
+
+    [Fact]
     public void AuthServerBaseDefault()
     {
         Assert.Equal("auth.freshli.io", Configuration.DefaultAuthServerBase);
@@ -114,8 +123,23 @@ public class ConfigurationTest
     }
 
     [Fact]
+    public void CanonicalApiBaseUrl()
+    {
+        Assert.Equal("https://api.freshli.io/v1", _configuration.CanonicalApiBaseUrl);
+    }
+
+    [Fact]
     public void ApiBaseUrlDefault()
     {
         Assert.Equal("https://api.freshli.io/v1", _configuration.ApiBaseUrl);
+    }
+
+    [Fact]
+    public void ApiBaseUrlDependsOnApiServerBase()
+    {
+        _environment.Setup(mock => mock.GetVariable(Configuration.ApiServerBaseEnvVarName))
+            .Returns("api.freshli-staging.io:8888");
+
+        Assert.Equal("https://api.freshli-staging.io:8888/v1", _configuration.ApiBaseUrl);
     }
 }

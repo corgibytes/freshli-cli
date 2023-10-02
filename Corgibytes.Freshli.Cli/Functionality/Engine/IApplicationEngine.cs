@@ -8,5 +8,6 @@ public interface IApplicationEngine
 {
     public IServiceProvider ServiceProvider { get; }
 
-    public ValueTask Wait(IApplicationTask task, CancellationToken cancellationToken);
+    public ValueTask Wait(IApplicationTask task, CancellationToken cancellationToken, ApplicationTaskWaitToken? excluding = null);
+    public ValueTask RegisterChildWaitToken(IApplicationTask task, ApplicationTaskWaitToken waitToken, CancellationToken cancellationToken);
 }

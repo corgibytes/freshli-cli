@@ -24,8 +24,8 @@ public class ComputeLibYearForPackageActivityTest
     private readonly ComputeLibYearForPackageActivity _activity;
     private readonly Mock<IApplicationEventEngine> _eventClient = new();
     private static readonly DateTimeOffset s_asOfDateTime = new(2021, 1, 29, 12, 30, 45, 0, TimeSpan.Zero);
-    private readonly CachedHistoryStopPoint _historyStopPoint = new() { Id = 29, AsOfDateTime = s_asOfDateTime };
-    private readonly CachedManifest _manifest = new() { Id = 12, ManifestFilePath = "path/to/manifest" };
+    private readonly CachedHistoryStopPoint _historyStopPoint = new() { Id = 29, AsOfDateTime = s_asOfDateTime, LocalPath = "/path/to/history-stop-point" };
+    private readonly CachedManifest _manifest = new() { Id = 12, ManifestFilePath = "/path/to/history-stop-point/path/to/manifest" };
 
     public ComputeLibYearForPackageActivityTest()
     {

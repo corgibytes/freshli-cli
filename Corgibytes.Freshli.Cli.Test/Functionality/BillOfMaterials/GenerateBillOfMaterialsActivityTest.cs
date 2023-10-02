@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
@@ -20,12 +19,11 @@ public class GenerateBillOfMaterialsActivityTest
     public async Task Handle()
     {
         const string repositoryPath = "/path/to/repository";
-        const string manifestPath = "path/to/manifest";
-        var fullManifestPath = Path.Combine(repositoryPath, manifestPath);
+        const string manifestPath = "/path/to/history-stop-point/path/to/manifest";
 
         var asOfDateTime = DateTimeOffset.Now;
         var javaAgentReader = new Mock<IAgentReader>();
-        javaAgentReader.Setup(mock => mock.ProcessManifest(fullManifestPath, asOfDateTime))
+        javaAgentReader.Setup(mock => mock.ProcessManifest(manifestPath, asOfDateTime))
             .ReturnsAsync("/path/to/bill-of-materials");
 
         const string agentExecutablePath = "/path/to/agent";

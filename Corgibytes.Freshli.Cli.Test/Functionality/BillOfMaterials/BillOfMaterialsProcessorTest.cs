@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Extensions;
 using CycloneDX.Models;
+using FluentAssertions;
 using JetBrains.Annotations;
 using Moq;
 using PackageUrl;
+using ServiceStack;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.BillOfMaterials;
@@ -32,11 +35,16 @@ public static class BillOfMaterialsProcessorTest
         [MemberData(nameof(PropertyData))]
         public void StoresProperty(string _, string expectedValue)
         {
-            // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-            Assert.Contains(_processedBom.Metadata.Properties, property =>
-                property.Name == _ &&
-                property.Value == expectedValue
-            );
+            try
+            {
+                _processedBom.Metadata.Properties.Should().ContainSingle(property =>
+                    property.Name == _ &&
+                    property.Value == expectedValue);
+            }
+            catch (Exception error)
+            {
+                throw new Exception($"Failed to find property in bom metadata. Metadata properties: {_processedBom.Metadata.Properties.ToJson()}", error);
+            }
         }
 
         public static TheoryData<string, string> PropertyData() => new()
@@ -372,12 +380,18 @@ public static class BillOfMaterialsProcessorTest
     {
         get
         {
-            s_manifest ??= new CachedManifest
+            if (s_manifest != null)
+            {
+                return s_manifest;
+            }
+
+            s_manifest = new CachedManifest
             {
                 HistoryStopPoint = HistoryStopPoint,
                 PackageLibYears = CachedPackageLibYears,
-                ManifestFilePath = "path/to/manifest"
+                ManifestFilePath = "/path/to/history-stop-point/path/to/manifest"
             };
+            CacheDb.Setup(mock => mock.RetrieveManifest(HistoryStopPoint, "/path/to/history-stop-point/path/to/manifest")).ReturnsAsync(s_manifest);
             return s_manifest;
         }
     }

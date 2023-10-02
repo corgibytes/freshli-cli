@@ -164,14 +164,14 @@ public class CacheDbTest
             {
                 AsOfDateTime = DateTimeOffset.Now,
                 RepositoryId = repository.Id,
-                LocalPath = "localPath",
+                LocalPath = "/path/to/history-stop-point",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
             };
 
             var savedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
 
-            const string firstManifestPath = "/path/to/first/manifest";
+            const string firstManifestPath = "/path/to/history-stop-point/path/to/first/manifest";
 
             var retrievedManifest = await cacheDb.RetrieveManifest(savedHistoryStopPoint, firstManifestPath);
             Assert.Null(retrievedManifest);
@@ -195,14 +195,14 @@ public class CacheDbTest
             {
                 AsOfDateTime = DateTimeOffset.Now,
                 RepositoryId = repository.Id,
-                LocalPath = "localPath",
+                LocalPath = "/path/to/history-stop-point",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
             };
 
             var savedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
 
-            const string firstManifestPath = "/path/to/first/manifest";
+            const string firstManifestPath = "/path/to/history-stop-point/path/to/first/manifest";
 
             var savedManifest = await cacheDb.AddManifest(savedHistoryStopPoint, firstManifestPath);
             Assert.True(savedManifest.Id != 0);
@@ -233,14 +233,14 @@ public class CacheDbTest
             {
                 AsOfDateTime = DateTimeOffset.Now,
                 RepositoryId = repository.Id,
-                LocalPath = "localPath",
+                LocalPath = "/path/to/history-stop-point",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
             };
 
             var savedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
 
-            const string firstManifestPath = "/path/to/first/manifest";
+            const string firstManifestPath = "/path/to/history-stop-point/path/to/first/manifest";
 
             var savedFirstManifest = await cacheDb.AddManifest(savedHistoryStopPoint, firstManifestPath);
             Assert.True(savedFirstManifest.Id != 0);
@@ -253,7 +253,7 @@ public class CacheDbTest
             Assert.NotNull(retrievedFirstManifest);
             AssertManifestsEqual(savedFirstManifest, retrievedFirstManifest);
 
-            const string secondManifestPath = "/path/to/second/manifest";
+            const string secondManifestPath = "/path/to/history-stop-point/path/to/second/manifest";
 
             var savedSecondManifest = await cacheDb.AddManifest(savedHistoryStopPoint, secondManifestPath);
             Assert.True(savedSecondManifest.Id != 0);
@@ -285,7 +285,7 @@ public class CacheDbTest
             {
                 AsOfDateTime = DateTimeOffset.Now,
                 RepositoryId = repository.Id,
-                LocalPath = "localPath",
+                LocalPath = "/path/to/history-stop-point",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = await cacheDb.SaveAnalysis(BuildCompleteCachedAnalysis()),
             };
@@ -293,7 +293,7 @@ public class CacheDbTest
             var savedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
             historyStopPoint.Id = savedHistoryStopPoint.Id;
 
-            const string firstManifestPath = "/path/to/first/manifest";
+            const string firstManifestPath = "/path/to/history-stop-point/path/to/first/manifest";
 
             var savedFirstManifest = await cacheDb.AddManifest(historyStopPoint, firstManifestPath);
             Assert.True(savedFirstManifest.Id != 0);
@@ -306,7 +306,7 @@ public class CacheDbTest
             Assert.NotNull(retrievedFirstManifest);
             AssertManifestsEqual(savedFirstManifest, retrievedFirstManifest);
 
-            const string secondManifestPath = "/path/to/second/manifest";
+            const string secondManifestPath = "/path-to-history-stop-point/path/to/second/manifest";
 
             var savedSecondManifest = await cacheDb.AddManifest(historyStopPoint, secondManifestPath);
             Assert.True(savedSecondManifest.Id != 0);
@@ -341,14 +341,14 @@ public class CacheDbTest
             {
                 AsOfDateTime = asOfDateTime,
                 RepositoryId = repository.Id,
-                LocalPath = "localPath",
+                LocalPath = "/path/to/history-stop-point",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = analysisId,
             };
 
             var storedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
 
-            const string manifestFilePath = "manifestFilePath";
+            const string manifestFilePath = "/path/to/history-stop-point/path/to/manifest";
             var storedManifest = await cacheDb.AddManifest(storedHistoryStopPoint, manifestFilePath);
 
             var package = new PackageURL("pkg:nuget/Newtonsoft.Json@12.0.3");
@@ -408,14 +408,14 @@ public class CacheDbTest
             {
                 AsOfDateTime = asOfDateTime,
                 RepositoryId = repository.Id,
-                LocalPath = "localPath",
+                LocalPath = "/path/to/history-stop-point",
                 GitCommitId = "gitCommitId",
                 CachedAnalysisId = analysisId,
             };
             var storedHistoryStopPoint = await cacheDb.AddHistoryStopPoint(historyStopPoint);
 
-            var firstManifest = await cacheDb.AddManifest(storedHistoryStopPoint, "/path/to/first/manifest");
-            var secondManifest = await cacheDb.AddManifest(storedHistoryStopPoint, "/path/to/second/manifest");
+            var firstManifest = await cacheDb.AddManifest(storedHistoryStopPoint, "/path/to/history-stop-point/path/to/first/manifest");
+            var secondManifest = await cacheDb.AddManifest(storedHistoryStopPoint, "/path/to/history-stop-point/path/to/second/manifest");
 
             var package = new PackageURL("pkg:nuget/Newtonsoft.Json@12.0.3");
 
@@ -454,7 +454,7 @@ public class CacheDbTest
             );
 
             var updatedFirstManifest =
-                await cacheDb.RetrieveManifest(storedHistoryStopPoint, "/path/to/first/manifest");
+                await cacheDb.RetrieveManifest(storedHistoryStopPoint, "/path/to/history-stop-point/path/to/first/manifest");
             Assert.NotNull(updatedFirstManifest);
             Assert.Equal(
                 retrievedPackageLibYear.Id,
@@ -464,7 +464,7 @@ public class CacheDbTest
 
 
             var updatedSecondManifest =
-                await cacheDb.RetrieveManifest(storedHistoryStopPoint, "/path/to/second/manifest");
+                await cacheDb.RetrieveManifest(storedHistoryStopPoint, "/path/to/history-stop-point/path/to/second/manifest");
             Assert.NotNull(updatedSecondManifest);
             Assert.Equal(
                 retrievedPackageLibYear.Id,

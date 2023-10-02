@@ -16,7 +16,7 @@ public class ManifestDetectedEventTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task CorrectlyDispatchesGenerateBillOfMaterialsActivity()
     {
-        const string manifestPath = "path/to/manifest";
+        const string manifestPath = "/path/to/history-stop-point/path/to/manifest";
         var engine = new Mock<IApplicationActivityEngine>();
 
         const string agentExecutablePath = "/path/to/agent";
@@ -55,7 +55,7 @@ public class ManifestDetectedEventTest
         var cancellationToken = new System.Threading.CancellationToken(false);
         var parent = new Mock<IHistoryStopPointProcessingTask>();
 
-        var cachedManifest = new CachedManifest { ManifestFilePath = "path/to/manifest" };
+        var cachedManifest = new CachedManifest { ManifestFilePath = "/path/to/history-stop-point/path/to/manifest" };
 
         var appEvent = new ManifestDetectedEvent
         {

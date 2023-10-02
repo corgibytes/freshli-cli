@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
@@ -25,18 +26,24 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
+        WaitingForChildrenThread = BuildWaitingForChildrenThread(eventClient, cancellationToken);
+        WaitingForChildrenThread.Start();
+
         var historyStopPoint = Parent?.HistoryStopPoint;
         _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
 
         var logger = eventClient.ServiceProvider.GetService<ILogger<DeterminePackagesFromBomActivity>>();
-        logger?.LogTrace("Handling retrieval of packageUrls from BomFile = {PathToBom}", PathToBom);
+        logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Starting retrieval of packageUrls from BomFile = {PathToBom}", historyStopPoint.Id, PathToBom);
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
 
         try
         {
             var bomReader = eventClient.ServiceProvider.GetRequiredService<IBomReader>();
             var packageUrls = bomReader.AsPackageUrls(PathToBom);
-            logger?.LogTrace("Received {Count}  packageUrls from BomFile = {PathToBom}",
-                packageUrls.Count, PathToBom);
+            logger?.LogTrace(
+                "HistoryStopPoint = {HistoryStopPointId}: Received {Count} packageUrls from BomFile = {PathToBom}",
+                historyStopPoint.Id, packageUrls.Count, PathToBom);
 
             foreach (var packageUrl in packageUrls)
             {
@@ -61,31 +68,55 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
                 await eventClient.Fire(new NoPackagesFoundEvent(this), cancellationToken);
             }
 
-            WaitingForChildrenThread = BuildWaitingForChildrenThread(eventClient, cancellationToken);
-            WaitingForChildrenThread.Start();
         }
         catch (Exception error)
         {
             await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, error), cancellationToken);
         }
+        finally
+        {
+            stopWatch.Stop();
+            logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Completed retrieval of packageUrls from BomFile = {PathToBom}. Elapsed time - {Duration}", historyStopPoint.Id, PathToBom, stopWatch.Elapsed);
+        }
     }
 
-    private Thread BuildWaitingForChildrenThread(IApplicationEventEngine eventClient, CancellationToken cancellationToken) =>
-        new(() =>
+    private Thread BuildWaitingForChildrenThread(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    {
+        return new Thread(Start);
+
+        async void Start()
         {
+            ApplicationTaskWaitToken? waitToken = null;
             try
             {
-                eventClient.Wait(this, cancellationToken).AsTask().Wait(cancellationToken);
-                eventClient.Fire(
+                waitToken = new ApplicationTaskWaitToken();
+                await eventClient.RegisterChildWaitToken(this, waitToken, cancellationToken);
+
+                var historyStopPoint = Parent?.HistoryStopPoint;
+                _ = historyStopPoint ?? throw new Exception("Parent's HistoryStopPoint is null");
+
+                var logger = eventClient.ServiceProvider.GetService<ILogger<DeterminePackagesFromBomActivity>>();
+
+                var stopWatch = new Stopwatch();
+                stopWatch.Start();
+                logger?.LogTrace(
+                    "HistoryStopPoint = {HistoryStopPointId}: Waiting for packages to be determined from {BomPath}",
+                    historyStopPoint.Id, PathToBom);
+                await eventClient.Wait(this, cancellationToken, waitToken);
+                stopWatch.Stop();
+                logger?.LogTrace(
+                    "HistoryStopPoint = {HistoryStopPointId}: Waited {WaitTime} for packages to be determined from {BomPath}",
+                    historyStopPoint.Id, stopWatch.Elapsed.ToString(), PathToBom);
+
+                await eventClient.Fire(
                     new PackagesFromBomProcessedEvent
                     {
                         Parent = this,
                         PathToBom = PathToBom,
                         AgentExecutablePath = AgentExecutablePath
                     },
-                    cancellationToken,
-                    ApplicationTaskMode.Untracked
-                ).AsTask().Wait(cancellationToken);
+                    cancellationToken
+                );
             }
             catch (OperationCanceledException)
             {
@@ -97,13 +128,15 @@ public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistorySt
             }
             catch (Exception error)
             {
-                eventClient.Fire(
-                    new UnhandledExceptionEvent(error),
-                    cancellationToken,
-                    ApplicationTaskMode.Untracked
-                ).AsTask().Wait(cancellationToken);
+                await eventClient.Fire(new UnhandledExceptionEvent(error), cancellationToken,
+                    ApplicationTaskMode.Untracked);
             }
-        });
+            finally
+            {
+                waitToken?.Signal();
+            }
+        }
+    }
 
     private const int WaitingForChildrenThreadStopTimeout = 200;
     public void Dispose()

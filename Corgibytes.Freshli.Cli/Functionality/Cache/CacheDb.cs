@@ -116,8 +116,11 @@ public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
         using (await _cacheDbLock.LockAsync())
         {
             var value = await _sqliteRetryPolicy.ExecuteAsync(
-                async () => await _context.CachedManifests.FirstOrDefaultAsync(entry =>
-                    entry.HistoryStopPoint.Id == historyStopPoint.Id && entry.ManifestFilePath == manifestFilePath
+                async () => await _context.CachedManifests
+                    .Include(entry => entry.HistoryStopPoint)
+                    .Include(entry => entry.PackageLibYears)
+                    .FirstOrDefaultAsync(entry =>
+                        entry.HistoryStopPoint.Id == historyStopPoint.Id && entry.ManifestFilePath == manifestFilePath
                 )
             );
 
@@ -203,6 +206,7 @@ public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
 
             var manifestEntity = await _context.CachedManifests
                 .Include(value => value.HistoryStopPoint)
+                .Include(value => value.PackageLibYears)
                 .FirstAsync(value => value.Id == manifest.Id);
 
             if (manifestEntity.HistoryStopPoint.AsOfDateTime != packageLibYear.AsOfDateTime)
@@ -212,26 +216,13 @@ public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
                 );
             }
 
-            CachedPackageLibYear savedPackageLibYearEntity;
-            if (packageLibYear.Id != 0)
-            {
-                savedPackageLibYearEntity = (await _context.CachedPackageLibYears.FindAsync(packageLibYear.Id))!;
-                if (!_context.CachedPackageLibYears.Any(value => value.Manifests.Select(point => point.Id).Contains(manifest.Id)))
-                {
-                    savedPackageLibYearEntity.Manifests.Add(manifestEntity);
-                }
-            }
-            else
-            {
-                packageLibYear.Manifests.Add(manifestEntity);
-                savedPackageLibYearEntity = (await _context.CachedPackageLibYears.AddAsync(packageLibYear)).Entity;
-            }
+            manifestEntity.PackageLibYears.Add(packageLibYear);
 
             await SaveChanges(_context);
 
             await transaction.CommitAsync();
 
-            return savedPackageLibYearEntity;
+            return (await RetrievePackageLibYear(new PackageURL(packageLibYear.PackageUrl), packageLibYear.AsOfDateTime))!;
         }
     }
 

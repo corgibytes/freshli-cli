@@ -101,6 +101,7 @@ public class CacheManager : ICacheManager, IDisposable, IAsyncDisposable
 
     private static string GetFilePathHash(string filePath)
     {
+        // TODO: Unify this with CachedManifest.ManifestFilePathHash
         var sourceManifestHash = SHA256.HashData(Encoding.UTF8.GetBytes(filePath));
         return BitConverter.ToString(sourceManifestHash).Replace("-", string.Empty);
     }

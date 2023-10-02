@@ -16,10 +16,9 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
     private const int MutexWaitTimeoutInMilliseconds = 200;
     private readonly Dictionary<Type, Func<IApplicationEvent, ValueTask>> _eventHandlers = new();
 
-    private readonly ICountdownEvent _queueModificationsCountdownEvent = new DefaultCountdownEvent(0);
     private readonly ILogger<ApplicationEngine> _logger;
 
-    private readonly ConcurrentDictionary<IApplicationTask, ICountdownEvent> _tasksAndCountdownEvents = new();
+    private readonly ConcurrentDictionary<IApplicationTask, ApplicationTaskWaitToken> _tasksAndResetEvents = new();
 
     public ApplicationEngine(IBackgroundTaskQueue taskQueue, ILogger<ApplicationEngine> logger,
         IServiceProvider serviceProvider)
@@ -33,88 +32,44 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private void RecordTask(IApplicationTask task)
     {
-        lock (_queueModificationsCountdownEvent)
-        {
-            _tasksAndCountdownEvents.TryAdd(
-                task,
-                new ListeningCountdownEvent(_queueModificationsCountdownEvent, 1)
-            );
-        }
+        // Note: This will only return false if the task has already been recorded as a child task
+        _tasksAndResetEvents.TryAdd(task, new ApplicationTaskWaitToken());
     }
 
     public async ValueTask Dispatch(IApplicationActivity applicationActivity, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
     {
-        lock (_queueModificationsCountdownEvent)
-        {
-            if (!_queueModificationsCountdownEvent.TryAddCount())
-            {
-                _queueModificationsCountdownEvent.Reset(1);
-            }
-        }
-
         RecordTask(applicationActivity);
 
-        try
-        {
-            await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationActivity,
-                _ => HandleActivity(applicationActivity, mode, cancellationToken)), cancellationToken);
-        }
-        finally
-        {
-            lock (_queueModificationsCountdownEvent)
-            {
-                _queueModificationsCountdownEvent.Signal();
-            }
-        }
+        await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationActivity,
+            _ => HandleActivity(applicationActivity, mode, cancellationToken)), cancellationToken);
     }
 
-    public ValueTask Wait(IApplicationTask task, CancellationToken cancellationToken)
+    public async ValueTask Wait(IApplicationTask task, CancellationToken cancellationToken, ApplicationTaskWaitToken? excluding = null)
     {
         var timer = new Stopwatch();
         timer.Start();
 
         LogWaitStart(task);
-        ICountdownEvent? countdownEvent;
-
-        while (!_tasksAndCountdownEvents.TryGetValue(task, out countdownEvent))
-        {
-            Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
-        }
-
-        countdownEvent.Wait(cancellationToken);
+        await WaitTaskCountdownEvent(task, cancellationToken, excluding);
 
         timer.Stop();
         LogWaitStop(timer.ElapsedMilliseconds);
-
-        return ValueTask.CompletedTask;
     }
 
     public IServiceProvider ServiceProvider { get; }
 
     public async ValueTask Fire(IApplicationEvent applicationEvent, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
     {
-        lock (_queueModificationsCountdownEvent)
-        {
-            if (!_queueModificationsCountdownEvent.TryAddCount())
-            {
-                _queueModificationsCountdownEvent.Reset(1);
-            }
-        }
-
         RecordTask(applicationEvent);
 
-        try
-        {
-            await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationEvent,
-                _ => FireEventAndHandler(applicationEvent, mode, cancellationToken)), cancellationToken);
-        }
-        finally
-        {
-            lock (_queueModificationsCountdownEvent)
-            {
-                _queueModificationsCountdownEvent.Signal();
-            }
-        }
+        await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationEvent,
+            _ => FireEventAndHandler(applicationEvent, mode, cancellationToken)), cancellationToken);
+    }
+
+    public async ValueTask RegisterChildWaitToken(IApplicationTask task, ApplicationTaskWaitToken waitToken, CancellationToken cancellationToken)
+    {
+        var taskWaitToken = await GetTaskWaitInfo(task, cancellationToken);
+        taskWaitToken.AddChildResetEvent(waitToken);
     }
 
     public void On<TEvent>(Func<TEvent, ValueTask> eventHandler) where TEvent : IApplicationEvent
@@ -133,17 +88,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private async ValueTask FireEventAndHandler(IApplicationEvent applicationEvent, ApplicationTaskMode mode, CancellationToken cancellationToken)
     {
-        ICountdownEvent? countdownEvent;
-        while (!_tasksAndCountdownEvents.TryGetValue(applicationEvent, out countdownEvent))
-        {
-            await Task.Delay(10, cancellationToken);
-        }
-
+        var applicationEventHasHandlers = false;
         try
         {
             await HandleEvent(applicationEvent, mode, cancellationToken);
 
-            bool applicationEventHasHandlers;
             lock (_eventHandlers)
             {
                 applicationEventHasHandlers =
@@ -151,16 +100,17 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             }
             if (applicationEventHasHandlers)
             {
-                countdownEvent.AddCount();
-
                 // TODO: Pass the cancellation token to TriggerHandler
                 await TaskQueue.QueueBackgroundWorkItemAsync(new WorkItem(applicationEvent,
-                    _ => TriggerHandler(applicationEvent)), cancellationToken);
+                    _ => TriggerHandler(applicationEvent, cancellationToken)), cancellationToken);
             }
         }
         finally
         {
-            countdownEvent.Signal();
+            if (!applicationEventHasHandlers)
+            {
+                await SignalTaskCountdownEvent(applicationEvent, cancellationToken);
+            }
         }
     }
 
@@ -184,16 +134,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
             return;
         }
 
-        ChildTrackingApplicationEngine eventEngine;
-        lock (_queueModificationsCountdownEvent)
-        {
-            eventEngine = new ChildTrackingApplicationEngine(
-                this,
-                _tasksAndCountdownEvents,
-                _queueModificationsCountdownEvent,
-                activity
-            );
-        }
+        var eventEngine = new ChildTrackingApplicationEngine(
+            this,
+            _tasksAndResetEvents,
+            activity
+        );
 
         try
         {
@@ -211,13 +156,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
         finally
         {
-            ICountdownEvent? countdownEvent;
-            while (!_tasksAndCountdownEvents.TryGetValue(activity, out countdownEvent))
-            {
-                await Task.Delay(10, cancellationToken);
-            }
-
-            countdownEvent.Signal();
+            await SignalTaskCountdownEvent(activity, cancellationToken);
 
             if (semaphore != null && semaphoreEntered)
             {
@@ -228,16 +167,11 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
 
     private async ValueTask HandleEvent(IApplicationEvent appEvent, ApplicationTaskMode mode, CancellationToken cancellationToken)
     {
-        ChildTrackingApplicationEngine eventEngine;
-        lock (_queueModificationsCountdownEvent)
-        {
-            eventEngine = new ChildTrackingApplicationEngine(
-                this,
-                _tasksAndCountdownEvents,
-                _queueModificationsCountdownEvent,
-                appEvent
-            );
-        }
+        var eventEngine = new ChildTrackingApplicationEngine(
+            this,
+            _tasksAndResetEvents,
+            appEvent
+        );
 
         try
         {
@@ -255,7 +189,7 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
     }
 
-    private async ValueTask TriggerHandler(IApplicationEvent applicationEvent)
+    private async ValueTask TriggerHandler(IApplicationEvent applicationEvent, CancellationToken cancellationToken)
     {
         var tasks = new List<Task>();
         ICollection<Type> keys;
@@ -280,20 +214,34 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         }
 
         await Task.WhenAll(tasks);
-
-        ICountdownEvent? countdownEvent;
-        while (!_tasksAndCountdownEvents.TryGetValue(applicationEvent, out countdownEvent))
-        {
-            await Task.Delay(10);
-        }
-
-        countdownEvent.Signal();
+        await SignalTaskCountdownEvent(applicationEvent, cancellationToken);
     }
 
     public void Dispose()
     {
-        _queueModificationsCountdownEvent.Dispose();
-
         GC.SuppressFinalize(this);
+    }
+
+    private async Task<ApplicationTaskWaitToken> GetTaskWaitInfo(IApplicationTask task, CancellationToken cancellationToken)
+    {
+        ApplicationTaskWaitToken? waitInfo;
+        while (!_tasksAndResetEvents.TryGetValue(task, out waitInfo))
+        {
+            await Task.Delay(10, cancellationToken);
+        }
+
+        return waitInfo;
+    }
+
+    private async Task SignalTaskCountdownEvent(IApplicationTask task, CancellationToken cancellationToken)
+    {
+        var waitInfo = await GetTaskWaitInfo(task, cancellationToken);
+        waitInfo.Signal();
+    }
+
+    private async Task WaitTaskCountdownEvent(IApplicationTask task, CancellationToken cancellationToken, ApplicationTaskWaitToken? excluding = null)
+    {
+        var waitInfo = await GetTaskWaitInfo(task, cancellationToken);
+        await waitInfo.Wait(cancellationToken, excluding);
     }
 }

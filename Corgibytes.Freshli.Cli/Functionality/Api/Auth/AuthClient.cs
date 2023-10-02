@@ -31,7 +31,7 @@ public class AuthClient : IAuthClient
     public async Task<DeviceAuthToken> GetDevice(CancellationToken cancellationToken = default)
     {
         var scope = "name, email, openid, profile, offline_access";
-        var audience = $"https://{_configuration.ApiServerBase}/v1";
+        var audience = _configuration.CanonicalApiBaseUrl;
 
         var deviceCodeRequestUrl = $"https://{_configuration.AuthServerBase}/oauth/device/code";
         var deviceCodeRequest = new HttpRequestMessage(HttpMethod.Post, deviceCodeRequestUrl)
