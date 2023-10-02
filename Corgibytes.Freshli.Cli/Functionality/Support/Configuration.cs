@@ -8,9 +8,9 @@ public class Configuration : IConfiguration
     // TODO: Remove this constant
     public const string LegacyFreshliWebApiBaseUrlEnvVarName = "FRESHLI_WEB_API_BASE_URL";
     // ReSharper disable once UnusedMember.Global
-    public const string ApiServerBaseEnvVarName = "FRESHLI_API_BASE";
+    public const string ApiServerBaseEnvVarName = "FRESHLI_API_SERVER";
     // ReSharper disable once UnusedMember.Global
-    public const string AuthServerBaseEnvVarName = "FRESHLI_AUTH_BASE";
+    public const string AuthServerBaseEnvVarName = "FRESHLI_AUTH_SERVER";
     // ReSharper disable once UnusedMember.Global
     public const string AuthClientIdEnvVarName = "FRESHLI_AUTH_CLIENT_ID";
 
@@ -54,13 +54,28 @@ public class Configuration : IConfiguration
         set => _freshliWebApiBaseUrl = value != null! ? RemoveTrailingSlash(value) : value;
     }
 
-    // TODO: allow overriding this value with an environment variable
-    public string ApiServerBase { get; } = DefaultApiServerBase;
+    public string ApiServerBase
+    {
+        get
+        {
+            var valueFromEnvironment = _environment.GetVariable(ApiServerBaseEnvVarName);
+            return valueFromEnvironment ?? DefaultApiServerBase;
+        }
+    }
+
     // TODO: allow overriding this value with an environment variable
     public string AuthServerBase { get; } = DefaultAuthServerBase;
     // TODO: allow overriding this value with an environment variable
     public string AuthClientId { get; } = DefaultAuthClientId;
-    public string ApiBaseUrl { get; } = $"https://{DefaultApiServerBase}/v1";
+    public string CanonicalApiBaseUrl { get; } = $"https://{DefaultApiServerBase}/v1";
+
+    public string ApiBaseUrl
+    {
+        get
+        {
+            return $"https://{ApiServerBase}/v1";
+        }
+    }
 
     public int WorkerCount { get; set; }
     public int AgentServiceCount => Math.Max(WorkerCount / 4, 1);
