@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
@@ -44,7 +43,6 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
 
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
 
-            var historyPointPath = historyStopPoint.LocalPath;
             var asOfDateTime = historyStopPoint.AsOfDateTime;
 
             logger?.LogDebug("Preparing to process manifest for HistoryStopPointId = {HistoryStopPointId} with agent = {Agent} for {Path} on {AsOfDate}",

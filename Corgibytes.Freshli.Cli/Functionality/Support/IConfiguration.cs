@@ -6,6 +6,7 @@ public interface IConfiguration
     public string CacheDir { get; set; }
     // TODO: Remove this property
     public string LegacyWebApiBaseUrl { get; }
+    // ReSharper disable once UnusedMemberInSuper.Global
     public string ApiServerBase { get; }
     public string AuthServerBase { get; }
     public string AuthClientId { get; }

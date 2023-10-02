@@ -19,7 +19,7 @@ public class ResultsApi : IResultsApi, IDisposable
     private readonly IConfiguration _configuration;
     private readonly HttpClient _client;
     private readonly ILogger<ResultsApi> _logger;
-    private ICacheManager _cacheManager;
+    private readonly ICacheManager _cacheManager;
 
     public ResultsApi(IConfiguration configuration, HttpClient client, ICacheManager cacheManager, ILogger<ResultsApi> logger)
     {
@@ -241,7 +241,7 @@ public class ResultsApi : IResultsApi, IDisposable
         }
         catch (Exception error)
         {
-            throw new InvalidOperationException($"Failed to upload bom", error);
+            throw new InvalidOperationException("Failed to upload bom", error);
         }
     }
 

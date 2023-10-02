@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Extensions;
+using CycloneDX.Json;
 using CycloneDX.Models;
 using FluentAssertions;
 using JetBrains.Annotations;
@@ -670,7 +670,7 @@ public static class BillOfMaterialsProcessorTest
     private static async Task<Bom> LoadCycloneDxBom(string path)
     {
         await using var sourceBomFileStream = File.OpenRead(path);
-        var bom = await CycloneDX.Json.Serializer.DeserializeAsync(sourceBomFileStream);
+        var bom = await Serializer.DeserializeAsync(sourceBomFileStream);
         return bom;
     }
 }

@@ -37,7 +37,6 @@ public class ManifestDetectedEvent : ApplicationEventBase, IHistoryStopPointProc
 
     public override string ToString()
     {
-        var historyStopPoint = Parent?.HistoryStopPoint;
         var historyStopPointId = Parent?.HistoryStopPoint?.Id ?? 0;
 
         var manifestId = Manifest?.Id ?? 0;

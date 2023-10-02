@@ -283,7 +283,7 @@ public class ApplicationEngineTest : IDisposable
             }
         }
 
-        Assert.True(activity.ChildEvent!.Activities.All(activity => activity.HandleStoppedAt <= stoppedWaitingAt));
+        Assert.True(activity.ChildEvent!.Activities.All(entry => entry.HandleStoppedAt <= stoppedWaitingAt));
         AssertHandled(activity);
     }
 
@@ -346,7 +346,7 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    private void AssertHandled(FakeApplicationActivityThatResultsInSynchronizedActivities fakeActivity)
+    private static void AssertHandled(FakeApplicationActivityThatResultsInSynchronizedActivities fakeActivity)
     {
         Assert.NotNull(fakeActivity.ChildEvent);
         Assert.Equal(FakeApplicationEventThatDispatchesSynchronizedActivities.ActivityCount, fakeActivity.ChildEvent.Activities.Count);
