@@ -71,11 +71,14 @@ flowchart TD;
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
     ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
     ApiPackageLibYearCreatedEvent
+    BomUploadedToApiEvent
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
     CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
     CreateApiPackageLibYearActivity --> HistoryStopPointProcessingFailedEvent
     UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
+    UploadBomToApiActivity --> BomUploadedToApiEvent
+    UploadBomToApiActivity --> HistoryStopPointProcessingFailedEvent
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
     AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
     BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
@@ -83,7 +86,8 @@ flowchart TD;
     BillOfMaterialsGeneratedEvent --> FireHistoryStopPointProcessingErrorActivity
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
     GenerateBillOfMaterialsActivity --> HistoryStopPointProcessingFailedEvent
-    LibYearMetadataAddedToBomEvent
+    LibYearMetadataAddedToBomEvent --> UploadBomToApiActivity
+    LibYearMetadataAddedToBomEvent --> FireHistoryStopPointProcessingErrorActivity
     PackagesFromBomProcessedEvent --> AddLibYearMetadataDataToBomActivity
     PackagesFromBomProcessedEvent --> FireHistoryStopPointProcessingErrorActivity
     CacheDestroyedEvent -.-> ApplicationEventBase
