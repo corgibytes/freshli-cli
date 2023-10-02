@@ -95,4 +95,12 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
             await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, error), cancellationToken);
         }
     }
+
+    public override string ToString()
+    {
+        var historyStopPointId = Parent?.HistoryStopPoint?.Id ?? 0;
+
+        var manifestId = Parent?.Manifest?.Id ?? 0;
+        return $"HistoryStopPoint = {historyStopPointId}: {GetType().Name} - AgentExecutablePath = {AgentExecutablePath}, Manifest = {manifestId}, PackageUrl = {Package}";
+    }
 }

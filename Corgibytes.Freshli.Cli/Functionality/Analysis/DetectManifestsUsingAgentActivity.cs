@@ -78,4 +78,10 @@ public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryS
             await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, error), cancellationToken);
         }
     }
+
+    public override string ToString()
+    {
+        var historyStopPointId = Parent?.HistoryStopPoint?.Id ?? 0;
+        return $"HistoryStopPoint = {historyStopPointId}: {GetType().Name} - AgentExecutablePath = {AgentExecutablePath}";
+    }
 }

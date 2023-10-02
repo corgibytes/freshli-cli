@@ -79,4 +79,11 @@ public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHis
 
         return s_semaphores.GetOrAdd(HistoryStopPoint.GitCommitId, new SemaphoreSlim(1, 1));
     }
+
+    public override string ToString()
+    {
+        var historyStopPointId = HistoryStopPoint.Id;
+
+        return $"HistoryStopPoint = {historyStopPointId}: {GetType().Name}";
+    }
 }

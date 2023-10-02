@@ -31,4 +31,10 @@ public class AgentDetectedForDetectManifestEvent : ApplicationEventBase, IHistor
                 cancellationToken);
         }
     }
+
+    public override string ToString()
+    {
+        var historyStopPointId = Parent?.HistoryStopPoint?.Id ?? 0;
+        return $"HistoryStopPoint = {historyStopPointId}: {GetType().Name} - AgentExecutablePath = {AgentExecutablePath}";
+    }
 }

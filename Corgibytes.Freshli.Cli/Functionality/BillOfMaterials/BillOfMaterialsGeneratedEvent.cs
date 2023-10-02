@@ -35,4 +35,12 @@ public class BillOfMaterialsGeneratedEvent : ApplicationEventBase, IHistoryStopP
             );
         }
     }
+
+    public override string ToString()
+    {
+        var historyStopPointId = Parent?.HistoryStopPoint?.Id ?? 0;
+
+        var manifestId = Parent?.Manifest?.Id ?? 0;
+        return $"HistoryStopPoint = {historyStopPointId}: {GetType().Name} - AgentExecutablePath = {AgentExecutablePath}, Manifest = {manifestId}, PathToBillOfMaterials = {PathToBillOfMaterials}";
+    }
 }

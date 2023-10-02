@@ -28,4 +28,13 @@ public class FireHistoryStopPointProcessingErrorActivity : IApplicationActivity,
             return 0;
         }
     }
+
+    public override string ToString()
+    {
+        var historyStopPointId = Parent?.HistoryStopPoint?.Id ?? 0;
+
+        var manifestId = Parent?.Manifest?.Id ?? 0;
+        return $"HistoryStopPoint = {historyStopPointId}: {GetType().Name} - Manifest = {manifestId}";
+    }
+
 }
