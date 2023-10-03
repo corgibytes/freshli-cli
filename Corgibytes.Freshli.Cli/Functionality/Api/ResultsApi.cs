@@ -199,6 +199,9 @@ public class ResultsApi : IResultsApi, IDisposable
 
     public async ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom)
     {
+        // TODO: This repository name is a hash built from the remote url and the branch name
+        // this should be changed to the "canonical" name of the repository. And we should
+        // also use the branch name for sending data to the API.
         var repositoryName = new DirectoryInfo(manifest.HistoryStopPoint.Repository.LocalPath).Name;
         var dataPointDate = manifest.HistoryStopPoint.AsOfDateTime.ToString("O");
         var manifestHash = manifest.GetManifestRelativeFilePathHash();
