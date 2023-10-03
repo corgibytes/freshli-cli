@@ -120,7 +120,8 @@ public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
                     .Include(entry => entry.HistoryStopPoint)
                     .Include(entry => entry.PackageLibYears)
                     .FirstOrDefaultAsync(entry =>
-                        entry.HistoryStopPoint.Id == historyStopPoint.Id && entry.ManifestFilePath == manifestFilePath
+                        entry.HistoryStopPoint.Id == historyStopPoint.Id &&
+                        entry.ManifestFilePath == manifestFilePath
                 )
             );
 
