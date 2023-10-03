@@ -31,30 +31,47 @@ public record ApplicationTaskWaitToken(ManualResetEventSlim ResetEvent, Concurre
         }
     }
 
-    public async Task Wait(CancellationToken cancellationToken, ApplicationTaskWaitToken? excluding = null)
+    private enum WaitMode
     {
-        var childWaitTask = Task.WhenAll(
-            ChildWaitInfos.ToArray().Where(item => item != excluding).Select(item => item.Wait(cancellationToken))
+        All,
+        ChildrenOnly
+    }
+
+    private async Task<bool> Wait(ApplicationTaskWaitToken? excluding, CancellationToken cancellationToken,
+        WaitMode waitMode = WaitMode.All)
+    {
+        var childWaitTask = Task.Run(
+            async () =>
+            {
+                await Task.WhenAll(
+                    ChildWaitInfos.ToArray().Where(item => item != excluding).Select(item => item.Wait(cancellationToken))
+                );
+            },
+            cancellationToken
         );
 
         var childAddedDuringWait = false;
         _waitTasksAndAddedStatus.TryAdd(childWaitTask, childAddedDuringWait);
 
-        ResetEvent.Wait(cancellationToken);
+        if (waitMode == WaitMode.All)
+        {
+            ResetEvent.Wait(cancellationToken);
+        }
+
         await childWaitTask;
 
         _waitTasksAndAddedStatus.TryRemove(childWaitTask, out childAddedDuringWait);
 
         while (childAddedDuringWait)
         {
-            childWaitTask = Task.WhenAll(
-                ChildWaitInfos.ToArray().Where(item => item != excluding).Select(item => item.Wait(cancellationToken))
-            );
-            _waitTasksAndAddedStatus.TryAdd(childWaitTask, false);
-
-            await childWaitTask;
-
-            _waitTasksAndAddedStatus.TryRemove(childWaitTask, out childAddedDuringWait);
+            childAddedDuringWait = await Wait(excluding, cancellationToken, WaitMode.ChildrenOnly);
         }
+
+        return childAddedDuringWait;
+    }
+
+    public async Task Wait(CancellationToken cancellationToken, ApplicationTaskWaitToken? excluding = null)
+    {
+        await Wait(excluding, cancellationToken);
     }
 }
