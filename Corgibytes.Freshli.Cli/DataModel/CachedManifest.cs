@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Corgibytes.Freshli.Cli.DataModel;
 
 [Index(nameof(Id), IsUnique = true)]
+[Index(nameof(HistoryStopPointId), nameof(ManifestFilePath), IsUnique = true)]
 // ReSharper disable once ClassWithVirtualMembersNeverInherited.Global
 public class CachedManifest : TimeStampedEntity
 {
@@ -14,6 +15,7 @@ public class CachedManifest : TimeStampedEntity
     [Required] public string ManifestFilePath { get; set; } = null!;
 
     public virtual CachedHistoryStopPoint HistoryStopPoint { get; set; } = null!;
+    [Required] public int HistoryStopPointId { get; set; }
 
     // ReSharper disable once UnusedMember.Global
     // ReSharper disable once ReturnTypeCanBeEnumerable.Global
