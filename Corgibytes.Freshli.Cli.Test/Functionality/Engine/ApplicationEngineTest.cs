@@ -407,8 +407,8 @@ public class ApplicationEngineTest : IDisposable
     {
         Assert.True(fakeActivity.WasHandleCalled);
         Assert.True(fakeActivity.DidWaitThreadFinish);
-        Assert.True(fakeActivity.WaitThreadFinishedAt <= before);
-        Assert.True(fakeActivity.HandleFinishedAt <= before);
+        fakeActivity.WaitThreadFinishedAt.Should().BeOnOrBefore(before);
+        fakeActivity.HandleFinishedAt.Should().BeOnOrBefore(before);
         foreach (var childEvent in fakeActivity.Children)
         {
             AssertHandledBefore(childEvent, fakeActivity.WaitThreadFinishedAt);
@@ -418,7 +418,7 @@ public class ApplicationEngineTest : IDisposable
     private static void AssertHandledBefore(FakeApplicationEventTree fakeEvent, DateTimeOffset before)
     {
         Assert.True(fakeEvent.WasHandleCalled);
-        Assert.True(fakeEvent.HandleFinishedAt <= before);
+        fakeEvent.HandleFinishedAt.Should().BeOnOrBefore(before);
         foreach (var childActivity in fakeEvent.Children)
         {
             AssertHandledBefore(childActivity, before);
@@ -428,7 +428,7 @@ public class ApplicationEngineTest : IDisposable
     private static void AssertHandledBefore(FakeApplicationActivityTree fakeActivity, DateTimeOffset before)
     {
         Assert.True(fakeActivity.WasHandleCalled);
-        Assert.True(fakeActivity.HandleFinishedAt <= before);
+        fakeActivity.HandleFinishedAt.Should().BeOnOrBefore(before);
         foreach (var childActivity in fakeActivity.Children)
         {
             AssertHandledBefore(childActivity, before);

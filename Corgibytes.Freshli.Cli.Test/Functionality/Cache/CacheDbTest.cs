@@ -7,6 +7,7 @@ using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Git;
+using FluentAssertions;
 using PackageUrl;
 using Xunit;
 
@@ -460,8 +461,7 @@ public class CacheDbTest
                 retrievedPackageLibYear.Id,
                 updatedFirstManifest.PackageLibYears.First().Id
             );
-            Assert.True(DateTimeOffset.Now - updatedFirstManifest.UpdatedAt < DateTolerance);
-
+            updatedFirstManifest.UpdatedAt.Should().BeWithin(DateTolerance).Before(DateTimeOffset.Now);
 
             var updatedSecondManifest =
                 await cacheDb.RetrieveManifest(storedHistoryStopPoint, "/path/to/history-stop-point/path/to/second/manifest");
