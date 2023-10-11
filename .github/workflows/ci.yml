@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest-8-cores]
+        os: [ubuntu-latest]
 
     runs-on: ${{ matrix.os }}
     env:
