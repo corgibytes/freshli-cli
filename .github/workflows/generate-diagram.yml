@@ -33,7 +33,7 @@ jobs:
         run: bin/generate-diagram.rb
 
       - name: "Committing Diagram"
-        uses: stefanzweifel/git-auto-commit-action@v4
+        uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Committing auto generated diagram.
           file_pattern: docs/activities-and-events.md
