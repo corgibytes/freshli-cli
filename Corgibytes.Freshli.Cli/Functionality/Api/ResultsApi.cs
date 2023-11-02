@@ -117,27 +117,6 @@ public class ResultsApi : IResultsApi, IDisposable
         }
     }
 
-    public async ValueTask UpdateAnalysis(Guid apiAnalysisId, string status)
-    {
-        var apiUrl = _configuration.LegacyWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
-        var requestBody = JsonContent.Create(
-            new { state = status },
-            new MediaTypeHeaderValue("application/json")
-        );
-
-        try
-        {
-            await ApiSendAsync(HttpMethod.Put, apiUrl, requestBody, HttpStatusCode.OK);
-        }
-        catch (Exception error)
-        {
-            throw new InvalidOperationException(
-                $"Failed to update analysis '{apiAnalysisId}' with state = '{status}'.",
-                error
-            );
-        }
-    }
-
     public async ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom)
     {
         // TODO: This repository name is a hash built from the remote url and the branch name

@@ -9,6 +9,5 @@ public interface IResultsApi
 {
     string GetResultsUrl(Guid analysisId);
     ValueTask<Guid> CreateAnalysis(string url);
-    ValueTask UpdateAnalysis(Guid apiAnalysisId, string status);
     ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom);
 }
