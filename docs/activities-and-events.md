@@ -25,7 +25,7 @@ flowchart TD;
     AnalysisIdNotFoundEvent -.-> FailureEvent
     AnalysisIdNotFoundEvent
     AnalysisStartedEvent -.-> ApplicationEventBase
-    AnalysisStartedEvent --> CreateAnalysisApiActivity
+    AnalysisStartedEvent
     CacheDoesNotExistEvent -.-> ErrorEvent
     CacheDoesNotExistEvent --> PrepareCacheForAnalysisActivity
     CachePreparedForAnalysisEvent -.-> ApplicationEventBase
@@ -71,7 +71,6 @@ flowchart TD;
     ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
     ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
     ApiPackageLibYearCreatedEvent
-    CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
     AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
     BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
