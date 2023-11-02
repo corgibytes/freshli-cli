@@ -29,9 +29,6 @@ public class ResultsApi : IResultsApi, IDisposable
         _logger = logger;
     }
 
-    // TODO: the results URL should use the base URL from the configuration
-    public string GetResultsUrl(Guid analysisId) => "https://freshli.io/AnalysisRequests/" + analysisId;
-
     private class UnexpectedStatusCode : Exception
     {
         public UnexpectedStatusCode(HttpStatusCode expected, HttpStatusCode actual) :
@@ -43,53 +40,6 @@ public class ResultsApi : IResultsApi, IDisposable
         {
             return $"Expected status code {expected} but got {actual}";
         }
-    }
-
-    private async ValueTask<T> ApiSendAsync<T>(HttpMethod method, string url, HttpContent? content,
-        HttpStatusCode expectedStatusCode, Func<HttpResponseMessage, Task<T>>? responseProcessor = null)
-    {
-        var uri = string.IsNullOrEmpty(url) ? null : new Uri(url, UriKind.RelativeOrAbsolute);
-
-        var response = await Policy
-            .Handle<HttpRequestException>()
-            .Or<TimeoutException>()
-            .WaitAndRetryAsync(6, retryAttempt =>
-                TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
-            )
-            .ExecuteAsync(async () =>
-            {
-                var request = new HttpRequestMessage(method, uri)
-                {
-                    Content = content
-                };
-
-                // TODO: pass in a cancellation token
-                return await _client.SendAsync(request);
-            });
-
-        if (response.StatusCode != expectedStatusCode)
-        {
-            throw new UnexpectedStatusCode(expectedStatusCode, response.StatusCode);
-        }
-
-        return responseProcessor != null ? await responseProcessor(response) : default!;
-    }
-
-    private async ValueTask<T> ApiSendAsync<T>(HttpMethod method, string url, HttpContent body,
-        HttpStatusCode expectedStatusCode,
-        Func<HttpResponseMessage, T>? responseProcessor = null)
-    {
-        return await ApiSendAsync(method, url, body, expectedStatusCode, (response) =>
-        {
-            var processorResult = responseProcessor != null ? responseProcessor(response) : default!;
-            return Task.FromResult(processorResult);
-        });
-    }
-
-    private async ValueTask ApiSendAsync(HttpMethod method, string url, JsonContent body,
-        HttpStatusCode expectedStatusCode)
-    {
-        await ApiSendAsync(method, url, body, expectedStatusCode, _ => true);
     }
 
     public async ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom)
