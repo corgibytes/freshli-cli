@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Commands.Analyze;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
-using Corgibytes.Freshli.Cli.Functionality.Api;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.Support;
@@ -32,10 +31,9 @@ public class AnalyzeRunnerTest
 
         var serviceProvider = new Mock<IServiceProvider>();
         var runner = new Mock<IRunner>();
-        var resultsApi = new Mock<IResultsApi>();
 
         _analyzeRunner = new AnalyzeRunner(serviceProvider.Object, runner.Object, _configuration.Object,
-            _activityEngine.Object, _eventEngine.Object, resultsApi.Object);
+            _activityEngine.Object, _eventEngine.Object);
 
         _options = new AnalyzeCommandOptions
         {
@@ -56,10 +54,6 @@ public class AnalyzeRunnerTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RunIndicatesThatAnalysisIsComplete()
     {
-        var apiAnalysisId = Guid.NewGuid();
-
-        SetupAnalysisApiCreatedEvent(apiAnalysisId);
-
         var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
 
         Assert.Equal(0, exitCode);
@@ -71,25 +65,11 @@ public class AnalyzeRunnerTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RunIndicatesThatAnalysisFailed()
     {
-        var apiAnalysisId = Guid.NewGuid();
-
         SetupAnalysisFailureLoggedEvent();
-        SetupAnalysisApiCreatedEvent(apiAnalysisId);
 
         var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
 
         Assert.Equal(1, exitCode);
-
-        VerifyConfigurationValuesSetCorrectly();
-        VerifyStartAnalysisActivityDispatched();
-    }
-
-    [Fact(Timeout = Constants.DefaultTestTimeout)]
-    public async Task RunIndicatesThatCouldNotCallApi()
-    {
-        var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
-
-        Assert.Equal(-1, exitCode);
 
         VerifyConfigurationValuesSetCorrectly();
         VerifyStartAnalysisActivityDispatched();
@@ -121,12 +101,5 @@ public class AnalyzeRunnerTest
             .Setup(mock => mock.On(It.IsAny<Func<AnalysisFailureLoggedEvent, ValueTask>>()))
             .Callback<Func<AnalysisFailureLoggedEvent, ValueTask>>(action => action(
                 new AnalysisFailureLoggedEvent(new UnhandledExceptionEvent(new Exception("example failure")))
-            ).AsTask().Wait());
-
-    private void SetupAnalysisApiCreatedEvent(Guid apiAnalysisId) =>
-        _eventEngine
-            .Setup(mock => mock.On(It.IsAny<Func<AnalysisApiCreatedEvent, ValueTask>>()))
-            .Callback<Func<AnalysisApiCreatedEvent, ValueTask>>(action => action(
-                new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
             ).AsTask().Wait());
 }

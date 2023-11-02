@@ -17,18 +17,15 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
     private readonly IApplicationActivityEngine _activityEngine;
     private readonly IConfiguration _configuration;
     private readonly IApplicationEventEngine _eventEngine;
-    private readonly IResultsApi _resultsApi;
 
     public AnalyzeRunner(
         IServiceProvider serviceProvider, IRunner runner, IConfiguration configuration,
-        IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine,
-        IResultsApi resultsApi
+        IApplicationActivityEngine activityEngine, IApplicationEventEngine eventEngine
     ) : base(serviceProvider, runner)
     {
         _configuration = configuration;
         _activityEngine = activityEngine;
         _eventEngine = eventEngine;
-        _resultsApi = resultsApi;
     }
 
     public override async ValueTask<int> Run(AnalyzeCommandOptions options, IConsole console, CancellationToken cancellationToken)
@@ -57,17 +54,6 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             }
 
             exitStatus = 1;
-            return ValueTask.CompletedTask;
-        });
-
-        Guid? apiAnalysisId = null;
-        _eventEngine.On<AnalysisApiCreatedEvent>(createdEvent =>
-        {
-            apiAnalysisId = createdEvent.ApiAnalysisId;
-            console.Out.WriteLine(
-                "Results will be available at: " +
-                _resultsApi.GetResultsUrl(createdEvent.ApiAnalysisId)
-            );
             return ValueTask.CompletedTask;
         });
 

@@ -74,7 +74,6 @@ public class ServiceBuilder
     {
         Services.AddScoped<IAnalyzeProgressReporter, SpectreConsoleAnalyzeProgressReporter>();
         Services.AddScoped<ICommandRunner<AnalyzeCommand, AnalyzeCommandOptions>, AnalyzeRunner>();
-        Services.AddScoped<IResultsApi, ResultsApi>();
         Services.AddScoped<IHistoryIntervalParser, HistoryIntervalParser>();
         Services.AddScoped<IBomReader, CycloneDxBomReader>();
     }
