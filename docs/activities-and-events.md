@@ -62,15 +62,6 @@ flowchart TD;
     UnableToRestartAnalysisEvent
     UnhandledExceptionEvent -.-> FailureEvent
     UnhandledExceptionEvent
-    AnalysisApiCreatedEvent -.-> ApplicationEventBase
-    AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
-    AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
-    AnalysisApiStatusUpdatedEvent -.-> ApplicationEventBase
-    AnalysisApiStatusUpdatedEvent
-    ApiHistoryStopCreatedEvent -.-> ApplicationEventBase
-    ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
-    ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
-    ApiPackageLibYearCreatedEvent
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
     AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
     BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
