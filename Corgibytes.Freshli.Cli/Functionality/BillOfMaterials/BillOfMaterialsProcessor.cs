@@ -59,6 +59,11 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
                 Name = "freshli:analysis:data-point",
                 Value = manifest.HistoryStopPoint.AsOfDateTime.ToString("O")
             },
+            new ()
+            {
+                Name = "freshli:source:hash",
+                Value = manifest.HistoryStopPoint.Repository.Id
+            },
             new()
             {
                 Name = "freshli:source:url",

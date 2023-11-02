@@ -44,6 +44,7 @@ public static class BillOfMaterialsProcessorTest
             { "freshli:analysis:id", AnalysisId.ToString() },
             { "freshli:analysis:creation-date", CreatedAt.ToString("O") },
             { "freshli:analysis:data-point", HistoryStopPoint.AsOfDateTime.ToString("O") },
+            { "freshli:source:hash", HistoryStopPoint.Repository.Id },
             { "freshli:source:url", HistoryStopPoint.Repository.Url },
             { "freshli:source:branch", HistoryStopPoint.Repository.Branch! },
             { "freshli:source:clone-path", HistoryStopPoint.Repository.LocalPath },
