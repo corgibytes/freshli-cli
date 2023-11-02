@@ -134,33 +134,7 @@ public class ResultsApi : IResultsApi, IDisposable
             );
         }
     }
-
-    public async ValueTask CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint)
-    {
-        var cachedAnalysis = await cacheDb.RetrieveAnalysis(analysisId);
-        var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
-
-        var asOfDateTime = historyStopPoint.AsOfDateTime;
-
-        var apiUrl = _configuration.LegacyWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
-        var requestBody = JsonContent.Create(
-            new { date = asOfDateTime.ToString("o") },
-            new MediaTypeHeaderValue("application/json")
-        );
-
-        try
-        {
-            await ApiSendAsync(HttpMethod.Post, apiUrl, requestBody, HttpStatusCode.Created);
-        }
-        catch (Exception error)
-        {
-            throw new InvalidOperationException(
-                $"Failed to create history point for analysis '{apiAnalysisId}' with '{asOfDateTime}'.",
-                error
-            );
-        }
-    }
-
+    
     public void Dispose()
     {
         _client.Dispose();

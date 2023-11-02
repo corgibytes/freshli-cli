@@ -31,15 +31,5 @@ public class HistoryIntervalStopFoundEventTest
 
         var cancellationToken = new System.Threading.CancellationToken(false);
         await appEvent.Handle(eventClient.Object, cancellationToken);
-
-        eventClient.Verify(mock =>
-            mock.Dispatch(
-                It.Is<CreateApiHistoryStopActivity>(value =>
-                    value.HistoryStopPoint == historyStopPoint
-                ),
-                cancellationToken,
-                ApplicationTaskMode.Tracked
-            )
-        );
     }
 }
