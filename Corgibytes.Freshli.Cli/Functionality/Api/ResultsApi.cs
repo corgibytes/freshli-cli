@@ -47,11 +47,15 @@ public class ResultsApi : IResultsApi, IDisposable
         // TODO: This repository name is a hash built from the remote url and the branch name
         // this should be changed to the "canonical" name of the repository. And we should
         // also use the branch name for sending data to the API.
-        var repositoryName = new DirectoryInfo(manifest.HistoryStopPoint.Repository.LocalPath).Name;
+        var repositoryHash = new DirectoryInfo(manifest.HistoryStopPoint.Repository.LocalPath).Name;
         var dataPointDate = manifest.HistoryStopPoint.AsOfDateTime.ToString("O");
         var manifestHash = manifest.GetManifestRelativeFilePathHash();
 
-        var apiUrl = _configuration.ApiBaseUrl + $"/corgibytes/samples/{repositoryName}/{dataPointDate}/{manifestHash}/bom";
+        // TODO: Make these values that are passed in
+        var organizationNickname = "corgibytes";
+        var projectNickname = "samples";
+
+        var apiUrl = _configuration.ApiBaseUrl + $"/{organizationNickname}/{projectNickname}/{repositoryHash}/{dataPointDate}/{manifestHash}/bom";
 
         var credentials = await _cacheManager.GetApiCredentials();
         _ = credentials ?? throw new Exception("Failed to retrieve API credentials");
