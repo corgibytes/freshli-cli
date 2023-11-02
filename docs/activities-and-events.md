@@ -73,8 +73,6 @@ flowchart TD;
     ApiPackageLibYearCreatedEvent
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
     CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
-    CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
-    CreateApiPackageLibYearActivity --> HistoryStopPointProcessingFailedEvent
     UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
     AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
@@ -145,8 +143,7 @@ flowchart TD;
     LibYearComputationForBomStartedEvent -.-> ApplicationEventBase
     LibYearComputationForBomStartedEvent
     LibYearComputedForPackageEvent -.-> ApplicationEventBase
-    LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
-    LibYearComputedForPackageEvent --> FireHistoryStopPointProcessingErrorActivity
+    LibYearComputedForPackageEvent
     NoPackagesFoundEvent -.-> ApplicationEventBase
     NoPackagesFoundEvent
     PackageFoundEvent -.-> ApplicationEventBase
