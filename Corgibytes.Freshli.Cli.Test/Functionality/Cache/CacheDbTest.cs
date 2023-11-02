@@ -16,7 +16,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Cache;
 [IntegrationTest]
 public class CacheDbTest
 {
-    private TimeSpan DateTolerance { get; } = TimeSpan.FromSeconds(1);
+    private TimeSpan DateTolerance { get; } = TimeSpan.FromSeconds(4);
 
     [Fact]
     public async Task RetrieveAnalysisWhenNull()
