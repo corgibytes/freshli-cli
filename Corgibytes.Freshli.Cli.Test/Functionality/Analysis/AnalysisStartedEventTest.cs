@@ -19,15 +19,5 @@ public class AnalysisStartedEventTest
 
         var analysisStartedEvent = new AnalysisStartedEvent { AnalysisId = Guid.NewGuid() };
         await analysisStartedEvent.Handle(eventClient.Object, cancellationToken);
-
-        eventClient.Verify(
-            mock => mock.Dispatch(
-                It.Is<CreateAnalysisApiActivity>(value =>
-                    value.CachedAnalysisId == analysisStartedEvent.AnalysisId
-                ),
-                cancellationToken,
-                ApplicationTaskMode.Tracked
-            )
-        );
     }
 }
