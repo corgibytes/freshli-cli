@@ -72,7 +72,6 @@ flowchart TD;
     ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
     ApiPackageLibYearCreatedEvent
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
-    CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
     UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
     AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
@@ -126,7 +125,7 @@ flowchart TD;
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
     FireHistoryStopPointProcessingErrorActivity --> HistoryStopPointProcessingFailedEvent
     HistoryIntervalStopFoundEvent -.-> ApplicationEventBase
-    HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
+    HistoryIntervalStopFoundEvent
     HistoryStopCheckedOutEvent -.-> ApplicationEventBase
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
     HistoryStopPointProcessingCompletedEvent -.-> ApplicationEventBase
