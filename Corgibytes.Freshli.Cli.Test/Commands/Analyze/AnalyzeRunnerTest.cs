@@ -56,10 +56,6 @@ public class AnalyzeRunnerTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RunIndicatesThatAnalysisIsComplete()
     {
-        var apiAnalysisId = Guid.NewGuid();
-
-        SetupAnalysisApiCreatedEvent(apiAnalysisId);
-
         var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
 
         Assert.Equal(0, exitCode);
@@ -71,10 +67,7 @@ public class AnalyzeRunnerTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RunIndicatesThatAnalysisFailed()
     {
-        var apiAnalysisId = Guid.NewGuid();
-
         SetupAnalysisFailureLoggedEvent();
-        SetupAnalysisApiCreatedEvent(apiAnalysisId);
 
         var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
 
@@ -110,12 +103,5 @@ public class AnalyzeRunnerTest
             .Setup(mock => mock.On(It.IsAny<Func<AnalysisFailureLoggedEvent, ValueTask>>()))
             .Callback<Func<AnalysisFailureLoggedEvent, ValueTask>>(action => action(
                 new AnalysisFailureLoggedEvent(new UnhandledExceptionEvent(new Exception("example failure")))
-            ).AsTask().Wait());
-
-    private void SetupAnalysisApiCreatedEvent(Guid apiAnalysisId) =>
-        _eventEngine
-            .Setup(mock => mock.On(It.IsAny<Func<AnalysisApiCreatedEvent, ValueTask>>()))
-            .Callback<Func<AnalysisApiCreatedEvent, ValueTask>>(action => action(
-                new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
             ).AsTask().Wait());
 }

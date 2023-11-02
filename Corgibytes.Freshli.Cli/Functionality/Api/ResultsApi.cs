@@ -92,31 +92,6 @@ public class ResultsApi : IResultsApi, IDisposable
         await ApiSendAsync(method, url, body, expectedStatusCode, _ => true);
     }
 
-    public async ValueTask<Guid> CreateAnalysis(string url)
-    {
-        var apiUrl = _configuration.LegacyWebApiBaseUrl + "/api/v0/analysis-request";
-        var requestBody = JsonContent.Create(new
-        {
-            name = "Freshli CLI User",
-            email = "info@freshli.io",
-            url
-        }, new MediaTypeHeaderValue("application/json"));
-
-        try
-        {
-            return await ApiSendAsync(HttpMethod.Post, apiUrl, requestBody, HttpStatusCode.Created,
-                async (response) =>
-            {
-                var document = await response.Content.ReadFromJsonAsync<JsonNode>();
-                return document!["id"]!.GetValue<Guid>();
-            });
-        }
-        catch (Exception error)
-        {
-            throw new InvalidOperationException($"Failed to create analysis with url: {url}.", error);
-        }
-    }
-
     public async ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom)
     {
         // TODO: This repository name is a hash built from the remote url and the branch name

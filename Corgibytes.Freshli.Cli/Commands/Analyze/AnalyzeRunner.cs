@@ -60,17 +60,6 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
             return ValueTask.CompletedTask;
         });
 
-        Guid? apiAnalysisId = null;
-        _eventEngine.On<AnalysisApiCreatedEvent>(createdEvent =>
-        {
-            apiAnalysisId = createdEvent.ApiAnalysisId;
-            console.Out.WriteLine(
-                "Results will be available at: " +
-                _resultsApi.GetResultsUrl(createdEvent.ApiAnalysisId)
-            );
-            return ValueTask.CompletedTask;
-        });
-
         await _activityEngine.Dispatch(startAnalysisActivity, cancellationToken);
         await _activityEngine.Wait(startAnalysisActivity, cancellationToken);
 

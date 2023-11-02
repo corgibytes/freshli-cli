@@ -8,6 +8,5 @@ namespace Corgibytes.Freshli.Cli.Functionality.Api;
 public interface IResultsApi
 {
     string GetResultsUrl(Guid analysisId);
-    ValueTask<Guid> CreateAnalysis(string url);
     ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom);
 }

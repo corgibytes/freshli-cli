@@ -45,7 +45,14 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
                 RevisionHistoryMode = RevisionHistoryMode
             }
         );
-        await eventClient.Fire(new AnalysisStartedEvent { AnalysisId = id }, cancellationToken);
+        await eventClient.Fire(
+            new AnalysisStartedEvent
+            {
+                AnalysisId = id,
+                RepositoryUrl = RepositoryUrl
+            },
+            cancellationToken
+        );
     }
 
     private async ValueTask<bool> FireInvalidHistoryEventIfNeeded(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
