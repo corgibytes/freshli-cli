@@ -34,5 +34,11 @@ public class GitManager : IGitManager
         }
     }
 
+    public ValueTask<bool> IsWorkingDirectoryClean(string repositoryLocation) => throw new NotImplementedException();
+
+    public ValueTask<string> GetBranchName(string repositoryLocation) => throw new NotImplementedException();
+
+    public ValueTask<string> GetRemoteUrl(string repositoryLocation) => throw new NotImplementedException();
+
     public GitCommitIdentifier ParseCommitId(string commitId) => new(commitId);
 }
