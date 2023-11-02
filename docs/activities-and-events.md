@@ -72,7 +72,6 @@ flowchart TD;
     ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
     ApiPackageLibYearCreatedEvent
     CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
-    UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
     AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
     BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
