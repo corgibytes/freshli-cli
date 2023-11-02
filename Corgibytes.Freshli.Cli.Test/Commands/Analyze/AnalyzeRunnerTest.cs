@@ -66,7 +66,6 @@ public class AnalyzeRunnerTest
 
         VerifyConfigurationValuesSetCorrectly();
         VerifyStartAnalysisActivityDispatched();
-        VerifyApiStatusUpdated(apiAnalysisId, "success");
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -83,7 +82,6 @@ public class AnalyzeRunnerTest
 
         VerifyConfigurationValuesSetCorrectly();
         VerifyStartAnalysisActivityDispatched();
-        VerifyApiStatusUpdated(apiAnalysisId, "error");
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]
@@ -96,18 +94,6 @@ public class AnalyzeRunnerTest
         VerifyConfigurationValuesSetCorrectly();
         VerifyStartAnalysisActivityDispatched();
     }
-
-    private void VerifyApiStatusUpdated(Guid apiAnalysisId, string status) =>
-        _activityEngine.Verify(mock =>
-            mock.Dispatch(
-                It.Is<UpdateAnalysisStatusActivity>(value =>
-                    value.ApiAnalysisId == apiAnalysisId &&
-                    value.Status == status
-                ),
-                It.IsAny<CancellationToken>(),
-                ApplicationTaskMode.Tracked
-            )
-        );
 
     private void VerifyStartAnalysisActivityDispatched() =>
         _activityEngine.Verify(mock =>

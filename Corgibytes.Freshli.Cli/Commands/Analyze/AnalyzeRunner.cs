@@ -74,21 +74,6 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         await _activityEngine.Dispatch(startAnalysisActivity, cancellationToken);
         await _activityEngine.Wait(startAnalysisActivity, cancellationToken);
 
-        if (apiAnalysisId != null)
-        {
-            var updateStatusActivity = new UpdateAnalysisStatusActivity(
-                apiAnalysisId.Value,
-                exitStatus == 0 ? "success" : "error"
-            );
-            await _activityEngine.Dispatch(updateStatusActivity, cancellationToken);
-            await _activityEngine.Wait(updateStatusActivity, cancellationToken);
-        }
-        else
-        {
-            console.Out.WriteLine($"Unable to communicate with API. {nameof(apiAnalysisId)} is not set.");
-            exitStatus = -1;
-        }
-
         return exitStatus;
     }
 }
