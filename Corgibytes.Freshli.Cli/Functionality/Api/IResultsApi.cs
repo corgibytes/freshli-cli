@@ -11,5 +11,4 @@ public interface IResultsApi
     ValueTask<Guid> CreateAnalysis(string url);
     ValueTask UpdateAnalysis(Guid apiAnalysisId, string status);
     ValueTask CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint);
-    ValueTask CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint, CachedPackageLibYear packageLibYear);
 }

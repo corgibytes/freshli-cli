@@ -161,39 +161,6 @@ public class ResultsApi : IResultsApi, IDisposable
         }
     }
 
-    public async ValueTask CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint, CachedPackageLibYear packageLibYear)
-    {
-        _logger.LogTrace("CreatePackageLibYear({AnalysisId}, {PackageLibYearId})", analysisId, packageLibYear.Id);
-        var cachedAnalysis = await cacheDb.RetrieveAnalysis(analysisId);
-
-        var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
-        var asOfDateTime = historyStopPoint.AsOfDateTime;
-
-        var apiUrl = $"{_configuration.LegacyWebApiBaseUrl}/api/v0/analysis-request/{apiAnalysisId}/{asOfDateTime:o}";
-        var requestContent = JsonContent.Create(
-            new
-            {
-                packageUrl = packageLibYear.PackageUrl,
-                publicationDate = packageLibYear.ReleaseDateCurrentVersion.ToString("o"),
-                libYear = packageLibYear.LibYear
-            },
-            new MediaTypeHeaderValue("application/json")
-        );
-        _logger.LogTrace("Sending HistoryPoint to Freshli.Web endpoint {Endpoint}: {@Payload}", apiUrl, requestContent);
-
-        try
-        {
-            await ApiSendAsync(HttpMethod.Post, apiUrl, requestContent, HttpStatusCode.Created);
-        }
-        catch (Exception error)
-        {
-            throw new InvalidOperationException(
-                $"Failed to create package lib year for analysis '{apiAnalysisId}' and '{asOfDateTime:o}' with package URL '{packageLibYear.CurrentVersion}' publication date '{packageLibYear.ReleaseDateCurrentVersion:o}' and LibYear '{packageLibYear.LibYear}'.",
-                error
-            );
-        }
-    }
-
     public void Dispose()
     {
         _client.Dispose();

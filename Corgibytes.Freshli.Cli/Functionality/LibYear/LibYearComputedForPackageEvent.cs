@@ -14,24 +14,8 @@ public class LibYearComputedForPackageEvent : ApplicationEventBase, IHistoryStop
     public required CachedPackageLibYear PackageLibYear { get; init; }
     public required string AgentExecutablePath { get; init; }
 
-    public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
-        try
-        {
-            await eventClient.Dispatch(
-                new CreateApiPackageLibYearActivity
-                {
-                    Parent = this,
-                    PackageLibYear = PackageLibYear,
-                    AgentExecutablePath = AgentExecutablePath
-                },
-                cancellationToken);
-        }
-        catch (Exception error)
-        {
-            await eventClient.Dispatch(
-                new FireHistoryStopPointProcessingErrorActivity(this, error),
-                cancellationToken);
-        }
+        return ValueTask.CompletedTask;
     }
 }

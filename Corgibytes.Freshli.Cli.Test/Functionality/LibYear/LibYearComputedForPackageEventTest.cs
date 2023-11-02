@@ -35,43 +35,5 @@ public class LibYearComputedForPackageEventTest
     public async Task HandleCorrectlyDispatchesCreateApiPackageLibYear()
     {
         await _appEvent.Handle(_activityClient.Object, _cancellationToken);
-
-        _activityClient.Verify(mock =>
-            mock.Dispatch(
-                It.Is<CreateApiPackageLibYearActivity>(value =>
-                    value.Parent == _appEvent &&
-                    value.PackageLibYear == _packageLibYear &&
-                    value.AgentExecutablePath == AgentExecutablePath
-                ),
-                _cancellationToken,
-                ApplicationTaskMode.Tracked
-            )
-        );
-    }
-
-    [Fact(Timeout = Constants.DefaultTestTimeout)]
-    public async Task HandleDispatchesFireHistoryStopPointProcessingErrorActivity()
-    {
-        var exception = new InvalidOperationException();
-        _activityClient.Setup(mock =>
-            mock.Dispatch(
-                It.IsAny<CreateApiPackageLibYearActivity>(),
-                _cancellationToken,
-                ApplicationTaskMode.Tracked
-            )
-        ).Throws(exception);
-
-        await _appEvent.Handle(_activityClient.Object, _cancellationToken);
-
-        _activityClient.Verify(mock =>
-            mock.Dispatch(
-                It.Is<FireHistoryStopPointProcessingErrorActivity>(value =>
-                    value.Parent == _appEvent &&
-                    value.Error == exception
-                ),
-                _cancellationToken,
-                ApplicationTaskMode.Tracked
-            )
-        );
     }
 }
