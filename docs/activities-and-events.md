@@ -25,7 +25,7 @@ flowchart TD;
     AnalysisIdNotFoundEvent -.-> FailureEvent
     AnalysisIdNotFoundEvent
     AnalysisStartedEvent -.-> ApplicationEventBase
-    AnalysisStartedEvent --> CreateAnalysisApiActivity
+    AnalysisStartedEvent --> EnsureAuthenticatedActivity
     CacheDoesNotExistEvent -.-> ErrorEvent
     CacheDoesNotExistEvent --> PrepareCacheForAnalysisActivity
     CachePreparedForAnalysisEvent -.-> ApplicationEventBase
@@ -62,23 +62,15 @@ flowchart TD;
     UnableToRestartAnalysisEvent
     UnhandledExceptionEvent -.-> FailureEvent
     UnhandledExceptionEvent
-    AnalysisApiCreatedEvent -.-> ApplicationEventBase
-    AnalysisApiCreatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
-    AnalysisApiCreatedEvent --> CloneGitRepositoryActivity
-    AnalysisApiStatusUpdatedEvent -.-> ApplicationEventBase
-    AnalysisApiStatusUpdatedEvent
-    ApiHistoryStopCreatedEvent -.-> ApplicationEventBase
-    ApiHistoryStopCreatedEvent --> CheckoutHistoryActivity
-    ApiPackageLibYearCreatedEvent -.-> ApplicationEventBase
-    ApiPackageLibYearCreatedEvent
     BomUploadedToApiEvent
-    CreateAnalysisApiActivity --> AnalysisApiCreatedEvent
-    CreateApiHistoryStopActivity --> ApiHistoryStopCreatedEvent
-    CreateApiPackageLibYearActivity --> ApiPackageLibYearCreatedEvent
-    CreateApiPackageLibYearActivity --> HistoryStopPointProcessingFailedEvent
-    UpdateAnalysisStatusActivity --> AnalysisApiStatusUpdatedEvent
     UploadBomToApiActivity --> BomUploadedToApiEvent
     UploadBomToApiActivity --> HistoryStopPointProcessingFailedEvent
+    AuthenticatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
+    AuthenticatedEvent --> CloneGitRepositoryActivity
+    EnsureAuthenticatedActivity --> AuthenticatedEvent
+    EnsureAuthenticatedActivity --> NotAuthenticatedEvent
+    NotAuthenticatedEvent -.-> FailureEvent
+    NotAuthenticatedEvent
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
     AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
     BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
@@ -132,7 +124,7 @@ flowchart TD;
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
     FireHistoryStopPointProcessingErrorActivity --> HistoryStopPointProcessingFailedEvent
     HistoryIntervalStopFoundEvent -.-> ApplicationEventBase
-    HistoryIntervalStopFoundEvent --> CreateApiHistoryStopActivity
+    HistoryIntervalStopFoundEvent --> CheckoutHistoryActivity
     HistoryStopCheckedOutEvent -.-> ApplicationEventBase
     HistoryStopCheckedOutEvent --> DetectAgentsForDetectManifestsActivity
     HistoryStopPointProcessingCompletedEvent -.-> ApplicationEventBase
@@ -149,8 +141,7 @@ flowchart TD;
     LibYearComputationForBomStartedEvent -.-> ApplicationEventBase
     LibYearComputationForBomStartedEvent
     LibYearComputedForPackageEvent -.-> ApplicationEventBase
-    LibYearComputedForPackageEvent --> CreateApiPackageLibYearActivity
-    LibYearComputedForPackageEvent --> FireHistoryStopPointProcessingErrorActivity
+    LibYearComputedForPackageEvent
     NoPackagesFoundEvent -.-> ApplicationEventBase
     NoPackagesFoundEvent
     PackageFoundEvent -.-> ApplicationEventBase
