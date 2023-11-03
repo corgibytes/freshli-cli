@@ -9,6 +9,7 @@ using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 
+[IntegrationTest]
 public class CachedGitSourceRepositoryTest
 {
     [Fact]
