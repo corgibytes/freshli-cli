@@ -470,8 +470,7 @@ public class CacheDbTest
                 retrievedPackageLibYear.Id,
                 updatedSecondManifest.PackageLibYears.First().Id
             );
-            Assert.True(DateTimeOffset.Now - updatedSecondManifest.UpdatedAt < DateTolerance);
-
+            updatedSecondManifest.UpdatedAt.Should().BeWithin(DateTolerance).Before(DateTimeOffset.Now);
         });
     }
 
