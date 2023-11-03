@@ -2,17 +2,17 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
-using Corgibytes.Freshli.Cli.Functionality.Api;
 using Corgibytes.Freshli.Cli.Functionality.Auth;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Moq;
 using Xunit;
+using YamlDotNet.Core.Tokens;
 
-namespace Corgibytes.Freshli.Cli.Test.Functionality.Analysis;
+namespace Corgibytes.Freshli.Cli.Test.Functionality.Auth;
 
 [UnitTest]
-public class AnalysisStartedEventTest
+public class AuthenticatedEventTest
 {
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()

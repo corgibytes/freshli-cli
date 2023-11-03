@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
@@ -40,6 +41,36 @@ public class ResultsApi : IResultsApi, IDisposable
         {
             return $"Expected status code {expected} but got {actual}";
         }
+    }
+
+    public async ValueTask<Person?> GetPerson(CancellationToken cancellationToken)
+    {
+        _logger.LogDebug("Getting person");
+
+        var credentials = await _cacheManager.GetApiCredentials();
+        _ = credentials ?? throw new Exception("Failed to retrieve API credentials");
+
+        if (credentials.ExpiresAt < DateTime.UtcNow)
+        {
+            _logger.LogDebug("Credentials expired at {ExpiresAt}", credentials.ExpiresAt.ToString("O"));
+            // TODO: Refresh credentials if they are expired
+            throw new Exception("Credentials are expired. Please run the `auth` command again.");
+        }
+
+        var uri = new Uri(_configuration.ApiBaseUrl + "/person/me");
+
+        var request = new HttpRequestMessage(HttpMethod.Get, uri);
+        request.Headers.Add("authorization", $"Bearer {credentials.AccessToken}");
+
+        var response = await _client.SendAsync(request, cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<Person>(cancellationToken: cancellationToken);
+        }
+
+        _logger.LogWarning("Failed to get person. Status code {StatusCode} received.", response.StatusCode);
+
+        return null;
     }
 
     public async ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom)
