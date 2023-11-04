@@ -82,11 +82,7 @@ public class ResultsApi : IResultsApi, IDisposable
         var dataPointDate = manifest.HistoryStopPoint.AsOfDateTime.ToString("O");
         var manifestHash = manifest.GetManifestRelativeFilePathHash();
 
-        // TODO: Make these values that are passed in
-        var organizationNickname = "corgibytes";
-        var projectNickname = "samples";
-
-        var apiUrl = _configuration.ApiBaseUrl + $"/{organizationNickname}/{projectNickname}/{repositoryHash}/{dataPointDate}/{manifestHash}/bom";
+        var apiUrl = _configuration.ApiBaseUrl + $"/{_configuration.ProjectSlug}/{repositoryHash}/{dataPointDate}/{manifestHash}/bom";
 
         var credentials = await _cacheManager.GetApiCredentials();
         _ = credentials ?? throw new Exception("Failed to retrieve API credentials");
