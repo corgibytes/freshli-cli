@@ -17,6 +17,8 @@ flowchart TD;
     DetectAgentsActivity --> AgentsDetectedEvent
     NoAgentsDetectedFailureEvent -.-> FailureEvent
     NoAgentsDetectedFailureEvent
+    AccountNotSetUpEvent -.-> FailureEvent
+    AccountNotSetUpEvent
     AgentDetectedForDetectManifestEvent -.-> ApplicationEventBase
     AgentDetectedForDetectManifestEvent --> DetectManifestsUsingAgentActivity
     AgentDetectedForDetectManifestEvent --> FireHistoryStopPointProcessingErrorActivity
@@ -38,6 +40,10 @@ flowchart TD;
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
     DetectManifestsUsingAgentActivity --> NoManifestsDetectedEvent
     DetectManifestsUsingAgentActivity --> HistoryStopPointProcessingFailedEvent
+    DetermineProjectActivity --> AccountNotSetUpEvent
+    DetermineProjectActivity --> ProjectDeterminedEvent
+    DetermineProjectActivity --> ProjectNotFoundEvent
+    DetermineProjectActivity --> ProjectNotSpecifiedEvent
     ErrorEvent -.-> ApplicationEventBase
     ErrorEvent
     FailureEvent -.-> ErrorEvent
@@ -52,6 +58,12 @@ flowchart TD;
     NoManifestsDetectedEvent
     PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
     PrepareCacheForAnalysisActivity --> CachePrepareFailedForAnalysisEvent
+    ProjectDeterminedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
+    ProjectDeterminedEvent --> CloneGitRepositoryActivity
+    ProjectNotFoundEvent -.-> FailureEvent
+    ProjectNotFoundEvent
+    ProjectNotSpecifiedEvent -.-> FailureEvent
+    ProjectNotSpecifiedEvent
     RestartAnalysisActivity -.-> StartAnalysisActivityBase
     RestartAnalysisActivity --> UnableToRestartAnalysisEvent
     StartAnalysisActivity -.-> StartAnalysisActivityBase
@@ -65,8 +77,7 @@ flowchart TD;
     BomUploadedToApiEvent
     UploadBomToApiActivity --> BomUploadedToApiEvent
     UploadBomToApiActivity --> HistoryStopPointProcessingFailedEvent
-    AuthenticatedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
-    AuthenticatedEvent --> CloneGitRepositoryActivity
+    AuthenticatedEvent --> DetermineProjectActivity
     EnsureAuthenticatedActivity --> AuthenticatedEvent
     EnsureAuthenticatedActivity --> NotAuthenticatedEvent
     NotAuthenticatedEvent -.-> FailureEvent
