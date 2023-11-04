@@ -77,6 +77,8 @@ public class DetermineProjectActivityTest
 
         await activity.Handle(_engine.Object, _cancellationToken);
 
+        _configuration.VerifySet(mock => mock.ProjectSlug = "test-org/test-project", Times.Once);
+
         _engine.Verify(mock => mock.Fire(
             It.Is<ProjectDeterminedEvent>(value =>
                 value.AnalysisId == _analysisId &&

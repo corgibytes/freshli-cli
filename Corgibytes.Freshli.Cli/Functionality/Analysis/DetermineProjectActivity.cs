@@ -29,6 +29,8 @@ public class DetermineProjectActivity : IApplicationActivity
                 var project = organization.Projects[0];
                 var projectSlug = $"{organization.Nickname}/{project.Nickname}";
 
+                configuration.ProjectSlug = projectSlug;
+
                 await FireProjectDeterminedEvent(eventClient, projectSlug, cancellationToken);
             }
             else
