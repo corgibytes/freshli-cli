@@ -20,6 +20,7 @@ public class CloneGitRepositoryActivityTest
     private const string GitPath = "git";
     private const string LocalPath = "/local/path";
     private const string RepositoryId = "test";
+    private const string ProjectSlug = "test-org/test-project";
 
     private readonly Guid _analysisId = Guid.NewGuid();
 
@@ -77,7 +78,7 @@ public class CloneGitRepositoryActivityTest
         SetupCachedAnalysis();
         SetupCloneOrPullUsingDefaults();
 
-        var activity = new CloneGitRepositoryActivity(_analysisId);
+        var activity = new CloneGitRepositoryActivity { AnalysisId = _analysisId, ProjectSlug = ProjectSlug };
         await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>
@@ -108,7 +109,7 @@ public class CloneGitRepositoryActivityTest
         _gitSourceRepository.Setup(mock => mock.CloneOrPull(Url, Branch))
             .Throws(new GitException("Git clone failed"));
 
-        var activity = new CloneGitRepositoryActivity(_analysisId);
+        var activity = new CloneGitRepositoryActivity { AnalysisId = _analysisId, ProjectSlug = ProjectSlug };
         await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>

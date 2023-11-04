@@ -1,13 +1,12 @@
 using System;
-using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
+using Corgibytes.Freshli.Cli.Functionality.Api;
 using Corgibytes.Freshli.Cli.Functionality.Auth;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
-using Corgibytes.Freshli.Cli.Functionality.Git;
 using Moq;
 using Xunit;
-using YamlDotNet.Core.Tokens;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.Auth;
 
@@ -17,22 +16,24 @@ public class AuthenticatedEventTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task Handle()
     {
-        var startedEvent = new AnalysisStartedEvent
+        var authenticatedEvent = new AuthenticatedEvent
         {
             AnalysisId = new Guid(),
-            RepositoryUrl = "https://github.com/corgibytes/freshli-fixture-java-test"
+            RepositoryUrl = "https://github.com/corgibytes/freshli-fixture-java-test",
+            Person = new Person()
         };
 
-        var cancellationToken = new System.Threading.CancellationToken(false);
+        var cancellationToken = new CancellationToken(false);
 
         var engine = new Mock<IApplicationActivityEngine>();
-        await startedEvent.Handle(engine.Object, cancellationToken);
+        await authenticatedEvent.Handle(engine.Object, cancellationToken);
 
         engine.Verify(mock =>
             mock.Dispatch(
-                It.Is<EnsureAuthenticatedActivity>(value =>
-                    value.AnalysisId == startedEvent.AnalysisId &&
-                    value.RepositoryUrl == startedEvent.RepositoryUrl
+                It.Is<DetermineProjectActivity>(value =>
+                    value.AnalysisId == authenticatedEvent.AnalysisId &&
+                    value.RepositoryUrl == authenticatedEvent.RepositoryUrl &&
+                    value.Person == authenticatedEvent.Person
                 ),
                 cancellationToken,
                 ApplicationTaskMode.Tracked

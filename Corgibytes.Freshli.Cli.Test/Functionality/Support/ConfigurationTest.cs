@@ -44,55 +44,6 @@ public class ConfigurationTest
     }
 
     [Fact]
-    public void FreshliWebApiBaseUrlHasADefaultValue() =>
-        Assert.Equal("https://freshli.io", _configuration.LegacyWebApiBaseUrl);
-
-    [Fact]
-    public void FreshliWebApiBaseUrlCanBeSetViaEnvironmentVariable()
-    {
-        _environment.Setup(mock => mock.GetVariable(Configuration.LegacyFreshliWebApiBaseUrlEnvVarName))
-            .Returns("https://some/other/url");
-
-        Assert.Equal("https://some/other/url", _configuration.LegacyWebApiBaseUrl);
-    }
-
-    [Fact]
-    public void FreshliWebApiBaseUrlCanBeModified()
-    {
-        _configuration.LegacyWebApiBaseUrl = "https://yet/another/url";
-
-        Assert.Equal("https://yet/another/url", _configuration.LegacyWebApiBaseUrl);
-    }
-
-    [Fact]
-    public void FreshliWebUrlCannotBeModifiedWhenEnvironmentVariableIsSet()
-    {
-        _environment.Setup(mock => mock.GetVariable(Configuration.LegacyFreshliWebApiBaseUrlEnvVarName))
-            .Returns("https://url/from/env");
-
-        _configuration.LegacyWebApiBaseUrl = "https://url/from/assignment";
-
-        Assert.Equal("https://url/from/env", _configuration.LegacyWebApiBaseUrl);
-    }
-
-    [Fact]
-    public void FreshliWebUrlSetRemovesTrailingSlash()
-    {
-        _configuration.LegacyWebApiBaseUrl = "https://url/with/a/trailing/slash/";
-
-        Assert.Equal("https://url/with/a/trailing/slash", _configuration.LegacyWebApiBaseUrl);
-    }
-
-    [Fact]
-    public void FreshliWebUrlRemovesTrailingSlashFromEnvVariable()
-    {
-        _environment.Setup(mock => mock.GetVariable(Configuration.LegacyFreshliWebApiBaseUrlEnvVarName))
-            .Returns("https://url/with/a/trailing/slash/");
-
-        Assert.Equal("https://url/with/a/trailing/slash", _configuration.LegacyWebApiBaseUrl);
-    }
-
-    [Fact]
     public void ApiServerBaseDefault()
     {
         Assert.Equal("api.freshli.io", Configuration.DefaultApiServerBase);
@@ -141,5 +92,29 @@ public class ConfigurationTest
             .Returns("api.freshli-staging.io:8888");
 
         Assert.Equal("https://api.freshli-staging.io:8888/v1", _configuration.ApiBaseUrl);
+    }
+
+    [Fact]
+    public void UiUrlDefault()
+    {
+        Assert.Equal("https://freshli.io", _configuration.UiUrl);
+    }
+
+    [Fact]
+    public void UiUrlCanBeSetViaEnvironmentVariable()
+    {
+        _environment.Setup(mock => mock.GetVariable(Configuration.UiUrlEnvVarName))
+            .Returns("https://freshli-staging.io");
+
+        Assert.Equal("https://freshli-staging.io", _configuration.UiUrl);
+    }
+
+    [Fact]
+    public void UiUrlTrimsTrailingSlashFromEnvironmentVariable()
+    {
+        _environment.Setup(mock => mock.GetVariable(Configuration.UiUrlEnvVarName))
+            .Returns("https://freshli-staging.io/");
+
+        Assert.Equal("https://freshli-staging.io", _configuration.UiUrl);
     }
 }

@@ -11,9 +11,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class CloneGitRepositoryActivity : IApplicationActivity
 {
-    public readonly Guid CachedAnalysisId;
-
-    public CloneGitRepositoryActivity(Guid cachedAnalysisId) => CachedAnalysisId = cachedAnalysisId;
+    public required Guid AnalysisId { get; init; }
+    public required string ProjectSlug { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
@@ -24,7 +23,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = await cacheManager.GetCacheDb();
-            var cachedAnalysis = await cacheDb.RetrieveAnalysis(CachedAnalysisId);
+            var cachedAnalysis = await cacheDb.RetrieveAnalysis(AnalysisId);
 
             if (cachedAnalysis == null)
             {
@@ -33,7 +32,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             }
 
             await eventClient.Fire(
-                new GitRepositoryCloneStartedEvent { AnalysisId = CachedAnalysisId },
+                new GitRepositoryCloneStartedEvent { AnalysisId = AnalysisId },
                 cancellationToken);
 
             var gitRepositoryService = eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>();
@@ -49,7 +48,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             await eventClient.Fire(
                 new GitRepositoryClonedEvent
                 {
-                    AnalysisId = CachedAnalysisId,
+                    AnalysisId = AnalysisId,
                     HistoryStopData = historyStopData
                 },
                 cancellationToken);

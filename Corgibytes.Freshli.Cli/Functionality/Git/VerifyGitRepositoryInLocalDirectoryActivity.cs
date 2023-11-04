@@ -13,7 +13,8 @@ namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
 public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
 {
-    public Guid AnalysisId { get; init; }
+    public required Guid AnalysisId { get; init; }
+    public required string ProjectSlug { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {

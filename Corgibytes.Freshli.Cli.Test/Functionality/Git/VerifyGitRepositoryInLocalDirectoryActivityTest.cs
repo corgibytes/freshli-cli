@@ -17,6 +17,7 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Git;
 public class VerifyGitRepositoryInLocalDirectoryActivityTest
 {
     private readonly Guid _analysisId;
+    private readonly string _projectSlug = "test-org/test-project";
     private readonly Mock<ICacheDb> _cacheDb = new();
     private readonly Mock<ICacheManager> _cacheManager = new();
     private readonly Mock<IConfiguration> _configuration = new();
@@ -63,7 +64,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _gitManager.Setup(mock => mock.GetBranchName(_repositoryLocation)).ReturnsAsync("other-branch");
         _gitManager.Setup(mock => mock.GetRemoteUrl(_repositoryLocation)).ReturnsAsync("git-remote-url");
 
-        var activity = new VerifyGitRepositoryInLocalDirectoryActivity();
+        var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId, ProjectSlug = _projectSlug };
         await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         var expectedCachedGitSource = new CachedGitSource
@@ -99,7 +100,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task VerifyHandlerFiresFailureEventIfDirectoryDoesNotExist()
     {
-        var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
+        var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId, ProjectSlug = _projectSlug};
         await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>
@@ -122,7 +123,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _gitManager.Setup(mock => mock.IsWorkingDirectoryClean(_repositoryLocation)).ReturnsAsync(true);
         _gitManager.Setup(mock => mock.IsGitRepositoryInitialized(_repositoryLocation)).ReturnsAsync(false);
 
-        var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
+        var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId, ProjectSlug = _projectSlug};
         await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>
@@ -147,7 +148,7 @@ public class VerifyGitRepositoryInLocalDirectoryActivityTest
         _gitManager.Setup(mock => mock.IsGitRepositoryInitialized(_repositoryLocation)).ReturnsAsync(true);
         _gitManager.Setup(mock => mock.IsWorkingDirectoryClean(_repositoryLocation)).ReturnsAsync(false);
 
-        var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId };
+        var activity = new VerifyGitRepositoryInLocalDirectoryActivity { AnalysisId = _analysisId, ProjectSlug = _projectSlug};
         await activity.Handle(_eventEngine.Object, _cancellationToken);
 
         _eventEngine.Verify(mock =>
