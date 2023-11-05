@@ -12,9 +12,11 @@ namespace Corgibytes.Freshli.Cli.Test.Commands.Analyze;
 public class AnalyzeCommandOptionsTest : FreshliTest
 {
     private const string DefaultGitPath = "git";
+    private const string? DefaultBranch = null;
     private const string DefaultHistoryInterval = "1m";
     private const bool DefaultCommitHistory = false;
     private const bool DefaultLatestOnly = false;
+    private const string? DefaultProjectSlug = null;
 
     public AnalyzeCommandOptionsTest(ITestOutputHelper output) : base(output)
     {
@@ -26,37 +28,44 @@ public class AnalyzeCommandOptionsTest : FreshliTest
             // If passing no arguments, the default git path should be 'git'
             new object?[]
             {
-                new[] { "analyze" }, "git", null, DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly
+                new[] { "analyze" }, "git",
+                DefaultBranch, DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly, DefaultProjectSlug
             },
             // Specific git path expected
             new object?[]
             {
-                new[] { "analyze", "--git-path", "/usr/bin/local/git" }, "/usr/bin/local/git", null,
-                DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly
+                new[] { "analyze", "--git-path", "/usr/bin/local/git" },
+                "/usr/bin/local/git", DefaultBranch, DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly, DefaultProjectSlug
             },
             // Specific branch expected
             new object?[]
             {
-                new[] { "analyze", "--branch", "feature-fix-final.2.0" }, DefaultGitPath, "feature-fix-final.2.0",
-                DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly
+                new[] { "analyze", "--branch", "feature-fix-final.2.0" },
+                DefaultGitPath, "feature-fix-final.2.0", DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly, DefaultProjectSlug
             },
             // Entire commit history expected
             new object?[]
             {
-                new[] { "analyze", "--commit-history" }, DefaultGitPath, null, true, DefaultHistoryInterval,
-                DefaultLatestOnly
+                new[] { "analyze", "--commit-history" },
+                DefaultGitPath, DefaultBranch, true, DefaultHistoryInterval, DefaultLatestOnly, DefaultProjectSlug
             },
             // Three yearly history interval expected
             new object?[]
             {
-                new[] { "analyze", "--history-interval", "3y" }, DefaultGitPath, null, DefaultCommitHistory, "3y",
-                DefaultLatestOnly
+                new[] { "analyze", "--history-interval", "3y" },
+                DefaultGitPath, DefaultBranch, DefaultCommitHistory, "3y", DefaultLatestOnly, DefaultProjectSlug
             },
             // Latest only
             new object?[]
             {
-                new[] { "analyze", "--latest-only" }, DefaultGitPath, null, DefaultCommitHistory,
-                DefaultHistoryInterval, true
+                new[] { "analyze", "--latest-only" },
+                DefaultGitPath, DefaultBranch, DefaultCommitHistory, DefaultHistoryInterval, true, DefaultProjectSlug
+            },
+            // Specific project slug
+            new object?[]
+            {
+                new[] { "analyze", "--project", "org-nickname/project-nickname" },
+                DefaultGitPath, DefaultBranch, DefaultCommitHistory, DefaultHistoryInterval, DefaultLatestOnly, "org-nickname/project-nickname"
             }
         };
 
@@ -64,7 +73,7 @@ public class AnalyzeCommandOptionsTest : FreshliTest
     [MemberData(nameof(AnalyzeOptionsArgs))]
     public void Send_Args_ReturnsAnalyzeOptions(
         string[] args, string expectedGitPath, string? expectedBranch, bool expectedCommitHistory,
-        string expectedHistoryInterval, bool expectedLatestOnly
+        string expectedHistoryInterval, bool expectedLatestOnly, string? expectedProjectSlug
     )
     {
         var builder = new Program().CreateCommandLineBuilder();
@@ -75,10 +84,14 @@ public class AnalyzeCommandOptionsTest : FreshliTest
         var gitPath = result.GetOptionValueByName<string>("git-path");
         gitPath.Should().NotBeEmpty().And.Be(expectedGitPath);
 
+        var branch = result.GetOptionValueByName<string>("branch");
         if (expectedBranch != null)
         {
-            var branch = result.GetOptionValueByName<string>("branch");
             branch.Should().NotBeEmpty().And.Be(expectedBranch);
+        }
+        else
+        {
+            branch.Should().BeNull();
         }
 
         var commitHistory = result.GetOptionValueByName<bool>("commit-history");
@@ -89,6 +102,16 @@ public class AnalyzeCommandOptionsTest : FreshliTest
 
         var latestOnly = result.GetOptionValueByName<bool>("latest-only");
         latestOnly.Should().Be(expectedLatestOnly);
+
+        var projectSlug = result.GetOptionValueByName<string>("project");
+        if (expectedProjectSlug != null)
+        {
+            projectSlug.Should().NotBeEmpty().And.Be(expectedProjectSlug);
+        }
+        else
+        {
+            projectSlug.Should().BeNull();
+        }
     }
 
     [Fact]

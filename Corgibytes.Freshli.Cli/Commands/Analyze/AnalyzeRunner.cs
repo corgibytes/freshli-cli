@@ -35,6 +35,7 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
     {
         _configuration.CacheDir = options.CacheDir;
         _configuration.GitPath = options.GitPath;
+        _configuration.ProjectSlug = options.Project;
 
         var startAnalysisActivity = new StartAnalysisActivity
         {
