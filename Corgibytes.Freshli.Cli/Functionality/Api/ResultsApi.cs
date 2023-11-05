@@ -57,7 +57,7 @@ public class ResultsApi : IResultsApi, IDisposable
             throw new Exception("Credentials are expired. Please run the `auth` command again.");
         }
 
-        var uri = new Uri(_configuration.ApiBaseUrl + "/person/me");
+        var uri = new Uri(_configuration.ApiBaseUrl + "/people/me");
 
         var request = new HttpRequestMessage(HttpMethod.Get, uri);
         request.Headers.Add("authorization", $"Bearer {credentials.AccessToken}");
