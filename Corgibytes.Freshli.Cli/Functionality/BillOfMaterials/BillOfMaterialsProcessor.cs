@@ -61,6 +61,11 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
             },
             new()
             {
+                Name = "freshli:source:hash",
+                Value = manifest.HistoryStopPoint.Repository.Id
+            },
+            new()
+            {
                 Name = "freshli:source:url",
                 Value = manifest.HistoryStopPoint.Repository.Url
             },
