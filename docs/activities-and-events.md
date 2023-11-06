@@ -78,8 +78,8 @@ flowchart TD;
     UploadBomToApiActivity --> BomUploadedToApiEvent
     UploadBomToApiActivity --> HistoryStopPointProcessingFailedEvent
     AuthenticatedEvent --> DetermineProjectActivity
-    EnsureAuthenticatedActivity --> AuthenticatedEvent
     EnsureAuthenticatedActivity --> NotAuthenticatedEvent
+    EnsureAuthenticatedActivity --> AuthenticatedEvent
     NotAuthenticatedEvent -.-> FailureEvent
     NotAuthenticatedEvent
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
