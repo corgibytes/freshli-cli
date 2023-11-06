@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Api;
 using Corgibytes.Freshli.Cli.Functionality.Auth;
+using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Moq;
 using Xunit;
@@ -16,9 +17,10 @@ public class EnsureAuthenticatedActivityTest
     private readonly string _repositoryUrl = "repo-url";
     private readonly EnsureAuthenticatedActivity _activity;
     private readonly CancellationToken _cancellationToken = new();
-    private readonly Mock<IApplicationEventEngine> _engine = new Mock<IApplicationEventEngine>();
-    private readonly Mock<IServiceProvider> _serviceProvider = new Mock<IServiceProvider>();
-    private readonly Mock<IResultsApi> _resultsApi = new Mock<IResultsApi>();
+    private readonly Mock<IApplicationEventEngine> _engine = new();
+    private readonly Mock<IServiceProvider> _serviceProvider = new();
+    private readonly Mock<IResultsApi> _resultsApi = new();
+    private readonly Mock<ICacheManager> _cacheManager = new();
 
     public EnsureAuthenticatedActivityTest()
     {
@@ -30,6 +32,7 @@ public class EnsureAuthenticatedActivityTest
 
         _engine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(_resultsApi.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(ICacheManager))).Returns(_cacheManager.Object);
     }
 
     [Fact]
@@ -37,6 +40,7 @@ public class EnsureAuthenticatedActivityTest
     {
         var person = new Person();
 
+        _cacheManager.Setup(mock => mock.AreApiCredentialsPresent()).ReturnsAsync(true);
         _resultsApi.Setup(mock => mock.GetPerson(_cancellationToken)).ReturnsAsync(person);
 
         await _activity.Handle(_engine.Object, _cancellationToken);
@@ -55,7 +59,23 @@ public class EnsureAuthenticatedActivityTest
     [Fact]
     public async Task HandleWhenNotAuthenticated()
     {
+        _cacheManager.Setup(mock => mock.AreApiCredentialsPresent()).ReturnsAsync(true);
         _resultsApi.Setup(mock => mock.GetPerson(_cancellationToken)).ReturnsAsync(null as Person);
+
+        await _activity.Handle(_engine.Object, _cancellationToken);
+
+        _engine.Verify(mock => mock.Fire(
+            It.Is<NotAuthenticatedEvent>(value => value.ErrorMessage == "Failed to verify authentication credentials. Please try logging in using the `auth` command."),
+            _cancellationToken,
+            ApplicationTaskMode.Tracked
+        ));
+    }
+
+    [Fact]
+    public async Task  HandleWhenAuthCredentialsAreNotPresent()
+    {
+        _cacheManager.Setup(mock => mock.AreApiCredentialsPresent()).ReturnsAsync(false);
+        _resultsApi.Setup(mock => mock.GetPerson(_cancellationToken)).ReturnsAsync(new Person());
 
         await _activity.Handle(_engine.Object, _cancellationToken);
 

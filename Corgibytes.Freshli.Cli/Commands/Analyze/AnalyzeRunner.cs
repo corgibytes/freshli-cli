@@ -5,10 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
 using Corgibytes.Freshli.Cli.Functionality.Api;
+using Corgibytes.Freshli.Cli.Functionality.Auth;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.Support;
 using Corgibytes.Freshli.Lib;
+using YamlDotNet.Core.Tokens;
 
 namespace Corgibytes.Freshli.Cli.Commands.Analyze;
 
@@ -31,6 +33,13 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
         _resultsApi = resultsApi;
     }
 
+    private enum Status
+    {
+        Ok = 0,
+        Unknown = 1,
+        NotAuthenticated = 2
+    }
+
     public override async ValueTask<int> Run(AnalyzeCommandOptions options, IConsole console, CancellationToken cancellationToken)
     {
         _configuration.CacheDir = options.CacheDir;
@@ -47,23 +56,36 @@ public class AnalyzeRunner : CommandRunner<AnalyzeCommand, AnalyzeCommandOptions
                 options.LatestOnly ? RevisionHistoryMode.OnlyLatestRevision : RevisionHistoryMode.AllRevisions
         };
 
-        var exitStatus = 0;
+        var exitStatus = Status.Ok;
+
+        _eventEngine.On<NotAuthenticatedEvent>(appEvent =>
+        {
+            console.Out.WriteLine(appEvent.ErrorMessage);
+            exitStatus = Status.NotAuthenticated;
+            return ValueTask.CompletedTask;
+        });
 
         _eventEngine.On<AnalysisFailureLoggedEvent>(analysisFailure =>
         {
+            if (exitStatus > Status.Unknown)
+            {
+                return ValueTask.CompletedTask;
+            }
+
             console.Out.WriteLine("Analysis failed because: " + analysisFailure.ErrorEvent.ErrorMessage);
             if (analysisFailure.ErrorEvent.Exception != null)
             {
                 console.Out.WriteLine(analysisFailure.ErrorEvent.Exception.ToString());
             }
 
-            exitStatus = 1;
+            exitStatus = Status.Unknown;
+
             return ValueTask.CompletedTask;
         });
 
         await _activityEngine.Dispatch(startAnalysisActivity, cancellationToken);
         await _activityEngine.Wait(startAnalysisActivity, cancellationToken);
 
-        return exitStatus;
+        return (int) exitStatus;
     }
 }
