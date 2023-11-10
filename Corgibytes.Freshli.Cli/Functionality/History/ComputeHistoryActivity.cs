@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
+using Corgibytes.Freshli.Cli.Functionality.Api;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -68,15 +69,30 @@ public class ComputeHistoryActivity : IApplicationActivity
             historyIntervalStops = computeHistoryService.ComputeCommitHistory(HistoryStopData);
         }
 
+        // TODO: Filter the list of history interval stops (data points). Any data points that are already on
+        // the server should be removed from the list. This will prevent us from re-analyzing the same data.
+
         var historyIntervalStopsList = historyIntervalStops.ToList();
-
-        ReportProgress(progressReporter, historyIntervalStopsList);
-
         var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<ComputeHistoryActivity>>();
         logger.LogDebug("Detected {count} history stop points", historyIntervalStopsList.Count);
 
+        var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
+        var remoteHistoryIntervalStops = await resultsApi.GetDataPoints(HistoryStopData.RepositoryId);
+        logger.LogDebug("API returned {count} history stop points", remoteHistoryIntervalStops.Count);
+
+        var filteredHistoryIntervalStops = historyIntervalStopsList
+            .Where(left => !remoteHistoryIntervalStops.Any(right =>
+                left.GitCommitIdentifier == right.GitCommitIdentifier &&
+                left.AsOfDateTime.Equals(right.AsOfDateTime) &&
+                left.GitCommitDateTime.Equals(right.GitCommitDateTime))
+            )
+            .ToList();
+        logger.LogDebug("Filtered down to {count} history stop points", filteredHistoryIntervalStops.Count);
+
+        ReportProgress(progressReporter, filteredHistoryIntervalStops);
+
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
-        await HandleHistoryIntervalStops(eventClient, historyIntervalStopsList, configuration, cacheDb, cancellationToken);
+        await HandleHistoryIntervalStops(eventClient, filteredHistoryIntervalStops, configuration, cacheDb, cancellationToken);
     }
 
     private async Task HandleHistoryIntervalStops(IApplicationEventEngine eventClient,

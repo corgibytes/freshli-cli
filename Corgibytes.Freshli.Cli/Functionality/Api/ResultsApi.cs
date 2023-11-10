@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -9,6 +10,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
+using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.Support;
 using Microsoft.Extensions.Logging;
 using Polly;
@@ -123,6 +125,8 @@ public class ResultsApi : IResultsApi, IDisposable
             throw new InvalidOperationException("Failed to upload bom", error);
         }
     }
+
+    public ValueTask<IList<HistoryIntervalStop>> GetDataPoints(string repositoryHash) => throw new NotImplementedException();
 
     public void Dispose()
     {

@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Analysis;
+using Corgibytes.Freshli.Cli.Functionality.Api;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.Git;
@@ -28,6 +29,10 @@ public class ComputeHistoryActivityTest
     private readonly Mock<IAnalyzeProgressReporter> _progressReporter = new();
     private readonly Mock<ILogger<ComputeHistoryActivity>> _logger = new();
     private readonly CancellationToken _cancellationToken = new();
+    private readonly Mock<IResultsApi> _resultsApi = new();
+    private readonly string _repositoryUrl = "https://lorem-ipsum.com";
+    private readonly string _repositoryBranch = "main";
+    private readonly string _repositoryHash;
 
     public ComputeHistoryActivityTest()
     {
@@ -42,13 +47,16 @@ public class ComputeHistoryActivityTest
             .Returns(_progressReporter.Object);
         _serviceProvider.Setup(mock => mock.GetService(typeof(ILogger<ComputeHistoryActivity>)))
             .Returns(_logger.Object);
+        _serviceProvider.Setup(mock => mock.GetService(typeof(IResultsApi))).Returns(_resultsApi.Object);
 
         _eventEngine.Setup(mock => mock.ServiceProvider).Returns(_serviceProvider.Object);
+
+        _repositoryHash = new CachedGitSourceId(_repositoryUrl, _repositoryBranch).Id;
 
         HistoryStopData = new HistoryStopData
         {
             Configuration = Configuration,
-            RepositoryId = "test",
+            RepositoryId = _repositoryHash,
             CommitId = "abcde1234",
             AsOfDateTime = new DateTimeOffset(2022, 9, 1, 1, 0, 0, TimeSpan.Zero)
         };
@@ -60,8 +68,9 @@ public class ComputeHistoryActivityTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task FiresHistoryIntervalStopFoundEvents()
     {
-        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.AtInterval,
+        SetupCachedAnalysis(_repositoryUrl, _repositoryBranch, "1m", CommitHistory.AtInterval,
             RevisionHistoryMode.AllRevisions);
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>());
 
         // Have interval stops available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -93,10 +102,61 @@ public class ComputeHistoryActivityTest
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]
+    public async Task FiresHistoryIntervalStopFoundEventsFilteredViaApi()
+    {
+        SetupCachedAnalysis(_repositoryUrl, _repositoryBranch, "1m", CommitHistory.AtInterval,
+            RevisionHistoryMode.AllRevisions);
+
+        // Have interval stops available
+        var historyIntervalStops = new List<HistoryIntervalStop>
+        {
+            new(
+                "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                DateTime.Parse("2020-01-10T02:21:24+00:00"),
+                new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
+            ),
+            new(
+                "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
+                DateTime.Parse("2020-04-18T05:14:14+00:00"),
+                new DateTimeOffset(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
+            )
+        };
+        SetupHistoryStopPointIds(historyIntervalStops);
+        _computeHistory.Setup(mock => mock.ComputeWithHistoryInterval(
+                It.IsAny<IHistoryStopData>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>())
+            )
+            .Returns(historyIntervalStops);
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>()
+        {
+            new(
+                "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
+                DateTime.Parse("2020-04-18T05:14:14+00:00"),
+                new DateTimeOffset(2021, 5, 19, 15, 24, 24, TimeSpan.Zero)
+            )
+        });
+
+        // Act
+        var analysisId = new Guid("cbc83480-ae47-46de-91df-60747ca8fb09");
+        await new ComputeHistoryActivity(analysisId, HistoryStopData).Handle(_eventEngine.Object, _cancellationToken);
+
+        // Assert
+        VerifyProgressReporting(1);
+        VerifyHistoryStopPoints(analysisId, new List<HistoryIntervalStop>
+        {
+            new(
+                "75c7fcc7336ee718050c4a5c8dfb5598622787b2",
+                DateTime.Parse("2020-01-10T02:21:24+00:00"),
+                new DateTimeOffset(2021, 2, 20, 12, 31, 34, TimeSpan.Zero)
+            )
+        });
+    }
+
+    [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task FiresHistoryIntervalStopFoundEventsForComputeHistory()
     {
-        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
+        SetupCachedAnalysis(_repositoryUrl, _repositoryBranch, "1m", CommitHistory.Full,
             RevisionHistoryMode.AllRevisions);
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>());
 
         // Have interval stops available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -125,8 +185,9 @@ public class ComputeHistoryActivityTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task FiresHistoryIntervalStopFoundEventsForLatestOnly()
     {
-        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1m", CommitHistory.Full,
+        SetupCachedAnalysis(_repositoryUrl, _repositoryBranch, "1m", CommitHistory.Full,
             RevisionHistoryMode.OnlyLatestRevision);
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>());
 
         // Have interval stop available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -159,8 +220,9 @@ public class ComputeHistoryActivityTest
         // If we want to analyse it, we have to be wary of the interval not being bigger than the age of the first commit.
         // e.g. if it's less than a year old, running the analysis with a 1y interval breaks.
 
-        SetupCachedAnalysis("https://lorem-ipsum.com", "main", "1y", CommitHistory.AtInterval,
+        SetupCachedAnalysis(_repositoryUrl, _repositoryBranch, "1y", CommitHistory.AtInterval,
             RevisionHistoryMode.AllRevisions);
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>());
 
         var listCommits = new MockListCommits();
         listCommits.HasCommitsAvailable(new List<GitCommit>
