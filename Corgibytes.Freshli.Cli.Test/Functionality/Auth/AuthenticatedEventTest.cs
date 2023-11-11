@@ -20,7 +20,7 @@ public class AuthenticatedEventTest
         {
             AnalysisId = new Guid(),
             RepositoryUrl = "https://github.com/corgibytes/freshli-fixture-java-test",
-            Person = new Person()
+            Person = new PersonEntity()
         };
 
         var cancellationToken = new CancellationToken(false);

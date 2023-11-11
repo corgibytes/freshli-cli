@@ -38,7 +38,7 @@ public class EnsureAuthenticatedActivityTest
     [Fact]
     public async Task HandleWhenAuthenticated()
     {
-        var person = new Person();
+        var person = new PersonEntity();
 
         _cacheManager.Setup(mock => mock.AreApiCredentialsPresent()).ReturnsAsync(true);
         _resultsApi.Setup(mock => mock.GetPerson(_cancellationToken)).ReturnsAsync(person);
@@ -60,7 +60,7 @@ public class EnsureAuthenticatedActivityTest
     public async Task HandleWhenNotAuthenticated()
     {
         _cacheManager.Setup(mock => mock.AreApiCredentialsPresent()).ReturnsAsync(true);
-        _resultsApi.Setup(mock => mock.GetPerson(_cancellationToken)).ReturnsAsync(null as Person);
+        _resultsApi.Setup(mock => mock.GetPerson(_cancellationToken)).ReturnsAsync(null as PersonEntity);
 
         await _activity.Handle(_engine.Object, _cancellationToken);
 
@@ -75,7 +75,7 @@ public class EnsureAuthenticatedActivityTest
     public async Task  HandleWhenAuthCredentialsAreNotPresent()
     {
         _cacheManager.Setup(mock => mock.AreApiCredentialsPresent()).ReturnsAsync(false);
-        _resultsApi.Setup(mock => mock.GetPerson(_cancellationToken)).ReturnsAsync(new Person());
+        _resultsApi.Setup(mock => mock.GetPerson(_cancellationToken)).ReturnsAsync(new PersonEntity());
 
         await _activity.Handle(_engine.Object, _cancellationToken);
 

@@ -1,6 +1,6 @@
 namespace Corgibytes.Freshli.Cli.Functionality.Api;
 
-public class RepositoryMetadata
+public class RepositoryMetadataEntity
 {
     public string Hash { get; set; }
     public string Remote { get; set; }

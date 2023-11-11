@@ -3,11 +3,11 @@ using System.Linq;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Api;
 
-public class Project
+public class ProjectEntity
 {
     public string Name { get; set; }
     public string Nickname { get; set; }
-    public List<RepositoryMetadata> Repositories { get; set; }
+    public List<RepositoryMetadataEntity> Repositories { get; set; }
 
     public bool HasRepository(string repositoryHash)
     {

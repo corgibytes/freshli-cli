@@ -14,7 +14,7 @@ public class DetermineProjectActivity : IApplicationActivity
 {
     public required Guid AnalysisId { get; init; }
     public required string RepositoryUrl { get; init; }
-    public required Person Person { get; init; }
+    public required PersonEntity Person { get; init; }
 
     public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {

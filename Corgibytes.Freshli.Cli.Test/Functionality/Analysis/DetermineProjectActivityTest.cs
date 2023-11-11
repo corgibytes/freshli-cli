@@ -16,7 +16,7 @@ public class DetermineProjectActivityTest
 {
     private readonly Guid _analysisId = Guid.NewGuid();
     private readonly string _repositoryUrl = "repo-url";
-    private readonly Person _person = new();
+    private readonly PersonEntity _person = new();
     private readonly Mock<IApplicationEventEngine> _engine = new();
     private readonly CancellationToken _cancellationToken = new();
     private readonly Mock<IConfiguration> _configuration = new();
@@ -56,12 +56,12 @@ public class DetermineProjectActivityTest
     public async Task HandleWhenAccountHasOnlyOneProjectAndProjectValueInConfigurationIsUndefined()
     {
         _person.IsSetupComplete = true;
-        _person.Organizations = new List<Organization>
+        _person.Organizations = new List<OrganizationEntity>
         {
             new()
             {
                 Nickname = "test-org",
-                Projects = new List<Project>
+                Projects = new List<ProjectEntity>
                 {
                     new() { Nickname = "test-project" }
                 }
@@ -94,12 +94,12 @@ public class DetermineProjectActivityTest
     public async Task HandleWhenAccountHasOnlyOneProjectAndProjectValueInConfigurationDoesNotMatch()
     {
         _person.IsSetupComplete = true;
-        _person.Organizations = new List<Organization>
+        _person.Organizations = new List<OrganizationEntity>
         {
             new()
             {
                 Nickname = "test-org",
-                Projects = new List<Project>
+                Projects = new List<ProjectEntity>
                 {
                     new() { Nickname = "test-project" }
                 }
@@ -135,12 +135,12 @@ public class DetermineProjectActivityTest
     public async Task HandleWhenProjectValueInConfigurationMatchesAvailableProject()
     {
         _person.IsSetupComplete = true;
-        _person.Organizations = new List<Organization>
+        _person.Organizations = new List<OrganizationEntity>
         {
             new()
             {
                 Nickname = "first-org",
-                Projects = new List<Project>
+                Projects = new List<ProjectEntity>
                 {
                     new() { Nickname = "first-org-first-project" },
                     new() { Nickname = "first-org-second-project" }
@@ -149,7 +149,7 @@ public class DetermineProjectActivityTest
             new()
             {
                 Nickname = "second-org",
-                Projects = new List<Project>
+                Projects = new List<ProjectEntity>
                 {
                     new() { Nickname = "second-org-first-project" },
                     new() { Nickname = "second-org-second-project" }
@@ -183,12 +183,12 @@ public class DetermineProjectActivityTest
     public async Task HandleWhenProjectValueInConfigurationNotPresentInAvailableProject()
     {
         _person.IsSetupComplete = true;
-        _person.Organizations = new List<Organization>
+        _person.Organizations = new List<OrganizationEntity>
         {
             new()
             {
                 Nickname = "first-org",
-                Projects = new List<Project>
+                Projects = new List<ProjectEntity>
                 {
                     new() { Nickname = "first-org-first-project" },
                     new() { Nickname = "first-org-second-project" }
@@ -197,7 +197,7 @@ public class DetermineProjectActivityTest
             new()
             {
                 Nickname = "second-org",
-                Projects = new List<Project>
+                Projects = new List<ProjectEntity>
                 {
                     new() { Nickname = "second-org-first-project" },
                     new() { Nickname = "second-org-second-project" }
@@ -237,12 +237,12 @@ public class DetermineProjectActivityTest
     public async Task HandleWhenProjectValueInConfigurationNotDefinedAndMultipleProjectsAvailable()
     {
         _person.IsSetupComplete = true;
-        _person.Organizations = new List<Organization>
+        _person.Organizations = new List<OrganizationEntity>
         {
             new()
             {
                 Nickname = "first-org",
-                Projects = new List<Project>
+                Projects = new List<ProjectEntity>
                 {
                     new() { Nickname = "first-org-first-project" },
                     new() { Nickname = "first-org-second-project" }
@@ -251,7 +251,7 @@ public class DetermineProjectActivityTest
             new()
             {
                 Nickname = "second-org",
-                Projects = new List<Project>
+                Projects = new List<ProjectEntity>
                 {
                     new() { Nickname = "second-org-first-project" },
                     new() { Nickname = "second-org-second-project" }

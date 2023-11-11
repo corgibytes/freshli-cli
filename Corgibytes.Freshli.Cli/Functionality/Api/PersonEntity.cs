@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Api;
 
-public class Person
+public class PersonEntity
 {
     public string Name { get; set; }
     public string Nickname { get; set; }
@@ -12,10 +12,10 @@ public class Person
     public int LoginsCount { get; set; }
     public bool IsSetupComplete { get; set; }
 
-    public List<Identity> Identities { get; set; }
-    public List<Organization> Organizations { get; set; }
+    public List<IdentityEntity> Identities { get; set; }
+    public List<OrganizationEntity> Organizations { get; set; }
 
-    public Project? GetProject(string organizationNickname, string projectNickname)
+    public ProjectEntity? GetProject(string organizationNickname, string projectNickname)
     {
         var organization = Organizations.FirstOrDefault(organization =>
             organization.Nickname == organizationNickname);

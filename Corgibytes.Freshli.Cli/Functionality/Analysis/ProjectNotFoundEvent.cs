@@ -4,7 +4,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class ProjectNotFoundEvent : FailureEvent
 {
-    public ProjectNotFoundEvent(Person person, string projectSlug)
+    public ProjectNotFoundEvent(PersonEntity person, string projectSlug)
     {
         ErrorMessage =
             $"""

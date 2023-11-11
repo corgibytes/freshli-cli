@@ -5,7 +5,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
 public class ProjectNotSpecifiedEvent : FailureEvent
 {
-    public ProjectNotSpecifiedEvent(Person person)
+    public ProjectNotSpecifiedEvent(PersonEntity person)
     {
         ErrorMessage =
             $"""

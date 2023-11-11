@@ -45,7 +45,7 @@ public class ResultsApi : IResultsApi, IDisposable
         }
     }
 
-    public async ValueTask<Person?> GetPerson(CancellationToken cancellationToken)
+    public async ValueTask<PersonEntity?> GetPerson(CancellationToken cancellationToken)
     {
         _logger.LogDebug("Getting person");
 
@@ -67,7 +67,7 @@ public class ResultsApi : IResultsApi, IDisposable
         var response = await _client.SendAsync(request, cancellationToken);
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadFromJsonAsync<Person>(cancellationToken: cancellationToken);
+            return await response.Content.ReadFromJsonAsync<PersonEntity>(cancellationToken: cancellationToken);
         }
 
         _logger.LogWarning("Failed to get person. Status code {StatusCode} received.", response.StatusCode);
