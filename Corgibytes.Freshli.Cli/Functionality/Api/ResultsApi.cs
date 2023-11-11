@@ -152,9 +152,9 @@ public class ResultsApi : IResultsApi, IDisposable
                     return await _client.SendAsync(request, cancellationToken);
                 });
 
-            if (apiResponse.StatusCode != HttpStatusCode.Created)
+            if (apiResponse.StatusCode != HttpStatusCode.OK)
             {
-                throw new UnexpectedStatusCode(HttpStatusCode.Created, apiResponse.StatusCode);
+                throw new UnexpectedStatusCode(HttpStatusCode.OK, apiResponse.StatusCode);
             }
 
             var entries = await apiResponse.Content.ReadFromJsonAsync<List<BomMetadataEntity>>(cancellationToken: cancellationToken);
@@ -173,7 +173,7 @@ public class ResultsApi : IResultsApi, IDisposable
         }
         catch (Exception error)
         {
-            throw new InvalidOperationException("Failed to upload bom", error);
+            throw new InvalidOperationException("Failed to get data points", error);
         }
 
         return result;
