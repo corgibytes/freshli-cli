@@ -77,7 +77,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         logger.LogDebug("Detected {count} history stop points", historyIntervalStopsList.Count);
 
         var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
-        var remoteHistoryIntervalStops = await resultsApi.GetDataPoints(HistoryStopData.RepositoryId);
+        var remoteHistoryIntervalStops = await resultsApi.GetDataPoints(HistoryStopData.RepositoryId, cancellationToken);
         logger.LogDebug("API returned {count} history stop points", remoteHistoryIntervalStops.Count);
 
         var filteredHistoryIntervalStops = historyIntervalStopsList

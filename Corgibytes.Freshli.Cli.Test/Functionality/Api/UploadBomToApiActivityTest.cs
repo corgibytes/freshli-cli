@@ -43,7 +43,7 @@ public class UploadBomToApiActivityTest
 
         await _activity.Handle(_eventClient.Object, _cancellationToken);
 
-        resultsApi.Verify(mock => mock.UploadBomForManifest(_manifest, PathToBom));
+        resultsApi.Verify(mock => mock.UploadBomForManifest(_manifest, PathToBom, _cancellationToken));
 
         _eventClient.Verify(mock =>
             mock.Fire(

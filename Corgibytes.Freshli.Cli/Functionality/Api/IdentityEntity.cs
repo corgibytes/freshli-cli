@@ -1,6 +1,6 @@
 namespace Corgibytes.Freshli.Cli.Functionality.Api;
 
-public class Identity
+public class IdentityEntity
 {
     // "provider": "github",
     public string Provider { get; set; }

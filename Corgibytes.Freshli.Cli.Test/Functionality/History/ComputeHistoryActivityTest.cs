@@ -70,7 +70,7 @@ public class ComputeHistoryActivityTest
     {
         SetupCachedAnalysis(_repositoryUrl, _repositoryBranch, "1m", CommitHistory.AtInterval,
             RevisionHistoryMode.AllRevisions);
-        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>());
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash, _cancellationToken)).ReturnsAsync(new List<HistoryIntervalStop>());
 
         // Have interval stops available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -126,7 +126,7 @@ public class ComputeHistoryActivityTest
                 It.IsAny<IHistoryStopData>(), It.IsAny<string>(), It.IsAny<DateTimeOffset>())
             )
             .Returns(historyIntervalStops);
-        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>()
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash, _cancellationToken)).ReturnsAsync(new List<HistoryIntervalStop>()
         {
             new(
                 "583d813db3e28b9b44a29db352e2f0e1b4c6e420",
@@ -156,7 +156,7 @@ public class ComputeHistoryActivityTest
     {
         SetupCachedAnalysis(_repositoryUrl, _repositoryBranch, "1m", CommitHistory.Full,
             RevisionHistoryMode.AllRevisions);
-        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>());
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash, _cancellationToken)).ReturnsAsync(new List<HistoryIntervalStop>());
 
         // Have interval stops available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -187,7 +187,7 @@ public class ComputeHistoryActivityTest
     {
         SetupCachedAnalysis(_repositoryUrl, _repositoryBranch, "1m", CommitHistory.Full,
             RevisionHistoryMode.OnlyLatestRevision);
-        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>());
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash, _cancellationToken)).ReturnsAsync(new List<HistoryIntervalStop>());
 
         // Have interval stop available
         var historyIntervalStops = new List<HistoryIntervalStop>
@@ -222,7 +222,7 @@ public class ComputeHistoryActivityTest
 
         SetupCachedAnalysis(_repositoryUrl, _repositoryBranch, "1y", CommitHistory.AtInterval,
             RevisionHistoryMode.AllRevisions);
-        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash)).ReturnsAsync(new List<HistoryIntervalStop>());
+        _resultsApi.Setup(mock => mock.GetDataPoints(_repositoryHash, _cancellationToken)).ReturnsAsync(new List<HistoryIntervalStop>());
 
         var listCommits = new MockListCommits();
         listCommits.HasCommitsAvailable(new List<GitCommit>

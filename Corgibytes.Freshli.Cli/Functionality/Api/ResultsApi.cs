@@ -9,11 +9,13 @@ using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality.Api.Auth;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.Support;
 using Microsoft.Extensions.Logging;
 using Polly;
+using Polly.Retry;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Api;
 
@@ -23,6 +25,13 @@ public class ResultsApi : IResultsApi, IDisposable
     private readonly HttpClient _client;
     private readonly ILogger<ResultsApi> _logger;
     private readonly ICacheManager _cacheManager;
+
+    private readonly AsyncRetryPolicy _retryHttpPolicy = Policy
+        .Handle<HttpRequestException>()
+        .Or<TimeoutException>()
+        .WaitAndRetryAsync(6, retryAttempt =>
+            TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
+        );
 
     public ResultsApi(IConfiguration configuration, HttpClient client, ICacheManager cacheManager, ILogger<ResultsApi> logger)
     {
@@ -75,7 +84,7 @@ public class ResultsApi : IResultsApi, IDisposable
         return null;
     }
 
-    public async ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom)
+    public async ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom, CancellationToken cancellationToken)
     {
         // TODO: This repository name is a hash built from the remote url and the branch name
         // this should be changed to the "canonical" name of the repository. And we should
@@ -84,10 +93,9 @@ public class ResultsApi : IResultsApi, IDisposable
         var dataPointDate = manifest.HistoryStopPoint.AsOfDateTime.ToString("O");
         var manifestHash = manifest.GetManifestRelativeFilePathHash();
 
-        var apiUrl = _configuration.ApiBaseUrl + $"/{_configuration.ProjectSlug}/{repositoryHash}/{dataPointDate}/{manifestHash}/bom";
+        var apiUrl = _configuration.ApiBaseUrl + $"/{_configuration.ProjectSlug!}/{repositoryHash}/{dataPointDate}/{manifestHash}/bom";
 
-        var credentials = await _cacheManager.GetApiCredentials();
-        _ = credentials ?? throw new Exception("Failed to retrieve API credentials");
+        var credentials = await EnsureApiCredentials();
 
         await using var bomStream = File.OpenRead(pathToBom);
         var streamBody = new StreamContent(bomStream);
@@ -95,29 +103,21 @@ public class ResultsApi : IResultsApi, IDisposable
 
         try
         {
-            var uri = string.IsNullOrEmpty(apiUrl) ? null : new Uri(apiUrl, UriKind.RelativeOrAbsolute);
-
-            var response1 = await Policy
-                .Handle<HttpRequestException>()
-                .Or<TimeoutException>()
-                .WaitAndRetryAsync(6, retryAttempt =>
-                    TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
-                )
+            var apiResponse = await _retryHttpPolicy
                 .ExecuteAsync(async () =>
                 {
-                    var request = new HttpRequestMessage(HttpMethod.Post, uri)
+                    var request = new HttpRequestMessage(HttpMethod.Post, new Uri(apiUrl))
                     {
                         Content = streamBody
                     };
                     request.Headers.Add("authorization", $"Bearer {credentials.AccessToken}");
 
-                    // TODO: pass in a cancellation token
-                    return await _client.SendAsync(request);
+                    return await _client.SendAsync(request, cancellationToken);
                 });
 
-            if (response1.StatusCode != HttpStatusCode.Created)
+            if (apiResponse.StatusCode != HttpStatusCode.Created)
             {
-                throw new UnexpectedStatusCode(HttpStatusCode.Created, response1.StatusCode);
+                throw new UnexpectedStatusCode(HttpStatusCode.Created, apiResponse.StatusCode);
             }
         }
         catch (Exception error)
@@ -126,7 +126,58 @@ public class ResultsApi : IResultsApi, IDisposable
         }
     }
 
-    public ValueTask<IList<HistoryIntervalStop>> GetDataPoints(string repositoryHash) => throw new NotImplementedException();
+    private async Task<ApiCredentials> EnsureApiCredentials()
+    {
+        var credentials = await _cacheManager.GetApiCredentials();
+        _ = credentials ?? throw new Exception("Failed to retrieve API credentials");
+        return credentials;
+    }
+
+    public async ValueTask<IList<HistoryIntervalStop>> GetDataPoints(string repositoryHash, CancellationToken cancellationToken)
+    {
+        var apiUrl = _configuration.ApiBaseUrl + $"/{_configuration.ProjectSlug!}/{repositoryHash}/metadata";
+
+        var credentials = await EnsureApiCredentials();
+
+        var result = new List<HistoryIntervalStop>();
+
+        try
+        {
+            var apiResponse = await _retryHttpPolicy
+                .ExecuteAsync(async () =>
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, new Uri(apiUrl));
+                    request.Headers.Add("authorization", $"Bearer {credentials.AccessToken}");
+
+                    return await _client.SendAsync(request, cancellationToken);
+                });
+
+            if (apiResponse.StatusCode != HttpStatusCode.Created)
+            {
+                throw new UnexpectedStatusCode(HttpStatusCode.Created, apiResponse.StatusCode);
+            }
+
+            var entries = await apiResponse.Content.ReadFromJsonAsync<List<BomMetadataEntity>>(cancellationToken: cancellationToken);
+            if (entries == null)
+            {
+                throw new Exception("Failed to deserialize response");
+            }
+            foreach (var entry in entries)
+            {
+                var intervalStop = new HistoryIntervalStop(entry.Commit.Id, entry.Commit.Date, entry.DataPoint);
+                if (!result.Contains(intervalStop))
+                {
+                    result.Add(intervalStop);
+                }
+            }
+        }
+        catch (Exception error)
+        {
+            throw new InvalidOperationException("Failed to upload bom", error);
+        }
+
+        return result;
+    }
 
     public void Dispose()
     {

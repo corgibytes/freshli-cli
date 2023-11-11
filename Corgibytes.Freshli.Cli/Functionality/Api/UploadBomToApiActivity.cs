@@ -22,7 +22,7 @@ public class UploadBomToApiActivity : IApplicationActivity, IHistoryStopPointPro
 
             var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
 
-            await resultsApi.UploadBomForManifest(manifest, PathToBom);
+            await resultsApi.UploadBomForManifest(manifest, PathToBom, cancellationToken);
 
             await eventClient.Fire(new BomUploadedToApiEvent { Parent = this }, cancellationToken);
         }
