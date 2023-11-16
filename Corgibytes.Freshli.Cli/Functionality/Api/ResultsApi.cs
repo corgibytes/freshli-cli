@@ -152,6 +152,11 @@ public class ResultsApi : IResultsApi, IDisposable
                     return await _client.SendAsync(request, cancellationToken);
                 });
 
+            if (apiResponse.StatusCode == HttpStatusCode.NotFound)
+            {
+                return result;
+            }
+
             if (apiResponse.StatusCode != HttpStatusCode.OK)
             {
                 throw new UnexpectedStatusCode(HttpStatusCode.OK, apiResponse.StatusCode);
