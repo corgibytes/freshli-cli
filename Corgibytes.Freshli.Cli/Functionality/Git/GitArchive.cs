@@ -33,6 +33,13 @@ public class GitArchive
     private async ValueTask<string> CreateArchiveTask(GitCommitIdentifier gitCommitIdentifier,
         DirectoryInfo gitSourceTarget, CachedGitSource gitSource)
     {
+        // TODO: Modify this so that it does the following:
+        // 1. Keep the zip file around in the cache directory - it's a pristine copy of the source code at the commit
+        // 2. If the zip doesn't already exist then run `git archive` to create it
+        // 3. Remove the expanded directory if it already exists
+        // 4. Expand the zip file into the cache directory
+        // This should speed things up a little bit
+
         if (await Task.Run(() => Directory.Exists(gitSourceTarget.FullName)))
         {
             return gitSourceTarget.FullName;
