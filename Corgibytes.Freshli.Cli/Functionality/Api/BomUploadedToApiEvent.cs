@@ -5,11 +5,11 @@ using Corgibytes.Freshli.Cli.Functionality.History;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Api;
 
-public class BomUploadedToApiEvent : IApplicationEvent, IHistoryStopPointProcessingTask
+public class BomUploadedToApiEvent : ApplicationEventBase, IHistoryStopPointProcessingTask
 {
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
-    public ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
+    public override ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         return ValueTask.CompletedTask;
     }

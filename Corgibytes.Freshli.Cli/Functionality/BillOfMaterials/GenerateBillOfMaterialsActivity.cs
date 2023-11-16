@@ -12,11 +12,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
-public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchronized, IHistoryStopPointProcessingTask
+public class GenerateBillOfMaterialsActivity : ApplicationActivityBase, ISynchronized, IHistoryStopPointProcessingTask
 {
-    public int Priority
+    public GenerateBillOfMaterialsActivity() : base(100)
     {
-        get { return 100; }
     }
 
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_historyPointSemaphores = new();
@@ -24,7 +23,7 @@ public class GenerateBillOfMaterialsActivity : IApplicationActivity, ISynchroniz
     public required string AgentExecutablePath { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {

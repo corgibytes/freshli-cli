@@ -130,6 +130,8 @@ public class ApplicationEngine : IApplicationEventEngine, IApplicationActivityEn
         if (!semaphoreEntered)
         {
             // place the activity back in the queue and free up the worker to make progress on a different activity
+
+            activity.DecreasePriority();
             await Dispatch(activity, cancellationToken, mode);
             return;
         }

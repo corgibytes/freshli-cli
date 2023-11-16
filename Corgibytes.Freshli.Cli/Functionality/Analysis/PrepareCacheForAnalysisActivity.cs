@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class PrepareCacheForAnalysisActivity : IApplicationActivity
+public class PrepareCacheForAnalysisActivity : ApplicationActivityBase
 {
     public PrepareCacheForAnalysisActivity(string repositoryUrl = "", string? repositoryBranch = null,
         string historyInterval = "", CommitHistory useCommitHistory = CommitHistory.AtInterval,
@@ -29,7 +29,7 @@ public class PrepareCacheForAnalysisActivity : IApplicationActivity
     // TODO: Research how to use a value class here instead of a string
     public string HistoryInterval { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
 

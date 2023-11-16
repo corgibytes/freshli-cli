@@ -270,10 +270,10 @@ public class ApplicationEngineTest : IDisposable
         Assert.True(activity.WasHandleCalled);
     }
 
-    class FakeApplicationActivityThatResultsInSynchronizedActivities : IApplicationActivity
+    class FakeApplicationActivityThatResultsInSynchronizedActivities : ApplicationActivityBase
     {
         public FakeApplicationEventThatDispatchesSynchronizedActivities? ChildEvent { get; private set; }
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             ChildEvent = new FakeApplicationEventThatDispatchesSynchronizedActivities();
             await Task.Delay(s_handleDelay, cancellationToken);
@@ -282,12 +282,12 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    class FakeApplicationEventThatDispatchesSynchronizedActivities : IApplicationEvent
+    class FakeApplicationEventThatDispatchesSynchronizedActivities : ApplicationEventBase
     {
         public const int ActivityCount = 30;
         public List<FakeSynchronizedActivity> Activities { get; } = new();
 
-        public async ValueTask Handle(IApplicationActivityEngine activityClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationActivityEngine activityClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
 
@@ -459,11 +459,11 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    private class FakeApplicationActivityThatFiresAnEventThatCountsCalls : IApplicationActivity
+    private class FakeApplicationActivityThatFiresAnEventThatCountsCalls : ApplicationActivityBase
     {
         public FakeApplicationEventThatCountsCalls ChildEvent { get; private set; } = null!;
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
 
@@ -472,11 +472,11 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    private class FakeApplicationEventThatCountsCalls : IApplicationEvent
+    private class FakeApplicationEventThatCountsCalls : ApplicationEventBase
     {
         public int HandleCallCount;
 
-        public async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
 
@@ -484,10 +484,10 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    private class FakeApplicationActivityThatCountsCalls : IApplicationActivity
+    private class FakeApplicationActivityThatCountsCalls : ApplicationActivityBase
     {
         public int HandleCallCount;
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
 
@@ -495,11 +495,11 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    private class FakeApplicationActivityThatThrows : IApplicationActivity
+    private class FakeApplicationActivityThatThrows : ApplicationActivityBase
     {
         public bool WasHandleCalled { get; private set; }
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
 
@@ -509,11 +509,11 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    private class FakeApplicationActivityThatFiresAnEventThatThrows : IApplicationActivity
+    private class FakeApplicationActivityThatFiresAnEventThatThrows : ApplicationActivityBase
     {
         public bool WasHandleCalled { get; private set; }
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
 
@@ -523,9 +523,9 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    private class FakeApplicationEventThatThrows : IApplicationEvent
+    private class FakeApplicationEventThatThrows : ApplicationEventBase
     {
-        public async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
 
@@ -533,10 +533,10 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    private class FakeApplicationActivity : IApplicationActivity
+    private class FakeApplicationActivity : ApplicationActivityBase
     {
         public bool WasHandleCalled { get; private set; }
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
 
@@ -544,11 +544,11 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    class FakeApplicationActivityThatFiresAnEvent : IApplicationActivity
+    class FakeApplicationActivityThatFiresAnEvent : ApplicationActivityBase
     {
         public bool WasHandleCalled { get; private set; }
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
 
@@ -558,7 +558,7 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    class FakeApplicationActivityTreeThatWaitsOnChildren : IApplicationActivity
+    class FakeApplicationActivityTreeThatWaitsOnChildren : ApplicationActivityBase
     {
         public bool WasHandleCalled { get; private set; }
         public DateTimeOffset HandleFinishedAt { get; private set; }
@@ -570,7 +570,7 @@ public class ApplicationEngineTest : IDisposable
         private const int MaxFanOut = TreeFanOut;
         private static int s_count;
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             var childWaitingThread = new Thread(Start);
             childWaitingThread.Start();
@@ -615,7 +615,7 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    class FakeApplicationActivityTree : IApplicationActivity
+    class FakeApplicationActivityTree : ApplicationActivityBase
     {
         public bool WasHandleCalled { get; private set; }
         public DateTimeOffset HandleFinishedAt { get; private set; }
@@ -624,7 +624,7 @@ public class ApplicationEngineTest : IDisposable
         private const int MaxFanOut = TreeFanOut;
         private static int s_count;
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
 
@@ -646,7 +646,7 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    class FakeApplicationEventTree : IApplicationEvent
+    class FakeApplicationEventTree : ApplicationEventBase
     {
         public bool WasHandleCalled { get; private set; }
         public DateTimeOffset HandleFinishedAt { get; private set; }
@@ -654,7 +654,7 @@ public class ApplicationEngineTest : IDisposable
 
         private const int MaxFanOut = TreeFanOut;
         private static int s_count;
-        public async ValueTask Handle(IApplicationActivityEngine activityClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationActivityEngine activityClient, CancellationToken cancellationToken)
         {
             await Task.Delay(TimeSpan.FromMilliseconds(10), cancellationToken);
 
@@ -676,15 +676,15 @@ public class ApplicationEngineTest : IDisposable
         }
     }
 
-    private class FakeApplicationEvent : IApplicationEvent
+    private class FakeApplicationEvent : ApplicationEventBase
     {
-        public async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
         {
             await Task.Delay(s_handleDelay, cancellationToken);
         }
     }
 
-    private class FakeSynchronizedActivity : IApplicationActivity, ISynchronized
+    private class FakeSynchronizedActivity : ApplicationActivityBase, ISynchronized
     {
         private readonly int _delay;
         private static readonly SemaphoreSlim s_semaphore = new(1, 1);
@@ -697,7 +697,7 @@ public class ApplicationEngineTest : IDisposable
         public DateTimeOffset HandleStartedAt { get; private set; }
         public DateTimeOffset HandleStoppedAt { get; private set; }
 
-        public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+        public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
         {
             HandleStartedAt = DateTimeOffset.Now;
             await Task.Delay(_delay, cancellationToken);

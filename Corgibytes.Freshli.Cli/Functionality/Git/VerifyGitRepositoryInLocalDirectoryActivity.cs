@@ -11,12 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
-public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
+public class VerifyGitRepositoryInLocalDirectoryActivity : ApplicationActivityBase
 {
     public required Guid AnalysisId { get; init; }
     public required string ProjectSlug { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();

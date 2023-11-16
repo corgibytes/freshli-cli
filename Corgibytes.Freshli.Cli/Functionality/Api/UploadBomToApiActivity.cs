@@ -7,13 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Api;
 
-public class UploadBomToApiActivity : IApplicationActivity, IHistoryStopPointProcessingTask
+public class UploadBomToApiActivity : ApplicationActivityBase, IHistoryStopPointProcessingTask
 {
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required string AgentExecutablePath { get; init; }
     public required string PathToBom { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {

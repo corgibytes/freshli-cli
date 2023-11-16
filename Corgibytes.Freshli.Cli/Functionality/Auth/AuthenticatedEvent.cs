@@ -9,13 +9,13 @@ using Corgibytes.Freshli.Cli.Functionality.Git;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Auth;
 
-public class AuthenticatedEvent : IApplicationEvent
+public class AuthenticatedEvent : ApplicationEventBase
 {
     public required Guid AnalysisId { get; init; }
     public required string RepositoryUrl { get; init; }
     public required PersonEntity Person { get; init; }
 
-    public async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         await eventClient.Dispatch(
             new DetermineProjectActivity

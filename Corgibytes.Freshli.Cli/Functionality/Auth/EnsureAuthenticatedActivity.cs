@@ -8,12 +8,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Auth;
 
-public class EnsureAuthenticatedActivity : IApplicationActivity
+public class EnsureAuthenticatedActivity : ApplicationActivityBase
 {
     public required Guid AnalysisId { get; init; }
     public required string RepositoryUrl { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var resultsApi = eventClient.ServiceProvider.GetRequiredService<IResultsApi>();
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();

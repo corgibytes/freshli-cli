@@ -5,9 +5,9 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Diagnostics;
 
-public class LoadServiceProviderActivity : IApplicationActivity
+public class LoadServiceProviderActivity : ApplicationActivityBase
 {
-    public ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         if (eventClient.ServiceProvider == null)
         {

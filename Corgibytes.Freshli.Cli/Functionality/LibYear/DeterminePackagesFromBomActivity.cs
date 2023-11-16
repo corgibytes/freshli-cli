@@ -11,20 +11,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
-public class DeterminePackagesFromBomActivity : IApplicationActivity, IHistoryStopPointProcessingTask, IDisposable
+public class DeterminePackagesFromBomActivity : ApplicationActivityBase, IHistoryStopPointProcessingTask, IDisposable
 {
     public Thread? WaitingForChildrenThread { get; private set; }
-
-    public int Priority
-    {
-        get { return 100; }
-    }
-
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required string PathToBom { get; init; }
     public required string AgentExecutablePath { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public DeterminePackagesFromBomActivity() : base(100)
+    {
+    }
+
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         WaitingForChildrenThread = BuildWaitingForChildrenThread(eventClient, cancellationToken);
         WaitingForChildrenThread.Start();

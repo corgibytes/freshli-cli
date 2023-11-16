@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActivity
+public abstract class StartAnalysisActivityBase<TErrorEvent> : ApplicationActivityBase
     where TErrorEvent : ErrorEvent, new()
 {
     public string RepositoryUrl { get; init; } = null!;
@@ -23,7 +23,7 @@ public abstract class StartAnalysisActivityBase<TErrorEvent> : IApplicationActiv
     private ICacheManager CacheManager { get; set; } = null!;
     private IHistoryIntervalParser HistoryIntervalParser { get; set; } = null!;
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         Configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         CacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();

@@ -10,13 +10,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class DetermineProjectActivity : IApplicationActivity
+public class DetermineProjectActivity : ApplicationActivityBase
 {
     public required Guid AnalysisId { get; init; }
     public required string RepositoryUrl { get; init; }
     public required PersonEntity Person { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var configuredProjectSlug = configuration.ProjectSlug;

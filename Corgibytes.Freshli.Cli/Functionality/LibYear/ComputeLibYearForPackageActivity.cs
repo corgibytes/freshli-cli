@@ -13,19 +13,18 @@ using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
-public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistoryStopPointProcessingTask
+public class ComputeLibYearForPackageActivity : ApplicationActivityBase, IHistoryStopPointProcessingTask
 {
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required PackageURL Package { get; init; }
     public required string AgentExecutablePath { get; init; }
     private static readonly AsyncLock s_cacheLibYearLock = new();
 
-    public int Priority
+    public ComputeLibYearForPackageActivity() : base(100)
     {
-        get { return 100; }
     }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {

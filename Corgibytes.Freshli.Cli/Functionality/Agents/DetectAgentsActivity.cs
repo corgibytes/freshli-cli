@@ -7,13 +7,13 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Agents;
 
-public class DetectAgentsActivity : IApplicationActivity
+public class DetectAgentsActivity : ApplicationActivityBase
 {
     private readonly IAgentsDetector _agentsDetector;
 
     public DetectAgentsActivity(IAgentsDetector agentsDetector) => _agentsDetector = agentsDetector;
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var agents = _agentsDetector.Detect();
 

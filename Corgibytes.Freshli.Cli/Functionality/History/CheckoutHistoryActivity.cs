@@ -12,14 +12,14 @@ using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
-public class CheckoutHistoryActivity : IApplicationActivity, ISynchronized, IHistoryStopPointProcessingTask
+public class CheckoutHistoryActivity : ApplicationActivityBase, ISynchronized, IHistoryStopPointProcessingTask
 {
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> s_semaphores = new();
 
     public IHistoryStopPointProcessingTask? Parent => null;
     public required CachedHistoryStopPoint HistoryStopPoint { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var logger = eventClient.ServiceProvider.GetService<ILogger<CheckoutHistoryActivity>>();
         logger?.LogDebug("HistoryStopPoint = {HistoryStopPointId}: Handling history checkout", HistoryStopPoint.Id);

@@ -15,7 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.History;
 
-public class ComputeHistoryActivity : IApplicationActivity
+public class ComputeHistoryActivity : ApplicationActivityBase
 {
     public readonly IHistoryStopData HistoryStopData;
 
@@ -27,7 +27,7 @@ public class ComputeHistoryActivity : IApplicationActivity
         HistoryStopData = historyStopData;
     }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var progressReporter = eventClient.ServiceProvider.GetRequiredService<IAnalyzeProgressReporter>();
         progressReporter.ReportHistoryStopPointDetectionStarted();

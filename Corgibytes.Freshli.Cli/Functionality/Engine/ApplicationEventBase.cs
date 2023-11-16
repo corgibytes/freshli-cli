@@ -3,11 +3,14 @@ using System.Threading.Tasks;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Engine;
 
-public abstract class ApplicationEventBase : IApplicationEvent
+public abstract class ApplicationEventBase : ApplicationTaskBase, IApplicationEvent
 {
-    public virtual int Priority
+    protected ApplicationEventBase() : base(0)
     {
-        get { return 0; }
+    }
+
+    protected ApplicationEventBase(int initialPriority) : base(initialPriority)
+    {
     }
 
     public abstract ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken);

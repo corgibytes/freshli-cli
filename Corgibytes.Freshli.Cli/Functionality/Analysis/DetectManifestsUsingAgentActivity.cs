@@ -10,17 +10,16 @@ using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class DetectManifestsUsingAgentActivity : IApplicationActivity, IHistoryStopPointProcessingTask
+public class DetectManifestsUsingAgentActivity : ApplicationActivityBase, IHistoryStopPointProcessingTask
 {
-    public int Priority
+    public DetectManifestsUsingAgentActivity() : base(100)
     {
-        get { return 100; }
     }
 
     public required string AgentExecutablePath { get; init; }
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {

@@ -7,13 +7,13 @@ using Corgibytes.Freshli.Cli.Functionality.Git;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class ProjectDeterminedEvent : IApplicationEvent
+public class ProjectDeterminedEvent : ApplicationEventBase
 {
     public required Guid AnalysisId { get; init; }
     public required string RepositoryUrl { get; init; }
     public required string ProjectSlug { get; init;}
 
-    public async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationActivityEngine eventClient, CancellationToken cancellationToken)
     {
         if (Directory.Exists(RepositoryUrl))
         {
