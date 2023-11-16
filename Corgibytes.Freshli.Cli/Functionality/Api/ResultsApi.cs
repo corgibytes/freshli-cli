@@ -122,7 +122,7 @@ public class ResultsApi : IResultsApi, IDisposable
         }
         catch (Exception error)
         {
-            throw new InvalidOperationException("Failed to upload bom", error);
+            throw new InvalidOperationException($"Failed to upload bom {pathToBom}", error);
         }
     }
 
