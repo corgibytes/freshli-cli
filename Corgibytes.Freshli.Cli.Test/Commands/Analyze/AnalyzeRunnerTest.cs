@@ -56,26 +56,18 @@ public class AnalyzeRunnerTest
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RunIndicatesThatAnalysisIsComplete()
     {
-        var apiAnalysisId = Guid.NewGuid();
-
-        SetupAnalysisApiCreatedEvent(apiAnalysisId);
-
         var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
 
         Assert.Equal(0, exitCode);
 
         VerifyConfigurationValuesSetCorrectly();
         VerifyStartAnalysisActivityDispatched();
-        VerifyApiStatusUpdated(apiAnalysisId, "success");
     }
 
     [Fact(Timeout = Constants.DefaultTestTimeout)]
     public async Task RunIndicatesThatAnalysisFailed()
     {
-        var apiAnalysisId = Guid.NewGuid();
-
         SetupAnalysisFailureLoggedEvent();
-        SetupAnalysisApiCreatedEvent(apiAnalysisId);
 
         var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
 
@@ -83,31 +75,7 @@ public class AnalyzeRunnerTest
 
         VerifyConfigurationValuesSetCorrectly();
         VerifyStartAnalysisActivityDispatched();
-        VerifyApiStatusUpdated(apiAnalysisId, "error");
     }
-
-    [Fact(Timeout = Constants.DefaultTestTimeout)]
-    public async Task RunIndicatesThatCouldNotCallApi()
-    {
-        var exitCode = await _analyzeRunner.Run(_options, _console.Object, CancellationToken.None);
-
-        Assert.Equal(-1, exitCode);
-
-        VerifyConfigurationValuesSetCorrectly();
-        VerifyStartAnalysisActivityDispatched();
-    }
-
-    private void VerifyApiStatusUpdated(Guid apiAnalysisId, string status) =>
-        _activityEngine.Verify(mock =>
-            mock.Dispatch(
-                It.Is<UpdateAnalysisStatusActivity>(value =>
-                    value.ApiAnalysisId == apiAnalysisId &&
-                    value.Status == status
-                ),
-                It.IsAny<CancellationToken>(),
-                ApplicationTaskMode.Tracked
-            )
-        );
 
     private void VerifyStartAnalysisActivityDispatched() =>
         _activityEngine.Verify(mock =>
@@ -135,12 +103,5 @@ public class AnalyzeRunnerTest
             .Setup(mock => mock.On(It.IsAny<Func<AnalysisFailureLoggedEvent, ValueTask>>()))
             .Callback<Func<AnalysisFailureLoggedEvent, ValueTask>>(action => action(
                 new AnalysisFailureLoggedEvent(new UnhandledExceptionEvent(new Exception("example failure")))
-            ).AsTask().Wait());
-
-    private void SetupAnalysisApiCreatedEvent(Guid apiAnalysisId) =>
-        _eventEngine
-            .Setup(mock => mock.On(It.IsAny<Func<AnalysisApiCreatedEvent, ValueTask>>()))
-            .Callback<Func<AnalysisApiCreatedEvent, ValueTask>>(action => action(
-                new AnalysisApiCreatedEvent { ApiAnalysisId = apiAnalysisId }
             ).AsTask().Wait());
 }

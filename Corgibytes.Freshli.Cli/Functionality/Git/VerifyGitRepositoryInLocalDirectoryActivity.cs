@@ -11,11 +11,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
-public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
+public class VerifyGitRepositoryInLocalDirectoryActivity : ApplicationActivityBase
 {
-    public Guid AnalysisId { get; init; }
+    public required Guid AnalysisId { get; init; }
+    public required string ProjectSlug { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
         var gitManager = eventClient.ServiceProvider.GetRequiredService<IGitManager>();
@@ -23,6 +24,8 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
         var gitSourceRepository = eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>();
         var cacheDb = await cacheManager.GetCacheDb();
         var analysis = await cacheDb.RetrieveAnalysis(AnalysisId);
+
+        var localGitDirectory = analysis.RepositoryUrl;
 
         if (analysis == null)
         {
@@ -51,7 +54,23 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
             return;
         }
 
-        var cachedGitSourceId = new CachedGitSourceId(analysis.RepositoryUrl);
+        if (await gitManager.IsWorkingDirectoryClean(analysis.RepositoryUrl) == false)
+        {
+            await eventClient.Fire(
+                new DirectoryIsNotGitInitializedFailureEvent
+                {
+                    ErrorMessage = $"There are pending changes in the git directory at {analysis.RepositoryUrl}"
+                },
+                cancellationToken);
+            return;
+        }
+
+        // TODO: Need to ensure that this is a full expanded path
+
+        var gitBranch = await gitManager.GetBranchName(localGitDirectory);
+        var gitRemoteUrl = await gitManager.GetRemoteUrl(localGitDirectory);
+
+        var cachedGitSourceId = new CachedGitSourceId(gitRemoteUrl, gitBranch);
 
         var entry = await cacheDb.RetrieveCachedGitSource(cachedGitSourceId);
         if (entry == null)
@@ -59,12 +78,9 @@ public class VerifyGitRepositoryInLocalDirectoryActivity : IApplicationActivity
             var cachedGitSource = new CachedGitSource
             {
                 Id = cachedGitSourceId.Id,
-                // TODO: This needs to retrieve the default git remote if `analysis.RepositoryUrl` is a local directory.
-                Url = analysis.RepositoryUrl,
-                // TODO: This needs to retrieve the current branch name (or commit sha if detached head).
-                Branch = null,
-                // TODO: Need to ensure that this is a full expanded path.
-                LocalPath = analysis.RepositoryUrl
+                Url = gitRemoteUrl,
+                Branch = gitBranch,
+                LocalPath = localGitDirectory
             };
             await gitSourceRepository.Save(cachedGitSource);
         }

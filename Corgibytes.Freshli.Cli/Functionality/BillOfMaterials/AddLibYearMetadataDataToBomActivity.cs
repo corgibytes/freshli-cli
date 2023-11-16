@@ -7,13 +7,13 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 
-public class AddLibYearMetadataDataToBomActivity : IApplicationActivity, IHistoryStopPointProcessingTask
+public class AddLibYearMetadataDataToBomActivity : ApplicationActivityBase, IHistoryStopPointProcessingTask
 {
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required string PathToBom { get; init; }
     public required string AgentExecutablePath { get; init; }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {
@@ -37,5 +37,13 @@ public class AddLibYearMetadataDataToBomActivity : IApplicationActivity, IHistor
         {
             await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, error), cancellationToken);
         }
+    }
+
+    public override string ToString()
+    {
+        var historyStopPointId = Parent?.HistoryStopPoint?.Id ?? 0;
+
+        var manifestId = Parent?.Manifest?.Id ?? 0;
+        return $"HistoryStopPoint = {historyStopPointId}: {GetType().Name} - AgentExecutablePath = {AgentExecutablePath}, Manifest = {manifestId}, PathToBom = {PathToBom}";
     }
 }

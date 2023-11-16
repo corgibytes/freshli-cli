@@ -13,19 +13,18 @@ using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
 
-public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistoryStopPointProcessingTask
+public class ComputeLibYearForPackageActivity : ApplicationActivityBase, IHistoryStopPointProcessingTask
 {
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required PackageURL Package { get; init; }
     public required string AgentExecutablePath { get; init; }
     private static readonly AsyncLock s_cacheLibYearLock = new();
 
-    public int Priority
+    public ComputeLibYearForPackageActivity() : base(100)
     {
-        get { return 100; }
     }
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         try
         {
@@ -52,6 +51,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
                     if (!packageLibYear.DoesBelongTo(manifest))
                     {
                         await cacheDb.AddPackageLibYear(manifest, packageLibYear);
+                        logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Existing cached PackageLibYear {PackageURL} added to cached manifest {ManifestId}", historyStopPoint.Id, packageLibYear.PackageUrl, manifest.Id);
                     }
                 }
                 else
@@ -78,6 +78,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
                             LibYear = computedPackageLibYear.LibYear
                         }
                     );
+                    logger?.LogTrace("HistoryStopPoint = {HistoryStopPointId}: Added new cached PackageLibYear {PackageURL} added to cached manifest {ManifestId}", historyStopPoint.Id, packageLibYear.PackageUrl, manifest.Id);
                 }
             }
 
@@ -94,5 +95,13 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
         {
             await eventClient.Fire(new HistoryStopPointProcessingFailedEvent(this, error), cancellationToken);
         }
+    }
+
+    public override string ToString()
+    {
+        var historyStopPointId = Parent?.HistoryStopPoint?.Id ?? 0;
+
+        var manifestId = Parent?.Manifest?.Id ?? 0;
+        return $"HistoryStopPoint = {historyStopPointId}: {GetType().Name} - AgentExecutablePath = {AgentExecutablePath}, Manifest = {manifestId}, PackageUrl = {Package}";
     }
 }

@@ -47,6 +47,7 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         var existingCachedGitSource = await cacheDb.RetrieveCachedGitSource(id);
         if (existingCachedGitSource is not null)
         {
+            await Pull(existingCachedGitSource);
             return existingCachedGitSource;
         }
 
@@ -59,14 +60,6 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
             Branch = branch,
             LocalPath = directory.FullName
         };
-        await cacheDb.AddCachedGitSource(cachedGitSource);
-
-        // TODO: We probably shouldn't pull if we're running against a repository that we didn't check out
-        if (directory.GetFiles().Any() || directory.GetDirectories().Any())
-        {
-            await Pull(cachedGitSource);
-            return cachedGitSource;
-        }
 
         // If not yet cloned, clone from URL.
         await Clone(cachedGitSource);
@@ -76,6 +69,12 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
         {
             await Checkout(cachedGitSource);
         }
+        else
+        {
+            cachedGitSource.Branch = await FetchCurrentBranch(cachedGitSource);
+        }
+
+        await cacheDb.AddCachedGitSource(cachedGitSource);
 
         return cachedGitSource;
     }
@@ -83,11 +82,6 @@ public class CachedGitSourceRepository : ICachedGitSourceRepository
     private async ValueTask Pull(CachedGitSource cachedGitSource)
     {
         var branch = cachedGitSource.Branch;
-        if (cachedGitSource.Branch == null)
-        {
-            branch = await FetchCurrentBranch(cachedGitSource);
-        }
-
         string? commandOutput = null;
 
         try

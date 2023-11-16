@@ -8,10 +8,13 @@ using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.BillOfMaterials;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
 using Corgibytes.Freshli.Cli.Functionality.Extensions;
+using CycloneDX.Json;
 using CycloneDX.Models;
+using FluentAssertions;
 using JetBrains.Annotations;
 using Moq;
 using PackageUrl;
+using ServiceStack;
 using Xunit;
 
 namespace Corgibytes.Freshli.Cli.Test.Functionality.BillOfMaterials;
@@ -32,11 +35,16 @@ public static class BillOfMaterialsProcessorTest
         [MemberData(nameof(PropertyData))]
         public void StoresProperty(string _, string expectedValue)
         {
-            // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Local
-            Assert.Contains(_processedBom.Metadata.Properties, property =>
-                property.Name == _ &&
-                property.Value == expectedValue
-            );
+            try
+            {
+                _processedBom.Metadata.Properties.Should().ContainSingle(property =>
+                    property.Name == _ &&
+                    property.Value == expectedValue);
+            }
+            catch (Exception error)
+            {
+                throw new Exception($"Failed to find property in bom metadata. Metadata properties: {_processedBom.Metadata.Properties.ToJson()}", error);
+            }
         }
 
         public static TheoryData<string, string> PropertyData() => new()
@@ -44,11 +52,13 @@ public static class BillOfMaterialsProcessorTest
             { "freshli:analysis:id", AnalysisId.ToString() },
             { "freshli:analysis:creation-date", CreatedAt.ToString("O") },
             { "freshli:analysis:data-point", HistoryStopPoint.AsOfDateTime.ToString("O") },
+            { "freshli:source:hash", HistoryStopPoint.Repository.Id },
             { "freshli:source:url", HistoryStopPoint.Repository.Url },
             { "freshli:source:branch", HistoryStopPoint.Repository.Branch! },
             { "freshli:source:clone-path", HistoryStopPoint.Repository.LocalPath },
             { "freshli:commit:id", HistoryStopPoint.GitCommitId },
-            { "freshli:commit:date", HistoryStopPoint.GitCommitDateTime.ToString("O") }
+            { "freshli:commit:date", HistoryStopPoint.GitCommitDateTime.ToString("O") },
+            { "freshli:manifest:path", "path/to/manifest" }
         };
     }
 
@@ -360,6 +370,7 @@ public static class BillOfMaterialsProcessorTest
                 CachedAnalysis = Analysis,
                 AsOfDateTime = AsOfDate,
                 Repository = GitSource,
+                LocalPath = "/path/to/history-stop-point"
             };
             return s_historyStopPoint;
         }
@@ -370,11 +381,18 @@ public static class BillOfMaterialsProcessorTest
     {
         get
         {
-            s_manifest ??= new CachedManifest
+            if (s_manifest != null)
+            {
+                return s_manifest;
+            }
+
+            s_manifest = new CachedManifest
             {
                 HistoryStopPoint = HistoryStopPoint,
-                PackageLibYears = CachedPackageLibYears
+                PackageLibYears = CachedPackageLibYears,
+                ManifestFilePath = "/path/to/history-stop-point/path/to/manifest"
             };
+            CacheDb.Setup(mock => mock.RetrieveManifest(HistoryStopPoint, "/path/to/history-stop-point/path/to/manifest")).ReturnsAsync(s_manifest);
             return s_manifest;
         }
     }
@@ -653,7 +671,7 @@ public static class BillOfMaterialsProcessorTest
     private static async Task<Bom> LoadCycloneDxBom(string path)
     {
         await using var sourceBomFileStream = File.OpenRead(path);
-        var bom = await CycloneDX.Json.Serializer.DeserializeAsync(sourceBomFileStream);
+        var bom = await Serializer.DeserializeAsync(sourceBomFileStream);
         return bom;
     }
 }

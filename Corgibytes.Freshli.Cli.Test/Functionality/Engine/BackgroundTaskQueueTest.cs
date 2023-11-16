@@ -10,15 +10,17 @@ namespace Corgibytes.Freshli.Cli.Test.Functionality.Engine;
 [UnitTest]
 public class BackgroundTaskQueueTest
 {
-    private class DefaultApplicationTask : IApplicationTask
+    private class DefaultApplicationTask : ApplicationTaskBase
     {
+        public DefaultApplicationTask() : base(1000)
+        {
+        }
     }
 
-    private class HighPriorityApplicationTask : IApplicationTask
+    private class HighPriorityApplicationTask : ApplicationTaskBase
     {
-        public int Priority
+        public HighPriorityApplicationTask() : base(0)
         {
-            get { return 0; }
         }
     }
 

@@ -172,9 +172,10 @@ namespace Corgibytes.Freshli.Cli.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("HistoryStopPointId");
-
                     b.HasIndex("Id")
+                        .IsUnique();
+
+                    b.HasIndex("HistoryStopPointId", "ManifestFilePath")
                         .IsUnique();
 
                     b.ToTable("CachedManifests");

@@ -9,13 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Git;
 
-public class CloneGitRepositoryActivity : IApplicationActivity
+public class CloneGitRepositoryActivity : ApplicationActivityBase
 {
-    public readonly Guid CachedAnalysisId;
+    public required Guid AnalysisId { get; init; }
+    public required string ProjectSlug { get; init; }
 
-    public CloneGitRepositoryActivity(Guid cachedAnalysisId) => CachedAnalysisId = cachedAnalysisId;
-
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var configuration = eventClient.ServiceProvider.GetRequiredService<IConfiguration>();
 
@@ -24,7 +23,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
         {
             var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
             var cacheDb = await cacheManager.GetCacheDb();
-            var cachedAnalysis = await cacheDb.RetrieveAnalysis(CachedAnalysisId);
+            var cachedAnalysis = await cacheDb.RetrieveAnalysis(AnalysisId);
 
             if (cachedAnalysis == null)
             {
@@ -33,7 +32,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             }
 
             await eventClient.Fire(
-                new GitRepositoryCloneStartedEvent { AnalysisId = CachedAnalysisId },
+                new GitRepositoryCloneStartedEvent { AnalysisId = AnalysisId },
                 cancellationToken);
 
             var gitRepositoryService = eventClient.ServiceProvider.GetRequiredService<ICachedGitSourceRepository>();
@@ -49,7 +48,7 @@ public class CloneGitRepositoryActivity : IApplicationActivity
             await eventClient.Fire(
                 new GitRepositoryClonedEvent
                 {
-                    AnalysisId = CachedAnalysisId,
+                    AnalysisId = AnalysisId,
                     HistoryStopData = historyStopData
                 },
                 cancellationToken);

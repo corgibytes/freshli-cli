@@ -15,7 +15,7 @@ public class AddLibYearMetadataDataToBomActivityTest
     private const string PathToBom = "/path/to/bom";
     private const string AgentExecutablePath = "/path/to/agent";
 
-    private readonly CachedManifest _manifest = new() { Id = 12, ManifestFilePath = "/path/to/manifest" };
+    private readonly CachedManifest _manifest = new() { Id = 12, ManifestFilePath = "/path/to/history-stop-point/path/to/manifest" };
 
     private readonly Mock<IHistoryStopPointProcessingTask> _parent = new();
     private readonly Mock<IApplicationEventEngine> _engine = new();

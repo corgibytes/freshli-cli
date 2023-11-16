@@ -7,13 +7,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Analysis;
 
-public class LogAnalysisFailureActivity : IApplicationActivity
+public class LogAnalysisFailureActivity : ApplicationActivityBase
 {
     public readonly ErrorEvent ErrorEvent;
 
     public LogAnalysisFailureActivity(ErrorEvent errorEvent) => ErrorEvent = errorEvent;
 
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         if (IsCancellationException(ErrorEvent))
         {

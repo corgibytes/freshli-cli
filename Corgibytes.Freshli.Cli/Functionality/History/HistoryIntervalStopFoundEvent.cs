@@ -18,7 +18,7 @@ public class HistoryIntervalStopFoundEvent : ApplicationEventBase
         var logger = eventClient.ServiceProvider.GetRequiredService<ILogger<HistoryIntervalStopFoundEvent>>();
         logger.LogDebug("Started processing history stop point {id}", HistoryStopPoint.Id);
         await eventClient.Dispatch(
-            new CreateApiHistoryStopActivity { HistoryStopPoint = HistoryStopPoint },
+            new CheckoutHistoryActivity { HistoryStopPoint = HistoryStopPoint },
             cancellationToken
         );
     }

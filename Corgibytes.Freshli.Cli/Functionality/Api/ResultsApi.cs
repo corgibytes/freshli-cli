@@ -1,15 +1,21 @@
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
+using System.Threading;
 using System.Threading.Tasks;
 using Corgibytes.Freshli.Cli.DataModel;
+using Corgibytes.Freshli.Cli.Functionality.Api.Auth;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
+using Corgibytes.Freshli.Cli.Functionality.Git;
 using Corgibytes.Freshli.Cli.Functionality.Support;
 using Microsoft.Extensions.Logging;
 using Polly;
+using Polly.Retry;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Api;
 
@@ -18,16 +24,22 @@ public class ResultsApi : IResultsApi, IDisposable
     private readonly IConfiguration _configuration;
     private readonly HttpClient _client;
     private readonly ILogger<ResultsApi> _logger;
+    private readonly ICacheManager _cacheManager;
 
-    public ResultsApi(IConfiguration configuration, HttpClient client, ILogger<ResultsApi> logger)
+    private readonly AsyncRetryPolicy _retryHttpPolicy = Policy
+        .Handle<HttpRequestException>()
+        .Or<TimeoutException>()
+        .WaitAndRetryAsync(6, retryAttempt =>
+            TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
+        );
+
+    public ResultsApi(IConfiguration configuration, HttpClient client, ICacheManager cacheManager, ILogger<ResultsApi> logger)
     {
+        _cacheManager = cacheManager;
         _configuration = configuration;
         _client = client;
         _logger = logger;
     }
-
-    // TODO: the results URL should use the base URL from the configuration
-    public string GetResultsUrl(Guid analysisId) => "https://freshli.io/AnalysisRequests/" + analysisId;
 
     private class UnexpectedStatusCode : Exception
     {
@@ -42,156 +54,134 @@ public class ResultsApi : IResultsApi, IDisposable
         }
     }
 
-    private async ValueTask<T> ApiSendAsync<T>(HttpMethod method, string url, JsonContent? content,
-        HttpStatusCode expectedStatusCode, Func<HttpResponseMessage, Task<T>>? responseProcessor = null)
+    public async ValueTask<PersonEntity?> GetPerson(CancellationToken cancellationToken)
     {
-        var uri = string.IsNullOrEmpty(url) ? null : new Uri(url, UriKind.RelativeOrAbsolute);
+        _logger.LogDebug("Getting person");
 
-        var response = await Policy
-            .Handle<HttpRequestException>()
-            .Or<TimeoutException>()
-            .WaitAndRetryAsync(6, retryAttempt =>
-                TimeSpan.FromMilliseconds(Math.Pow(10, retryAttempt / 2.0))
-            )
-            .ExecuteAsync(async () =>
-            {
-                var request = new HttpRequestMessage(method, uri)
+        var credentials = await _cacheManager.GetApiCredentials();
+        _ = credentials ?? throw new Exception("Failed to retrieve API credentials");
+
+        if (credentials.ExpiresAt < DateTime.UtcNow)
+        {
+            _logger.LogDebug("Credentials expired at {ExpiresAt}", credentials.ExpiresAt.ToString("O"));
+            // TODO: Refresh credentials if they are expired
+            throw new Exception("Credentials are expired. Please run the `auth` command again.");
+        }
+
+        var uri = new Uri(_configuration.ApiBaseUrl + "/people/me");
+
+        var request = new HttpRequestMessage(HttpMethod.Get, uri);
+        request.Headers.Add("authorization", $"Bearer {credentials.AccessToken}");
+
+        var response = await _client.SendAsync(request, cancellationToken);
+        if (response.IsSuccessStatusCode)
+        {
+            return await response.Content.ReadFromJsonAsync<PersonEntity>(cancellationToken: cancellationToken);
+        }
+
+        _logger.LogWarning("Failed to get person. Status code {StatusCode} received.", response.StatusCode);
+
+        return null;
+    }
+
+    public async ValueTask UploadBomForManifest(CachedManifest manifest, string pathToBom, CancellationToken cancellationToken)
+    {
+        // TODO: This repository name is a hash built from the remote url and the branch name
+        // this should be changed to the "canonical" name of the repository. And we should
+        // also use the branch name for sending data to the API.
+        var repositoryHash = new DirectoryInfo(manifest.HistoryStopPoint.Repository.LocalPath).Name;
+        var dataPointDate = manifest.HistoryStopPoint.AsOfDateTime.ToString("O");
+        var manifestHash = manifest.GetManifestRelativeFilePathHash();
+
+        var apiUrl = _configuration.ApiBaseUrl + $"/{_configuration.ProjectSlug!}/{repositoryHash}/{dataPointDate}/{manifestHash}/bom";
+
+        var credentials = await EnsureApiCredentials();
+
+        await using var bomStream = File.OpenRead(pathToBom);
+        var streamBody = new StreamContent(bomStream);
+        streamBody.Headers.Add("content-type", "application/json");
+
+        try
+        {
+            var apiResponse = await _retryHttpPolicy
+                .ExecuteAsync(async () =>
                 {
-                    Content = content
-                };
+                    var request = new HttpRequestMessage(HttpMethod.Post, new Uri(apiUrl))
+                    {
+                        Content = streamBody
+                    };
+                    request.Headers.Add("authorization", $"Bearer {credentials.AccessToken}");
 
-                // TODO: pass in a cancellation token
-                return await _client.SendAsync(request);
-            });
+                    return await _client.SendAsync(request, cancellationToken);
+                });
 
-        if (response.StatusCode != expectedStatusCode)
-        {
-            throw new UnexpectedStatusCode(expectedStatusCode, response.StatusCode);
-        }
-
-        return responseProcessor != null ? await responseProcessor(response) : default!;
-    }
-
-    private async ValueTask<T> ApiSendAsync<T>(HttpMethod method, string url, JsonContent body,
-        HttpStatusCode expectedStatusCode,
-        Func<HttpResponseMessage, T>? responseProcessor = null)
-    {
-        return await ApiSendAsync(method, url, body, expectedStatusCode, (response) =>
-        {
-            var processorResult = responseProcessor != null ? responseProcessor(response) : default!;
-            return Task.FromResult(processorResult);
-        });
-    }
-
-    private async ValueTask ApiSendAsync(HttpMethod method, string url, JsonContent body,
-        HttpStatusCode expectedStatusCode)
-    {
-        await ApiSendAsync(method, url, body, expectedStatusCode, _ => true);
-    }
-
-    public async ValueTask<Guid> CreateAnalysis(string url)
-    {
-        var apiUrl = _configuration.LegacyWebApiBaseUrl + "/api/v0/analysis-request";
-        var requestBody = JsonContent.Create(new
-        {
-            name = "Freshli CLI User",
-            email = "info@freshli.io",
-            url
-        }, new MediaTypeHeaderValue("application/json"));
-
-        try
-        {
-            return await ApiSendAsync(HttpMethod.Post, apiUrl, requestBody, HttpStatusCode.Created,
-                async (response) =>
+            if (apiResponse.StatusCode != HttpStatusCode.Created)
             {
-                var document = await response.Content.ReadFromJsonAsync<JsonNode>();
-                return document!["id"]!.GetValue<Guid>();
-            });
+                throw new UnexpectedStatusCode(HttpStatusCode.Created, apiResponse.StatusCode);
+            }
         }
         catch (Exception error)
         {
-            throw new InvalidOperationException($"Failed to create analysis with url: {url}.", error);
+            throw new InvalidOperationException($"Failed to upload bom {pathToBom}", error);
         }
     }
 
-    public async ValueTask UpdateAnalysis(Guid apiAnalysisId, string status)
+    private async Task<ApiCredentials> EnsureApiCredentials()
     {
-        var apiUrl = _configuration.LegacyWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
-        var requestBody = JsonContent.Create(
-            new { state = status },
-            new MediaTypeHeaderValue("application/json")
-        );
+        var credentials = await _cacheManager.GetApiCredentials();
+        _ = credentials ?? throw new Exception("Failed to retrieve API credentials");
+        return credentials;
+    }
+
+    public async ValueTask<IList<HistoryIntervalStop>> GetDataPoints(string repositoryHash, CancellationToken cancellationToken)
+    {
+        var apiUrl = _configuration.ApiBaseUrl + $"/{_configuration.ProjectSlug!}/{repositoryHash}/metadata";
+
+        var credentials = await EnsureApiCredentials();
+
+        var result = new List<HistoryIntervalStop>();
 
         try
         {
-            await ApiSendAsync(HttpMethod.Put, apiUrl, requestBody, HttpStatusCode.OK);
-        }
-        catch (Exception error)
-        {
-            throw new InvalidOperationException(
-                $"Failed to update analysis '{apiAnalysisId}' with state = '{status}'.",
-                error
-            );
-        }
-    }
+            var apiResponse = await _retryHttpPolicy
+                .ExecuteAsync(async () =>
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, new Uri(apiUrl));
+                    request.Headers.Add("authorization", $"Bearer {credentials.AccessToken}");
 
-    public async ValueTask CreateHistoryPoint(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint)
-    {
-        var cachedAnalysis = await cacheDb.RetrieveAnalysis(analysisId);
-        var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
+                    return await _client.SendAsync(request, cancellationToken);
+                });
 
-        var asOfDateTime = historyStopPoint.AsOfDateTime;
-
-        var apiUrl = _configuration.LegacyWebApiBaseUrl + "/api/v0/analysis-request/" + apiAnalysisId;
-        var requestBody = JsonContent.Create(
-            new { date = asOfDateTime.ToString("o") },
-            new MediaTypeHeaderValue("application/json")
-        );
-
-        try
-        {
-            await ApiSendAsync(HttpMethod.Post, apiUrl, requestBody, HttpStatusCode.Created);
-        }
-        catch (Exception error)
-        {
-            throw new InvalidOperationException(
-                $"Failed to create history point for analysis '{apiAnalysisId}' with '{asOfDateTime}'.",
-                error
-            );
-        }
-    }
-
-    public async ValueTask CreatePackageLibYear(ICacheDb cacheDb, Guid analysisId, CachedHistoryStopPoint historyStopPoint, CachedPackageLibYear packageLibYear)
-    {
-        _logger.LogTrace("CreatePackageLibYear({AnalysisId}, {PackageLibYearId})", analysisId, packageLibYear.Id);
-        var cachedAnalysis = await cacheDb.RetrieveAnalysis(analysisId);
-
-        var apiAnalysisId = cachedAnalysis!.ApiAnalysisId;
-        var asOfDateTime = historyStopPoint.AsOfDateTime;
-
-        var apiUrl = $"{_configuration.LegacyWebApiBaseUrl}/api/v0/analysis-request/{apiAnalysisId}/{asOfDateTime:o}";
-        var requestContent = JsonContent.Create(
-            new
+            if (apiResponse.StatusCode == HttpStatusCode.NotFound)
             {
-                packageUrl = packageLibYear.PackageUrl,
-                publicationDate = packageLibYear.ReleaseDateCurrentVersion.ToString("o"),
-                libYear = packageLibYear.LibYear
-            },
-            new MediaTypeHeaderValue("application/json")
-        );
-        _logger.LogTrace("Sending HistoryPoint to Freshli.Web endpoint {Endpoint}: {@Payload}", apiUrl, requestContent);
+                return result;
+            }
 
-        try
-        {
-            await ApiSendAsync(HttpMethod.Post, apiUrl, requestContent, HttpStatusCode.Created);
+            if (apiResponse.StatusCode != HttpStatusCode.OK)
+            {
+                throw new UnexpectedStatusCode(HttpStatusCode.OK, apiResponse.StatusCode);
+            }
+
+            var entries = await apiResponse.Content.ReadFromJsonAsync<List<BomMetadataEntity>>(cancellationToken: cancellationToken);
+            if (entries == null)
+            {
+                throw new Exception("Failed to deserialize response");
+            }
+            foreach (var entry in entries)
+            {
+                var intervalStop = new HistoryIntervalStop(entry.Commit.Id, entry.Commit.Date, entry.DataPoint);
+                if (!result.Contains(intervalStop))
+                {
+                    result.Add(intervalStop);
+                }
+            }
         }
         catch (Exception error)
         {
-            throw new InvalidOperationException(
-                $"Failed to create package lib year for analysis '{apiAnalysisId}' and '{asOfDateTime:o}' with package URL '{packageLibYear.CurrentVersion}' publication date '{packageLibYear.ReleaseDateCurrentVersion:o}' and LibYear '{packageLibYear.LibYear}'.",
-                error
-            );
+            throw new InvalidOperationException("Failed to get data points", error);
         }
+
+        return result;
     }
 
     public void Dispose()

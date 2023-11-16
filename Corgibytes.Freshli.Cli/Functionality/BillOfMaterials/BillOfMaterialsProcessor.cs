@@ -61,6 +61,11 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
             },
             new()
             {
+                Name = "freshli:source:hash",
+                Value = manifest.HistoryStopPoint.Repository.Id
+            },
+            new()
+            {
                 Name = "freshli:source:url",
                 Value = manifest.HistoryStopPoint.Repository.Url
             },
@@ -83,6 +88,11 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
             {
                 Name = "freshli:commit:date",
                 Value = manifest.HistoryStopPoint.GitCommitDateTime.ToString("O")
+            },
+            new()
+            {
+                Name = "freshli:manifest:path",
+                Value = manifest.GetManifestRelativeFilePath()
             }
         });
 
@@ -91,11 +101,14 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
         var cacheDb = await _cacheManager.GetCacheDb();
         _ = cacheDb ?? throw new Exception("CacheDb is null");
 
+        manifest = (await cacheDb.RetrieveManifest(manifest.HistoryStopPoint, manifest.ManifestFilePath))!;
+
         foreach (var component in bom.Components)
         {
             var packageLibYear = manifest.PackageLibYears.Find(value => value.PackageUrl == component.Purl);
             if (packageLibYear == null)
             {
+                // TODO: This should generate a warning message
                 continue;
             }
 
@@ -104,6 +117,8 @@ public class BillOfMaterialsProcessor : IBillOfMaterialsProcessor
 
             var parsedPackageUrl = new PackageURL(component.Purl);
             var releases = cacheDb.RetrieveCachedReleaseHistory(parsedPackageUrl);
+
+            // TODO: If the release history is empty then there should be a warning
 
             await foreach (var release in releases)
             {

@@ -12,12 +12,10 @@ public class ChildTrackingApplicationEngine : IApplicationActivityEngine, IAppli
     private readonly IApplicationActivityEngine _activityEngine;
     private readonly IApplicationEventEngine _eventEngine;
     private readonly IApplicationTask _parentTask;
-    private readonly ConcurrentDictionary<IApplicationTask, ICountdownEvent> _tasksAndCountdownEvents;
-    private readonly ICountdownEvent _queueModificationsCountdownEvent;
+    private readonly ConcurrentDictionary<IApplicationTask, ApplicationTaskWaitToken> _tasksAndWaitInfos;
 
     public ChildTrackingApplicationEngine(IApplicationEngine engine,
-        ConcurrentDictionary<IApplicationTask, ICountdownEvent> tasksAndCountdownEvents,
-        ICountdownEvent queueModificationsCountdownEvent,
+        ConcurrentDictionary<IApplicationTask, ApplicationTaskWaitToken> tasksAndWaitInfos,
         IApplicationTask parentTask)
     {
         _engine = engine;
@@ -35,43 +33,52 @@ public class ChildTrackingApplicationEngine : IApplicationActivityEngine, IAppli
             ),
             nameof(engine)
         );
-        _tasksAndCountdownEvents = tasksAndCountdownEvents;
-        _queueModificationsCountdownEvent = queueModificationsCountdownEvent;
+        _tasksAndWaitInfos = tasksAndWaitInfos;
         _parentTask = parentTask;
     }
 
     public IServiceProvider ServiceProvider => _engine.ServiceProvider;
 
-    private void RecordChildTask(IApplicationTask childTask)
+    private async Task RecordChildTask(IApplicationTask childTask, CancellationToken cancellationToken)
     {
-        var parentCountdownEvent = _tasksAndCountdownEvents.GetOrAdd(
-            _parentTask,
-            new ListeningCountdownEvent(_queueModificationsCountdownEvent, 1)
-        );
-        _tasksAndCountdownEvents.GetOrAdd(childTask, new ChildCountdownEvent(parentCountdownEvent, 1));
-        parentCountdownEvent.AddCount();
+        ApplicationTaskWaitToken? parentTaskWaitInfo;
+        while (!_tasksAndWaitInfos.TryGetValue(_parentTask, out parentTaskWaitInfo))
+        {
+            await Task.Delay(TimeSpan.FromMicroseconds(10), cancellationToken);
+        }
+
+        var childTaskWaitInfo = new ApplicationTaskWaitToken();
+        if (!_tasksAndWaitInfos.TryAdd(childTask, childTaskWaitInfo))
+        {
+            throw new Exception("Failed to add child event");
+        }
+        parentTaskWaitInfo.AddChildResetEvent(childTaskWaitInfo);
     }
 
-    public ValueTask Dispatch(IApplicationActivity applicationActivity, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
+    public async ValueTask Dispatch(IApplicationActivity applicationActivity, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
     {
         if (mode == ApplicationTaskMode.Tracked)
         {
-            RecordChildTask(applicationActivity);
+            await RecordChildTask(applicationActivity, cancellationToken);
         }
 
-        return _activityEngine.Dispatch(applicationActivity, cancellationToken, mode);
+        await _activityEngine.Dispatch(applicationActivity, cancellationToken, mode);
     }
 
-    public ValueTask Wait(IApplicationTask task, CancellationToken cancellationToken) => _engine.Wait(task, cancellationToken);
+    public ValueTask Wait(IApplicationTask task, CancellationToken cancellationToken, ApplicationTaskWaitToken? excluding = null) => _engine.Wait(task, cancellationToken, excluding);
 
-    public ValueTask Fire(IApplicationEvent applicationEvent, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
+    public async ValueTask RegisterChildWaitToken(IApplicationTask task, ApplicationTaskWaitToken waitToken,
+        CancellationToken cancellationToken) =>
+        await _engine.RegisterChildWaitToken(task, waitToken, cancellationToken);
+
+    public async ValueTask Fire(IApplicationEvent applicationEvent, CancellationToken cancellationToken, ApplicationTaskMode mode = ApplicationTaskMode.Tracked)
     {
         if (mode == ApplicationTaskMode.Tracked)
         {
-            RecordChildTask(applicationEvent);
+            await RecordChildTask(applicationEvent, cancellationToken);
         }
 
-        return _eventEngine.Fire(applicationEvent, cancellationToken, mode);
+        await _eventEngine.Fire(applicationEvent, cancellationToken, mode);
     }
 
     public void On<TEvent>(Func<TEvent, ValueTask> eventHandler) where TEvent : IApplicationEvent

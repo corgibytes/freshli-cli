@@ -6,9 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 
-public class PrepareCacheActivity : IApplicationActivity
+public class PrepareCacheActivity : ApplicationActivityBase
 {
-    public async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
+    public override async ValueTask Handle(IApplicationEventEngine eventClient, CancellationToken cancellationToken)
     {
         var cacheManager = eventClient.ServiceProvider.GetRequiredService<ICacheManager>();
 

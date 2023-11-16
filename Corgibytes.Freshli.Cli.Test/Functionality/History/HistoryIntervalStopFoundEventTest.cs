@@ -34,7 +34,7 @@ public class HistoryIntervalStopFoundEventTest
 
         eventClient.Verify(mock =>
             mock.Dispatch(
-                It.Is<CreateApiHistoryStopActivity>(value =>
+                It.Is<CheckoutHistoryActivity>(value =>
                     value.HistoryStopPoint == historyStopPoint
                 ),
                 cancellationToken,

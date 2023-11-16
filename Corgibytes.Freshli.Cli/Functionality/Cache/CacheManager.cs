@@ -101,6 +101,7 @@ public class CacheManager : ICacheManager, IDisposable, IAsyncDisposable
 
     private static string GetFilePathHash(string filePath)
     {
+        // TODO: Unify this with CachedManifest.ManifestFilePathHash
         var sourceManifestHash = SHA256.HashData(Encoding.UTF8.GetBytes(filePath));
         return BitConverter.ToString(sourceManifestHash).Replace("-", string.Empty);
     }
@@ -139,11 +140,22 @@ public class CacheManager : ICacheManager, IDisposable, IAsyncDisposable
     public async ValueTask<ApiCredentials?> GetApiCredentials()
     {
         var credentialsPath = await GetCredentialsPath();
-        // TODO: Handle the file not being present
+
+        if (!File.Exists(credentialsPath))
+        {
+            return null;
+        }
+
         // TODO: Handle parsing failure
         // TODO: Throw an error if any of the values in the `ApiCredentials` instance is null or default
         await using var credentialsStream = File.OpenRead(credentialsPath);
         return await JsonSerializer.DeserializeAsync<ApiCredentials>(credentialsStream);
+    }
+
+    public async ValueTask<bool> AreApiCredentialsPresent()
+    {
+        var credentialsPath = await GetCredentialsPath();
+        return File.Exists(credentialsPath);
     }
 
     public async ValueTask<bool> Destroy()

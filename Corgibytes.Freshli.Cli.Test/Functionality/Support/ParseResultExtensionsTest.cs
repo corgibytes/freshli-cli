@@ -36,7 +36,7 @@ public class ParseResultExtensionsTest
 
         var exception = Assert.Throws<ArgumentException>(() => parseResult.GetOptionValueByName<string>("missing"));
         Assert.Equal(
-            "No option was found with the name `missing`. Valid option names are `branch`, `cache-dir`, `commit-history`, `git-path`, `history-interval`, `latest-only`, `logfile`, `loglevel`, `workers`.",
+            "No option was found with the name `missing`. Valid option names are `branch`, `cache-dir`, `commit-history`, `git-path`, `history-interval`, `latest-only`, `logfile`, `loglevel`, `project`, `workers`.",
             exception.Message);
         Assert.IsType<InvalidOperationException>(exception.InnerException);
     }

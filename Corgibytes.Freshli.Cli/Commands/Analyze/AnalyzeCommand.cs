@@ -9,6 +9,16 @@ public class AnalyzeCommand : RunnableCommand<AnalyzeCommand, AnalyzeCommandOpti
     public AnalyzeCommand(IConfiguration configuration) : base("analyze",
         "The primary user-facing command. This command will delegate to other freshli activities to accomplish its work. It will manage work queues to enable parallelization.")
     {
+        var projectSlug = new Option<string>(
+            "--project",
+            description:
+            "The name of the project to associate the analysis with. Takes the form of `organization-nickname/project-nickname`. If not specified, then an attempt will be made to determine which project to use. However, if more than project is present, then an error will be generated.")
+        {
+            AllowMultipleArgumentsPerToken = false,
+            Arity = ArgumentArity.ExactlyOne
+        };
+        AddOption(projectSlug);
+
         var gitPath = new Option<string>(
             "--git-path",
             description: "Path to the git binary. Default = 'git'",

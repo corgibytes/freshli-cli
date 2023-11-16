@@ -7,9 +7,10 @@ namespace Corgibytes.Freshli.Cli.Commands.Analyze;
 public class AnalyzeCommandOptions : CommandOptions
 {
     public string GitPath { get; set; } = null!;
-    public string Branch { get; set; } = null!;
+    public string? Branch { get; set; }
     public bool CommitHistory { get; set; }
     public string HistoryInterval { get; set; } = null!;
     public string RepositoryLocation { get; set; } = null!;
     public bool LatestOnly { get; set; }
+    public string? Project { get; set; }
 }

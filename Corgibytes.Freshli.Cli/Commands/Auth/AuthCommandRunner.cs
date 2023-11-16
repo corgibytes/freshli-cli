@@ -25,11 +25,12 @@ public class AuthCommandRunner : CommandRunner<AuthCommand, EmptyCommandOptions>
         try
         {
             var token = await _authClient.GetDevice(cancellationToken);
-            console.WriteLine("Open this url in a browser to finish logging in:");
-            console.WriteLine(token.LoginUrl);
-            console.WriteLine("Ensure that the following code is displayed before attempting to log in:");
+            console.WriteLine("Ensure that the following code is displayed when attempting to login:");
             console.WriteLine(token.UserCode);
+            console.WriteLine("Visiting this URL will log you in:");
+            console.WriteLine(token.LoginUrl);
 
+            console.WriteLine("Waiting for response from server...");
             var credentials = await _authClient.GetCredentials(token, cancellationToken);
             var savedCredentialsPath = await _cacheManager.StoreApiCredentials(credentials);
             console.WriteLine($"Credentials saved in {savedCredentialsPath}");
