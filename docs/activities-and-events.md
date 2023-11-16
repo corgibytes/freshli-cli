@@ -14,6 +14,7 @@ Here are some things to keep in mind when viewing the graph:
 flowchart TD;
     AgentsDetectedEvent -.-> ApplicationEventBase
     AgentsDetectedEvent
+    DetectAgentsActivity -.-> ApplicationActivityBase
     DetectAgentsActivity --> AgentsDetectedEvent
     NoAgentsDetectedFailureEvent -.-> FailureEvent
     NoAgentsDetectedFailureEvent
@@ -34,12 +35,15 @@ flowchart TD;
     CachePreparedForAnalysisEvent --> RestartAnalysisActivity
     CachePrepareFailedForAnalysisEvent -.-> FailureEvent
     CachePrepareFailedForAnalysisEvent
+    DetectAgentsForDetectManifestsActivity -.-> ApplicationActivityBase
     DetectAgentsForDetectManifestsActivity --> NoAgentsDetectedFailureEvent
     DetectAgentsForDetectManifestsActivity --> AgentDetectedForDetectManifestEvent
     DetectAgentsForDetectManifestsActivity --> HistoryStopPointProcessingFailedEvent
+    DetectManifestsUsingAgentActivity -.-> ApplicationActivityBase
     DetectManifestsUsingAgentActivity --> ManifestDetectedEvent
     DetectManifestsUsingAgentActivity --> NoManifestsDetectedEvent
     DetectManifestsUsingAgentActivity --> HistoryStopPointProcessingFailedEvent
+    DetermineProjectActivity -.-> ApplicationActivityBase
     DetermineProjectActivity --> AccountNotSetUpEvent
     DetermineProjectActivity --> ProjectDeterminedEvent
     DetermineProjectActivity --> ProjectNotFoundEvent
@@ -50,14 +54,17 @@ flowchart TD;
     FailureEvent --> LogAnalysisFailureActivity
     InvalidHistoryIntervalEvent -.-> FailureEvent
     InvalidHistoryIntervalEvent
+    LogAnalysisFailureActivity -.-> ApplicationActivityBase
     LogAnalysisFailureActivity --> AnalysisFailureLoggedEvent
     ManifestDetectedEvent -.-> ApplicationEventBase
     ManifestDetectedEvent --> GenerateBillOfMaterialsActivity
     ManifestDetectedEvent --> FireHistoryStopPointProcessingErrorActivity
     NoManifestsDetectedEvent -.-> ApplicationEventBase
     NoManifestsDetectedEvent
+    PrepareCacheForAnalysisActivity -.-> ApplicationActivityBase
     PrepareCacheForAnalysisActivity --> CachePreparedForAnalysisEvent
     PrepareCacheForAnalysisActivity --> CachePrepareFailedForAnalysisEvent
+    ProjectDeterminedEvent -.-> ApplicationEventBase
     ProjectDeterminedEvent --> VerifyGitRepositoryInLocalDirectoryActivity
     ProjectDeterminedEvent --> CloneGitRepositoryActivity
     ProjectNotFoundEvent -.-> FailureEvent
@@ -68,29 +75,38 @@ flowchart TD;
     RestartAnalysisActivity --> UnableToRestartAnalysisEvent
     StartAnalysisActivity -.-> StartAnalysisActivityBase
     StartAnalysisActivity --> CacheDoesNotExistEvent
+    StartAnalysisActivityBase -.-> ApplicationActivityBase
     StartAnalysisActivityBase --> AnalysisStartedEvent
     StartAnalysisActivityBase --> InvalidHistoryIntervalEvent
     UnableToRestartAnalysisEvent -.-> FailureEvent
     UnableToRestartAnalysisEvent
     UnhandledExceptionEvent -.-> FailureEvent
     UnhandledExceptionEvent
+    BomUploadedToApiEvent -.-> ApplicationEventBase
     BomUploadedToApiEvent
+    UploadBomToApiActivity -.-> ApplicationActivityBase
     UploadBomToApiActivity --> BomUploadedToApiEvent
     UploadBomToApiActivity --> HistoryStopPointProcessingFailedEvent
+    AuthenticatedEvent -.-> ApplicationEventBase
     AuthenticatedEvent --> DetermineProjectActivity
+    EnsureAuthenticatedActivity -.-> ApplicationActivityBase
     EnsureAuthenticatedActivity --> NotAuthenticatedEvent
     EnsureAuthenticatedActivity --> AuthenticatedEvent
     NotAuthenticatedEvent -.-> FailureEvent
     NotAuthenticatedEvent
+    AddLibYearMetadataDataToBomActivity -.-> ApplicationActivityBase
     AddLibYearMetadataDataToBomActivity --> LibYearMetadataAddedToBomEvent
     AddLibYearMetadataDataToBomActivity --> HistoryStopPointProcessingFailedEvent
     BillOfMaterialsGeneratedEvent -.-> ApplicationEventBase
     BillOfMaterialsGeneratedEvent --> DeterminePackagesFromBomActivity
     BillOfMaterialsGeneratedEvent --> FireHistoryStopPointProcessingErrorActivity
+    GenerateBillOfMaterialsActivity -.-> ApplicationActivityBase
     GenerateBillOfMaterialsActivity --> BillOfMaterialsGeneratedEvent
     GenerateBillOfMaterialsActivity --> HistoryStopPointProcessingFailedEvent
+    LibYearMetadataAddedToBomEvent -.-> ApplicationEventBase
     LibYearMetadataAddedToBomEvent --> UploadBomToApiActivity
     LibYearMetadataAddedToBomEvent --> FireHistoryStopPointProcessingErrorActivity
+    PackagesFromBomProcessedEvent -.-> ApplicationEventBase
     PackagesFromBomProcessedEvent --> AddLibYearMetadataDataToBomActivity
     PackagesFromBomProcessedEvent --> FireHistoryStopPointProcessingErrorActivity
     CacheDestroyedEvent -.-> ApplicationEventBase
@@ -101,13 +117,19 @@ flowchart TD;
     CachePreparedEvent
     CachePrepareFailedEvent -.-> FailureEvent
     CachePrepareFailedEvent
+    DestroyCacheActivity -.-> ApplicationActivityBase
     DestroyCacheActivity --> CacheDestroyedEvent
     DestroyCacheActivity --> CacheDestroyFailedEvent
+    PrepareCacheActivity -.-> ApplicationActivityBase
     PrepareCacheActivity --> CachePreparedEvent
     PrepareCacheActivity --> CachePrepareFailedEvent
+    LoadServiceProviderActivity -.-> ApplicationActivityBase
     LoadServiceProviderActivity
+    ThrowExceptionActivity -.-> ApplicationActivityBase
     ThrowExceptionActivity
+    ApplicationActivityBase
     ApplicationEventBase
+    CloneGitRepositoryActivity -.-> ApplicationActivityBase
     CloneGitRepositoryActivity --> AnalysisIdNotFoundEvent
     CloneGitRepositoryActivity --> GitRepositoryCloneStartedEvent
     CloneGitRepositoryActivity --> GitRepositoryClonedEvent
@@ -124,15 +146,19 @@ flowchart TD;
     GitRepositoryCloneStartedEvent
     GitRepositoryInLocalDirectoryVerifiedEvent -.-> ApplicationEventBase
     GitRepositoryInLocalDirectoryVerifiedEvent --> ComputeHistoryActivity
+    VerifyGitRepositoryInLocalDirectoryActivity -.-> ApplicationActivityBase
     VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryDoesNotExistFailureEvent
     VerifyGitRepositoryInLocalDirectoryActivity --> DirectoryIsNotGitInitializedFailureEvent
     VerifyGitRepositoryInLocalDirectoryActivity --> GitRepositoryInLocalDirectoryVerifiedEvent
+    CheckoutHistoryActivity -.-> ApplicationActivityBase
     CheckoutHistoryActivity --> HistoryStopCheckedOutEvent
     CheckoutHistoryActivity --> HistoryStopPointProcessingCompletedEvent
     CheckoutHistoryActivity --> UnhandledExceptionEvent
+    ComputeHistoryActivity -.-> ApplicationActivityBase
     ComputeHistoryActivity --> AnalysisIdNotFoundEvent
     ComputeHistoryActivity --> InvalidHistoryIntervalEvent
     ComputeHistoryActivity --> HistoryIntervalStopFoundEvent
+    FireHistoryStopPointProcessingErrorActivity -.-> ApplicationActivityBase
     FireHistoryStopPointProcessingErrorActivity --> HistoryStopPointProcessingFailedEvent
     HistoryIntervalStopFoundEvent -.-> ApplicationEventBase
     HistoryIntervalStopFoundEvent --> CheckoutHistoryActivity
@@ -142,8 +168,10 @@ flowchart TD;
     HistoryStopPointProcessingCompletedEvent
     HistoryStopPointProcessingFailedEvent -.-> UnhandledExceptionEvent
     HistoryStopPointProcessingFailedEvent
+    ComputeLibYearForPackageActivity -.-> ApplicationActivityBase
     ComputeLibYearForPackageActivity --> LibYearComputedForPackageEvent
     ComputeLibYearForPackageActivity --> HistoryStopPointProcessingFailedEvent
+    DeterminePackagesFromBomActivity -.-> ApplicationActivityBase
     DeterminePackagesFromBomActivity --> PackageFoundEvent
     DeterminePackagesFromBomActivity --> NoPackagesFoundEvent
     DeterminePackagesFromBomActivity --> HistoryStopPointProcessingFailedEvent
