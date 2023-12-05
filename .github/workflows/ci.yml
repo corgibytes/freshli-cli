@@ -36,7 +36,7 @@ jobs:
           "HOME=${env:GITHUB_WORKSPACE}" >> $env:GITHUB_ENV
 
       - name: "[Setup] - .NET Core"
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
           global-json-file: ./global.json
 
