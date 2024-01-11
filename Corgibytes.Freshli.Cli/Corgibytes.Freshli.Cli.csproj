@@ -51,7 +51,7 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <PackageReference Include="Google.Protobuf" Version="3.24.3" />
+    <PackageReference Include="Google.Protobuf" Version="3.25.2" />
     <PackageReference Include="Grpc.Net.Client" Version="2.57.0" />
     <PackageReference Include="Grpc.Net.ClientFactory" Version="2.57.0" />
     <PackageReference Include="Grpc.Core.Api" Version="2.57.0" />
