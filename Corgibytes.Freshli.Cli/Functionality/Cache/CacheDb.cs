@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AsyncKeyedLock;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Extensions;
 using Corgibytes.Freshli.Cli.Functionality.Git;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using NeoSmart.AsyncLock;
 using PackageUrl;
 using Polly;
 using Polly.Retry;
@@ -17,7 +17,7 @@ namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 // TODO: This class should handle validating that the data is correct before saving it.
 public class CacheDb : ICacheDb, IDisposable, IAsyncDisposable
 {
-    private readonly AsyncLock _cacheDbLock = new();
+    private readonly AsyncNonKeyedLocker _cacheDbLock = new();
 
     private readonly AsyncRetryPolicy _sqliteRetryPolicy = Policy
         .Handle<SqliteException>()
