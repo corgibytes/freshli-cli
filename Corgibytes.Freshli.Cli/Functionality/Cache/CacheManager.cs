@@ -5,20 +5,20 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AsyncKeyedLock;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Api.Auth;
 using Corgibytes.Freshli.Cli.Functionality.Support;
 using Corgibytes.Freshli.Cli.Resources;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using NeoSmart.AsyncLock;
 
 namespace Corgibytes.Freshli.Cli.Functionality.Cache;
 
 public class CacheManager : ICacheManager, IDisposable, IAsyncDisposable
 {
     private readonly IConfiguration _configuration;
-    private readonly AsyncLock _cacheDbLock = new();
+    private readonly AsyncNonKeyedLocker _cacheDbLock = new();
     private CacheDb? _cacheDb;
 
     public CacheManager(IConfiguration configuration) => _configuration = configuration;
