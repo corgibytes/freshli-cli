@@ -1,6 +1,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AsyncKeyedLock;
 using Corgibytes.Freshli.Cli.DataModel;
 using Corgibytes.Freshli.Cli.Functionality.Agents;
 using Corgibytes.Freshli.Cli.Functionality.Cache;
@@ -8,7 +9,6 @@ using Corgibytes.Freshli.Cli.Functionality.Engine;
 using Corgibytes.Freshli.Cli.Functionality.History;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NeoSmart.AsyncLock;
 using PackageUrl;
 
 namespace Corgibytes.Freshli.Cli.Functionality.LibYear;
@@ -18,7 +18,7 @@ public class ComputeLibYearForPackageActivity : IApplicationActivity, IHistorySt
     public required IHistoryStopPointProcessingTask? Parent { get; init; }
     public required PackageURL Package { get; init; }
     public required string AgentExecutablePath { get; init; }
-    private static readonly AsyncLock s_cacheLibYearLock = new();
+    private static readonly AsyncNonKeyedLocker s_cacheLibYearLock = new();
 
     public int Priority
     {
