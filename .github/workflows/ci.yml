@@ -41,7 +41,7 @@ jobs:
           global-json-file: ./global.json
 
       - name: "[Setup] - Install GitVersion"
-        uses: gittools/actions/gitversion/setup@v0.10.2
+        uses: gittools/actions/gitversion/setup@v1.2.0
         with:
           versionSpec: '5.10.3'
 
@@ -63,19 +63,19 @@ jobs:
           "HOME=${env:GITHUB_WORKSPACE}" >> $env:GITHUB_ENV
 
       - name: "[Versioning] - GitVersion Config"
-        uses: gittools/actions/gitversion/execute@v0.10.2
+        uses: gittools/actions/gitversion/execute@v1.2.0
         with:
           useConfigFile: true
           additionalArguments: '/showConfig'
 
       - name: "[Versioning] - Determine Version"
-        uses: gittools/actions/gitversion/execute@v0.10.2
+        uses: gittools/actions/gitversion/execute@v1.2.0
         id: gitversion
         with:
           useConfigFile: true
 
       - name: "[Versioning] - Update csproj Files"
-        uses: gittools/actions/gitversion/execute@v0.10.2
+        uses: gittools/actions/gitversion/execute@v1.2.0
         with:
           useConfigFile: true
           additionalArguments: '/updateprojectfiles'
