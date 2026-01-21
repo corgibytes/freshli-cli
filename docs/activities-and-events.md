@@ -11,6 +11,9 @@ Here are some things to keep in mind when viewing the graph:
 * Each arrow with a dotted line represents an "is a" relationship. The source class inherits from the destination class.
 
 ```mermaid
+/usr/share/dotnet/sdk/10.0.100/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.EolTargetFrameworks.targets(32,5): warning NETSDK1138: The target framework 'net7.0' is out of support and will not receive security updates in the future. Please refer to https://aka.ms/dotnet-core-support for more information about the support policy. [/home/runner/work/freshli-cli/freshli-cli/tools/diagram-generator/diagram-generator.csproj]
+/usr/share/dotnet/sdk/10.0.100/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.EolTargetFrameworks.targets(32,5): warning NETSDK1138: The target framework 'net7.0' is out of support and will not receive security updates in the future. Please refer to https://aka.ms/dotnet-core-support for more information about the support policy. [/home/runner/work/freshli-cli/freshli-cli/tools/diagram-generator/diagram-generator.csproj]
+/usr/share/dotnet/sdk/10.0.100/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.EolTargetFrameworks.targets(32,5): warning NETSDK1138: The target framework 'net7.0' is out of support and will not receive security updates in the future. Please refer to https://aka.ms/dotnet-core-support for more information about the support policy. [/home/runner/work/freshli-cli/freshli-cli/tools/diagram-generator/diagram-generator.csproj]
 flowchart TD;
     AgentsDetectedEvent -.-> ApplicationEventBase
     AgentsDetectedEvent
